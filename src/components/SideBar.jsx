@@ -13,6 +13,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import React, { useState } from 'react';
 
+
 // React component for the SideBar
 const SideBar = () => {
   const [openInventory, setOpenInventory] = useState(false);
@@ -30,17 +31,18 @@ const SideBar = () => {
   const handleReportClick = () => {
     setOpenReport(!openReport);
   };
- 
 
   return (
     
       <List className='mx-2 mt-2'>
-        {/* Main sections */}
-        <ListItem button className='rounded-lg hover:bg-blue-100 focus:bg-blue-400' >
-          <DashboardIcon></DashboardIcon>
-          <ListItemText primary="Dashboard" className='pl-4 pr-4' />
-        </ListItem>
-
+        {/* Dashboard sections */}
+        <a href='/'>
+          <ListItem button className='rounded-lg hover:bg-blue-100 focus:bg-blue-400' >
+            <DashboardIcon></DashboardIcon>
+            <ListItemText primary="Dashboard" className='pl-4 pr-4' />
+          </ListItem>
+        </a>
+        
         {/* Inventory */}
         <ListItem button onClick={handleInventoryClick} className='rounded-lg hover:bg-blue-100 focus:bg-blue-400'>
           <InventoryIcon></InventoryIcon>
@@ -52,9 +54,11 @@ const SideBar = () => {
             <ListItem button  className='pl-8 rounded-lg'>
               <ListItemText primary="Item" />
             </ListItem>
-            <ListItem button  className='pl-8 rounded-lg'>
-              <ListItemText primary="Adjustment" />
-            </ListItem>
+            <a href='/adjustment'>
+              <ListItem button  className='pl-8 rounded-lg'>
+                <ListItemText primary="Adjustment" />
+              </ListItem>
+            </a>
             <ListItem button  className='pl-8 rounded-lg'>
               <ListItemText primary="Stock In" />
             </ListItem>
