@@ -1,14 +1,16 @@
-import React from 'react'
+import * as React from 'react';
 
-const Dashboard = (props) => {
+import { Grid } from '@mui/material';
+
+export default function BasicButtons() {
   return (
-    <div>
-        <div>
-            <h1 className="pt-6 pb-6 text-3xl font-bold ">{props.name}</h1>
-        </div>
-        <h4>Admin Dashboard...!!</h4>
-    </div>
-  )
+    <Grid container>
+      <Grid item bgcolor='primary.light' p={2} xs={12} sm={6} > first</Grid>
+      <Grid item bgcolor='primary.light' p={2} xs={12} sm={6} >second</Grid>
+      <Grid item bgcolor='primary.light' p={2} xs={12} sm={6} >third</Grid>
+      <Grid item bgcolor='primary.light' p={2} xs={12} sm={6} >fourth</Grid> 
+    </Grid>
+  );
 }
 
-export default Dashboard
+
