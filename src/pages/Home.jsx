@@ -6,17 +6,21 @@ import Dashboard from './Dashboard'
 
 import Adjustment from './Adjustment/Adjustment'
 import NewAdjustment from './Adjustment/NewAdjustment'
+import User from './User/User'
+import CreateUser from './User/CreateUser'
+import Userupdate from './User/Edit_user'
+import EditUser from '../components/UserEditForm'
 
 const Home = () => {
   return (
     <div>
       <div>
-        <NavBar></NavBar>
+        <NavBar/>
       </div>
   
       <div className='flex h-screen'>
         <div className='box-border hidden border-2 md:block w-96'>
-          <SideBar></SideBar>
+          <SideBar/>
         </div>
           
       
@@ -26,6 +30,11 @@ const Home = () => {
             <Routes>
               <Route path='/' element={<Dashboard name="Dashboard"/>}></Route>
               <Route path='/adjustment' element={<Adjustment/>}></Route>
+              <Route path='/user' element={<User/>}></Route>
+              <Route path="/newUser" element={<CreateUser/>}/>
+              <Route path="/user/users/:ID" element={<EditUser/>}/>
+        
+
             </Routes>
           </BrowserRouter>
         </div>

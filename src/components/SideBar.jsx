@@ -34,10 +34,10 @@ const SideBar = () => {
 
   return (
     
-      <List className='mx-2 mt-2'>
+      <List className='mx-2 mt-2 h-full'>
         {/* Dashboard sections */}
         <a href='/'>
-          <ListItem button className='rounded-lg hover:bg-blue-100 focus:bg-blue-400' >
+          <ListItem button className='rounded-lg hover:bg-blue-100 focus:bg-blue-400 ' >
             <DashboardIcon></DashboardIcon>
             <ListItemText primary="Dashboard" className='pl-4 pr-4' />
           </ListItem>
