@@ -1,5 +1,6 @@
 import React from "react";
-import Home from "./pages/Home"
+import SelectedInventoryRequest from "./pages/InventoryRequest/SelectedInventoryRequest";
+import Home from "./pages/Home";
 
 
 function App() {
@@ -11,3 +12,5 @@ function App() {
 }
 
 export default App;
+
+
