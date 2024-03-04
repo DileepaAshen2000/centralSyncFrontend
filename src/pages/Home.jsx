@@ -2,11 +2,12 @@ import React from 'react'
 import NavBar from '../components/NavBar'
 import SideBar from '../components/SideBar'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Dashboard from './Dashboard'
+//import Dashboard from './Dashboard'
 import Adjustment from './Adjustment/Adjustment'
 import NewAdjustment from './Adjustment/NewAdjustment'
 import { Grid } from '@mui/material'
 import AdjustmentDocument from './Adjustment/AdjustmentDocument'
+import RequestList from './InventoryRequest/InventoryRequestList'
 
 const Home = () => {
   return (
@@ -23,10 +24,11 @@ const Home = () => {
           {/* Enter components here, that you want to insert. */}
           <BrowserRouter>
             <Routes>
-              <Route path='/' element={<Dashboard name="Dashboard"/>}></Route>
+              {/* <Route path='/' element={<Dashboard name="Dashboard"/>}></Route> */}
               <Route path='/adjustment' element={<Adjustment/>}></Route>
               <Route path='/newadjustment' element={<NewAdjustment/>}></Route>
               <Route path='/adjustment/adj1' element={<AdjustmentDocument/>}></Route>
+              <Route path='/inventoryRequest' element={<RequestList/>}></Route>
             </Routes>
           </BrowserRouter>
         </Grid>
