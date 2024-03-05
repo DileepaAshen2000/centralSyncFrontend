@@ -1,13 +1,17 @@
 import {
+  Button,
+  Popover,
   InputAdornment,
   InputLabel,
+  MenuList,
   MenuItem,
   Select,
   TextField,
 } from "@mui/material";
-import { Button } from "@mui/material";
+
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+
 import axios from "axios";
 
 const ViewItemDetails = () => {
@@ -19,10 +23,10 @@ const ViewItemDetails = () => {
   const [weight, setWeight] = useState("");
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [isEditable, setIsEditable] = useState(true);
+  const [notEditable, setnotEditable] = useState(true);
   const { ID } = useParams();
 
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -55,10 +59,10 @@ const ViewItemDetails = () => {
   }, [ID]);
 
   const handleEdit = () => {
-    setIsEditable(!isEditable);
+    setnotEditable(!notEditable);
   };
 
-  const handleSave = (e) => {
+  const handleSave = () => {
     const item = {
       itemName,
       itemGroup,
@@ -78,19 +82,46 @@ const ViewItemDetails = () => {
       .catch((error) => {
         console.log(error);
       });
-      
 
-
+    navigate("/item");
   };
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const id = isOpen ? (
+    <Button
+      variant="contained"
+      className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
+      onClick={handleEdit}
+    >
+      Edit
+    </Button>
+  ) : undefined;
+
+  const handleMoreButton = (event) => {
+    setAnchorEl(event.currentTarget);
+    setIsOpen(true);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setIsOpen(false);
+  };
+
+  const handleDelete=()=>{
+    try{
+      axios.delete("http://localhost:8080/inventory-item/deleteItem/" + ID);
+    }catch(error){
+      console.log(error);
+    }
+    navigate("/item");
+  }
+
   return (
-    <form className="bg-[#F5F5F5] grid grid-cols-8 gap-y-10 pl-12 ">
+    <form className="grid grid-cols-8 gap-y-10 pl-12 ">
       <h1 className=" col-span-4 text-2xl ">Item Details</h1>
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel
-          htmlFor="id"
-          className="flex-none text-black w-32 "
-        >
+        <InputLabel htmlFor="id" className="flex-none text-black w-32 ">
           Item id
         </InputLabel>
         <TextField
@@ -121,7 +152,7 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
-            readOnly: isEditable,
+            readOnly: notEditable,
           }}
         />
       </div>
@@ -135,7 +166,8 @@ const ViewItemDetails = () => {
             value={itemGroup}
             onChange={(e) => setItemGroup(e.target.value)}
             id="itemGroup"
-            className="  w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
+            className="bg-white  w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
+            readOnly={notEditable}
           >
             <MenuItem disabled value={itemGroup}></MenuItem>
             <MenuItem value="computer accessories">
@@ -161,7 +193,7 @@ const ViewItemDetails = () => {
             endAdornment: <InputAdornment position="end">pcs</InputAdornment>,
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: isEditable,
+            readOnly: notEditable,
           }}
         />
       </div>
@@ -192,7 +224,7 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: isEditable,
+            readOnly: notEditable,
           }}
         />
       </div>
@@ -208,7 +240,7 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: isEditable,
+            readOnly: notEditable,
           }}
         />
       </div>
@@ -229,7 +261,7 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 ml-5 bg-white",
-            readOnly: isEditable,
+            readOnly: notEditable,
           }}
         />
       </div>
@@ -245,25 +277,77 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: isEditable,
+            readOnly: notEditable,
           }}
         />
       </div>
-
-      <Button
-        variant="contained"
-        className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
-        onClick={handleEdit}
-      >
-        Edit
-      </Button>
-      <Button
-        variant="outlined"
-        className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
-        onClick={handleSave}
-      >
-        Save
-      </Button>
+      {!notEditable ? (
+        <>
+          <Button
+            variant="contained"
+            className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
+            onClick={handleSave}
+          >
+            Save
+          </Button>
+          <Button
+            variant="outlined"
+            className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
+            onClick={() => navigate("/item")}
+          >
+            Cancel
+          </Button>
+        </>
+      ) : (
+        <>
+          <Button
+            variant="contained"
+            className="row-start-1 col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
+            onClick={handleMoreButton}
+          >
+            More
+          </Button>
+          <Popover
+            id={id}
+            open={isOpen}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+          >
+            <MenuList>
+              <MenuItem>
+                <Button
+                  variant="contained"
+                  className=" col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
+                  onClick={handleEdit}
+                >
+                  Edit
+                </Button>
+              </MenuItem>
+              <MenuItem>
+                <Button
+                  variant="contained"
+                  className="col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
+              </MenuItem>
+              <MenuItem>
+                <Button
+                  variant="contained"
+                  className=" col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
+                >
+                  Mark as inactive
+                </Button>
+              </MenuItem>
+            </MenuList>
+          </Popover>
+        </>
+      )}
     </form>
   );
 };

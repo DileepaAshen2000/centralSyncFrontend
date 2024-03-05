@@ -43,10 +43,11 @@ const AddItemForm = () => {
     }).then(() => {
       console.log("New inventory item added");
     });
+    navigate("/item")
   };
 
   return (
-    <form className="bg-[#F5F5F5] grid grid-cols-8 gap-y-10 pl-12 ">
+    <form className="grid grid-cols-8 gap-y-10 pl-12 ">
       <h1 className=" col-span-4 text-2xl ">New item</h1>
 
       <div className="col-start-1 col-span-4 flex items-center">
@@ -78,7 +79,7 @@ const AddItemForm = () => {
             id="Group"
             value={itemGroup}
             onChange={(e) => setItemGroup(e.target.value)}
-            className="  w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
+            className=" bg-white w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
           >
             <MenuItem disabled value={itemGroup}>
               <em>Select an itemGroup</em>

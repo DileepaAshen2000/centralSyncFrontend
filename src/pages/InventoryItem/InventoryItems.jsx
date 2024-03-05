@@ -49,7 +49,7 @@ const ItemDataGrid = () => {
       .get("http://localhost:8080/inventory-item/getAll")
       .then((response) => {
         const data = response.data.map((item, index) => ({
-          id: index + 1,
+          id: item.itemId,
           item_name: item.itemName,
           group: item.itemGroup,
           quantity: item.quantity,
@@ -60,7 +60,7 @@ const ItemDataGrid = () => {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  });
 
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const handleRowSelectionModelChange = (newSelectedRow) => {
@@ -77,18 +77,14 @@ const ItemDataGrid = () => {
   };
 
   return (
-    <Box
-      sx={{
-        height: 400,
-        width: "100%",
-      }}
+    <Box className="h-[400px] w-full"
     >
       <Box>
         <h1 className="inline-block text-3xl font-bold p-4">All items</h1>
         {rowSelectionModel > 0 ? (
           <Button
             variant="contained"
-            className="bg-blue-600 px-6 py-2 text-white rounded left-[72%]"
+            className="bg-blue-600 px-6 py-2 text-white rounded left-[69%] w-[145px]"
             onClick={handleClick}
           >
             View Details
@@ -96,7 +92,7 @@ const ItemDataGrid = () => {
         ) : (
           <Button
             variant="contained"
-            className="bg-blue-600 px-6 py-2 text-white rounded left-[72%]"
+            className="bg-blue-600 px-6 py-2 text-white rounded left-[69%] w-[145px]"
             onClick={() => navigate("/item/add-item")}
           >
             Add items
