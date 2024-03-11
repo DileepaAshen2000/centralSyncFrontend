@@ -15,6 +15,13 @@ import RequestList from './InventoryRequest/InventoryRequestList'
 import ItemDataGrid from './InventoryItem/InventoryItems'
 import AddItemForm from './InventoryItem/NewItem'
 import ViewItemDetails from './InventoryItem/ViewDetails'
+import ViewHistory from './History'
+ 
+
+
+
+
+
 
 const Home = () => {
   return (
@@ -43,6 +50,7 @@ const Home = () => {
               <Route path='/item' element={<ItemDataGrid/>}></Route>
               <Route path='/item/add-item' element={<AddItemForm/>}></Route>
               <Route path='/item/edit-item/:ID' element={<ViewItemDetails/>}></Route>
+              <Route path='/history' element={<ViewHistory/>}></Route>
             </Routes>
           </BrowserRouter>
         </Grid>
