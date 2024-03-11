@@ -9,7 +9,7 @@ const columns = [
   { field: 'description', headerName: 'Description', width: 300 },
   { field: 'adjusted_Qty', headerName: 'Adjusted_Qty', width: 150 },
   { field: 'date', headerName: 'Date', width: 150 },
-  { field: 'adjustment_Status', headerName: 'Adjustment_Status', width: 100 },
+  { field: 'status', headerName: 'Status', width: 100 },
 ];
 
 
@@ -27,7 +27,7 @@ useEffect(() => {
       description: adj.description,
       adjusted_Qty: adj.newQuantity,
       date: adj.date,
-      adjustment_Status: adj.status,
+      status: adj.status,
 
     }));
     setData(data);

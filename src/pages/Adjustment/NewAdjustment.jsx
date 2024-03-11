@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FormControl, Select, MenuItem, TextField, Grid, Box, Typography, Button, Stack } from '@mui/material';
+import { FormControl, Select, MenuItem, TextField, Grid, Box, Typography, Button } from '@mui/material';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -43,7 +43,7 @@ const NewAdjustment = () => {
   }
 
   return (
-    <Box paddingLeft={10} paddingRight={10}>
+    <Box className='p-10 bg-white rounded-2xl ml-14 mr-14'>
       <Box className="pb-4">
         <h1 className="pt-2 pb-3 text-3xl font-bold ">New Adjustment</h1>
       </Box>
@@ -151,9 +151,9 @@ const NewAdjustment = () => {
             </Grid>
           </Grid>
 
-          <Box mt={2} paddingLeft={25}>
+          <Box mt={4} className='pl-44'>
             <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <Table sx={{ minWidth: 650, border:2 }} aria-label="simple table">
                 <TableHead>
                   <TableRow>
                     <TableCell>Item Details</TableCell>
@@ -186,10 +186,18 @@ const NewAdjustment = () => {
           <input type='file' className="mt-4 mb-2" ></input>
           <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
         </Box>
-        <Stack spacing={4} direction='row' ml={100} mt={4}>
-            <Button variant="contained" type='submit'>Submit</Button>
-            <Button variant="outlined">Cancel</Button>
-        </Stack>
+        <div className='flex gap-6 mt-6 ml-[70%]'>
+            <Button className="px-6 py-2 text-white bg-blue-600 rounded"
+               variant='contained'
+               type='submit'
+               onClick={() => navigate("/newadjustment")}
+                >submit</Button>
+
+            <Button className="px-6 py-2 rounded"
+               variant='outlined'
+               onClick={() => navigate("/adjustment")}
+                >cancel</Button>
+        </div>
       </form>
     </Box>
   );
