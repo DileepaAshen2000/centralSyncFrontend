@@ -130,10 +130,10 @@ export default function NavBar() {
       
       {/* Sidebar Content */}
       <div
-        className={` w-80 absolute right-0 h-screen bg-[#F1ECEC] text-black ${SidebarOpen ? 'block' : 'hidden'}`}
+        className={` w-80 absolute right-0 h-screen bg-[#F1ECEC] text-black ${SidebarOpen ? 'block' : 'hidden'}  `}
       >
        
-        <div className="flex flex-col gap-10 p-10 pl-4">
+        <div className="flex flex-col gap-10 p-10 pl-4"> 
           <div className='flex gap-4'>
             <div>Profile Picture</div>
             <div>
