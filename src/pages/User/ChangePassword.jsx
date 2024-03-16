@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import { TextField, Button, Stack, Select } from "@mui/material";
 import { useForm } from "react-hook-form";
 import Typography from "@mui/material/Typography";
+import { useNavigate } from "react-router-dom";
 
 
 const Changepassword = () =>{
+  const navigate = useNavigate();
     return(
+      
         <div>
  <h1 className="pt-6 pb-10 text-3xl font-bold ">Change Password</h1>
 
@@ -72,7 +75,7 @@ const Changepassword = () =>{
             <Button
               variant="outlined"
               className="bg-[#007EF2] w-[150px] rounded-md text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
-              
+              onClick={()=>navigate("/User")}
             >
               
               Save 

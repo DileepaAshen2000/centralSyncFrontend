@@ -7,6 +7,9 @@ import SelectD from "./Select_D";
 //import DragDrop from "./Drag&Drop";
 //import { DropzoneArea } from 'material-ui-dropzone';
 //import Dropzone from "./Dropzone";
+import { Link, useNavigate, useParams } from "react-router-dom";
+
+
 
 const UserForm = () => {
   const form = useForm();
@@ -19,6 +22,7 @@ const UserForm = () => {
   const [email, setEmail] = useState("");
   const [department, setDepartment] = useState("");
   const [role, setRole] = useState("");
+  const navigate = useNavigate();
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -41,6 +45,7 @@ const UserForm = () => {
     }).then(() => {
       console.log("New User added");
     });
+    navigate("/User")
   };
 
   return (
@@ -110,6 +115,7 @@ const UserForm = () => {
           <div className="col-span-2">
             <TextField
               id="date"
+              type="date"
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",

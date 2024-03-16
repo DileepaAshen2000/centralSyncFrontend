@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Stack, Select } from "@mui/material";
+import { TextField, Button, Stack, Select,Popover,MenuList } from "@mui/material";
 import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
 import SelectD from "./Select_D";
@@ -23,6 +23,8 @@ const EditUser = () => {
   const [role, setRole] = useState("");
   const { ID } = useParams();
   const [isEditable, setIsEditable] = useState(true);
+  const [fetchData, setFetchData] = useState(false);
+
 
   const navigate = useNavigate();
 
@@ -92,8 +94,103 @@ const EditUser = () => {
       });
   };
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleMoreButton = (event) => {
+    setAnchorEl(event.currentTarget);
+    setIsOpen(true);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setIsOpen(false);
+  };
+
+  const handleDelete = () => {
+    try {
+      axios
+        .delete("http://localhost:8080/user/delete/" + ID)
+        .then(() => {
+          setFetchData(!fetchData);
+          navigate("/user", { fetchData });
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  {/*const handleMarkAsInactiveButton = () => {
+    axios
+      .patch(
+        "http://localhost:8080/User/updateStatus/" + ID + "/inactive"
+      )
+      .then(() => {
+        setFetchData(!fetchData);
+        navigate("/user", { fetchData });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };*/}
+
   return (
-    <>
+  <>
+    <div className="grid grid-cols-4 grid-rows-1 gap-y-7 gap-x-[0.25rem] mb-10 ">
+    <div className="col-start-1">
+    <h1 className="text-3xl font-bold ">Edit User Details</h1>
+    </div>
+    <div className="col-start-4">
+      <Button
+      variant="contained"
+      className="bg-[#007EF2] w-[150px] rounded-md text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
+      onClick={handleMoreButton}
+    >
+      More
+    </Button>
+
+    <Popover
+      open={isOpen}
+      anchorEl={anchorEl}
+      onClose={handleClose}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "left",
+      }}
+      >
+      <MenuList>
+        <MenuItem>
+          <Button
+            variant="contained"
+            className="bg-[#007EF2] w-[180px] rounded-md text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
+            onClick={handleEdit}
+          >
+            Edit
+          </Button>
+        </MenuItem>
+        <MenuItem>
+          <Button
+            variant="contained"
+            className="bg-[#007EF2] w-[180px] rounded-md text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
+            onClick={handleDelete}
+          >
+            Delete
+          </Button>
+        </MenuItem>
+        <MenuItem>
+          <Button
+            variant="contained"
+            className="bg-[#007EF2] w-[180px] rounded-md text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
+           //onClick={handleMarkAsInactiveButton}
+          >
+            Mark as inactive
+          </Button>
+        </MenuItem>
+      </MenuList>
+    </Popover>
+    </div>
+  </div>
+      <div>
       <form noValidate>
         <div className="grid grid-cols-6 grid-rows-7  gap-x-[0.25rem] ">
           <div className="col-span-1 row-span-1">
@@ -347,30 +444,37 @@ const EditUser = () => {
         </div>
 
         <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] mt-12 ">
+         
+           
           <div className="col-start-5">
             <Button
-      
               variant="outlined"
               className="bg-[#007EF2] w-[150px] rounded-md text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
-              onClick={handleEdit}
-            >
-              
-              Edit
-            </Button>
-          </div>
-          <div className="col-start-6">
-            <Button
-              variant="outlined"
-              className="bg-white w-[150px] rounded-md text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-[#007EF2]"
               onClick={handleSave}
             >
               
               Save
             </Button>
+            </div>
+            <div className="col-start-6">
+            <Button
+      
+              variant="outlined"
+              className="bg-white w-[150px] rounded-md text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-[#007EF2]"
+             
+              onClick={()=>navigate("/User")}
+            >
+              
+              Cancel
+            </Button>
           </div>
         </div>
       </form>
+      </div>
     </>
   );
 };
 export default EditUser;
+
+
+ 

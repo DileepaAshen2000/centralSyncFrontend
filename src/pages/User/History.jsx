@@ -36,7 +36,13 @@ export default function OppositeContentTimeline() {
             <TimelineItem>
               <TimelineOppositeContent className="flex-none w-1/5">
                 <Chip
-                  label="9.30"
+                  label={
+                    <>
+      27 Dec 2023<br />
+      9.30 pm
+    </>
+                  }
+                  
                   component="a"
                   href="#basic-chip"
                   variant="outlined"
@@ -49,11 +55,11 @@ export default function OppositeContentTimeline() {
               </TimelineSeparator>
               <TimelineContent>
                 <Chip
-                  label="Eat"
+                 label="Inventory Adjustment approved."
                   component="a"
                   href="#basic-chip"
                   variant="outlined"
-                  className="bg-[#B9D4F3] w-[335px] h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none   space-x-5 shadow-md  "
+                  className="bg-[#B9D4F3] w-[335px] h-[45px]  text-black   rounded-none   space-x-5 shadow-md  "
                   clickable
                 />
               </TimelineContent>
@@ -61,11 +67,16 @@ export default function OppositeContentTimeline() {
             <TimelineItem>
               <TimelineOppositeContent className="flex-none w-1/5">
                 <Chip
-                  label="9.30"
+                  label={
+                    <>
+      27 Dec 2023<br />
+      5.30 pm
+    </>
+                  }
                   component="a"
                   href="#basic-chip"
                   variant="outlined"
-                  className="bg-[#B9D4F3] w-[335px] h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-md   space-x-5 shadow-md  "
+                  className="bg-[#B9D4F3] w-[335px] h-[45px]  text-black   border-none  rounded-md   space-x-5 shadow-md  "
                 />
               </TimelineOppositeContent>
               <TimelineSeparator>
@@ -74,11 +85,11 @@ export default function OppositeContentTimeline() {
               </TimelineSeparator>
               <TimelineContent>
                 <Chip
-                  label="Eat"
+                  label="New User Added"
                   component="a"
                   href="#basic-chip"
                   variant="outlined"
-                  className="bg-[#B9D4F3] w-[335px] h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none   space-x-5 shadow-md "
+                  className="bg-[#B9D4F3] w-[335px] h-[45px]  text-black    rounded-none   space-x-5 shadow-md "
                   clickable
                 />
               </TimelineContent>
@@ -86,7 +97,12 @@ export default function OppositeContentTimeline() {
             <TimelineItem>
               <TimelineOppositeContent className="flex-none w-1/5">
                 <Chip
-                  label="9.30"
+                  label={
+                    <>
+      27 Dec 2023<br />
+      10.30 am
+    </>
+                  }
                   component="a"
                   href="#basic-chip"
                   variant="outlined"
@@ -99,7 +115,8 @@ export default function OppositeContentTimeline() {
               </TimelineSeparator>
               <TimelineContent>
                 <Chip
-                  label="Eat"
+                   label="Inventory Adjustment approved."
+                    
                   component="a"
                   href="#basic-chip"
                   variant="outlined"

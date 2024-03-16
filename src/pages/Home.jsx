@@ -17,12 +17,15 @@ import AddItemForm from "./InventoryItem/NewItem";
 import ViewItemDetails from "./InventoryItem/ViewDetails";
 import ViewHistory from "./User/History";
 import Changepassword from "./User/ChangePassword";
+import { BrowserRouter as Router, Link } from "react-router-dom";
 
 const Home = () => {
   return (
     <div>
       <div>
+      <Router>
         <NavBar />
+      </Router>
       </div>
       <Grid container className="flex">
         <Grid
@@ -44,7 +47,7 @@ const Home = () => {
             <Routes>
               {/* <Route path='/' element={<Dashboard name="Dashboard"/>}></Route> */}
               <Route path="/adjustment" element={<Adjustment />}></Route>
-
+              
               <Route path="/user" element={<User />}></Route>
               <Route path="/newUser" element={<CreateUser />} />
               <Route path="/user/users/:ID" element={<EditUser />} />
