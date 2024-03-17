@@ -11,6 +11,11 @@ import RequestList from './InventoryRequest/InventoryRequestList'
 import ItemDataGrid from './InventoryItem/InventoryItems'
 import AddItemForm from './InventoryItem/NewItem'
 import ViewItemDetails from './InventoryItem/ViewDetails'
+import Usage from './Reports/UsageReport'
+import OrderDataGrid from './InitiateOrder/OrderList'
+import NewOrderForm from './InitiateOrder/NewOrder'
+import ViewOrderDetails from './InitiateOrder/ViewOrder'
+
 
 const Home = () => {
   return (
@@ -34,7 +39,11 @@ const Home = () => {
               <Route path='/inventoryRequest' element={<RequestList/>}></Route>
               <Route path='/item' element={<ItemDataGrid/>}></Route>
               <Route path='/item/add-item' element={<AddItemForm/>}></Route>
-              <Route path='/item/edit-item/:ID' element={<ViewItemDetails/>}></Route>
+              <Route path='/item/view-item/:ID' element={<ViewItemDetails/>}></Route>
+              <Route path='/report/item-usage-analysis' element={<Usage/>}></Route>
+              <Route path='/order' element={<OrderDataGrid/>}></Route>
+              <Route path='/order/new-order' element={<NewOrderForm/>}></Route>
+              <Route path='/order/view-order/:ID' element={<ViewOrderDetails/>}></Route>
             </Routes>
           </BrowserRouter>
         </Grid>

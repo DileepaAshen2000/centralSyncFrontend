@@ -7,24 +7,24 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 const columns = [
-  { field: "id", headerName: "Item ID", width: 150 },
+  { field: "id", headerName: "Order ID", width: 150 },
   {
-    field: "item_name",
-    headerName: "Item Name",
+    field: "email_address",
+    headerName: "Email Address",
     minwidth: 200,
     editable: false,
     flex: 1,
   },
   {
-    field: "group",
-    headerName: "Group",
+    field: "vendor",
+    headerName: "Vendor",
     minwidth: 200,
     editable: false,
     flex: 1,
   },
   {
-    field: "quantity",
-    headerName: "Quantity",
+    field: "topic",
+    headerName: "Topic",
     type: "number",
     minwidth: 150,
     editable: true,
@@ -40,21 +40,21 @@ const columns = [
   },
 ];
 
-const ItemDataGrid = () => {
+const OrderDataGrid = () => {
   const navigate = useNavigate();
 
   const [rows, setRows] = useState([]);
   const { fetchData } = useParams();
   useEffect(() => {
     axios
-      .get("http://localhost:8080/inventory-item/getAll")
+      .get("http://localhost:8080/orders/getAll")
       .then((response) => {
-        const data = response.data.map((item, index) => ({
-          id: item.itemId,
-          item_name: item.itemName,
-          group: item.itemGroup,
-          quantity: item.quantity,
-          status: item.status,
+        const data = response.data.map((order, index) => ({
+          id: order.orderId,
+          email_address: order.vendorEmail,
+          vendor: order.vendorName,
+          topic: order.description,
+          status: order.status,
         }));
         setRows(data);
       })
@@ -70,15 +70,15 @@ const ItemDataGrid = () => {
 
   const handleClick = () => {
     
-      const selectedItemId = rowSelectionModel[0];
-      navigate("/item/view-item/" + selectedItemId);
+      const selectedorderId = rowSelectionModel[0];
+      navigate("/order/view-order/" + selectedorderId);
    
   };
 
   return (
     <Box className="h-[400px] w-full">
       <Box>
-        <h1 className="inline-block text-3xl font-bold p-4">All items</h1>
+        <h1 className="inline-block text-3xl font-bold p-4">Orders</h1>
         {rowSelectionModel > 0 ? (
           <Button
             variant="contained"
@@ -91,9 +91,9 @@ const ItemDataGrid = () => {
           <Button
             variant="contained"
             className="bg-blue-600 px-6 py-2 text-white rounded left-[69%] w-[145px]"
-            onClick={() => navigate("/item/add-item")}
+            onClick={() => navigate("/order/new-order")}
           >
-            Add items
+            New Order
           </Button>
         )}
       </Box>
@@ -119,4 +119,4 @@ const ItemDataGrid = () => {
   );
 };
 
-export default ItemDataGrid;
+export default OrderDataGrid;
