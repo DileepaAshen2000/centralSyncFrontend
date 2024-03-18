@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormControl, Select, MenuItem, TextField, Grid, Box, Typography, Button } from '@mui/material';
 
 import Table from '@mui/material/Table';
@@ -9,7 +9,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
@@ -19,9 +19,11 @@ const rows = [
   createData('Frozen yoghurt', 159, 6.0, 24)
 ];
 
-const NewAdjustment = () => {
+const EditAdjustment = () => {
 
   let navigate = useNavigate();
+
+  const {adjId} = useParams(); // To get the id from the url
   const [adj,setAdj] = useState({  // create state for adjustment, initial state is empty with object.
     reason:"",
     date:"",
@@ -31,71 +33,132 @@ const NewAdjustment = () => {
     group:""
   })
 
-  const{reason,date,description,newQuantity,name,group} = adj; // Destructure the state
+  const{reason,date,description,newQuantity,name,group} = adj;
   
   //Add onChange event to the input fields
   const onInputChange=(e)=>{
     setAdj({...adj,[e.target.name]:e.target.value});
   };
 
+  useEffect(() => {
+    loadAdjustment();
+  },[]);
+
   const onSubmit=async(e)=>{
     e.preventDefault(); // To remove unwanted url tail part
-    await axios.post("http://localhost:8080/adjustment/add",adj) // To send data to the server
-    navigate('/adjustment') // To navigate to the adjustment page
+    await axios.put(`http://localhost:8080/adjustment/updateById/${adjId}`,adj); // To send data to the server
+    console.log(adj);
+    navigate('/adjustment');
+  };
+
+  const loadAdjustment = async () => {
+    try {
+      const result = await axios.get(`http://localhost:8080/adjustment/getById/${adjId}`);
+      setAdj(result.data);  // Make sure the fetched data structure matches the structure of your state
+    } catch (error) {
+      console.error('Error loading adjustment:', error);
+    }
   }
 
   return (
     <Box className='p-10 bg-white rounded-2xl ml-14 mr-14'>
       <Box className="pb-4">
-        <h1 className="pt-2 pb-3 text-3xl font-bold ">New Adjustment</h1>
+        <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit Adjustment</h1>
       </Box>
       <form onSubmit={(e)=> onSubmit(e)}>
         <Grid container spacing={2}  padding={4} >
+
+            <Grid container display='flex' mt={4}>
+                <Grid item sm={2} xs={2}>
+                    <Typography>Adjustment ID</Typography>
+                </Grid>
+                <Grid item sm={9} xs={9}>
+                    <TextField
+                    style={{ width: '300px' }}
+                    name='id'
+                    label='Adjustment ID'
+                    size='small'
+                    value={adjId}
+                    onChange={(e)=>onInputChange(e)}
+                    InputProps={{
+                        readOnly: true,
+                      }}
+                    />
+                </Grid>
+            </Grid>
+
+            <Grid container display='flex' mt={4}>
+                <Grid item sm={2} xs={2}>
+                    <Typography>Item ID</Typography>
+                </Grid>
+                <Grid item sm={9} xs={9}>
+                    <TextField
+                    style={{ width: '300px' }}
+                    name='id'
+                    label='Item ID'
+                    size='small'
+                    
+                    onChange={(e)=>onInputChange(e)}
+                    InputProps={{
+                        readOnly: true,
+                      }}
+                    />
+                </Grid>
+            </Grid>
+
+            <Grid container display='flex' mt={4}>
+                <Grid item sm={2} xs={2}>
+                    <Typography>Item Name</Typography>
+                </Grid>
+                <Grid item sm={9} xs={9}>
+                <TextField
+                    style={{ width: '300px' }}
+                    name='name'
+                    label='Item Name'
+                    size='small'
+                    value={name}
+                    onChange={(e)=>onInputChange(e)}
+                    InputProps={{
+                        readOnly: true,
+                      }}
+                    />
+                </Grid>
+            </Grid>
+
+            <Grid container display='flex' mt={4}>
+                <Grid item sm={2} xs={2}>
+                    <Typography>Group</Typography>
+                </Grid>
+                <Grid item sm={9} xs={9}>
+                    <TextField
+                        style={{ width: '300px' }}
+                        label='Group'
+                        value={group}
+                        onChange={(e)=>onInputChange(e)}
+                        name='group'
+                        size='small' 
+                        InputProps={{
+                            readOnly: true,
+                          }}
+                    />
+                </Grid>
+            </Grid>
           
-          <Grid container display='flex'>
+          {/* <Grid container display='flex'mt={4}>
             <Grid item sm={2} xs={2}>
               <Typography>Group</Typography>
             </Grid>
             <Grid item sm={9} xs={9}>
               <FormControl style={{ width: '300px' }}>
                 <Select size='small' name='group'>
-                  <MenuItem value="option1">Group 1</MenuItem>
-                  <MenuItem value="option2">Group 2</MenuItem>
-                  <MenuItem value="option3">Group 3</MenuItem>
+                  <MenuItem value="option1">Option 1</MenuItem>
+                  <MenuItem value="option2">Option 2</MenuItem>
+                  <MenuItem value="option3">Option 3</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
-          </Grid>
+          </Grid> */}
           
-          <Grid container display='flex' mt={4}>
-            <Grid item sm={2} xs={2}>
-              <Typography>Item Name</Typography>
-            </Grid>
-            <Grid item sm={9} xs={9}>
-              <TextField
-                style={{ width: '300px' }}
-                label="Item Name"
-                type="search"
-                name='name'
-                size='small'  
-                helperText='Please select the item name.'     
-              />
-            </Grid>
-          </Grid>
-          
-          <Grid container display='flex' mt={4}>
-            <Grid item sm={2} xs={2}>
-              <Typography>Item ID</Typography>
-            </Grid>
-            <Grid item sm={9} xs={9}>
-              <TextField
-              style={{ width: '300px' }}
-               label="Item ID" 
-               name='id'
-               size='small'
-              />
-            </Grid>
-          </Grid>
           
           <Grid container display='flex' mt={4}>
             <Grid item sm={2} xs={2}>
@@ -125,9 +188,9 @@ const NewAdjustment = () => {
             <Grid item sm={9} xs={9}>
               <FormControl style={{ width: '300px' }}>
                 <Select value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason'>
-                  <MenuItem value="reason1">Damaged Item</MenuItem>
-                  <MenuItem value="reason2">Stolen Item</MenuItem>
-                  <MenuItem value="reason3">Others</MenuItem>
+                  <MenuItem value="reason1">Reason 1</MenuItem>
+                  <MenuItem value="reason2">Reason 2</MenuItem>
+                  <MenuItem value="reason3">Reason 3</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -148,7 +211,6 @@ const NewAdjustment = () => {
                 style={{ width: '500px' }}
                 value={description}
                 onChange={(e)=>onInputChange(e)}
-                
               />
             </Grid>
           </Grid>
@@ -192,8 +254,7 @@ const NewAdjustment = () => {
             <Button className="px-6 py-2 text-white bg-blue-600 rounded"
                variant='contained'
                type='submit'
-               onClick={() => navigate("/newadjustment")}
-                >submit</Button>
+                >edit & submit</Button>
 
             <Button className="px-6 py-2 rounded"
                variant='outlined'
@@ -205,4 +266,4 @@ const NewAdjustment = () => {
   );
 };
 
-export default NewAdjustment;
+export default EditAdjustment;
