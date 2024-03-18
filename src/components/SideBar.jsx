@@ -65,12 +65,16 @@ const SideBar = () => {
               <ListItemText primary="Adjustment" />
             </ListItem>
           </a>
-          <ListItem button className="pl-8 rounded-lg">
-            <ListItemText primary="Stock In" />
-          </ListItem>
-          <ListItem button className="pl-8 rounded-lg">
-            <ListItemText primary="Stock Out" />
-          </ListItem>
+          <a href="/stockIn">
+            <ListItem button className="pl-8 rounded-lg">
+              <ListItemText primary="Stock In" />
+            </ListItem>
+          </a>
+          <a href="/stockOut">
+            <ListItem button className="pl-8 rounded-lg">
+              <ListItemText primary="Stock Out" />
+            </ListItem>
+          </a>
         </List>
       </Collapse>
 

@@ -15,6 +15,9 @@ import RequestList from './InventoryRequest/InventoryRequestList'
 import ItemDataGrid from './InventoryItem/InventoryItems'
 import AddItemForm from './InventoryItem/NewItem'
 import ViewItemDetails from './InventoryItem/ViewDetails'
+import EditAdjustment from './Adjustment/EditAdjustment'
+import StockInList from './StockIn/StockInList'
+import StockOutList from './StockOut/StockOutList'
 
 const Home = () => {
   return (
@@ -28,20 +31,35 @@ const Home = () => {
         </Grid>
 
         <Grid item sm={9.5} style={{ backgroundColor: '#eeeeee' }} className='w-screen p-10'>
-          {/* Enter components here, that you want to insert. */}
           <BrowserRouter>
             <Routes>
-              <Route path='/' element={<AdminDashboard name="Dashboard"/>}></Route>
+              {/* Enter components here, that you want to insert. */}
+              {/* Dashboard routing */}
+              <Route path='/' element={<AdminDashboard/>}></Route>
+              
+              {/* Adjustment routing */}
               <Route path='/adjustment' element={<Adjustment/>}></Route>
+              <Route path='/newadjustment' element={<NewAdjustment/>}></Route>
+              <Route path='/adjustment/:adjId' element={<AdjustmentDocument/>}></Route>
+              <Route path='/adjustment/editadjustment/:adjId' element={<EditAdjustment/>}></Route>
+              
+              {/* User routing */}
               <Route path='/user' element={<User/>}></Route>
               <Route path="/newUser" element={<CreateUser/>}/>
               <Route path="/user/users/:ID" element={<EditUser/>}/>
-              <Route path='/newadjustment' element={<NewAdjustment/>}></Route>
-              <Route path='/adjustment/adj1' element={<AdjustmentDocument/>}></Route>
-              <Route path='/inventoryRequest' element={<RequestList/>}></Route>
+              
+              {/* Inventory Item routing */}
               <Route path='/item' element={<ItemDataGrid/>}></Route>
               <Route path='/item/add-item' element={<AddItemForm/>}></Route>
               <Route path='/item/edit-item/:ID' element={<ViewItemDetails/>}></Route>
+              
+              {/* Inventory Request routing */}
+              <Route path='/inventoryRequest' element={<RequestList/>}></Route>
+
+              {/* Stock In/Out routing */}
+              <Route path='/stockIn' element={<StockInList/>}></Route>
+              <Route path='/stockOut' element={<StockOutList/>}></Route>
+              
             </Routes>
           </BrowserRouter>
         </Grid>
