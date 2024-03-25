@@ -28,12 +28,10 @@ const rows = [
   createData('I2000020', "Moveble Chair", 25, 20 , -5),
 ];
 
-const handlePrint=()=>{
-  window.print();
-}
 
 
-const RequestDocument = () => {
+
+const RequestDocumentReject = () => {
 
   const [rows, setData] = useState([])
   useEffect(() => {
@@ -49,7 +47,6 @@ const RequestDocument = () => {
                   department: user.depName,
                   createdBy: user.createdBy, // Assuming a "createdBy" property in the response data
                   status: user.reqStatus,
-                  createdBy: user.createdBy, // Assuming a "createdBy" property in the response data
                   empID: user.empID,
               }));
               setData(data);
@@ -65,12 +62,10 @@ const RequestDocument = () => {
     <div> 
       
       <Box className="bg-slate-300 p-4 ...">
-                            <div className='block'>
+                            <div className='flex items-end justify-end space-x-4 ...'>
                             <Button>Accept</Button>
                             <Button>Reject</Button>
-                            <Button><LocalPrintshopIcon className='mr-1'></LocalPrintshopIcon>Print</Button>
-                            
-                            
+                            <Button><LocalPrintshopIcon className='mr-1'></LocalPrintshopIcon>&nbsp;&nbsp;Print</Button>                            
                         </div>
                 </Box>       
       <main>
@@ -79,7 +74,7 @@ const RequestDocument = () => {
         <div className="p-10 ml-1 mr-1 bg-slate-200 ">
           <div>
             <section>
-              <button className="w-40 h-10 m-5 bg-blue-300 rounded-2xl">Pending</button>
+              <button className="w-40 h-10 m-5 bg-rose-500 rounded-2xl">Rejected</button>
             </section>
           </div>
           <div>
@@ -148,4 +143,4 @@ const RequestDocument = () => {
   )
 }
 
-export default RequestDocument
+export default RequestDocumentReject

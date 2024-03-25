@@ -7,7 +7,7 @@ import Adjustment from './Adjustment/Adjustment'
 import NewAdjustment from './Adjustment/NewAdjustment'
 import User from './User/User'
 import CreateUser from './User/CreateUser'
-// import Userupdate from './User/Edit_user'
+
 import EditUser from '../components/UserEditForm'
 import { Grid } from '@mui/material'
 import AdjustmentDocument from './Adjustment/AdjustmentDocument'
@@ -15,8 +15,12 @@ import RequestList from './InventoryRequest/RequestsList'
 import ItemDataGrid from './InventoryItem/InventoryItems'
 import AddItemForm from './InventoryItem/NewItem'
 import ViewItemDetails from './InventoryItem/ViewDetails'
-import RequestDocument from './InventoryRequest/RequestDocument'
+import RequestDocumentPending from './InventoryRequest/RequestDocumentPending'
+import RequestDocumentAccept from './InventoryRequest/RequestDocumentAccept'
+import RequestDocumentReject from './InventoryRequest/RequestDocumentReject'
 import CreateNewRequest from './InventoryRequest/CreateNewRequest'
+import EditRequest from './InventoryRequest/EditRequest'
+
 
 const Home = () => {
   return (
@@ -41,8 +45,11 @@ const Home = () => {
               <Route path='/newadjustment' element={<NewAdjustment/>}></Route>
               <Route path='/adjustment/adj1' element={<AdjustmentDocument/>}></Route>
               <Route path='/inventory-request' element={<RequestList/>}></Route>
-              <Route path='/inventory-request/request-document' element={<RequestDocument/>}></Route>
+              <Route path='/inventory-request/request-document-pending' element={<RequestDocumentPending/>}></Route>
+              <Route path='/inventory-request/request-document-accept' element={<RequestDocumentAccept/>}></Route>
+              <Route path='/inventory-request/request-document-reject' element={<RequestDocumentReject/>}></Route>
               <Route path='/inventory-request/create-new-request' element={<CreateNewRequest/>}></Route>
+              <Route path='/inventory-request/edit-request' element={<EditRequest/>}></Route>
               <Route path='/item' element={<ItemDataGrid/>}></Route>
               <Route path='/item/add-item' element={<AddItemForm/>}></Route>
               <Route path='/item/edit-item/:ID' element={<ViewItemDetails/>}></Route>
