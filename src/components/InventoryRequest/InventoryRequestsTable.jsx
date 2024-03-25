@@ -3,6 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import { useEffect, useState } from 'react'
 
+
 const columns = [
   { field: 'id', headerName: 'Request ID', width: 150 },
   { field: 'reason', headerName: 'Reason', width: 180 },
@@ -10,7 +11,6 @@ const columns = [
   { field: 'role', headerName: 'Role', width: 150 },
   { field: 'status', headerName: 'Status', width: 100 },
 ];
-
 
 
 export default function Table() {

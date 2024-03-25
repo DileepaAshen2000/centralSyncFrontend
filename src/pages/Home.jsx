@@ -11,10 +11,12 @@ import CreateUser from './User/CreateUser'
 import EditUser from '../components/UserEditForm'
 import { Grid } from '@mui/material'
 import AdjustmentDocument from './Adjustment/AdjustmentDocument'
-import RequestList from './InventoryRequest/InventoryRequestList'
+import RequestList from './InventoryRequest/RequestsList'
 import ItemDataGrid from './InventoryItem/InventoryItems'
 import AddItemForm from './InventoryItem/NewItem'
 import ViewItemDetails from './InventoryItem/ViewDetails'
+import RequestDocument from './InventoryRequest/RequestDocument'
+import CreateNewRequest from './InventoryRequest/CreateNewRequest'
 
 const Home = () => {
   return (
@@ -38,7 +40,9 @@ const Home = () => {
               <Route path="/user/users/:ID" element={<EditUser/>}/>
               <Route path='/newadjustment' element={<NewAdjustment/>}></Route>
               <Route path='/adjustment/adj1' element={<AdjustmentDocument/>}></Route>
-              <Route path='/inventoryRequest' element={<RequestList/>}></Route>
+              <Route path='/inventory-request' element={<RequestList/>}></Route>
+              <Route path='/inventory-request/request-document' element={<RequestDocument/>}></Route>
+              <Route path='/inventory-request/create-new-request' element={<CreateNewRequest/>}></Route>
               <Route path='/item' element={<ItemDataGrid/>}></Route>
               <Route path='/item/add-item' element={<AddItemForm/>}></Route>
               <Route path='/item/edit-item/:ID' element={<ViewItemDetails/>}></Route>
