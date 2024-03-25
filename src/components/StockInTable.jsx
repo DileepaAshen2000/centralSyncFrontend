@@ -4,17 +4,16 @@ import axios from 'axios';
 import { useEffect, useState } from 'react'
 
 const columns = [
-  { field: 'id', headerName: 'Adjustment ID', width: 150 },
-  { field: 'reason', headerName: 'Reason', width: 180 },
-  { field: 'description', headerName: 'Description', width: 300 },
-  { field: 'adjusted_Qty', headerName: 'Adjusted_Qty', width: 150 },
+  { field: 'id', headerName: 'Item ID', width: 150 },
+  { field: 'name', headerName: 'Item Name', width: 180 },
+  { field: 'group', headerName: 'Group', width: 300 },
+  { field: 'quantity', headerName: 'Quantity', width: 150 },
   { field: 'date', headerName: 'Date', width: 150 },
-  { field: 'status', headerName: 'Status', width: 100 },
 ];
 
 
 
-export default function Table() {
+export default function StockInTable() {
 const [rows, setData] = useState([])
 useEffect(() => {
   axios.get('http://localhost:8080/adjustment/getAll')
@@ -27,7 +26,6 @@ useEffect(() => {
       description: adj.description,
       adjusted_Qty: adj.newQuantity,
       date: adj.date,
-      status: 'pending',
 
     }));
     setData(data);
