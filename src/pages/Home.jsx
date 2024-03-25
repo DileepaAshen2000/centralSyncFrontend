@@ -7,17 +7,25 @@ import Adjustment from './Adjustment/Adjustment'
 import NewAdjustment from './Adjustment/NewAdjustment'
 import User from './User/User'
 import CreateUser from './User/CreateUser'
-// import Userupdate from './User/Edit_user'
+
 import EditUser from '../components/UserEditForm'
 import { Grid } from '@mui/material'
 import AdjustmentDocument from './Adjustment/AdjustmentDocument'
-import RequestList from './InventoryRequest/InventoryRequestList'
+import RequestList from './InventoryRequest/RequestsList'
 import ItemDataGrid from './InventoryItem/InventoryItems'
 import AddItemForm from './InventoryItem/NewItem'
 import ViewItemDetails from './InventoryItem/ViewDetails'
+
+import RequestDocumentPending from './InventoryRequest/RequestDocumentPending'
+import RequestDocumentAccept from './InventoryRequest/RequestDocumentAccept'
+import RequestDocumentReject from './InventoryRequest/RequestDocumentReject'
+import CreateNewRequest from './InventoryRequest/CreateNewRequest'
+import EditRequest from './InventoryRequest/EditRequest'
+
 import EditAdjustment from './Adjustment/EditAdjustment'
 import StockInList from './StockIn/StockInList'
 import StockOutList from './StockOut/StockOutList'
+
 
 const Home = () => {
   return (
@@ -42,11 +50,14 @@ const Home = () => {
               <Route path='/newadjustment' element={<NewAdjustment/>}></Route>
               <Route path='/adjustment/:adjId' element={<AdjustmentDocument/>}></Route>
               <Route path='/adjustment/editadjustment/:adjId' element={<EditAdjustment/>}></Route>
+              <Route path='/newadjustment' element={<NewAdjustment/>}></Route>
+              <Route path='/adjustment/adj1' element={<AdjustmentDocument/>}></Route>
               
               {/* User routing */}
               <Route path='/user' element={<User/>}></Route>
               <Route path="/newUser" element={<CreateUser/>}/>
               <Route path="/user/users/:ID" element={<EditUser/>}/>
+
               
               {/* Inventory Item routing */}
               <Route path='/item' element={<ItemDataGrid/>}></Route>
@@ -55,6 +66,12 @@ const Home = () => {
               
               {/* Inventory Request routing */}
               <Route path='/inventoryRequest' element={<RequestList/>}></Route>
+              <Route path='/inventory-request' element={<RequestList/>}></Route>
+              <Route path='/inventory-request/request-document-pending' element={<RequestDocumentPending/>}></Route>
+              <Route path='/inventory-request/request-document-accept' element={<RequestDocumentAccept/>}></Route>
+              <Route path='/inventory-request/request-document-reject' element={<RequestDocumentReject/>}></Route>
+              <Route path='/inventory-request/create-new-request' element={<CreateNewRequest/>}></Route>
+              <Route path='/inventory-request/edit-request' element={<EditRequest/>}></Route>
 
               {/* Stock In/Out routing */}
               <Route path='/stockIn' element={<StockInList/>}></Route>

@@ -3,31 +3,33 @@ import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import { useEffect, useState } from 'react'
 
+
 const columns = [
   { field: 'id', headerName: 'Request ID', width: 150 },
   { field: 'reason', headerName: 'Reason', width: 180 },
   { field: 'department', headerName: 'Department', width: 300 },
-  { field: 'role', headerName: 'Role', width: 150 },
-  { field: 'status', headerName: 'Status', width: 100 },
+  { field: 'employeeName', headerName: 'Role', width: 150 },
+  { field: 'reqStatus', headerName: 'Status', width: 100 },
 ];
-
 
 
 export default function Table() {
 const [rows, setData] = useState([])
 useEffect(() => {
   axios.get('http://localhost:8080/request/getAll')
+  
     .then((response) => {
    
-    const data = response.data.map((user,index) => ({
+    const data = response.data.map((inventoryRequest,index) => ({
       
       id: index+1,
-      reason: user.reason,
-      department: user.depName,
-      role: user.role,
-      status: user.reqStatus
+      reason: inventoryRequest.reason,
+      department: inventoryRequest.department,
+      employeeName: inventoryRequest.employeeName,
+      status: inventoryRequest.reqStatus,
     }));
     setData(data);
+    console.log(data);
     })
     .catch((error) => {
       console.log(error);
