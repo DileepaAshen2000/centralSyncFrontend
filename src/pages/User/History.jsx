@@ -9,7 +9,7 @@ import TimelineOppositeContent from "@mui/lab/TimelineOppositeContent";
 import Chip from "@mui/material/Chip";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import Typography from "@mui/material/Typography";
-import BackdropBlurComponent from "../../components/BlurBackdrop.jsx";
+
 
 export default function OppositeContentTimeline() {
   return (

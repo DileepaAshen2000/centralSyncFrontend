@@ -8,7 +8,7 @@ import NewAdjustment from "./Adjustment/NewAdjustment";
 import User from "./User/User";
 import CreateUser from "./User/CreateUser";
 import Userupdate from "./User/Edit_user";
-import EditUser from "../components/UserEditForm";
+import EditUser from "../components/User_Components/UserEditForm";
 import { Grid } from "@mui/material";
 import AdjustmentDocument from "./Adjustment/AdjustmentDocument";
 import RequestList from "./InventoryRequest/InventoryRequestList";
@@ -17,6 +17,7 @@ import AddItemForm from "./InventoryItem/NewItem";
 import ViewItemDetails from "./InventoryItem/ViewDetails";
 import ViewHistory from "./User/History";
 import Changepassword from "./User/ChangePassword";
+import TicketForm from "../components/Ticket_Create";
 import { BrowserRouter as Router, Link } from "react-router-dom";
 
 const Home = () => {
@@ -65,6 +66,7 @@ const Home = () => {
               ></Route>
               <Route path="/history" element={<ViewHistory />}></Route>
               <Route path="/changepassword" element={<Changepassword />}></Route>
+              <Route path="/newTicket" element={<TicketForm/>}></Route>
             </Routes>
           </BrowserRouter>
         </Grid>

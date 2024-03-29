@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import NavBar from '../../components/NavBar'
 import SideBar from '../../components/SideBar'
 import {Button} from "@mui/material";
-import UserTable from '../../components/UserTable';
+import UserTable from '../../components/User_Components/UserTable';
 import { Box } from '@mui/material'
 
 
