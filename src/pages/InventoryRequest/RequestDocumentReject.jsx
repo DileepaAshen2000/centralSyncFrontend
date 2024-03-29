@@ -6,7 +6,19 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Typography,Button } from '@mui/material';
+import { Typography } from '@mui/material';
+import { useEffect, useState } from 'react'
+import Button from '../../components/InventoryRequest/Button';
+import {
+  Stack,
+  Box,
+} from '@mui/material';
+import LocalPrintshopIcon from '@mui/icons-material/LocalPrintshop';
+
+import axios from 'axios';
+
+
+
 
 function createData(id, name, avaQty, newQty, adjQty) {
   return { id, name, avaQty, newQty, adjQty };
@@ -16,49 +28,75 @@ const rows = [
   createData('I2000020', "Moveble Chair", 25, 20 , -5),
 ];
 
-const handlePrint=()=>{
-  window.print();
-}
-const AdjustmentDocument = () => {
-  return (
-    <div>
-      <div>
-        <header className="text-3xl">Adjustment Details</header>
-      </div>
-      
-      <main>
-        <div className="flex items-end justify-end p-6 mr-10">
-        <Button className="px-6 py-2 text-white bg-blue-600 rounded"
-               variant='contained'
-               type='submit'
-               onClick={handlePrint}
-                >print</Button>
-        </div>
 
-        <div className="p-10 ml-6 mr-6 bg-white">
+
+
+const RequestDocumentReject = () => {
+
+  const [rows, setData] = useState([])
+  useEffect(() => {
+      axios.get('http://localhost:8080/request/getAll')
+          .then((response) => {
+
+              const data = response.data.map((user, index) => ({
+
+                  id: index + 1,
+                  refNo: user.refNo, // Assuming a "refNo" property in the response data
+                  date: user.date, // Assuming a "date" property in the response data
+                  reason: user.reason,
+                  department: user.depName,
+                  createdBy: user.createdBy, // Assuming a "createdBy" property in the response data
+                  status: user.reqStatus,
+                  empID: user.empID,
+              }));
+              setData(data);
+              console.log(data);
+          })
+          .catch((error) => {
+              console.log(error);
+          });
+  }, [])
+  return (
+
+   
+    <div> 
+      
+      <Box className="bg-slate-300 p-4 ...">
+                            <div className='flex items-end justify-end space-x-4 ...'>
+                            <Button>Accept</Button>
+                            <Button>Reject</Button>
+                            <Button><LocalPrintshopIcon className='mr-1'></LocalPrintshopIcon>&nbsp;&nbsp;Print</Button>                            
+                        </div>
+                </Box>       
+      <main>
+
+
+        <div className="p-10 ml-1 mr-1 bg-slate-200 ">
           <div>
             <section>
-              <button className="w-40 h-10 m-5 text-blue-800 bg-blue-300 rounded-2xl">Pending</button>
+              <button className="w-40 h-10 m-5 bg-rose-500 rounded-2xl">Rejected</button>
             </section>
           </div>
           <div>
             <section className="flex flex-row items-end justify-end mb-6">
-              <header className="text-3xl">INVENTORY ADJUSTMENT</header>
+              <header className="text-3xl">INVENTORY REQUEST</header>
             </section>
             <section className="flex flex-row items-end justify-end gap-10">
               <ul className='flex flex-col gap-2'>
                 <li className="font-bold">Ref. No</li>
-                <li className="font-bold">Reason</li>
-                <li className="font-bold">Adjustment Type</li>
-                <li className="font-bold">Created By</li>
                 <li className="font-bold">Date</li>
+                <li className="font-bold">Reason</li>
+                <li className="font-bold">Department</li>
+                <li className="font-bold">Created By</li>
+                <li className="font-bold">Emp.ID</li>
               </ul>
               <ul className='flex flex-col gap-2'>
-                <li>AD2024001</li>
-                <li>Damaged Item</li>
-                <li>Quantity</li>
-                <li>Dileepa Ashen</li>
+                <li>IR2003001</li>
                 <li>2024-02-26</li>
+                <li>For Office Use</li>
+                <li>HR</li>
+                <li>Kamal</li>
+                <li>EM20232001</li>
               </ul>
             </section>
           </div>
@@ -66,11 +104,11 @@ const AdjustmentDocument = () => {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow className=" bg-zinc-800">
+                <TableCell align="right" className="text-white">#</TableCell>
                   <TableCell align="right" className="text-white">Item ID</TableCell>
                   <TableCell align="right" className="text-white">Item & Description</TableCell>
-                  <TableCell align="right" className="text-white">Quantity Available</TableCell>
-                  <TableCell align="right" className="text-white">New Quantity On Hand</TableCell>
-                  <TableCell align="right" className="text-white">Adjusted Quantity</TableCell>
+                  <TableCell align="right" className="text-white">Requested Quantity</TableCell>
+                  <TableCell align="right" className="text-white">Brand</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -90,7 +128,7 @@ const AdjustmentDocument = () => {
             </Table>
           </TableContainer>
 
-          <div className="mt-16 mb-32">
+          <div className="mt-6">
             <Typography variant="body1" gutterBottom>Description : </Typography>
             <div className="w-2/3">
               <Typography variant="body2">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
@@ -100,30 +138,9 @@ const AdjustmentDocument = () => {
             </div>
           </div>
         </div>
-
-        <div className='flex gap-6 mt-6 ml-6'>
-          <h4>Note :</h4>
-          <textarea className="w-2/3 h-20 p-2 mt-2 border-2 border-gray-300 rounded-md" placeholder='Write something here..'></textarea>
-        </div>
-
-        <div className='flex gap-4 ml-[60%] mt-6'>
-          <Button className="px-6 py-2 text-white bg-blue-600 rounded"
-                variant='contained'
-                type='submit'
-                  >approve & adjust</Button>
-          <Button className="px-6 py-2 text-white bg-blue-600 rounded"
-                variant='contained'
-                type='submit'
-                  >reject</Button>
-          <Button className="px-6 py-2 rounded"
-                variant='outlined'
-                type='submit'
-                  >cancel</Button>
-        </div>
-        
       </main>
     </div>
   )
 }
 
-export default AdjustmentDocument
+export default RequestDocumentReject

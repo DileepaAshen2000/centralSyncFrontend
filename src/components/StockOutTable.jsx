@@ -3,33 +3,32 @@ import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import { useEffect, useState } from 'react'
 
-
 const columns = [
-  { field: 'id', headerName: 'Request ID', width: 150 },
-  { field: 'reason', headerName: 'Reason', width: 180 },
+  { field: 'id', headerName: 'Item ID', width: 150 },
+  { field: 'name', headerName: 'Item Name', width: 180 },
   { field: 'department', headerName: 'Department', width: 300 },
-  { field: 'employeeName', headerName: 'Role', width: 150 },
-  { field: 'reqStatus', headerName: 'Status', width: 100 },
+  { field: 'quantity', headerName: 'Quantity', width: 150 },
+  { field: 'date', headerName: 'Date', width: 150 },
 ];
 
 
-export default function Table() {
+
+export default function StockOutTable() {
 const [rows, setData] = useState([])
 useEffect(() => {
-  axios.get('http://localhost:8080/request/getAll')
-  
+  axios.get('http://localhost:8080/adjustment/getAll')
     .then((response) => {
    
-    const data = response.data.map((inventoryRequest,index) => ({
+    const data = response.data.map((adj) => ({
       
-      id: index+1,
-      reason: inventoryRequest.reason,
-      department: inventoryRequest.department,
-      employeeName: inventoryRequest.employeeName,
-      status: inventoryRequest.reqStatus,
+      id: adj.adjId,
+      reason: adj.reason,
+      description: adj.description,
+      adjusted_Qty: adj.newQuantity,
+      date: adj.date,
+
     }));
     setData(data);
-    console.log(data);
     })
     .catch((error) => {
       console.log(error);
@@ -38,7 +37,9 @@ useEffect(() => {
 
   return (
     <div>
+    
       <DataGrid
+      className='shadow-lg'
         rows={rows}
         columns={columns}
         initialState={{
