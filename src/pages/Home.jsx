@@ -3,7 +3,7 @@ import React from "react";
 import NavBar from "../components/NavBar";
 import SideBar from "../components/SideBar";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-//import Dashboard from './Dashboard'
+import AdminDashboard from './AdminDashboard'
 import Adjustment from "./Adjustment/Adjustment";
 import NewAdjustment from "./Adjustment/NewAdjustment";
 import User from "./User/User";
@@ -85,7 +85,7 @@ const Home = () => {
               
               {/* Inventory Request routing */}
               <Route path='/inventoryRequest' element={<RequestList/>}></Route>
-              <Route path='/inventory-request' element={<RequestList/>}></Route>
+              
               <Route path='/inventory-request/request-document-pending' element={<RequestDocumentPending/>}></Route>
               <Route path='/inventory-request/request-document-accept' element={<RequestDocumentAccept/>}></Route>
               <Route path='/inventory-request/request-document-reject' element={<RequestDocumentReject/>}></Route>
@@ -103,6 +103,7 @@ const Home = () => {
             </Routes>
           </BrowserRouter>
         </Grid>
+      </Grid>
       </Grid>
     </div>
   );
