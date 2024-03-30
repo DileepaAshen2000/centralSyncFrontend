@@ -3,7 +3,6 @@ import NavBar from '../components/NavBar'
 import SideBar from '../components/SideBar'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import AdminDashboard from './AdminDashboard'
-import Adjustment from './Adjustment/Adjustment'
 import NewAdjustment from './Adjustment/NewAdjustment'
 import User from './User/User'
 import CreateUser from './User/CreateUser'
@@ -25,6 +24,7 @@ import EditRequest from './InventoryRequest/EditRequest'
 import EditAdjustment from './Adjustment/EditAdjustment'
 import StockInList from './StockIn/StockInList'
 import StockOutList from './StockOut/StockOutList'
+import AdjustmentList from './Adjustment/AdjustmentList'
 
 
 const Home = () => {
@@ -46,7 +46,7 @@ const Home = () => {
               <Route path='/' element={<AdminDashboard/>}></Route>
               
               {/* Adjustment routing */}
-              <Route path='/adjustment' element={<Adjustment/>}></Route>
+              <Route path='/adjustment' element={<AdjustmentList/>}></Route>
               <Route path='/newadjustment' element={<NewAdjustment/>}></Route>
               <Route path='/adjustment/:adjId' element={<AdjustmentDocument/>}></Route>
               <Route path='/adjustment/editadjustment/:adjId' element={<EditAdjustment/>}></Route>

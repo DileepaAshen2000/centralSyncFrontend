@@ -10,13 +10,14 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
+function createData(name, calories, fat, carbs) {
+  return { name, calories, fat, carbs };
 }
 
 const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24)
+  createData('Computer SSD HD', 159, 6.0, 24)
 ];
 
 const NewAdjustment = () => {
@@ -27,11 +28,10 @@ const NewAdjustment = () => {
     date:"",
     description:"",
     newQuantity:"",
-    name:"",
-    group:""
+    itemId:""
   })
 
-  const{reason,date,description,newQuantity,name,group} = adj; // Destructure the state
+  const{reason,date,description,newQuantity,itemId} = adj; // Destructure the state
   
   //Add onChange event to the input fields
   const onInputChange=(e)=>{
@@ -40,9 +40,48 @@ const NewAdjustment = () => {
 
   const onSubmit=async(e)=>{
     e.preventDefault(); // To remove unwanted url tail part
-    await axios.post("http://localhost:8080/adjustment/add",adj) // To send data to the server
+    const result = await axios.post("http://localhost:8080/adjustment/add",adj) // To send data to the server
+    console.log(result.data)
     navigate('/adjustment') // To navigate to the adjustment page
   }
+
+  //handle the onClick event of submit button
+  const handleClick = () => {
+    Swal.fire({
+      title: "Good job!",
+      text: "You submitted the Adjustment!",
+      icon: "success"
+    });
+    
+  }
+
+  //handle the file change event
+  // const [selectedFile, setSelectedFile] = useState(null);
+  // const [message, setMessage] = useState('');
+
+  // const handleFileChange = (event) => {
+  //   setSelectedFile(event.target.files[0]);
+  //   setMessage('');
+  // };
+
+  // const handleUpload = async () => {
+  //   const formData = new FormData();
+  //   formData.append('file', selectedFile);
+
+  //   try {
+  //     const response = await axios.post('/adjustment/upload', formData, {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data',
+  //       },
+  //     });
+  //     setMessage(response.data.message);
+  //   } catch (error) {
+  //     console.error(error);
+  //     setMessage('Error uploading file!');
+  //   }
+  // };
+
+  // end of file upload
 
   return (
     <Box className='p-10 bg-white rounded-2xl ml-14 mr-14'>
@@ -91,8 +130,10 @@ const NewAdjustment = () => {
               <TextField
               style={{ width: '300px' }}
                label="Item ID" 
-               name='id'
+               name='itemId'
                size='small'
+               value={itemId}
+               onChange={(e)=>onInputChange(e)}
               />
             </Grid>
           </Grid>
@@ -148,7 +189,6 @@ const NewAdjustment = () => {
                 style={{ width: '500px' }}
                 value={description}
                 onChange={(e)=>onInputChange(e)}
-                
               />
             </Grid>
           </Grid>
@@ -170,11 +210,15 @@ const NewAdjustment = () => {
                       key={row.name}
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
+                      {/* item name */}
                       <TableCell component="th" scope="row">
-                        {row.name}
+                        {row.name}  
                       </TableCell>
+                      {/* available Qty */}
                       <TableCell align="right">{row.calories}</TableCell>
+                      {/* new Qty */}
                       <TableCell align="right"><TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}></TextField></TableCell>
+                      {/* adjust Qty */}
                       <TableCell align="right">{row.carbs}</TableCell>
                     </TableRow>
                   ))}
@@ -185,16 +229,15 @@ const NewAdjustment = () => {
         </Grid>
         <Box>
           <Typography display='block' gutterBottom>Attach File(s) to inventory adjustment </Typography>
-          <input type='file' className="mt-4 mb-2" ></input>
+          <input type='file' className="mt-4 mb-2"></input>
           <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
         </Box>
         <div className='flex gap-6 mt-6 ml-[70%]'>
             <Button className="px-6 py-2 text-white bg-blue-600 rounded"
                variant='contained'
                type='submit'
-               onClick={() => navigate("/newadjustment")}
+              onClick={handleClick}
                 >submit</Button>
-
             <Button className="px-6 py-2 rounded"
                variant='outlined'
                onClick={() => navigate("/adjustment")}

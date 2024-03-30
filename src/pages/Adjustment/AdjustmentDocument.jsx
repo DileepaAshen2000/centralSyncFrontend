@@ -7,6 +7,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Typography,Button } from '@mui/material';
+import { useState } from 'react';
+import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
 function createData(id, name, avaQty, newQty, adjQty) {
   return { id, name, avaQty, newQty, adjQty };
@@ -19,7 +23,39 @@ const rows = [
 const handlePrint=()=>{
   window.print();
 }
+
 const AdjustmentDocument = () => {
+
+  const navigate = useNavigate();
+
+  const {adjId} = useParams(); // To get the id from the url
+  const [adj,setAdj] = useState({  // create state for adjustment, initial state is empty with object.
+    reason:"",
+    date:"",
+    description:"",
+    newQuantity:"",
+    name:"",
+    group:"",
+    status:"",
+    itemID:""
+  })
+
+const{reason,date,description,newQuantity,name,group,status,itemId} = adj;
+
+useEffect(() => {
+  loadAdjustment();
+},[]);
+
+//get selected adjustment data
+const loadAdjustment = async () => {
+  try {
+    const result = await axios.get(`http://localhost:8080/adjustment/getById/${adjId}`);
+    setAdj(result.data);  // Make sure the fetched data structure matches the structure of your state
+  } catch (error) {
+    console.error('Error loading adjustment:', error);
+  }
+}
+
   return (
     <div>
       <div>
@@ -38,7 +74,7 @@ const AdjustmentDocument = () => {
         <div className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section>
-              <button className="w-40 h-10 m-5 text-blue-800 bg-blue-300 rounded-2xl">Pending</button>
+              <button className="w-40 h-10 m-5 text-blue-800 bg-blue-300 rounded-2xl">{status}</button>
             </section>
           </div>
           <div>
@@ -54,11 +90,11 @@ const AdjustmentDocument = () => {
                 <li className="font-bold">Date</li>
               </ul>
               <ul className='flex flex-col gap-2'>
-                <li>AD2024001</li>
-                <li>Damaged Item</li>
+                <li>{adjId}</li>
+                <li>{reason}</li>
                 <li>Quantity</li>
                 <li>Dileepa Ashen</li>
-                <li>2024-02-26</li>
+                <li>{date}</li>
               </ul>
             </section>
           </div>
@@ -79,11 +115,11 @@ const AdjustmentDocument = () => {
                     key={row.name}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-                    <TableCell align="right">{row.id}</TableCell>
+                    <TableCell align="right">{itemId}</TableCell>
                     <TableCell align="right">{row.name}</TableCell>
                     <TableCell align="right">{row.avaQty}</TableCell>
-                    <TableCell align="right">{row.newQty}</TableCell>
-                    <TableCell align="right">{row.adjQty}</TableCell>
+                    <TableCell align="right">{newQuantity}</TableCell>
+                    <TableCell align="right">{newQuantity}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -96,7 +132,7 @@ const AdjustmentDocument = () => {
               <Typography variant="body2">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
                 blanditiis tenetur unde suscipit, quam beatae rerum inventore consectetur,
                 neque doloribus, cupiditate numquam dignissimos laborum fugiat deleniti? Eum
-                quasi quidem quibusdam.</Typography>
+                quasi quidem quibusdam.{description}</Typography>
             </div>
           </div>
         </div>
@@ -118,6 +154,7 @@ const AdjustmentDocument = () => {
           <Button className="px-6 py-2 rounded"
                 variant='outlined'
                 type='submit'
+                onClick={() => navigate("/adjustment")}
                   >cancel</Button>
         </div>
         
