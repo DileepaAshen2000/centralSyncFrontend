@@ -143,23 +143,7 @@ const EditAdjustment = () => {
                     />
                 </Grid>
             </Grid>
-          
-          {/* <Grid container display='flex'mt={4}>
-            <Grid item sm={2} xs={2}>
-              <Typography>Group</Typography>
-            </Grid>
-            <Grid item sm={9} xs={9}>
-              <FormControl style={{ width: '300px' }}>
-                <Select size='small' name='group'>
-                  <MenuItem value="option1">Option 1</MenuItem>
-                  <MenuItem value="option2">Option 2</MenuItem>
-                  <MenuItem value="option3">Option 3</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid> */}
-          
-          
+
           <Grid container display='flex' mt={4}>
             <Grid item sm={2} xs={2}>
               <Typography>Date</Typography>
