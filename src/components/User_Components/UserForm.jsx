@@ -67,7 +67,7 @@ const UserForm = () => {
            
           </div>
           <div className="col-span-2">
-          {errors.firstName && <div className="text-[#FC0000]">{errors.firstName}</div>}
+          {errors.firstName && <div className="text-[#FC0000] text-sm">{errors.firstName}</div>}
             <TextField
               id="name"
               variant="outlined"
@@ -86,7 +86,7 @@ const UserForm = () => {
 
           </div>
           <div className="col-span-2">
-          {errors.lastName && <div className="text-[#FC0000]">{errors.lastName}</div>}
+          {errors.lastName && <div className="text-[#FC0000] text-sm">{errors.lastName}</div>}
             
             <TextField
               variant="outlined"
@@ -106,7 +106,7 @@ const UserForm = () => {
             <label htmlFor="2">Department</label>
           </div>
           <div className="col-span-2">
-          {errors.department && <div className="text-[#FC0000]">{errors.department}</div>}
+          {errors.department && <div className="text-[#FC0000] text-sm">{errors.department}</div>}
             <SelectD
               value={department}
               onChange={(selectedOption) => setDepartment(selectedOption)}
@@ -119,7 +119,7 @@ const UserForm = () => {
             <label htmlFor="3">Role</label>
           </div>
           <div className="col-span-2">
-          {errors.role && <div className="text-[#FC0000]">{errors.role}</div>}
+          {errors.role && <div className="text-[#FC0000] text-sm">{errors.role}</div>}
             {" "}
             <SelectR
               value={role}
@@ -133,7 +133,7 @@ const UserForm = () => {
             <label htmlFor="4">Date Of Birth</label>
           </div>
           <div className="col-span-2">
-          {errors.dateOfBirth && <div className="text-[#FC0000]">{errors.dateOfBirth}</div>}
+          {errors.dateOfBirth && <div className="text-[#FC0000] text-sm">{errors.dateOfBirth}</div>}
             <TextField
               id="date"
               type="date"
@@ -153,7 +153,7 @@ const UserForm = () => {
             <label htmlFor="5">Adress</label>
           </div>
           <div className="col-span-2">
-          {errors.address && <div className="text-[#FC0000]">{errors.address}</div>}
+          {errors.address && <div className="text-[#FC0000] text-sm">{errors.address}</div>}
             <TextField
               type="text"
               id="adress"
@@ -181,7 +181,7 @@ const UserForm = () => {
             <label htmlFor="name">Mobile No </label>
           </div>
           <div className="col-span-2">
-          {errors.mobileNo && <div className="text-[#FC0000]">{errors.mobileNo}</div>}
+          {errors.mobileNo && <div className="text-[#FC0000] text-sm">{errors.mobileNo}</div>}
             <TextField
               type="text"
               id="mno"
@@ -200,7 +200,7 @@ const UserForm = () => {
             </label>
           </div>
           <div className="col-span-2">
-          {errors.telNo&& <div className="text-[#FC0000]">{errors.telNo}</div>}
+          {errors.telNo&& <div className="text-[#FC0000] text-sm">{errors.telNo}</div>}
             <TextField
               type="text"
               id="Tno"
@@ -217,7 +217,7 @@ const UserForm = () => {
             <label htmlFor="name">Email Adress</label>
           </div>
           <div className="col-span-2">
-          {errors.email && <div className="text-[#FC0000]">{errors.email}</div>}
+          {errors.email && <div className="text-[#FC0000] text-sm">{errors.email}</div>}
             <TextField
               type="text"
               id="email"
@@ -245,7 +245,7 @@ const UserForm = () => {
             <label htmlFor="name">Password</label>
           </div>
           <div className="col-span-2">
-          {errors.password && <div className="text-[#FC0000]">{errors.password}</div>}
+          {errors.password && <div className="text-[#FC0000] text-sm">{errors.password}</div>}
             <TextField
               type="password"
               id="password"
@@ -263,7 +263,7 @@ const UserForm = () => {
             <label htmlFor="name">Confirm Password</label>
           </div>
           <div className="col-span-2">
-          {errors.cpassword && <div className="text-[#FC0000]">{errors.cpassword}</div>}
+          {errors.cpassword && <div className="text-[#FC0000] text-sm">{errors.cpassword}</div>}
             <TextField
               type="password"
               id="cpassword"
