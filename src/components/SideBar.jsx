@@ -135,21 +135,24 @@ const SideBar = () => {
           <ListItem button className="pl-8 rounded-lg">
             <ListItemText primary="Stock Alert" />
           </ListItem>
-          <ListItem button className="pl-8 rounded-lg">
+          <a href="/report/item-usage-analysis">
+          <ListItem  button className="pl-8 rounded-lg">
             <ListItemText primary="Item Usage Analysis" />
           </ListItem>
+          </a>
         </List>
       </Collapse>
 
       {/* Initiate Order */}
-      <ListItem
-        button
-        className="rounded-lg hover:bg-blue-100 focus:bg-blue-400"
-      >
-        <ShoppingCartIcon></ShoppingCartIcon>
-        <ListItemText primary="Initiate Order" className="pl-4 pr-4" />
-      </ListItem>
-
+      <a href="/order">
+        <ListItem
+          button
+          className="rounded-lg hover:bg-blue-100 focus:bg-blue-400"
+        >
+          <ShoppingCartIcon></ShoppingCartIcon>
+          <ListItemText primary="Initiate Order" className="pl-4 pr-4" />
+        </ListItem>
+      </a>
       <ListItem
         button
         className="rounded-lg md:hidden hover:bg-blue-100 focus:bg-blue-400">

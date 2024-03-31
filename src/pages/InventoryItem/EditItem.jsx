@@ -1,30 +1,70 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
 import {
+  Button,
   InputAdornment,
   InputLabel,
   MenuItem,
   Select,
   TextField,
 } from "@mui/material";
-import { Button } from "@mui/material";
 
-const AddItemForm = () => {
-  const navigate = useNavigate();
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
+import axios from "axios";
+
+const EditItem = () => {
   const [itemName, setItemName] = useState("");
   const [itemGroup, setItemGroup] = useState("select an item group");
   const [unit, setUnit] = useState("");
   const [brand, setBrand] = useState("");
-  const [dimension, setdimension] = useState("");
+  const [dimension, setDimension] = useState("");
   const [weight, setWeight] = useState("");
   const [description, setDescription] = useState("");
+  const [status, setStatus] = useState("");
   const [quantity, setQuantity] = useState("");
+  
+  const { ID } = useParams();
 
   const [fetchData, setFetchData] = useState(false);
-  const handleClick = (e) => {
-    e.preventDefault();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8080/inventory-item/getById/${ID}`)
+      .then((response) => {
+        const data = {
+          itemName: response.data.itemName,
+          itemGroup: response.data.itemGroup,
+          brand: response.data.brand,
+          unit: response.data.unit,
+          dimension: response.data.dimension,
+          weight: response.data.weight,
+          description: response.data.description,
+          quantity: response.data.quantity,
+          status: response.data.status,
+        };
+
+        setItemName(data.itemName);
+        setItemGroup(data.itemGroup);
+        setBrand(data.brand);
+        setUnit(data.unit);
+        setDimension(data.dimension);
+        setWeight(data.weight);
+        setDescription(data.description);
+        setQuantity(data.quantity);
+        setStatus(data.status);
+        
+       
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [ID]);
+
+ 
+
+  const handleSave = () => {
     const item = {
       itemName,
       itemGroup,
@@ -34,24 +74,42 @@ const AddItemForm = () => {
       weight,
       description,
       quantity,
-     
+      status
+    
     };
-    console.log(item);
 
-    fetch("http://localhost:8080/inventory-item/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(item),
-    }).then(() => {
-      setFetchData(!fetchData);
-      console.log("New inventory item added");
-      navigate("/item", { fetchData });
-    });
+    axios
+      .put(`http://localhost:8080/inventory-item/updateById/${ID}`, item)
+      .then(() => {
+        console.log("Successfully updated");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    setFetchData(!fetchData);
+    navigate("/item");
   };
+
 
   return (
     <form className="grid grid-cols-8 gap-y-10 pl-12 ">
-      <h1 className=" col-span-4 text-2xl ">New item</h1>
+      <h1 className=" col-span-4 text-2xl ">Item Details</h1>
+      <div className="col-start-1 col-span-4 flex items-center">
+        <InputLabel htmlFor="id" className="flex-none text-black w-32 ">
+          Item id
+        </InputLabel>
+        <TextField
+          value={ID}
+          id="id"
+          variant="outlined"
+          InputProps={{
+            className:
+              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
+            readOnly: true,
+          }}
+        />
+      </div>
 
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel
@@ -62,37 +120,37 @@ const AddItemForm = () => {
           Item name
         </InputLabel>
         <TextField
-          id="name"
           value={itemName}
           onChange={(e) => setItemName(e.target.value)}
+          id="name"
           variant="outlined"
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
+              readOnly: false,
           }}
         />
       </div>
 
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="Group" className="flex-none text-black w-32 ">
+        <InputLabel htmlFor="itemGroup" className="flex-none text-black w-32 ">
           Item group
         </InputLabel>
         <div className="flex-grow">
           <Select
-            id="Group"
             value={itemGroup}
             onChange={(e) => setItemGroup(e.target.value)}
-            className=" bg-white w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
+            id="itemGroup"
+            className="bg-white  w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
+           
           >
-            <MenuItem disabled value={itemGroup}>
-              <em>Select an itemGroup</em>
-            </MenuItem>
+            <MenuItem disabled value={itemGroup}></MenuItem>
             <MenuItem value="computerAccessories">
               Computer accessories
             </MenuItem>
             <MenuItem value="printers">Printers</MenuItem>
             <MenuItem value="computerHardware">Computer hardware</MenuItem>
-            <MenuItem value="other">Other</MenuItem>
+            <MenuItem value="other">other</MenuItem>
           </Select>
         </div>
       </div>
@@ -102,14 +160,16 @@ const AddItemForm = () => {
           Unit
         </InputLabel>
         <TextField
-          id="unit"
           value={unit}
           onChange={(e) => setUnit(e.target.value)}
+          id="unit"
           variant="outlined"
           InputProps={{
             endAdornment: <InputAdornment position="end">pcs</InputAdornment>,
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+              readOnly: false,
+           
           }}
         />
       </div>
@@ -118,13 +178,15 @@ const AddItemForm = () => {
           Brand
         </InputLabel>
         <TextField
-          id="brand"
           value={brand}
           onChange={(e) => setBrand(e.target.value)}
+          id="brand"
           variant="outlined"
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+              readOnly: false,
+             
           }}
         />
       </div>
@@ -133,13 +195,15 @@ const AddItemForm = () => {
           Dimension
         </InputLabel>
         <TextField
-          id="dimension"
           value={dimension}
-          onChange={(e) => setdimension(e.target.value)}
+          onChange={(e) => setDimension(e.target.value)}
+          id="dimension"
           variant="outlined"
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+              readOnly: false,
+           
           }}
         />
       </div>
@@ -148,13 +212,15 @@ const AddItemForm = () => {
           Weight
         </InputLabel>
         <TextField
-          id="weight"
           value={weight}
           onChange={(e) => setWeight(e.target.value)}
+          id="weight"
           variant="outlined"
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+              readOnly: false,
+           
           }}
         />
       </div>
@@ -166,15 +232,17 @@ const AddItemForm = () => {
           Description
         </InputLabel>
         <TextField
-          id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          id="description"
           variant="outlined"
           multiline
           rows={10}
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 ml-5 bg-white",
+              readOnly: false,
+           
           }}
         />
       </div>
@@ -183,33 +251,37 @@ const AddItemForm = () => {
           Initial quantity
         </InputLabel>
         <TextField
-          id="quantity"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
+          id="quantity"
           variant="outlined"
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+              readOnly: false,
+           
           }}
         />
       </div>
-
-      <Button
-        variant="contained"
-        className="row-start-10 col-start-6 rounded-sm bg-blue-600 ml-10"
-        onClick={handleClick}
-      >
-        Save
-      </Button>
-      <Button
-        variant="outlined"
-        className="row-start-10 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
-        onClick={() => navigate("/item")}
-      >
-        Cancel
-      </Button>
+      
+        <>
+          <Button
+            variant="contained"
+            className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
+            onClick={handleSave}
+          >
+            Save
+          </Button>
+          <Button
+            variant="outlined"
+            className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
+            onClick={() => navigate("/item")}
+          >
+            Cancel
+          </Button>
+        </>
     </form>
   );
 };
 
-export default AddItemForm;
+export default EditItem;

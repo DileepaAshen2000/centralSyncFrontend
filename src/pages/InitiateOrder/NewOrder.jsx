@@ -1,70 +1,65 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import {
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
+import { InputLabel, TextField } from "@mui/material";
 import { Button } from "@mui/material";
 
-const AddItemForm = () => {
+const NewOrderForm = () => {
   const navigate = useNavigate();
 
+  const [vendorName, setVendorName] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [vendorEmail, setVendorEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [date, setDate] = useState("");
   const [itemName, setItemName] = useState("");
-  const [itemGroup, setItemGroup] = useState("select an item group");
-  const [unit, setUnit] = useState("");
-  const [brand, setBrand] = useState("");
-  const [dimension, setdimension] = useState("");
-  const [weight, setWeight] = useState("");
-  const [description, setDescription] = useState("");
+  const [brandName, setBrandName] = useState("");
   const [quantity, setQuantity] = useState("");
-
+  const [description, setDescription] = useState("");
   const [fetchData, setFetchData] = useState(false);
+
   const handleClick = (e) => {
     e.preventDefault();
-    const item = {
+    const order = {
+      vendorName,
+      companyName,
+      vendorEmail,
+      mobile,
+      date,
       itemName,
-      itemGroup,
-      unit,
-      brand,
-      dimension,
-      weight,
-      description,
+      brandName,
       quantity,
      
     };
-    console.log(item);
+    console.log(order);
 
-    fetch("http://localhost:8080/inventory-item/add", {
+    fetch("http://localhost:8080/orders/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(item),
+      body: JSON.stringify(order),
     }).then(() => {
       setFetchData(!fetchData);
-      console.log("New inventory item added");
-      navigate("/item", { fetchData });
+      console.log("New order sent");
+      navigate("/order", { fetchData });
     });
   };
 
   return (
     <form className="grid grid-cols-8 gap-y-10 pl-12 ">
-      <h1 className=" col-span-4 text-2xl ">New item</h1>
+      <h1 className=" col-span-4 text-2xl ">New Order</h1>
 
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel
-          htmlFor="name"
+          htmlFor="vendorName"
           className="flex-none text-black w-32 "
           required
         >
-          Item name
+          Vendor name
         </InputLabel>
         <TextField
-          id="name"
-          value={itemName}
-          onChange={(e) => setItemName(e.target.value)}
+          id="vendorName"
+          value={vendorName}
+          onChange={(e) => setVendorName(e.target.value)}
           variant="outlined"
           InputProps={{
             className:
@@ -75,52 +70,31 @@ const AddItemForm = () => {
 
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel htmlFor="Group" className="flex-none text-black w-32 ">
-          Item group
+          Company Name
         </InputLabel>
-        <div className="flex-grow">
-          <Select
-            id="Group"
-            value={itemGroup}
-            onChange={(e) => setItemGroup(e.target.value)}
-            className=" bg-white w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
-          >
-            <MenuItem disabled value={itemGroup}>
-              <em>Select an itemGroup</em>
-            </MenuItem>
-            <MenuItem value="computerAccessories">
-              Computer accessories
-            </MenuItem>
-            <MenuItem value="printers">Printers</MenuItem>
-            <MenuItem value="computerHardware">Computer hardware</MenuItem>
-            <MenuItem value="other">Other</MenuItem>
-          </Select>
-        </div>
+        <TextField
+          id="companyName"
+          value={companyName}
+          onChange={(e) => setCompanyName(e.target.value)}
+          variant="outlined"
+          InputProps={{
+            className:
+              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
+          }}
+        />
       </div>
 
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="unit" className="flex-none text-black w-32 ">
-          Unit
+        <InputLabel
+          htmlFor="vendorEmail"
+          className="flex-none text-black w-32 "
+        >
+          Email Address
         </InputLabel>
         <TextField
-          id="unit"
-          value={unit}
-          onChange={(e) => setUnit(e.target.value)}
-          variant="outlined"
-          InputProps={{
-            endAdornment: <InputAdornment position="end">pcs</InputAdornment>,
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-          }}
-        />
-      </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="brand" className="flex-none text-black w-32 ">
-          Brand
-        </InputLabel>
-        <TextField
-          id="brand"
-          value={brand}
-          onChange={(e) => setBrand(e.target.value)}
+          id="vendorEmail"
+          value={vendorEmail}
+          onChange={(e) => setVendorEmail(e.target.value)}
           variant="outlined"
           InputProps={{
             className:
@@ -129,13 +103,13 @@ const AddItemForm = () => {
         />
       </div>
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="dimension" className="flex-none text-black  w-32">
-          Dimension
+        <InputLabel htmlFor="mobile" className="flex-none text-black w-32 ">
+          Mobile
         </InputLabel>
         <TextField
-          id="dimension"
-          value={dimension}
-          onChange={(e) => setdimension(e.target.value)}
+          id="mobile"
+          value={mobile}
+          onChange={(e) => setMobile(e.target.value)}
           variant="outlined"
           InputProps={{
             className:
@@ -144,13 +118,63 @@ const AddItemForm = () => {
         />
       </div>
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="weight" className="flex-none text-black  w-32">
-          Weight
+        <InputLabel htmlFor="date" className="flex-none text-black  w-32">
+          Date
         </InputLabel>
         <TextField
-          id="weight"
-          value={weight}
-          onChange={(e) => setWeight(e.target.value)}
+          id="date"
+          value={date}
+          type="date"
+          onChange={(e) => setDate(e.target.value)}
+          variant="outlined"
+          InputProps={{
+            className:
+              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+          }}
+        />
+      </div>
+      <div className="col-start-1 col-span-4 flex items-center">
+        <InputLabel htmlFor="itemName" className="flex-none text-black  w-32">
+          Item Name
+        </InputLabel>
+        <TextField
+          id="itemName"
+          value={itemName}
+          onChange={(e) => setItemName(e.target.value)}
+          variant="outlined"
+          InputProps={{
+            className:
+              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+          }}
+        />
+      </div>
+      <div className="col-start-1 col-span-4 flex items-center">
+        <InputLabel
+          htmlFor="brandName"
+          className="flex-none text-black  w-32 mt-0"
+        >
+          Brand Name
+        </InputLabel>
+        <TextField
+          id="brandName"
+          value={brandName}
+          onChange={(e) => setBrandName(e.target.value)}
+          variant="outlined"
+          InputProps={{
+            className:
+              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+           
+          }}
+        />
+      </div>
+      <div className="col-start-1 col-span-4 flex items-center">
+        <InputLabel htmlFor="quantity" className="flex-none text-black w-32 ">
+          Quantity
+        </InputLabel>
+        <TextField
+          id="quantity"
+          value={quantity}
+          onChange={(e) => setQuantity(e.target.value)}
           variant="outlined"
           InputProps={{
             className:
@@ -161,7 +185,7 @@ const AddItemForm = () => {
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel
           htmlFor="description"
-          className="flex-none text-black  w-32 mt-0"
+          className="flex-none text-black w-32 "
         >
           Description
         </InputLabel>
@@ -175,36 +199,22 @@ const AddItemForm = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 ml-5 bg-white",
-          }}
-        />
-      </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="quantity" className="flex-none text-black w-32 ">
-          Initial quantity
-        </InputLabel>
-        <TextField
-          id="quantity"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+            
           }}
         />
       </div>
 
       <Button
         variant="contained"
-        className="row-start-10 col-start-6 rounded-sm bg-blue-600 ml-10"
+        className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
         onClick={handleClick}
       >
         Save
       </Button>
       <Button
         variant="outlined"
-        className="row-start-10 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
-        onClick={() => navigate("/item")}
+        className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
+        onClick={() => navigate("/order")}
       >
         Cancel
       </Button>
@@ -212,4 +222,4 @@ const AddItemForm = () => {
   );
 };
 
-export default AddItemForm;
+export default NewOrderForm;
