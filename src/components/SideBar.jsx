@@ -65,12 +65,16 @@ const SideBar = () => {
               <ListItemText primary="Adjustment" />
             </ListItem>
           </a>
-          <ListItem button className="pl-8 rounded-lg">
-            <ListItemText primary="Stock In" />
-          </ListItem>
-          <ListItem button className="pl-8 rounded-lg">
-            <ListItemText primary="Stock Out" />
-          </ListItem>
+          <a href="/stockIn">
+            <ListItem button className="pl-8 rounded-lg">
+              <ListItemText primary="Stock In" />
+            </ListItem>
+          </a>
+          <a href="/stockOut">
+            <ListItem button className="pl-8 rounded-lg">
+              <ListItemText primary="Stock Out" />
+            </ListItem>
+          </a>
         </List>
       </Collapse>
 
@@ -95,7 +99,7 @@ const SideBar = () => {
       </ListItem>
       <Collapse in={openRequestReservation} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <a href="/inventoryRequest">
+          <a href="/inventory-request">
             <ListItem button className="pl-8 rounded-lg">
               <ListItemText primary="Request" />
             </ListItem>
@@ -151,8 +155,7 @@ const SideBar = () => {
       </a>
       <ListItem
         button
-        className="rounded-lg md:hidden hover:bg-blue-100 focus:bg-blue-400"
-      >
+        className="rounded-lg md:hidden hover:bg-blue-100 focus:bg-blue-400">
         <AccountCircleIcon></AccountCircleIcon>
         <ListItemText primary="My Account" className="pl-4 pr-4" />
       </ListItem>

@@ -4,31 +4,31 @@ import axios from 'axios';
 import { useEffect, useState } from 'react'
 
 const columns = [
-  { field: 'id', headerName: 'Adjustment ID', width: 150 },
-  { field: 'reason', headerName: 'Reason', width: 180 },
-  { field: 'description', headerName: 'Description', width: 300 },
-  { field: 'adjusted_Qty', headerName: 'Adjusted_Qty', width: 150 },
+  { field: 'id', headerName: 'Item ID', width: 150 },
+  { field: 'name', headerName: 'Item Name', width: 180 },
+  { field: 'department', headerName: 'Department', width: 300 },
+  { field: 'quantity', headerName: 'Quantity', width: 150 },
   { field: 'date', headerName: 'Date', width: 150 },
-  { field: 'status', headerName: 'Status', width: 100 },
 ];
 
 
 
-export default function Table() {
-const [rows,setRows] = useState([])
+export default function StockOutTable() {
+const [rows, setData] = useState([])
 useEffect(() => {
   axios.get('http://localhost:8080/adjustment/getAll')
     .then((response) => {
    
-    const data = response.data.map((adj,index) => ({
-      id: index + 1,
+    const data = response.data.map((adj) => ({
+      
+      id: adj.adjId,
       reason: adj.reason,
       description: adj.description,
       adjusted_Qty: adj.newQuantity,
       date: adj.date,
-      status: 'pending',
+
     }));
-  setRows(data);
+    setData(data);
     })
     .catch((error) => {
       console.log(error);
@@ -37,6 +37,7 @@ useEffect(() => {
 
   return (
     <div>
+    
       <DataGrid
       className='shadow-lg'
         rows={rows}
