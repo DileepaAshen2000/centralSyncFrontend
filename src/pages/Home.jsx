@@ -12,7 +12,7 @@ import Userupdate from "./User/Edit_user";
 import EditUser from "../components/User_Components/UserEditForm";
 import { Grid } from "@mui/material";
 import AdjustmentDocument from "./Adjustment/AdjustmentDocument";
-import RequestList from "./InventoryRequest/InventoryRequestList";
+//import RequestList from "./InventoryRequest/InventoryRequestList";
 import ItemDataGrid from "./InventoryItem/InventoryItems";
 import AddItemForm from "./InventoryItem/NewItem";
 import ViewItemDetails from "./InventoryItem/ViewDetails";
@@ -39,20 +39,9 @@ const Home = () => {
       </Router>
       </div>
       <Grid container className="flex">
-        <Grid
-          item
-          sm={2.5}
-          className="box-border hidden h-screen md:block w-96"
-        >
+        <Grid item sm={2.5} className='box-border hidden h-screen md:block w-96'>
           <SideBar></SideBar>
         </Grid>
-
-        <Grid
-          item
-          sm={9.5}
-          style={{ backgroundColor: "#eeeeee" }}
-          className="w-screen p-10"
-        >
           
            
               
@@ -84,7 +73,7 @@ const Home = () => {
               <Route path='/item/edit-item/:ID' element={<ViewItemDetails/>}></Route>
               
               {/* Inventory Request routing */}
-              <Route path='/inventoryRequest' element={<RequestList/>}></Route>
+               {/*<Route path='/inventoryRequest' element={<RequestList/>}></Route>*/}
               
               <Route path='/inventory-request/request-document-pending' element={<RequestDocumentPending/>}></Route>
               <Route path='/inventory-request/request-document-accept' element={<RequestDocumentAccept/>}></Route>
@@ -104,7 +93,7 @@ const Home = () => {
           </BrowserRouter>
         </Grid>
       </Grid>
-      </Grid>
+     
     </div>
   );
 };

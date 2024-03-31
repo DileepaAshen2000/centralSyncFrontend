@@ -21,6 +21,7 @@ const UserForm = () => {
   const [department, setDepartment] = useState("");
   const [role, setRole] = useState("");
   const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -34,26 +35,39 @@ const UserForm = () => {
       telNo,
       department,
       role,
+      
     };
     console.log(user);
     fetch("http://localhost:8080/user/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(user),
-    }).then(() => {
-      console.log("New User added");
+    })
+    .then(response => {
+      if(response.ok){
+        console.log("New User added");
+
+      }
+      else{
+        response.json().then(errors =>{
+          setErrors(errors);
+        });
+      }
     });
-    navigate("/User");
   };
+    
 
   return (
     <>
-      <form noValidate>
+      <form>
         <div className="grid grid-cols-6 grid-rows-6  gap-x-[0.25rem] ">
           <div className="col-span-1 row-span-2">
             <label htmlFor="name">Name</label>
+            
+           
           </div>
           <div className="col-span-2">
+          {errors.firstName && <div className="text-[#FC0000]">{errors.firstName}</div>}
             <TextField
               id="name"
               variant="outlined"
@@ -65,9 +79,15 @@ const UserForm = () => {
               value={firstName}
               onChange={(e) => setfName(e.target.value)}
             />
+           
           </div>{" "}
-          <div className="col-span-3"> </div>
+          <div className="col-span-3">
+          
+
+          </div>
           <div className="col-span-2">
+          {errors.lastName && <div className="text-[#FC0000]">{errors.lastName}</div>}
+            
             <TextField
               variant="outlined"
               placeholder="Last Name"
@@ -86,6 +106,7 @@ const UserForm = () => {
             <label htmlFor="2">Department</label>
           </div>
           <div className="col-span-2">
+          {errors.department && <div className="text-[#FC0000]">{errors.department}</div>}
             <SelectD
               value={department}
               onChange={(selectedOption) => setDepartment(selectedOption)}
@@ -98,6 +119,7 @@ const UserForm = () => {
             <label htmlFor="3">Role</label>
           </div>
           <div className="col-span-2">
+          {errors.role && <div className="text-[#FC0000]">{errors.role}</div>}
             {" "}
             <SelectR
               value={role}
@@ -111,6 +133,7 @@ const UserForm = () => {
             <label htmlFor="4">Date Of Birth</label>
           </div>
           <div className="col-span-2">
+          {errors.dateOfBirth && <div className="text-[#FC0000]">{errors.dateOfBirth}</div>}
             <TextField
               id="date"
               type="date"
@@ -130,6 +153,7 @@ const UserForm = () => {
             <label htmlFor="5">Adress</label>
           </div>
           <div className="col-span-2">
+          {errors.address && <div className="text-[#FC0000]">{errors.address}</div>}
             <TextField
               type="text"
               id="adress"
@@ -157,6 +181,7 @@ const UserForm = () => {
             <label htmlFor="name">Mobile No </label>
           </div>
           <div className="col-span-2">
+          {errors.mobileNo && <div className="text-[#FC0000]">{errors.mobileNo}</div>}
             <TextField
               type="text"
               id="mno"
@@ -175,6 +200,7 @@ const UserForm = () => {
             </label>
           </div>
           <div className="col-span-2">
+          {errors.telNo&& <div className="text-[#FC0000]">{errors.telNo}</div>}
             <TextField
               type="text"
               id="Tno"
@@ -191,6 +217,7 @@ const UserForm = () => {
             <label htmlFor="name">Email Adress</label>
           </div>
           <div className="col-span-2">
+          {errors.email && <div className="text-[#FC0000]">{errors.email}</div>}
             <TextField
               type="text"
               id="email"
@@ -218,6 +245,7 @@ const UserForm = () => {
             <label htmlFor="name">Password</label>
           </div>
           <div className="col-span-2">
+          {errors.password && <div className="text-[#FC0000]">{errors.password}</div>}
             <TextField
               type="password"
               id="password"
@@ -235,6 +263,7 @@ const UserForm = () => {
             <label htmlFor="name">Confirm Password</label>
           </div>
           <div className="col-span-2">
+          {errors.cpassword && <div className="text-[#FC0000]">{errors.cpassword}</div>}
             <TextField
               type="password"
               id="cpassword"
@@ -270,6 +299,13 @@ const UserForm = () => {
           </div>
         </div>
       </form>
+      {Object.keys(errors).length > 0 && (
+        <div className="error-container">
+          {Object.entries(errors).map(([field, errorMessage]) => (
+            <div key={field}>{errorMessage}</div>
+          ))}
+        </div>
+      )}
     </>
   );
 };
