@@ -1,17 +1,21 @@
-import * as React from "react"
+import * as React from "react";
 import { PieChart } from "@mui/x-charts";
 import PieCenterLabel from "./PieCenterLabel";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+//define the size of the pie chart
 const size = {
   width: 300,
   height: 400,
 };
+
+
+//define a colour palatte
 const palette = ["#4583DE", "#FFB946"];
 
 const ItemPieChart = () => {
-
+  //adjust the viewbox of the chart
   useEffect(() => {
     const svg = document.querySelector(".css-13aj3tc-MuiChartsSurface-root");
     if (svg) {
@@ -19,8 +23,10 @@ const ItemPieChart = () => {
     }
   }, []);
 
+  //state variables
   const [itemData, setItemData] = useState([]);
 
+  //fetch data
   useEffect(() => {
     axios
       .get("http://localhost:8080/inventory-item/getAll")
@@ -32,23 +38,26 @@ const ItemPieChart = () => {
       });
   }, []);
 
+  // calculate the total number of active items
   const aciveTotal = itemData
     .map((inventoryItem) => inventoryItem.status)
     .reduce((count, status) => {
-      return status === "active" ? count + 1 : count;
+      return status === "ACTIVE" ? count + 1 : count;
     }, 0);
 
+  // calculate the total number of inactive items
   const inactiveTotal = itemData
     .map((inventoryItem) => inventoryItem.status)
     .reduce((count, status) => {
-      return status === "inactive" ? count + 1 : count;
+      return status === "INACTIVE" ? count + 1 : count;
     }, 0);
 
+  // define the series data for the pie chart
   const series = [
     {
       data: [
-        { value: aciveTotal, label: "active items" },
-        { value: inactiveTotal, label: "inactive items" },
+        { value: aciveTotal, label: "Active items" },
+        { value: inactiveTotal, label: "Inactive items" },
       ],
       innerRadius: 80,
     },
@@ -56,16 +65,14 @@ const ItemPieChart = () => {
 
   return (
     <PieChart
-    margin={{top:75, bottom:100}}
+      margin={{ top: 75, bottom: 100 }}
       colors={palette}
       series={series}
       slotProps={{
         legend: {
-          
           direction: "column",
           position: { vertical: "bottom", horizontal: "left" },
-          padding:10,
-        
+          padding: 10,
         },
       }}
       {...size}

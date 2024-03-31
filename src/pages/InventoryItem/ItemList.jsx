@@ -64,29 +64,43 @@ const ItemDataGrid = () => {
   }, [fetchData]);
 
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
+
   const handleRowSelectionModelChange = (newSelectedRow) => {
     setRowSelectionModel(newSelectedRow);
   };
 
-  const handleClick = () => {
-    
-      const selectedItemId = rowSelectionModel[0];
-      navigate("/item/view-item/" + selectedItemId);
-   
+  const handleView = () => {
+    const selectedItemId = rowSelectionModel[0];
+    navigate("/item/view-item/" + selectedItemId);
   };
+
+  const handleEdit=()=>{
+    const selectedItemId = rowSelectionModel[0];
+    navigate("/item/edit-item/" + selectedItemId);
+  }
 
   return (
     <Box className="h-[400px] w-full">
       <Box>
         <h1 className="inline-block text-3xl font-bold p-4">All items</h1>
         {rowSelectionModel > 0 ? (
-          <Button
-            variant="contained"
-            className="bg-blue-600 px-6 py-2 text-white rounded left-[69%] w-[145px]"
-            onClick={handleClick}
-          >
-            View Details
-          </Button>
+          <>
+            <Button
+              variant="contained"
+              className="bg-blue-600 px-6 py-2 text-white rounded left-[45%] w-[145px]"
+              onClick={handleEdit}
+            >
+              Edit
+            </Button>
+
+            <Button
+              variant="contained"
+              className="bg-blue-600  py-2 text-white rounded left-[54%] w-[145px]"
+              onClick={handleView}
+            >
+              View
+            </Button>
+          </>
         ) : (
           <Button
             variant="contained"
@@ -104,12 +118,12 @@ const ItemDataGrid = () => {
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 5,
+              pageSize: 10,
             },
           },
         }}
         autoHeight
-        pageSizeOptions={[5]}
+        pageSizeOptions={[10]}
         checkboxSelection
         disableRowSelectionOnClick
         rowSelectionModel={rowSelectionModel}

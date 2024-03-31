@@ -8,13 +8,16 @@ import NewAdjustment from './Adjustment/NewAdjustment'
 import { Grid } from '@mui/material'
 import AdjustmentDocument from './Adjustment/AdjustmentDocument'
 import RequestList from './InventoryRequest/InventoryRequestList'
-import ItemDataGrid from './InventoryItem/InventoryItems'
+import ItemDataGrid from './InventoryItem/ItemList'
 import AddItemForm from './InventoryItem/NewItem'
+import EditItem from './InventoryItem/EditItem'
 import ViewItemDetails from './InventoryItem/ViewDetails'
-import Usage from './Reports/UsageReport'
+import Usage from './Reports/UsageReport/UsageReport'
 import OrderDataGrid from './InitiateOrder/OrderList'
 import NewOrderForm from './InitiateOrder/NewOrder'
 import ViewOrderDetails from './InitiateOrder/ViewOrder'
+import EditOrderDetails from './InitiateOrder/EditOrder'
+
 
 
 const Home = () => {
@@ -40,10 +43,12 @@ const Home = () => {
               <Route path='/item' element={<ItemDataGrid/>}></Route>
               <Route path='/item/add-item' element={<AddItemForm/>}></Route>
               <Route path='/item/view-item/:ID' element={<ViewItemDetails/>}></Route>
+              <Route path='/item/edit-item/:ID' element={<EditItem/>}></Route>
               <Route path='/report/item-usage-analysis' element={<Usage/>}></Route>
               <Route path='/order' element={<OrderDataGrid/>}></Route>
               <Route path='/order/new-order' element={<NewOrderForm/>}></Route>
               <Route path='/order/view-order/:ID' element={<ViewOrderDetails/>}></Route>
+              <Route path='/order/edit-order/:ID' element={<EditOrderDetails/>}></Route>
             </Routes>
           </BrowserRouter>
         </Grid>

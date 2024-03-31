@@ -1,9 +1,9 @@
 import {
   Button,
+  MenuList,
   Popover,
   InputAdornment,
   InputLabel,
-  MenuList,
   MenuItem,
   Select,
   TextField,
@@ -23,18 +23,18 @@ const ViewItemDetails = () => {
   const [weight, setWeight] = useState("");
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [status,setStatus]=useState("")
-
-  const [notEditable, setnotEditable] = useState(true);
-  const { ID } = useParams();
 
   const [fetchData, setFetchData] = useState(false);
+
+  const { ID } = useParams();
+
+ // const [fetchData, setFetchData] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/inventory-item/getById/" + ID)
+      .get(`http://localhost:8080/inventory-item/getById/${ID}`)
       .then((response) => {
         const data = {
           itemName: response.data.itemName,
@@ -56,42 +56,11 @@ const ViewItemDetails = () => {
         setWeight(data.weight);
         setDescription(data.description);
         setQuantity(data.quantity);
-        setStatus(data.status);
       })
       .catch((error) => {
         console.log(error);
       });
   }, [ID]);
-
-  const handleEdit = () => {
-    setnotEditable(!notEditable);
-  };
-
-  const handleSave = () => {
-    const item = {
-      itemName,
-      itemGroup,
-      unit,
-      brand,
-      dimension,
-      weight,
-      description,
-      quantity,
-      status,
-    };
-
-    axios
-      .put("http://localhost:8080/inventory-item/updateById/" + ID, item)
-      .then(() => {
-        console.log("Successfully updated");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
-    setFetchData(!fetchData);
-    navigate("/item");
-  };
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -109,7 +78,7 @@ const ViewItemDetails = () => {
   const handleDelete = () => {
     try {
       axios
-        .delete("http://localhost:8080/inventory-item/deleteItem/" + ID)
+        .delete(`http://localhost:8080/inventory-item/deleteItem/${ID}`)
         .then(() => {
           setFetchData(!fetchData);
           navigate("/item", { fetchData });
@@ -122,7 +91,7 @@ const ViewItemDetails = () => {
   const handleMarkAsInactiveButton = () => {
     axios
       .patch(
-        "http://localhost:8080/inventory-item/updateStatus/" + ID + "/inactive"
+        `http://localhost:8080/inventory-item/updateStatus/${ID}`
       )
       .then(() => {
         setFetchData(!fetchData);
@@ -132,6 +101,7 @@ const ViewItemDetails = () => {
         console.log(error);
       });
   };
+
 
   return (
     <form className="grid grid-cols-8 gap-y-10 pl-12 ">
@@ -168,7 +138,7 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
-            readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
@@ -183,14 +153,14 @@ const ViewItemDetails = () => {
             onChange={(e) => setItemGroup(e.target.value)}
             id="itemGroup"
             className="bg-white  w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
-            readOnly={notEditable}
+            readOnly="true"
           >
             <MenuItem disabled value={itemGroup}></MenuItem>
-            <MenuItem value="computer accessories">
+            <MenuItem value="computerAccessories">
               Computer accessories
             </MenuItem>
             <MenuItem value="printers">Printers</MenuItem>
-            <MenuItem value="hardware">Hardware</MenuItem>
+            <MenuItem value="computerHardware">Computer hardware</MenuItem>
             <MenuItem value="other">other</MenuItem>
           </Select>
         </div>
@@ -209,7 +179,7 @@ const ViewItemDetails = () => {
             endAdornment: <InputAdornment position="end">pcs</InputAdornment>,
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
@@ -225,7 +195,7 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-              readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
@@ -241,7 +211,7 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
@@ -257,7 +227,7 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
@@ -278,7 +248,7 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 ml-5 bg-white",
-            readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
@@ -294,29 +264,11 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
-      {!notEditable ? (
-        <>
-          <Button
-            variant="contained"
-            className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
-            onClick={handleSave}
-          >
-            Save
-          </Button>
-          <Button
-            variant="outlined"
-            className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
-            onClick={() => navigate("/item")}
-          >
-            Cancel
-          </Button>
-        </>
-      ) : (
-        <>
+      <>
           <Button
             variant="contained"
             className="row-start-1 col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
@@ -334,15 +286,7 @@ const ViewItemDetails = () => {
             }}
           >
             <MenuList>
-              <MenuItem>
-                <Button
-                  variant="contained"
-                  className=" col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
-                  onClick={handleEdit}
-                >
-                  Edit
-                </Button>
-              </MenuItem>
+              
               <MenuItem>
                 <Button
                   variant="contained"
@@ -364,7 +308,14 @@ const ViewItemDetails = () => {
             </MenuList>
           </Popover>
         </>
-      )}
+
+      <Button
+        variant="outlined"
+        className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
+        onClick={() => navigate("/item")}
+      >
+        Cancel
+      </Button>
     </form>
   );
 };

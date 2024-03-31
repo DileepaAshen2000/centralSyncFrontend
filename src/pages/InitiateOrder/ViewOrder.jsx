@@ -22,9 +22,8 @@ const ViewOrderDetails = () => {
   const [brandName, setBrandName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("");
-  
-  const [notEditable, setnotEditable] = useState(true);
+
+
   const { ID } = useParams();
 
   const [fetchData, setFetchData] = useState(false);
@@ -33,7 +32,7 @@ const ViewOrderDetails = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/orders/getById/" + ID)
+      .get(`http://localhost:8080/orders/getById/${ID}`)
       .then((response) => {
         const data = {
           vendorName: response.data.vendorName,
@@ -45,7 +44,6 @@ const ViewOrderDetails = () => {
           brandName: response.data.brandName,
           quantity: response.data.quantity,
           description: response.data.description,
-          status: response.data.status,
         };
 
         setVendorName(data.vendorName);
@@ -57,42 +55,13 @@ const ViewOrderDetails = () => {
         setBrandName(data.brandName);
         setQuantity(data.quantity);
         setDescription(data.description);
-        setStatus(data.status);
       })
       .catch((error) => {
         console.log(error);
       });
   }, [ID]);
 
-  const handleEdit = () => {
-    setnotEditable(!notEditable);
-  };
-
-  const handleSave = () => {
-    const order = {
-      vendorName,
-      companyName,
-      vendorEmail,
-      mobile,
-      date,
-      itemName,
-      brandName,
-      quantity,
-      status,
-    };
-
-    axios
-      .put("http://localhost:8080/orders/updateById/" + ID, order)
-      .then(() => {
-        console.log("Successfully updated");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
-    setFetchData(!fetchData);
-    navigate("/order");
-  };
+ 
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -122,7 +91,7 @@ const ViewOrderDetails = () => {
 
   const handleMarkAsReviewed = () => {
     axios
-      .patch("http://localhost:8080/orders/updateStatus/" + ID + "/reviewed")
+      .patch("http://localhost:8080/orders/updateStatus/" + ID)
       .then(() => {
         setFetchData(!fetchData);
         navigate("/order", { fetchData });
@@ -152,7 +121,7 @@ const ViewOrderDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
-            readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
@@ -172,7 +141,7 @@ const ViewOrderDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
-            readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
@@ -192,7 +161,7 @@ const ViewOrderDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
@@ -208,7 +177,7 @@ const ViewOrderDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
@@ -219,12 +188,13 @@ const ViewOrderDetails = () => {
         <TextField
           id="date"
           value={date}
+          type="date"
           onChange={(e) => setDate(e.target.value)}
           variant="outlined"
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
@@ -240,7 +210,7 @@ const ViewOrderDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
@@ -259,7 +229,7 @@ const ViewOrderDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
@@ -275,7 +245,7 @@ const ViewOrderDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
@@ -296,29 +266,11 @@ const ViewOrderDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 ml-5 bg-white",
-            readOnly: notEditable,
+            readOnly: true,
           }}
         />
       </div>
 
-      {!notEditable ? (
-        <>
-          <Button
-            variant="contained"
-            className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
-            onClick={handleSave}
-          >
-            Save
-          </Button>
-          <Button
-            variant="outlined"
-            className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
-            onClick={() => navigate("/order")}
-          >
-            Cancel
-          </Button>
-        </>
-      ) : (
         <>
           <Button
             variant="contained"
@@ -337,15 +289,7 @@ const ViewOrderDetails = () => {
             }}
           >
             <MenuList>
-              <MenuItem>
-                <Button
-                  variant="contained"
-                  className=" col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
-                  onClick={handleEdit}
-                >
-                  Edit
-                </Button>
-              </MenuItem>
+             
               <MenuItem>
                 <Button
                   variant="contained"
@@ -367,7 +311,7 @@ const ViewOrderDetails = () => {
             </MenuList>
           </Popover>
         </>
-      )}
+      
     </form>
   );
 };

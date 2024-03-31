@@ -16,8 +16,6 @@ const NewOrderForm = () => {
   const [brandName, setBrandName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
-  const status = "pending";
-
   const [fetchData, setFetchData] = useState(false);
 
   const handleClick = (e) => {
@@ -31,7 +29,7 @@ const NewOrderForm = () => {
       itemName,
       brandName,
       quantity,
-      status,
+     
     };
     console.log(order);
 
@@ -126,6 +124,7 @@ const NewOrderForm = () => {
         <TextField
           id="date"
           value={date}
+          type="date"
           onChange={(e) => setDate(e.target.value)}
           variant="outlined"
           InputProps={{

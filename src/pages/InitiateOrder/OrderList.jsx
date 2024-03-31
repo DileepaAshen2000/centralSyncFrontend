@@ -68,25 +68,39 @@ const OrderDataGrid = () => {
     setRowSelectionModel(newSelectedRow);
   };
 
-  const handleClick = () => {
-    
-      const selectedorderId = rowSelectionModel[0];
-      navigate("/order/view-order/" + selectedorderId);
-   
+  const handleView = () => {
+    const selectedItemId = rowSelectionModel[0];
+    navigate("/order/view-order/" + selectedItemId);
   };
+
+  const handleEdit=()=>{
+    const selectedItemId = rowSelectionModel[0];
+    navigate("/order/edit-order/" + selectedItemId);
+  }
 
   return (
     <Box className="h-[400px] w-full">
       <Box>
         <h1 className="inline-block text-3xl font-bold p-4">Orders</h1>
         {rowSelectionModel > 0 ? (
+          <>
           <Button
-            variant="contained"
-            className="bg-blue-600 px-6 py-2 text-white rounded left-[69%] w-[145px]"
-            onClick={handleClick}
-          >
-            View Details
-          </Button>
+              variant="contained"
+              className="bg-blue-600 px-6 py-2 text-white rounded left-[45%] w-[145px]"
+              onClick={handleEdit}
+            >
+              Edit
+            </Button>
+
+            <Button
+              variant="contained"
+              className="bg-blue-600  py-2 text-white rounded left-[54%] w-[145px]"
+              onClick={handleView}
+            >
+              View
+            </Button>
+          </>
+         
         ) : (
           <Button
             variant="contained"
