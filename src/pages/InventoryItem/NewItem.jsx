@@ -22,7 +22,6 @@ const AddItemForm = () => {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
 
-  const [fetchData, setFetchData] = useState(false);
   const handleClick = (e) => {
     e.preventDefault();
     const item = {
@@ -34,7 +33,6 @@ const AddItemForm = () => {
       weight,
       description,
       quantity,
-     
     };
     console.log(item);
 
@@ -43,14 +41,12 @@ const AddItemForm = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(item),
     }).then(() => {
-      setFetchData(!fetchData);
       console.log("New inventory item added");
-      navigate("/item", { fetchData });
     });
   };
 
   return (
-    <form className="grid grid-cols-8 gap-y-10 pl-12 ">
+    <form className="bg-[#F5F5F5] grid grid-cols-8 gap-y-10 pl-12 ">
       <h1 className=" col-span-4 text-2xl ">New item</h1>
 
       <div className="col-start-1 col-span-4 flex items-center">
@@ -82,17 +78,17 @@ const AddItemForm = () => {
             id="Group"
             value={itemGroup}
             onChange={(e) => setItemGroup(e.target.value)}
-            className=" bg-white w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
+            className="  w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
           >
             <MenuItem disabled value={itemGroup}>
               <em>Select an itemGroup</em>
             </MenuItem>
-            <MenuItem value="computerAccessories">
+            <MenuItem value="computer accessories">
               Computer accessories
             </MenuItem>
             <MenuItem value="printers">Printers</MenuItem>
-            <MenuItem value="computerHardware">Computer hardware</MenuItem>
-            <MenuItem value="other">Other</MenuItem>
+            <MenuItem value="hardware">Hardware</MenuItem>
+            <MenuItem value="other">other</MenuItem>
           </Select>
         </div>
       </div>

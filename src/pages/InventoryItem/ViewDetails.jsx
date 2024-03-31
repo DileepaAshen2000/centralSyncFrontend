@@ -1,17 +1,13 @@
 import {
-  Button,
-  MenuList,
-  Popover,
   InputAdornment,
   InputLabel,
   MenuItem,
   Select,
   TextField,
 } from "@mui/material";
-
+import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-
+import { useParams } from "react-router-dom";
 import axios from "axios";
 
 const ViewItemDetails = () => {
@@ -23,20 +19,17 @@ const ViewItemDetails = () => {
   const [weight, setWeight] = useState("");
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
-
-  const [fetchData, setFetchData] = useState(false);
-
+  const [isEditable, setIsEditable] = useState(true);
   const { ID } = useParams();
 
- // const [fetchData, setFetchData] = useState(false);
 
-  const navigate = useNavigate();
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/inventory-item/getById/${ID}`)
+      .get("http://localhost:8080/inventory-item/getById/" + ID)
       .then((response) => {
         const data = {
+          id: response.data.index + 1,
           itemName: response.data.itemName,
           itemGroup: response.data.itemGroup,
           brand: response.data.brand,
@@ -45,7 +38,6 @@ const ViewItemDetails = () => {
           weight: response.data.weight,
           description: response.data.description,
           quantity: response.data.quantity,
-          status: response.data.status,
         };
 
         setItemName(data.itemName);
@@ -62,52 +54,43 @@ const ViewItemDetails = () => {
       });
   }, [ID]);
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleMoreButton = (event) => {
-    setAnchorEl(event.currentTarget);
-    setIsOpen(true);
+  const handleEdit = () => {
+    setIsEditable(!isEditable);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-    setIsOpen(false);
-  };
+  const handleSave = (e) => {
+    const item = {
+      itemName,
+      itemGroup,
+      unit,
+      brand,
+      dimension,
+      weight,
+      description,
+      quantity,
+    };
 
-  const handleDelete = () => {
-    try {
-      axios
-        .delete(`http://localhost:8080/inventory-item/deleteItem/${ID}`)
-        .then(() => {
-          setFetchData(!fetchData);
-          navigate("/item", { fetchData });
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleMarkAsInactiveButton = () => {
     axios
-      .patch(
-        `http://localhost:8080/inventory-item/updateStatus/${ID}`
-      )
+      .put("http://localhost:8080/inventory-item/updateById/" + ID, item)
       .then(() => {
-        setFetchData(!fetchData);
-        navigate("/item", { fetchData });
+        console.log("Successfully updated");
       })
       .catch((error) => {
         console.log(error);
       });
+      
+
+
   };
 
-
   return (
-    <form className="grid grid-cols-8 gap-y-10 pl-12 ">
+    <form className="bg-[#F5F5F5] grid grid-cols-8 gap-y-10 pl-12 ">
       <h1 className=" col-span-4 text-2xl ">Item Details</h1>
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="id" className="flex-none text-black w-32 ">
+        <InputLabel
+          htmlFor="id"
+          className="flex-none text-black w-32 "
+        >
           Item id
         </InputLabel>
         <TextField
@@ -138,7 +121,7 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
-            readOnly: true,
+            readOnly: isEditable,
           }}
         />
       </div>
@@ -152,15 +135,14 @@ const ViewItemDetails = () => {
             value={itemGroup}
             onChange={(e) => setItemGroup(e.target.value)}
             id="itemGroup"
-            className="bg-white  w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
-            readOnly="true"
+            className="  w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
           >
             <MenuItem disabled value={itemGroup}></MenuItem>
-            <MenuItem value="computerAccessories">
+            <MenuItem value="computer accessories">
               Computer accessories
             </MenuItem>
             <MenuItem value="printers">Printers</MenuItem>
-            <MenuItem value="computerHardware">Computer hardware</MenuItem>
+            <MenuItem value="hardware">Hardware</MenuItem>
             <MenuItem value="other">other</MenuItem>
           </Select>
         </div>
@@ -179,7 +161,7 @@ const ViewItemDetails = () => {
             endAdornment: <InputAdornment position="end">pcs</InputAdornment>,
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: true,
+            readOnly: isEditable,
           }}
         />
       </div>
@@ -195,7 +177,6 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: true,
           }}
         />
       </div>
@@ -211,7 +192,7 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: true,
+            readOnly: isEditable,
           }}
         />
       </div>
@@ -227,7 +208,7 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: true,
+            readOnly: isEditable,
           }}
         />
       </div>
@@ -248,7 +229,7 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 ml-5 bg-white",
-            readOnly: true,
+            readOnly: isEditable,
           }}
         />
       </div>
@@ -264,57 +245,24 @@ const ViewItemDetails = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: true,
+            readOnly: isEditable,
           }}
         />
       </div>
-      <>
-          <Button
-            variant="contained"
-            className="row-start-1 col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
-            onClick={handleMoreButton}
-          >
-            More
-          </Button>
-          <Popover
-            open={isOpen}
-            anchorEl={anchorEl}
-            onClose={handleClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
-          >
-            <MenuList>
-              
-              <MenuItem>
-                <Button
-                  variant="contained"
-                  className="col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
-              </MenuItem>
-              <MenuItem>
-                <Button
-                  variant="contained"
-                  className=" col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
-                  onClick={handleMarkAsInactiveButton}
-                >
-                  Mark as inactive
-                </Button>
-              </MenuItem>
-            </MenuList>
-          </Popover>
-        </>
 
+      <Button
+        variant="contained"
+        className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
+        onClick={handleEdit}
+      >
+        Edit
+      </Button>
       <Button
         variant="outlined"
         className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
-        onClick={() => navigate("/item")}
+        onClick={handleSave}
       >
-        Cancel
+        Save
       </Button>
     </form>
   );
