@@ -299,13 +299,8 @@ const UserForm = () => {
           </div>
         </div>
       </form>
-      {Object.keys(errors).length > 0 && (
-        <div className="error-container">
-          {Object.entries(errors).map(([field, errorMessage]) => (
-            <div key={field}>{errorMessage}</div>
-          ))}
-        </div>
-      )}
+      
+       
     </>
   );
 };
