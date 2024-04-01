@@ -25,6 +25,7 @@ import StockOutList from './StockOut/StockOutList'
 import AdjustmentList from './Adjustment/AdjustmentList'
 
 
+
 const Home = () => {
   return (
     <div>
@@ -72,7 +73,10 @@ const Home = () => {
               {/* Stock In/Out routing */}
               <Route path='/stockIn' element={<StockInList/>}></Route>
               <Route path='/stockOut' element={<StockOutList/>}></Route>
-              
+
+              {/* report routing */}
+              {/* <Route path='/report' element={<StockLineChart/>}></Route>
+               */}
             </Routes>
           </BrowserRouter>
         </Grid>
