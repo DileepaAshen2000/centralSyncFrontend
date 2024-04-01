@@ -19,6 +19,16 @@ import ViewHistory from "./User/History";
 import Changepassword from "./User/ChangePassword";
 import TicketForm from "../components/Ticket_Create";
 import { BrowserRouter as Router, Link } from "react-router-dom";
+import AdminDashboard from './AdminDashboard'
+import EditUser from '../components/UserEditForm'
+import RequestList from './InventoryRequest/RequestsList'
+import RequestDocumentAccept from './InventoryRequest/RequestDocumentAccept'
+import CreateNewRequest from './InventoryRequest/CreateNewRequest'
+import EditRequest from './InventoryRequest/EditRequest'
+import EditAdjustment from './Adjustment/EditAdjustment'
+import StockInList from './StockIn/StockInList'
+import StockOutList from './StockOut/StockOutList'
+import AdjustmentList from './Adjustment/AdjustmentList'
 
 const Home = () => {
   return (
@@ -46,6 +56,7 @@ const Home = () => {
           {/* Enter components here, that you want to insert. */}
           <BrowserRouter>
             <Routes>
+
               {/* <Route path='/' element={<Dashboard name="Dashboard"/>}></Route> */}
               <Route path="/adjustment" element={<Adjustment />}></Route>
               
@@ -67,6 +78,45 @@ const Home = () => {
               <Route path="/history" element={<ViewHistory />}></Route>
               <Route path="/changepassword" element={<Changepassword />}></Route>
               <Route path="/newTicket" element={<TicketForm/>}></Route>
+
+              {/* Enter components here, that you want to insert. */}
+              {/* Dashboard routing */}
+              <Route path='/' element={<AdminDashboard/>}></Route>
+              
+              {/* Adjustment routing */}
+              <Route path='/adjustment' element={<AdjustmentList/>}></Route>
+              <Route path='/newadjustment' element={<NewAdjustment/>}></Route>
+              <Route path='/adjustment/:adjId' element={<AdjustmentDocument/>}></Route>
+              <Route path='/adjustment/editadjustment/:adjId' element={<EditAdjustment/>}></Route>
+              <Route path='/newadjustment' element={<NewAdjustment/>}></Route>
+              <Route path='/adjustment/adj1' element={<AdjustmentDocument/>}></Route>
+              
+              {/* User routing */}
+              <Route path='/user' element={<User/>}></Route>
+              <Route path="/newUser" element={<CreateUser/>}/>
+              <Route path="/user/users/:ID" element={<EditUser/>}/>
+
+              
+              {/* Inventory Item routing */}
+              <Route path='/item' element={<ItemDataGrid/>}></Route>
+              <Route path='/item/add-item' element={<AddItemForm/>}></Route>
+              <Route path='/item/edit-item/:ID' element={<ViewItemDetails/>}></Route>
+              
+              {/* Inventory Request routing */}
+              <Route path='/inventoryRequest' element={<RequestList/>}></Route>
+              <Route path='/inventory-request' element={<RequestList/>}></Route>
+              <Route path='/inventory-request/request-document-accept' element={<RequestDocumentAccept/>}></Route>
+              <Route path='/inventory-request/create-new-request' element={<CreateNewRequest/>}></Route>
+              <Route path='/inventory-request/edit-request' element={<EditRequest/>}></Route>
+
+              {/* Stock In/Out routing */}
+              <Route path='/stockIn' element={<StockInList/>}></Route>
+              <Route path='/stockOut' element={<StockOutList/>}></Route>
+
+              {/* report routing */}
+              {/* <Route path='/report' element={<StockLineChart/>}></Route>
+               */}
+
             </Routes>
           </BrowserRouter>
         </Grid>

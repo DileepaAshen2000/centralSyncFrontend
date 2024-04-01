@@ -4,12 +4,11 @@ import NavBar from '../../components/NavBar'
 import SideBar from '../../components/SideBar'
 import {Button} from "@mui/material";
 import UserTable from '../../components/User_Components/UserTable';
+import UserTable from '../../components/UserTable';
 import { Box } from '@mui/material'
 
 
-const User = () => {
-  const navigate=useNavigate();
-     
+const User = () => {  
   return (
     <Box>
         <Box className="pb-4">
