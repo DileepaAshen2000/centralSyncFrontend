@@ -16,9 +16,6 @@ import LocalPrintshopIcon from '@mui/icons-material/LocalPrintshop';
 
 import axios from 'axios';
 
-
-
-
 function createData(id, name, avaQty, newQty, adjQty) {
   return { id, name, avaQty, newQty, adjQty };
 }
