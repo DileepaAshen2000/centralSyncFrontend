@@ -1,102 +1,150 @@
 import React, { useEffect, useState } from "react";
 import { TextField, Button, Stack, Select } from "@mui/material";
-import { useForm } from "react-hook-form";
+// import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
-import SelectR from "./Select_R";
 import SelectD from "./Select_D";
+import SelectR from "./Select_R";
+import axios from "axios";
+import MenuItem from "@mui/material/MenuItem";
+import { Link, useNavigate, useParams } from "react-router-dom";
 //import DragDrop from "./Drag&Drop";
 //import { DropzoneArea } from 'material-ui-dropzone';
 //import Dropzone from "./Dropzone";
-import { Link, useNavigate, useParams } from "react-router-dom";
 
-const UserForm = () => {
-  const form = useForm();
+const EditUser = () => {
   const [firstName, setfName] = useState("");
   const [lastName, setlName] = useState("");
   const [dateOfBirth, setDOb] = useState("");
   const [mobileNo, setMNumber] = useState("");
-  const [telNo, setTelNUmber] = useState("");
+  const [telNo, setTelNumber] = useState("");
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
   const [department, setDepartment] = useState("");
   const [role, setRole] = useState("");
-  const navigate = useNavigate();
-  const [errors, setErrors] = useState({});
+  const { ID } = useParams();
+  const [isEditable, setIsEditable] = useState(true);
 
-  const handleClick = (e) => {
-    e.preventDefault();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8080/user/users/` + ID)
+
+      .then((response) => {
+        const data = {
+          id: response.data.index + 102,
+          firstName: response.data.firstName,
+          lastName: response.data.lastName,
+          dateOfBirth: response.data.dateOfBirth,
+          mobileNo: response.data.mobileNo,
+          telNo: response.data.telNo,
+          address: response.data.address,
+          email: response.data.email,
+          department: response.data.department,
+          role: response.data.role,
+        };
+        setfName(data.firstName);
+        setlName(data.lastName);
+        setDOb(data.dateOfBirth);
+        setMNumber(data.mobileNo);
+        setTelNumber(data.telNo);
+        setAddress(data.address);
+        setEmail(data.email);
+        setDepartment(data.department);
+        setRole(data.role);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [ID]);
+
+  const handleEdit = () => {
+    console.log("Edit button clicked");
+    setIsEditable(!isEditable);
+    console.log(isEditable);
+  };
+
+  
+
+
+  const handleSave = (e) => {
     const user = {
       firstName,
       lastName,
       dateOfBirth,
       mobileNo,
+      telNo,
       address,
       email,
-      telNo,
       department,
       role,
-      
     };
-    console.log(user);
-    fetch("http://localhost:8080/user/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(user),
-    })
-    .then(response => {
-      if(response.ok){
-        console.log("New User added");
 
-      }
-      else{
-        response.json().then(errors =>{
-          setErrors(errors);
-        });
-      }
-    });
+    axios
+      .put("http://localhost:8080/user/update/" + ID, user)
+      .then(() => {
+        console.log("Successfully updated");
+
+        navigate("/user");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
-    
 
   return (
     <>
-      <form>
-        <div className="grid grid-cols-6 grid-rows-6  gap-x-[0.25rem] ">
-          <div className="col-span-1 row-span-2">
-            <label htmlFor="name">Name</label>
-            
-           
+      <form noValidate>
+        <div className="grid grid-cols-6 grid-rows-7  gap-x-[0.25rem] ">
+          <div className="col-span-1 row-span-1">
+            <label htmlFor="5">Employee Id</label>
           </div>
           <div className="col-span-2">
-          {errors.firstName && <div className="text-[#FC0000] text-sm">{errors.firstName}</div>}
             <TextField
-              id="name"
+               
+              name="id"
+              placeholder=""
+              InputProps={{
+                className:
+                  "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
+                readOnly: true,
+              }}
+              value={ID}
+            />
+          </div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div className="col-span-1 row-span-2">
+            <label htmlFor="name">Name</label>
+          </div>
+          <div className="col-span-2">
+            <TextField
+              id="firstName"
               variant="outlined"
               placeholder="First Name"
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
+                readOnly: isEditable,
               }}
               value={firstName}
               onChange={(e) => setfName(e.target.value)}
             />
-           
-          </div>{" "}
-          <div className="col-span-3">
-          
-
           </div>
+          <div className="col-span-3"> </div>
           <div className="col-span-2">
-          {errors.lastName && <div className="text-[#FC0000] text-sm">{errors.lastName}</div>}
-            
             <TextField
               variant="outlined"
               placeholder="Last Name"
+              id="lastName"
+              value={lastName}
+              onChange={(e) => setlName(e.target.value)}
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
+                readOnly: isEditable,
               }}
-              value={lastName}
-              onChange={(e) => setlName(e.target.value)}
             />
           </div>
           <div></div>
@@ -106,11 +154,19 @@ const UserForm = () => {
             <label htmlFor="2">Department</label>
           </div>
           <div className="col-span-2">
-          {errors.department && <div className="text-[#FC0000] text-sm">{errors.department}</div>}
-            <SelectD
+            <Select
               value={department}
-              onChange={(selectedOption) => setDepartment(selectedOption)}
-            />
+              onChange={(e) => {
+                console.log("Selected Department:", e.target.value);
+                setDepartment(e.target.value);
+              }}
+              id="department"
+              className="w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2"
+            >
+              <MenuItem disabled value={department}></MenuItem>
+              <MenuItem value="Programming">Programming</MenuItem>
+              <MenuItem value="Cybersecurity">Cybersecurity</MenuItem>
+            </Select>
           </div>
           <div></div>
           <div></div>
@@ -119,12 +175,19 @@ const UserForm = () => {
             <label htmlFor="3">Role</label>
           </div>
           <div className="col-span-2">
-          {errors.role && <div className="text-[#FC0000] text-sm">{errors.role}</div>}
-            {" "}
-            <SelectR
+            <Select
               value={role}
-              onChange={(selectedOption) => setRole(selectedOption)}
-            />{" "}
+              onChange={(e) => {
+                console.log("Selected Role:", e.target.value);
+                setRole(e.target.value);
+              }}
+              id="role"
+              className="w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2"
+            >
+              <MenuItem disabled value={role}></MenuItem>
+              <MenuItem value="Web Developer">Web Developer</MenuItem>
+              <MenuItem value="Software Architect">Software Architect</MenuItem>
+            </Select>
           </div>
           <div></div>
           <div></div>
@@ -133,13 +196,15 @@ const UserForm = () => {
             <label htmlFor="4">Date Of Birth</label>
           </div>
           <div className="col-span-2">
-          {errors.dateOfBirth && <div className="text-[#FC0000] text-sm">{errors.dateOfBirth}</div>}
             <TextField
+          
               id="date"
-              type="date"
+              placeholder="dd/mm/yy"
+              name="dateOfBirth"
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
+                readOnly: isEditable,
               }}
               InputLabelProps={{ shrink: true }}
               value={dateOfBirth}
@@ -153,14 +218,15 @@ const UserForm = () => {
             <label htmlFor="5">Adress</label>
           </div>
           <div className="col-span-2">
-          {errors.address && <div className="text-[#FC0000] text-sm">{errors.address}</div>}
             <TextField
               type="text"
               id="adress"
+              name="address"
               placeholder=""
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-[65px] border border-[#857A7A] rounded-xl px-2",
+                readOnly: isEditable,
               }}
               value={address}
               onChange={(e) => setAddress(e.target.value)}
@@ -181,7 +247,6 @@ const UserForm = () => {
             <label htmlFor="name">Mobile No </label>
           </div>
           <div className="col-span-2">
-          {errors.mobileNo && <div className="text-[#FC0000] text-sm">{errors.mobileNo}</div>}
             <TextField
               type="text"
               id="mno"
@@ -189,8 +254,10 @@ const UserForm = () => {
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2 ",
+                readOnly: isEditable,
               }}
               value={mobileNo}
+              name="mobileNo"
               onChange={(e) => setMNumber(e.target.value)}
             />{" "}
           </div>
@@ -200,7 +267,6 @@ const UserForm = () => {
             </label>
           </div>
           <div className="col-span-2">
-          {errors.telNo&& <div className="text-[#FC0000] text-sm">{errors.telNo}</div>}
             <TextField
               type="text"
               id="Tno"
@@ -208,16 +274,17 @@ const UserForm = () => {
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2 ",
+                readOnly: isEditable,
               }}
               value={telNo}
-              onChange={(e) => setTelNUmber(e.target.value)}
+              name="telNo"
+              onChange={(e) => setTelNumber(e.target.value)}
             />
           </div>
           <div className="col-span-1">
             <label htmlFor="name">Email Adress</label>
           </div>
           <div className="col-span-2">
-          {errors.email && <div className="text-[#FC0000] text-sm">{errors.email}</div>}
             <TextField
               type="text"
               id="email"
@@ -225,7 +292,9 @@ const UserForm = () => {
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2",
+                readOnly: isEditable,
               }}
+              name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -245,7 +314,6 @@ const UserForm = () => {
             <label htmlFor="name">Password</label>
           </div>
           <div className="col-span-2">
-          {errors.password && <div className="text-[#FC0000] text-sm">{errors.password}</div>}
             <TextField
               type="password"
               id="password"
@@ -263,7 +331,6 @@ const UserForm = () => {
             <label htmlFor="name">Confirm Password</label>
           </div>
           <div className="col-span-2">
-          {errors.cpassword && <div className="text-[#FC0000] text-sm">{errors.cpassword}</div>}
             <TextField
               type="password"
               id="cpassword"
@@ -282,26 +349,28 @@ const UserForm = () => {
         <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] mt-12 ">
           <div className="col-start-5">
             <Button
+      
               variant="outlined"
               className="bg-[#007EF2] w-[150px] rounded-md text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
-              onClick={handleClick}
+              onClick={handleEdit}
             >
-              Save
+              
+              Edit
             </Button>
           </div>
           <div className="col-start-6">
             <Button
               variant="outlined"
               className="bg-white w-[150px] rounded-md text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-[#007EF2]"
+              onClick={handleSave}
             >
-              Cancel
+              
+              Save
             </Button>
           </div>
         </div>
       </form>
-      
-       
     </>
   );
 };
-export default UserForm;
+export default EditUser;
