@@ -35,12 +35,15 @@ const StockLineChart = ({category, year} ) => {
     axios
       .get(`http://localhost:8080/stock-out/getAll?itemGroup=${category}&year=${year}`)
       .then((response) => {
+        console.log(response);
         setStockOut(response.data);
       })
       .catch((error) => {
         console.log(error);
       });
   }, [category,year]);
+
+  console.log(stockOut);
 
    // Check if either stock in or stock out data is empty
   if (stockIn.length === 0 && stockOut.length === 0) {
@@ -71,7 +74,7 @@ const StockLineChart = ({category, year} ) => {
   const stockOutByMonth = stockOut
     .map((stock) => ({
       date: stock.date,
-      quantity: stock.quantity,
+      quantity: stock.outQty,
     }))
     .reduce((acc, so) => {
       const date = new Date(so.date);
