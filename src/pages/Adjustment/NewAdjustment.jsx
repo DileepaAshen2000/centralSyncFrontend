@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { FormControl, Select, MenuItem, TextField, Grid, Box, Typography, Button } from '@mui/material';
-
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -54,34 +53,6 @@ const NewAdjustment = () => {
     });
     
   }
-
-  //handle the file change event
-  // const [selectedFile, setSelectedFile] = useState(null);
-  // const [message, setMessage] = useState('');
-
-  // const handleFileChange = (event) => {
-  //   setSelectedFile(event.target.files[0]);
-  //   setMessage('');
-  // };
-
-  // const handleUpload = async () => {
-  //   const formData = new FormData();
-  //   formData.append('file', selectedFile);
-
-  //   try {
-  //     const response = await axios.post('/adjustment/upload', formData, {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data',
-  //       },
-  //     });
-  //     setMessage(response.data.message);
-  //   } catch (error) {
-  //     console.error(error);
-  //     setMessage('Error uploading file!');
-  //   }
-  // };
-
-  // end of file upload
 
   return (
     <Box className='p-10 bg-white rounded-2xl ml-14 mr-14'>
