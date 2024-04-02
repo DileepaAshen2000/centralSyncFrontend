@@ -10,12 +10,13 @@ import CreateUser from './User/CreateUser'
 import EditUser from '../components/UserEditForm'
 import { Grid } from '@mui/material'
 import AdjustmentDocument from './Adjustment/AdjustmentDocument'
-import RequestList from './InventoryRequest/RequestsList'
+
 import ItemDataGrid from './InventoryItem/InventoryItems'
 import AddItemForm from './InventoryItem/NewItem'
 import ViewItemDetails from './InventoryItem/ViewDetails'
-
-import RequestDocumentAccept from './InventoryRequest/RequestDocumentAccept'
+import RequestList from './InventoryRequest/RequestsList'
+import AdminRequestList from './InventoryRequest/AdminRequestList'
+import RequestDocumentPending from './InventoryRequest/RequestDocumentPending'
 import CreateNewRequest from './InventoryRequest/CreateNewRequest'
 import EditRequest from './InventoryRequest/EditRequest'
 
@@ -66,7 +67,8 @@ const Home = () => {
               {/* Inventory Request routing */}
               <Route path='/inventoryRequest' element={<RequestList/>}></Route>
               <Route path='/inventory-request' element={<RequestList/>}></Route>
-              <Route path='/inventory-request/request-document-accept' element={<RequestDocumentAccept/>}></Route>
+              <Route path='/admin-inventory-request-list' element={<AdminRequestList/>}></Route>
+              <Route path='/inventory-request/request-document-pending' element={<RequestDocumentPending/>}></Route>
               <Route path='/inventory-request/create-new-request' element={<CreateNewRequest/>}></Route>
               <Route path='/inventory-request/edit-request' element={<EditRequest/>}></Route>
 
