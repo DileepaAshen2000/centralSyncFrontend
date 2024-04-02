@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Typography } from '@mui/material';
+import { Typography,Button } from '@mui/material';
 
 function createData(id, name, avaQty, newQty, adjQty) {
   return { id, name, avaQty, newQty, adjQty };
@@ -28,13 +28,17 @@ const AdjustmentDocument = () => {
       
       <main>
         <div className="flex items-end justify-end p-6 mr-10">
-          <button className="h-10 text-white bg-blue-600 w-36 rounded-small" onClick={handlePrint} >Print</button>
+        <Button className="px-6 py-2 text-white bg-blue-600 rounded"
+               variant='contained'
+               type='submit'
+               onClick={handlePrint}
+                >print</Button>
         </div>
 
         <div className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section>
-              <button className="w-40 h-10 m-5 bg-blue-300 rounded-2xl">Pending</button>
+              <button className="w-40 h-10 m-5 text-blue-800 bg-blue-300 rounded-2xl">Pending</button>
             </section>
           </div>
           <div>
@@ -51,10 +55,10 @@ const AdjustmentDocument = () => {
               </ul>
               <ul className='flex flex-col gap-2'>
                 <li>AD2024001</li>
-                <li>2024-02-26</li>
                 <li>Damaged Item</li>
                 <li>Quantity</li>
                 <li>Dileepa Ashen</li>
+                <li>2024-02-26</li>
               </ul>
             </section>
           </div>
@@ -86,7 +90,7 @@ const AdjustmentDocument = () => {
             </Table>
           </TableContainer>
 
-          <div className="mt-6">
+          <div className="mt-16 mb-32">
             <Typography variant="body1" gutterBottom>Description : </Typography>
             <div className="w-2/3">
               <Typography variant="body2">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
@@ -96,6 +100,27 @@ const AdjustmentDocument = () => {
             </div>
           </div>
         </div>
+
+        <div className='flex gap-6 mt-6 ml-6'>
+          <h4>Note :</h4>
+          <textarea className="w-2/3 h-20 p-2 mt-2 border-2 border-gray-300 rounded-md" placeholder='Write something here..'></textarea>
+        </div>
+
+        <div className='flex gap-4 ml-[60%] mt-6'>
+          <Button className="px-6 py-2 text-white bg-blue-600 rounded"
+                variant='contained'
+                type='submit'
+                  >approve & adjust</Button>
+          <Button className="px-6 py-2 text-white bg-blue-600 rounded"
+                variant='contained'
+                type='submit'
+                  >reject</Button>
+          <Button className="px-6 py-2 rounded"
+                variant='outlined'
+                type='submit'
+                  >cancel</Button>
+        </div>
+        
       </main>
     </div>
   )
