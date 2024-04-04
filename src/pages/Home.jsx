@@ -20,7 +20,7 @@ import AdminRequestList from './InventoryRequest/AdminRequestList'
 import RequestDocumentPending from './InventoryRequest/RequestDocumentPending'
 import CreateNewRequest from './InventoryRequest/CreateNewRequest'
 import EditRequest from './InventoryRequest/EditRequest'
-
+import ViewHistory from "./User/History";
 import EditAdjustment from './Adjustment/EditAdjustment'
 import StockInList from './StockIn/StockInList'
 import StockOutList from './StockOut/StockOutList'
@@ -57,6 +57,7 @@ const Home = () => {
               <Route path='/user' element={<User/>}></Route>
               <Route path="/newUser" element={<CreateUser/>}/>
               <Route path="/user/users/:ID" element={<EditUser/>}/>
+              <Route path="/history" element={<ViewHistory />}></Route>
 
               
               {/* Inventory Item routing */}
