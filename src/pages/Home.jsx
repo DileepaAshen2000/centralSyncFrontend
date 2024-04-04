@@ -11,9 +11,10 @@ import EditUser from '../components/UserEditForm'
 import { Grid } from '@mui/material'
 import AdjustmentDocument from './Adjustment/AdjustmentDocument'
 
-import ItemDataGrid from './InventoryItem/InventoryItems'
+import ItemDataGrid from './InventoryItem/ItemList'
 import AddItemForm from './InventoryItem/NewItem'
 import ViewItemDetails from './InventoryItem/ViewDetails'
+import EditItem from './InventoryItem/EditItem'
 import RequestList from './InventoryRequest/RequestsList'
 import AdminRequestList from './InventoryRequest/AdminRequestList'
 import RequestDocumentPending from './InventoryRequest/RequestDocumentPending'
@@ -24,7 +25,6 @@ import EditAdjustment from './Adjustment/EditAdjustment'
 import StockInList from './StockIn/StockInList'
 import StockOutList from './StockOut/StockOutList'
 import AdjustmentList from './Adjustment/AdjustmentList'
-
 
 
 const Home = () => {
@@ -62,7 +62,9 @@ const Home = () => {
               {/* Inventory Item routing */}
               <Route path='/item' element={<ItemDataGrid/>}></Route>
               <Route path='/item/add-item' element={<AddItemForm/>}></Route>
-              <Route path='/item/edit-item/:ID' element={<ViewItemDetails/>}></Route>
+              <Route path='/item/edit-item/:ID' element={<EditItem/>}></Route>
+              <Route path='/item/view-item/:ID' element={<ViewItemDetails/>}></Route>
+
               
               {/* Inventory Request routing */}
               <Route path='/inventoryRequest' element={<RequestList/>}></Route>
@@ -76,9 +78,7 @@ const Home = () => {
               <Route path='/stockIn' element={<StockInList/>}></Route>
               <Route path='/stockOut' element={<StockOutList/>}></Route>
 
-              {/* report routing */}
-              {/* <Route path='/report' element={<StockLineChart/>}></Route>
-               */}
+
             </Routes>
           </BrowserRouter>
         </Grid>
