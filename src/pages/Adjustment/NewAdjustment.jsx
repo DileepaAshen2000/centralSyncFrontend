@@ -66,7 +66,7 @@ const NewAdjustment = () => {
             <Grid item sm={2} xs={2}>
               <Typography>Group</Typography>
             </Grid>
-            <Grid item sm={9} xs={9}>
+            <Grid item sm={9} xs={9}>   
               <FormControl style={{ width: '300px' }}>
                 <Select size='small' name='group'>
                   <MenuItem value="option1">Group 1</MenuItem>
