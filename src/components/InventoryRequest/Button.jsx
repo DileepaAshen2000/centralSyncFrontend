@@ -6,15 +6,9 @@ import Button from "@mui/material/Button";
 
 export default function BasicButtons(props) {
     const {children} = props;
-    const {icon}=props;
     return (
-        <Button style={{ backgroundColor: '#007EF2' }}
-            className='px-6 py-2 text-white rounded'
-            variant="contained"
-            sx={{
-                textTransform: 'none',
-                whiteSpace: '10px 20px',
-            }}>
+
+        <Button className="bg-blue-500 text-white w-40 h-15 m-0">
             {children}
         </Button>
     );

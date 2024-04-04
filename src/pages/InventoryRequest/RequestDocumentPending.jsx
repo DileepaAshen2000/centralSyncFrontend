@@ -14,6 +14,18 @@ import { useEffect } from 'react';
 
 function createData(id, name, avaQty, newQty, adjQty) {
   return { id, name, avaQty, newQty, adjQty };
+
+
+}
+//Utility Functions section
+const buttonColor=(reqStatus)=>{
+  if(reqStatus === 'pending'){
+    return <button className="w-40 h-10 m-5 text-blue-800 bg-blue-300 rounded-2xl">Pending</button>;
+  } else if(reqStatus === 'accepted'){
+    return <button className="w-40 h-10 m-5 text-green-800 bg-green-300 rounded-2xl">Accepted</button>;
+  } else if (reqStatus === 'rejected'){
+    return <button className="w-40 h-10 m-5 text-red-800 bg-red-300 rounded-2xl">Rejected</button>;
+  }
 }
 
 const rows = [
@@ -24,44 +36,43 @@ const handlePrint=()=>{
   window.print();
 }
 
-const AdjustmentDocument = () => {
+
+const InventoryRequestDocument = () => {
 
   const navigate = useNavigate();
 
-  const {adjId} = useParams(); // To get the id from the url
-  const [adj,setAdj] = useState({  // create state for adjustment, initial state is empty with object.
+  const {reqId} = useParams(); // To get the id from the url
+  const [req,setReq] = useState({  // create state for inventory request, initial state is empty with object.
     reason:"",
     date:"",
     description:"",
     newQuantity:"",
     name:"",
     group:"",
-    status:"",
+    reqStatus:"",
     itemID:""
   })
 
-const{reason,date,description,newQuantity,name,group,status,itemId} = adj;
+const{reason,date,description,newQuantity,name,group,reqStatus,itemId} = req;
 
 useEffect(() => {
-  loadAdjustment();
+  loadInventoryRequest();
 },[]);
 
 //get selected adjustment data
-const loadAdjustment = async () => {
+const loadInventoryRequest = async () => {
   try {
-    const result = await axios.get(`http://localhost:8080/adjustment/getById/${adjId}`);
-    setAdj(result.data);  // Make sure the fetched data structure matches the structure of your state
+    const result = await axios.get(`http://localhost:8080/request/getById/3`);
+    setReq(result.data);  // Make sure the fetched data structure matches the structure of your state
   } catch (error) {
-    console.error('Error loading adjustment:', error);
+    console.error('Error loading inventory request:', error);
   }
+
+
 }
 
   return (
     <div>
-      <div>
-        <header className="text-3xl">Adjustment Details</header>
-      </div>
-      
       <main>
         <div className="flex items-end justify-end p-6 mr-10">
         <Button className="px-6 py-2 text-white bg-blue-600 rounded"
@@ -74,27 +85,31 @@ const loadAdjustment = async () => {
         <div className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section>
-              <button className="w-40 h-10 m-5 text-blue-800 bg-blue-300 rounded-2xl">{status}</button>
+          
+          {buttonColor(req.reqStatus)}
             </section>
           </div>
           <div>
             <section className="flex flex-row items-end justify-end mb-6">
-              <header className="text-3xl">INVENTORY ADJUSTMENT</header>
+              <header className="text-3xl">INVENTORY REQUEST</header>
             </section>
             <section className="flex flex-row items-end justify-end gap-10">
               <ul className='flex flex-col gap-2'>
                 <li className="font-bold">Ref. No</li>
-                <li className="font-bold">Reason</li>
-                <li className="font-bold">Adjustment Type</li>
-                <li className="font-bold">Created By</li>
                 <li className="font-bold">Date</li>
+                <li className="font-bold">Reason</li>
+                <li className="font-bold">Department</li>
+                <li className="font-bold">Created By</li>
+                <li className="font-bold">Emp. ID</li>
               </ul>
               <ul className='flex flex-col gap-2'>
-                <li>{adjId}</li>
-                <li>{reason}</li>
-                <li>Quantity</li>
-                <li>Dileepa Ashen</li>
+                <li>1</li>
                 <li>{date}</li>
+                <li>{reason}</li>
+                <li>HR</li>
+                <li>Kamal</li>
+                <li>EM2020001</li>
+                
               </ul>
             </section>
           </div>
@@ -102,11 +117,11 @@ const loadAdjustment = async () => {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow className=" bg-zinc-800">
+                <TableCell align="right" className="text-white">#</TableCell>
                   <TableCell align="right" className="text-white">Item ID</TableCell>
-                  <TableCell align="right" className="text-white">Item & Description</TableCell>
-                  <TableCell align="right" className="text-white">Quantity Available</TableCell>
-                  <TableCell align="right" className="text-white">New Quantity On Hand</TableCell>
-                  <TableCell align="right" className="text-white">Adjusted Quantity</TableCell>
+                  <TableCell align="right" className="text-white">Item Name</TableCell>
+                  <TableCell align="right" className="text-white">Requested Qunantity</TableCell>
+                  <TableCell align="right" className="text-white">Brand</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -115,6 +130,7 @@ const loadAdjustment = async () => {
                     key={row.name}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
+                    <TableCell align="right">{itemId}</TableCell>
                     <TableCell align="right">{itemId}</TableCell>
                     <TableCell align="right">{row.name}</TableCell>
                     <TableCell align="right">{row.avaQty}</TableCell>
@@ -146,11 +162,11 @@ const loadAdjustment = async () => {
           <Button className="px-6 py-2 text-white bg-blue-600 rounded"
                 variant='contained'
                 type='submit'
-                  >approve & adjust</Button>
+                  >Accept</Button>
           <Button className="px-6 py-2 text-white bg-blue-600 rounded"
                 variant='contained'
                 type='submit'
-                  >reject</Button>
+                  >Reject</Button>
           <Button className="px-6 py-2 rounded"
                 variant='outlined'
                 type='submit'
@@ -163,4 +179,4 @@ const loadAdjustment = async () => {
   )
 }
 
-export default AdjustmentDocument
+export default InventoryRequestDocument

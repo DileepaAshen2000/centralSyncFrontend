@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormControl, Select, MenuItem, TextField, Grid, Box, Typography, Button } from '@mui/material';
+
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -8,107 +9,141 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { useNavigate, useParams } from 'react-router-dom';
 
-function createData(name, calories, fat, carbs) {
-  return { name, calories, fat, carbs };
+function createData(name, calories, fat, carbs, protein) {
+  return { name, calories, fat, carbs, protein };
 }
 
 const rows = [
-  createData('Computer SSD HD', 159, 6.0, 24)
+  createData('Frozen yoghurt', 159, 6.0, 24)
 ];
 
-const NewAdjustment = () => {
+const EditAdjustment = () => {
 
   let navigate = useNavigate();
+
+  const {adjId} = useParams(); // To get the id from the url
   const [adj,setAdj] = useState({  // create state for adjustment, initial state is empty with object.
     reason:"",
     date:"",
     description:"",
     newQuantity:"",
-    itemId:""
+    name:"",
+    group:""
   })
 
-  const{reason,date,description,newQuantity,itemId} = adj; // Destructure the state
+  const{reason,date,description,newQuantity,name,group} = adj;
   
   //Add onChange event to the input fields
   const onInputChange=(e)=>{
     setAdj({...adj,[e.target.name]:e.target.value});
   };
 
+  useEffect(() => {
+    loadAdjustment();
+  },[]);
+
   const onSubmit=async(e)=>{
     e.preventDefault(); // To remove unwanted url tail part
-    const result = await axios.post("http://localhost:8080/adjustment/add",adj) // To send data to the server
-    console.log(result.data)
-    navigate('/adjustment') // To navigate to the adjustment page
-  }
+    await axios.put(`http://localhost:8080/adjustment/updateById/${adjId}`,adj); // To send data to the server
+    console.log(adj);
+    navigate('/adjustment');
+  };
 
-  //handle the onClick event of submit button
-  const handleClick = () => {
-    Swal.fire({
-      title: "Good job!",
-      text: "You submitted the Adjustment!",
-      icon: "success"
-    });
-    
+  const loadAdjustment = async () => {
+    try {
+      const result = await axios.get(`http://localhost:8080/adjustment/getById/${adjId}`);
+      setAdj(result.data);  // Make sure the fetched data structure matches the structure of your state
+    } catch (error) {
+      console.error('Error loading adjustment:', error);
+    }
   }
 
   return (
     <Box className='p-10 bg-white rounded-2xl ml-14 mr-14'>
       <Box className="pb-4">
-        <h1 className="pt-2 pb-3 text-3xl font-bold ">New Adjustment</h1>
+        <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit Adjustment</h1>
       </Box>
       <form onSubmit={(e)=> onSubmit(e)}>
         <Grid container spacing={2}  padding={4} >
-          
-          <Grid container display='flex'>
-            <Grid item sm={2} xs={2}>
-              <Typography>Group</Typography>
+
+            <Grid container display='flex' mt={4}>
+                <Grid item sm={2} xs={2}>
+                    <Typography>Adjustment ID</Typography>
+                </Grid>
+                <Grid item sm={9} xs={9}>
+                    <TextField
+                    style={{ width: '300px' }}
+                    name='id'
+                    label='Adjustment ID'
+                    size='small'
+                    value={adjId}
+                    onChange={(e)=>onInputChange(e)}
+                    InputProps={{
+                        readOnly: true,
+                      }}
+                    />
+                </Grid>
             </Grid>
-            <Grid item sm={9} xs={9}>
-              <FormControl style={{ width: '300px' }}>
-                <Select size='small' name='group'>
-                  <MenuItem value="option1">Group 1</MenuItem>
-                  <MenuItem value="option2">Group 2</MenuItem>
-                  <MenuItem value="option3">Group 3</MenuItem>
-                </Select>
-              </FormControl>
+
+            <Grid container display='flex' mt={4}>
+                <Grid item sm={2} xs={2}>
+                    <Typography>Item ID</Typography>
+                </Grid>
+                <Grid item sm={9} xs={9}>
+                    <TextField
+                    style={{ width: '300px' }}
+                    name='id'
+                    label='Item ID'
+                    size='small'
+                    
+                    onChange={(e)=>onInputChange(e)}
+                    InputProps={{
+                        readOnly: true,
+                      }}
+                    />
+                </Grid>
             </Grid>
-          </Grid>
-          
-          <Grid container display='flex' mt={4}>
-            <Grid item sm={2} xs={2}>
-              <Typography>Item Name</Typography>
+
+            <Grid container display='flex' mt={4}>
+                <Grid item sm={2} xs={2}>
+                    <Typography>Item Name</Typography>
+                </Grid>
+                <Grid item sm={9} xs={9}>
+                <TextField
+                    style={{ width: '300px' }}
+                    name='name'
+                    label='Item Name'
+                    size='small'
+                    value={name}
+                    onChange={(e)=>onInputChange(e)}
+                    InputProps={{
+                        readOnly: true,
+                      }}
+                    />
+                </Grid>
             </Grid>
-            <Grid item sm={9} xs={9}>
-              <TextField
-                style={{ width: '300px' }}
-                label="Item Name"
-                type="search"
-                name='name'
-                size='small'  
-                helperText='Please select the item name.'     
-              />
+
+            <Grid container display='flex' mt={4}>
+                <Grid item sm={2} xs={2}>
+                    <Typography>Group</Typography>
+                </Grid>
+                <Grid item sm={9} xs={9}>
+                    <TextField
+                        style={{ width: '300px' }}
+                        label='Group'
+                        value={group}
+                        onChange={(e)=>onInputChange(e)}
+                        name='group'
+                        size='small' 
+                        InputProps={{
+                            readOnly: true,
+                          }}
+                    />
+                </Grid>
             </Grid>
-          </Grid>
-          
-          <Grid container display='flex' mt={4}>
-            <Grid item sm={2} xs={2}>
-              <Typography>Item ID</Typography>
-            </Grid>
-            <Grid item sm={9} xs={9}>
-              <TextField
-              style={{ width: '300px' }}
-               label="Item ID" 
-               name='itemId'
-               size='small'
-               value={itemId}
-               onChange={(e)=>onInputChange(e)}
-              />
-            </Grid>
-          </Grid>
-          
+
           <Grid container display='flex' mt={4}>
             <Grid item sm={2} xs={2}>
               <Typography>Date</Typography>
@@ -137,9 +172,9 @@ const NewAdjustment = () => {
             <Grid item sm={9} xs={9}>
               <FormControl style={{ width: '300px' }}>
                 <Select value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason'>
-                  <MenuItem value="reason1">Damaged Item</MenuItem>
-                  <MenuItem value="reason2">Stolen Item</MenuItem>
-                  <MenuItem value="reason3">Others</MenuItem>
+                  <MenuItem value="reason1">Reason 1</MenuItem>
+                  <MenuItem value="reason2">Reason 2</MenuItem>
+                  <MenuItem value="reason3">Reason 3</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -181,15 +216,11 @@ const NewAdjustment = () => {
                       key={row.name}
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
-                      {/* item name */}
                       <TableCell component="th" scope="row">
-                        {row.name}  
+                        {row.name}
                       </TableCell>
-                      {/* available Qty */}
                       <TableCell align="right">{row.calories}</TableCell>
-                      {/* new Qty */}
                       <TableCell align="right"><TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}></TextField></TableCell>
-                      {/* adjust Qty */}
                       <TableCell align="right">{row.carbs}</TableCell>
                     </TableRow>
                   ))}
@@ -200,15 +231,15 @@ const NewAdjustment = () => {
         </Grid>
         <Box>
           <Typography display='block' gutterBottom>Attach File(s) to inventory adjustment </Typography>
-          <input type='file' className="mt-4 mb-2"></input>
+          <input type='file' className="mt-4 mb-2" ></input>
           <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
         </Box>
         <div className='flex gap-6 mt-6 ml-[70%]'>
             <Button className="px-6 py-2 text-white bg-blue-600 rounded"
                variant='contained'
                type='submit'
-              onClick={handleClick}
-                >submit</Button>
+                >edit & submit</Button>
+
             <Button className="px-6 py-2 rounded"
                variant='outlined'
                onClick={() => navigate("/adjustment")}
@@ -219,4 +250,4 @@ const NewAdjustment = () => {
   );
 };
 
-export default NewAdjustment;
+export default EditAdjustment;

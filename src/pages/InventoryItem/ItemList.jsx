@@ -74,10 +74,10 @@ const ItemDataGrid = () => {
     navigate("/item/view-item/" + selectedItemId);
   };
 
-  const handleEdit = () => {
+  const handleEdit=()=>{
     const selectedItemId = rowSelectionModel[0];
     navigate("/item/edit-item/" + selectedItemId);
-  };
+  }
 
   return (
     <Box className="h-[400px] w-full">

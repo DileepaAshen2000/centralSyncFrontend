@@ -72,7 +72,7 @@ export default function NavBar() {
   };
 
   return (
-    <Box sx={{ flexGrow: 1}} >
+    <Box sx={{ flexGrow: 1}}>
       <AppBar position="static" className='bg-white'>
         <Toolbar>
           <img src={myLogo} alt="Inventory Logo" className='w-32 h-auto ' />
