@@ -44,10 +44,10 @@ const NewAdjustment = () => {
     navigate('/adjustment') // To navigate to the adjustment page
   }
 
-  //handle the onClick event of submit button
+  // handle the onClick event of Submit button
   const handleClick = () => {
     Swal.fire({
-      title: "Good job!",
+      title: "Good Job!",
       text: "You submitted the Adjustment!",
       icon: "success"
     });
@@ -86,7 +86,7 @@ const NewAdjustment = () => {
                 style={{ width: '300px' }}
                 label="Item Name"
                 type="search"
-                name='name'
+                name='itemName'
                 size='small'  
                 helperText='Please select the item name.'     
               />
@@ -136,7 +136,7 @@ const NewAdjustment = () => {
             </Grid>
             <Grid item sm={9} xs={9}>
               <FormControl style={{ width: '300px' }}>
-                <Select value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason'>
+                <Select  value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason'>
                   <MenuItem value="reason1">Damaged Item</MenuItem>
                   <MenuItem value="reason2">Stolen Item</MenuItem>
                   <MenuItem value="reason3">Others</MenuItem>
@@ -151,7 +151,6 @@ const NewAdjustment = () => {
             </Grid>
             <Grid item sm={9} xs={9}>
               <TextField
-                // id="outlined-multiline-static"
                 label="Description"
                 name='description'
                 multiline
@@ -188,7 +187,9 @@ const NewAdjustment = () => {
                       {/* available Qty */}
                       <TableCell align="right">{row.calories}</TableCell>
                       {/* new Qty */}
-                      <TableCell align="right"><TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}></TextField></TableCell>
+                      <TableCell align="right">
+                        <TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}></TextField>
+                      </TableCell>
                       {/* adjust Qty */}
                       <TableCell align="right">{row.carbs}</TableCell>
                     </TableRow>

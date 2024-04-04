@@ -28,7 +28,7 @@ const AdjustmentDocument = () => {
 
   const navigate = useNavigate();
 
-  const {adjId} = useParams(); // To get the id from the url
+  const {adjId} = useParams(); // get the adjustment id from the url
   const [adj,setAdj] = useState({  // create state for adjustment, initial state is empty with object.
     reason:"",
     date:"",
@@ -64,11 +64,11 @@ const loadAdjustment = async () => {
       
       <main>
         <div className="flex items-end justify-end p-6 mr-10">
-        <Button className="px-6 py-2 text-white bg-blue-600 rounded"
-               variant='contained'
-               type='submit'
-               onClick={handlePrint}
-                >print</Button>
+          <Button className="px-6 py-2 text-white bg-blue-600 rounded"
+                variant='contained'
+                type='submit'
+                onClick={handlePrint}
+                  >print</Button>
         </div>
 
         <div className="p-10 ml-6 mr-6 bg-white">
