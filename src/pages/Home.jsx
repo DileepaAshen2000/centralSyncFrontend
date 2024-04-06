@@ -27,6 +27,9 @@ import StockOutList from "./StockOut/StockOutList";
 import AdjustmentList from "./Adjustment/AdjustmentList";
 
 import OrderDataGrid from "./InitiateOrder/OrderList";
+import NewOrderForm from './InitiateOrder/NewOrder'
+import ViewOrderDetails from './InitiateOrder/ViewOrder'
+import EditOrderDetails from './InitiateOrder/EditOrder'
 
 const Home = () => {
   return (
@@ -116,6 +119,9 @@ const Home = () => {
 
               {/*Initiate order routing*/}
               <Route path="/order" element={<OrderDataGrid />}></Route>
+              <Route path='/order/new-order' element={<NewOrderForm/>}></Route>
+              <Route path='/order/view-order/:ID' element={<ViewOrderDetails/>}></Route>
+              <Route path='/order/edit-order/:ID' element={<EditOrderDetails/>}></Route>
             </Routes>
           </BrowserRouter>
         </Grid>
