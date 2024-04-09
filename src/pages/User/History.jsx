@@ -21,7 +21,7 @@ const UserActivityHistory = () => {
     const fetchActivityLogs = async () => {
       try {
         const response = await axios.get("http://localhost:8080/user-activity-log/getAll");  
-        setActivityLogs(response.data);
+        setActivityLogs(response.data.reverse());
         console.log(response.data);
       } catch (error) {
         console.error("Error fetching user activity logs:", error);
@@ -57,7 +57,7 @@ const UserActivityHistory = () => {
               <TimelineItem key={log.id}>
                 <TimelineOppositeContent className="flex-none w-1/5">
                   <Chip
-                    label={log.timestamp}
+                    label={<>{log.date}<br/>{log.time}</>}
                     component="a"
                     href="#basic-chip"
                     variant="outlined"
