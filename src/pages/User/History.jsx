@@ -22,6 +22,7 @@ const UserActivityHistory = () => {
       try {
         const response = await axios.get("http://localhost:8080/user-activity-log/getAll");  
         setActivityLogs(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching user activity logs:", error);
         console.error("Error details:", error.response);
@@ -77,13 +78,16 @@ const UserActivityHistory = () => {
                     clickable
                   />
                 </TimelineContent>
+                
               </TimelineItem>
             ))}
           </Timeline>
         </div>
       </div>
+   
     </React.Fragment>
   );
 };
 
 export default UserActivityHistory;
+

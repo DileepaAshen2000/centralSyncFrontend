@@ -60,7 +60,9 @@ const Home = () => {
               <Route path="/history" element={<UserActivityHistory/>}></Route>
 
               
-              {/* Inventory Item routing */}
+              {/* Inventory Item routing */} 
+
+              
               <Route path='/item' element={<ItemDataGrid/>}></Route>
               <Route path='/item/add-item' element={<AddItemForm/>}></Route>
               <Route path='/item/edit-item/:ID' element={<EditItem/>}></Route>
