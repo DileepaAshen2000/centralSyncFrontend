@@ -25,7 +25,7 @@ const UserActivityHistory = () => {
         console.log(response.data);
       } catch (error) {
         console.error("Error fetching user activity logs:", error);
-        console.error("Error details:", error.response);
+        
       }
     };
 
