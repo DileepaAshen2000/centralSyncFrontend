@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import ItemPieChart from "./PieChart";
+import UsageBarChart from "./ItemUsageBarGraph";
 import { YearCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -88,6 +89,11 @@ const Usage = () => {
         <div>
           <ItemPieChart />
         </div>
+      </div>
+      <div className="row-start-3 col-start-4 col-span-7 ml-10 mt-10 h-[400px] bg-white ">
+        <h2 className=" text-xl  p-4 ">Monitor Usage</h2>
+        <hr className="col-span-4 border-t border-gray-200" />
+        <UsageBarChart category={category} year={year} />
       </div>
      
     </div>
