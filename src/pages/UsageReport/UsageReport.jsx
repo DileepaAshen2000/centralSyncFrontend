@@ -82,7 +82,13 @@ const Usage = () => {
         <br /> (JAN-DEC)
         <br/> {year}
       </h1>
-    
+      <div className="row-start-3 col-span-3  bg-white">
+        <h1 className=" text-xl text-center p-4 ">All Items</h1>
+        <hr className="border-t border-gray-200" />
+        <div>
+          <ItemPieChart />
+        </div>
+      </div>
      
     </div>
   );
