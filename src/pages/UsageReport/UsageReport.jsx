@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import ItemPieChart from "./PieChart";
 import UsageBarChart from "./ItemUsageBarGraph";
+import StockLineChart from "./StockIn&OutChart";
 import { YearCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -95,7 +96,11 @@ const Usage = () => {
         <hr className="col-span-4 border-t border-gray-200" />
         <UsageBarChart category={category} year={year} />
       </div>
-     
+      <div className="row-start-4 col-span-10 h-[400px] mt-5 bg-white ">
+        <h2 className=" text-xl  p-4 ">Monitor Inventory Statistics</h2>
+        <hr className="col-span-4 border-t border-gray-200" />
+        <StockLineChart category={category} year={year} />
+      </div>
     </div>
   );
 };
