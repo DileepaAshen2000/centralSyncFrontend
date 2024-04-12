@@ -65,20 +65,17 @@ const SideBar = () => {
               <ListItemText primary="Adjustment" />
             </ListItem>
           </a>
-          <a href="/stockIn">
-            <ListItem button className="pl-8 rounded-lg">
-              <ListItemText primary="Stock In" />
-            </ListItem>
-          </a>
-          <a href="/stockOut">
-            <ListItem button className="pl-8 rounded-lg">
-              <ListItemText primary="Stock Out" />
-            </ListItem>
-          </a>
+          <ListItem button className="pl-8 rounded-lg">
+            <ListItemText primary="Stock In" />
+          </ListItem>
+          <ListItem button className="pl-8 rounded-lg">
+            <ListItemText primary="Stock Out" />
+          </ListItem>
         </List>
       </Collapse>
 
       {/* User */}
+      <a href="/user">
       <ListItem
         button
         className="rounded-lg hover:bg-blue-100 focus:bg-blue-400"
@@ -86,6 +83,7 @@ const SideBar = () => {
         <PersonIcon></PersonIcon>
         <ListItemText primary="User" className="pl-4 pr-4" />
       </ListItem>
+      </a>
 
       {/* Request & Reservation with dropdown and sub-parts */}
       <ListItem
@@ -99,7 +97,7 @@ const SideBar = () => {
       </ListItem>
       <Collapse in={openRequestReservation} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <a href="/inventory-request">
+          <a href="/inventoryRequest">
             <ListItem button className="pl-8 rounded-lg">
               <ListItemText primary="Request" />
             </ListItem>
@@ -126,22 +124,28 @@ const SideBar = () => {
       </ListItem>
       <Collapse in={openReport} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
+          <a href="/history">
           <ListItem button className="pl-8 rounded-lg">
             <ListItemText primary="View History" />
+        
           </ListItem>
+          </a>
           <ListItem button className="pl-8 rounded-lg">
             <ListItemText primary="Inventory Summary" />
           </ListItem>
           <ListItem button className="pl-8 rounded-lg">
             <ListItemText primary="Stock Alert" />
           </ListItem>
+          <a href="/report/item-usage-analysis">
           <ListItem button className="pl-8 rounded-lg">
             <ListItemText primary="Item Usage Analysis" />
           </ListItem>
+          </a>
         </List>
       </Collapse>
 
       {/* Initiate Order */}
+      <a href="/order">
       <ListItem
         button
         className="rounded-lg hover:bg-blue-100 focus:bg-blue-400"
@@ -149,10 +153,12 @@ const SideBar = () => {
         <ShoppingCartIcon></ShoppingCartIcon>
         <ListItemText primary="Initiate Order" className="pl-4 pr-4" />
       </ListItem>
+      </a>
 
       <ListItem
         button
-        className="rounded-lg md:hidden hover:bg-blue-100 focus:bg-blue-400">
+        className="rounded-lg md:hidden hover:bg-blue-100 focus:bg-blue-400"
+      >
         <AccountCircleIcon></AccountCircleIcon>
         <ListItemText primary="My Account" className="pl-4 pr-4" />
       </ListItem>

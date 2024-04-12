@@ -1,11 +1,9 @@
 import {
   Button,
-  MenuList,
   Popover,
-  InputAdornment,
   InputLabel,
+  MenuList,
   MenuItem,
-  Select,
   TextField,
 } from "@mui/material";
 
@@ -14,53 +12,56 @@ import { useParams, useNavigate } from "react-router-dom";
 
 import axios from "axios";
 
-const ViewItemDetails = () => {
+const ViewOrderDetails = () => {
+  const [vendorName, setVendorName] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [vendorEmail, setVendorEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [date, setDate] = useState("");
   const [itemName, setItemName] = useState("");
-  const [itemGroup, setItemGroup] = useState("select an item group");
-  const [unit, setUnit] = useState("");
-  const [brand, setBrand] = useState("");
-  const [dimension, setDimension] = useState("");
-  const [weight, setWeight] = useState("");
-  const [description, setDescription] = useState("");
+  const [brandName, setBrandName] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [description, setDescription] = useState("");
 
-  const [fetchData, setFetchData] = useState(false);
 
   const { ID } = useParams();
 
- // const [fetchData, setFetchData] = useState(false);
+  const [fetchData, setFetchData] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/inventory-item/getById/${ID}`)
+      .get(`http://localhost:8080/orders/getById/${ID}`)
       .then((response) => {
         const data = {
+          vendorName: response.data.vendorName,
+          companyName: response.data.companyName,
+          mobile: response.data.mobile,
+          vendorEmail: response.data.vendorEmail,
+          date: response.data.date,
           itemName: response.data.itemName,
-          itemGroup: response.data.itemGroup,
-          brand: response.data.brand,
-          unit: response.data.unit,
-          dimension: response.data.dimension,
-          weight: response.data.weight,
-          description: response.data.description,
+          brandName: response.data.brandName,
           quantity: response.data.quantity,
-          status: response.data.status,
+          description: response.data.description,
         };
 
+        setVendorName(data.vendorName);
+        setCompanyName(data.companyName);
+        setVendorEmail(data.vendorEmail);
+        setMobile(data.mobile);
+        setDate(data.date);
         setItemName(data.itemName);
-        setItemGroup(data.itemGroup);
-        setBrand(data.brand);
-        setUnit(data.unit);
-        setDimension(data.dimension);
-        setWeight(data.weight);
-        setDescription(data.description);
+        setBrandName(data.brandName);
         setQuantity(data.quantity);
+        setDescription(data.description);
       })
       .catch((error) => {
         console.log(error);
       });
   }, [ID]);
+
+ 
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -78,41 +79,44 @@ const ViewItemDetails = () => {
   const handleDelete = () => {
     try {
       axios
-        .delete(`http://localhost:8080/inventory-item/deleteItem/${ID}`)
+        .delete("http://localhost:8080/orders/deleteOrder/" + ID)
         .then(() => {
           setFetchData(!fetchData);
-          navigate("/item", { fetchData });
+          navigate("/order", { fetchData });
         });
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleMarkAsInactiveButton = () => {
+  const handleMarkAsReviewed = () => {
     axios
-      .patch(
-        `http://localhost:8080/inventory-item/updateStatus/${ID}`
-      )
+      .patch("http://localhost:8080/orders/updateStatus/" + ID)
       .then(() => {
         setFetchData(!fetchData);
-        navigate("/item", { fetchData });
+        navigate("/order", { fetchData });
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
-
   return (
     <form className="grid grid-cols-8 gap-y-10 pl-12 ">
-      <h1 className=" col-span-4 text-2xl ">Item Details</h1>
+      <h1 className=" col-span-4 text-2xl ">Order Details</h1>
+
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="id" className="flex-none text-black w-32 ">
-          Item id
+        <InputLabel
+          htmlFor="vendorName"
+          className="flex-none text-black w-32 "
+          required
+        >
+          Vendor name
         </InputLabel>
         <TextField
-          value={ID}
-          id="id"
+          id="vendorName"
+          value={vendorName}
+          onChange={(e) => setVendorName(e.target.value)}
           variant="outlined"
           InputProps={{
             className:
@@ -124,16 +128,15 @@ const ViewItemDetails = () => {
 
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel
-          htmlFor="name"
+          htmlFor="companyName"
           className="flex-none text-black w-32 "
-          required
         >
-          Item name
+          Company Name
         </InputLabel>
         <TextField
-          value={itemName}
-          onChange={(e) => setItemName(e.target.value)}
-          id="name"
+          id="companyName"
+          value={companyName}
+          onChange={(e) => setCompanyName(e.target.value)}
           variant="outlined"
           InputProps={{
             className:
@@ -144,53 +147,16 @@ const ViewItemDetails = () => {
       </div>
 
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="itemGroup" className="flex-none text-black w-32 ">
-          Item group
-        </InputLabel>
-        <div className="flex-grow">
-          <Select
-            value={itemGroup}
-            onChange={(e) => setItemGroup(e.target.value)}
-            id="itemGroup"
-            className="bg-white  w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
-            readOnly="true"
-          >
-            <MenuItem disabled value={itemGroup}></MenuItem>
-            <MenuItem value="computerAccessories">
-              Computer accessories
-            </MenuItem>
-            <MenuItem value="printers">Printers</MenuItem>
-            <MenuItem value="computerHardware">Computer hardware</MenuItem>
-            <MenuItem value="other">other</MenuItem>
-          </Select>
-        </div>
-      </div>
-
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="unit" className="flex-none text-black w-32 ">
-          Unit
+        <InputLabel
+          htmlFor="vendorEmail"
+          className="flex-none text-black w-32 "
+        >
+          Email Address
         </InputLabel>
         <TextField
-          value={unit}
-          onChange={(e) => setUnit(e.target.value)}
-          id="unit"
-          variant="outlined"
-          InputProps={{
-            endAdornment: <InputAdornment position="end">pcs</InputAdornment>,
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: true,
-          }}
-        />
-      </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="brand" className="flex-none text-black w-32 ">
-          Brand
-        </InputLabel>
-        <TextField
-          value={brand}
-          onChange={(e) => setBrand(e.target.value)}
-          id="brand"
+          id="vendorEmail"
+          value={vendorEmail}
+          onChange={(e) => setVendorEmail(e.target.value)}
           variant="outlined"
           InputProps={{
             className:
@@ -200,13 +166,13 @@ const ViewItemDetails = () => {
         />
       </div>
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="dimension" className="flex-none text-black  w-32">
-          Dimension
+        <InputLabel htmlFor="mobile" className="flex-none text-black w-32 ">
+          Mobile
         </InputLabel>
         <TextField
-          value={dimension}
-          onChange={(e) => setDimension(e.target.value)}
-          id="dimension"
+          id="mobile"
+          value={mobile}
+          onChange={(e) => setMobile(e.target.value)}
           variant="outlined"
           InputProps={{
             className:
@@ -216,13 +182,65 @@ const ViewItemDetails = () => {
         />
       </div>
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="weight" className="flex-none text-black  w-32">
-          Weight
+        <InputLabel htmlFor="date" className="flex-none text-black  w-32">
+          Date
         </InputLabel>
         <TextField
-          value={weight}
-          onChange={(e) => setWeight(e.target.value)}
-          id="weight"
+          id="date"
+          value={date}
+          type="date"
+          onChange={(e) => setDate(e.target.value)}
+          variant="outlined"
+          InputProps={{
+            className:
+              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+            readOnly: true,
+          }}
+        />
+      </div>
+      <div className="col-start-1 col-span-4 flex items-center">
+        <InputLabel htmlFor="itemName" className="flex-none text-black  w-32">
+          Item Name
+        </InputLabel>
+        <TextField
+          id="itemName"
+          value={itemName}
+          onChange={(e) => setItemName(e.target.value)}
+          variant="outlined"
+          InputProps={{
+            className:
+              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+            readOnly: true,
+          }}
+        />
+      </div>
+      <div className="col-start-1 col-span-4 flex items-center">
+        <InputLabel
+          htmlFor="brandName"
+          className="flex-none text-black  w-32 mt-0"
+        >
+          Brand Name
+        </InputLabel>
+        <TextField
+          id="brandName"
+          value={brandName}
+          onChange={(e) => setBrandName(e.target.value)}
+          variant="outlined"
+          InputProps={{
+            className:
+              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+            readOnly: true,
+          }}
+        />
+      </div>
+      <div className="col-start-1 col-span-4 flex items-center">
+        <InputLabel htmlFor="quantity" className="flex-none text-black w-32 ">
+          Quantity
+        </InputLabel>
+        <TextField
+          id="quantity"
+          value={quantity}
+          onChange={(e) => setQuantity(e.target.value)}
           variant="outlined"
           InputProps={{
             className:
@@ -234,14 +252,14 @@ const ViewItemDetails = () => {
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel
           htmlFor="description"
-          className="flex-none text-black  w-32 mt-0"
+          className="flex-none text-black w-32 "
         >
           Description
         </InputLabel>
         <TextField
+          id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          id="description"
           variant="outlined"
           multiline
           rows={10}
@@ -252,23 +270,8 @@ const ViewItemDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="quantity" className="flex-none text-black w-32 ">
-          Initial quantity
-        </InputLabel>
-        <TextField
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          id="quantity"
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: true,
-          }}
-        />
-      </div>
-      <>
+
+        <>
           <Button
             variant="contained"
             className="row-start-1 col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
@@ -286,7 +289,7 @@ const ViewItemDetails = () => {
             }}
           >
             <MenuList>
-              
+             
               <MenuItem>
                 <Button
                   variant="contained"
@@ -300,24 +303,17 @@ const ViewItemDetails = () => {
                 <Button
                   variant="contained"
                   className=" col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
-                  onClick={handleMarkAsInactiveButton}
+                  onClick={handleMarkAsReviewed}
                 >
-                  Mark as inactive
+                  Mark as reviewed
                 </Button>
               </MenuItem>
             </MenuList>
           </Popover>
         </>
-
-      <Button
-        variant="outlined"
-        className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
-        onClick={() => navigate("/item")}
-      >
-        Cancel
-      </Button>
+      
     </form>
   );
 };
 
-export default ViewItemDetails;
+export default ViewOrderDetails;
