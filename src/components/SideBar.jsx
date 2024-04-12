@@ -136,7 +136,7 @@ const SideBar = () => {
           <ListItem button className="pl-8 rounded-lg">
             <ListItemText primary="Stock Alert" />
           </ListItem>
-          <a href="reports/item-usage">
+          <a href="/report/item-usage-analysis">
           <ListItem button className="pl-8 rounded-lg">
             <ListItemText primary="Item Usage Analysis" />
           </ListItem>

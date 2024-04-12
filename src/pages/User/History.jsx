@@ -1,4 +1,5 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import Timeline from "@mui/lab/Timeline";
 import TimelineItem from "@mui/lab/TimelineItem";
 import TimelineSeparator from "@mui/lab/TimelineSeparator";
@@ -9,9 +10,28 @@ import TimelineOppositeContent from "@mui/lab/TimelineOppositeContent";
 import Chip from "@mui/material/Chip";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import Typography from "@mui/material/Typography";
+import { useParams } from "react-router-dom";
 
+const UserActivityHistory = () => {
+  const [activityLogs, setActivityLogs] = useState([]);
+ 
 
-export default function OppositeContentTimeline() {
+  useEffect(() => {
+    // Fetch user activity logs from the backend API
+    const fetchActivityLogs = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/user-activity-log/getAll");  
+        setActivityLogs(response.data.reverse());
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching user activity logs:", error);
+        
+      }
+    };
+
+    fetchActivityLogs();
+  }, []);
+
   return (
     <React.Fragment>
       <div className="pt-5 pb-10">
@@ -33,101 +53,41 @@ export default function OppositeContentTimeline() {
             </div>
           </div>
           <Timeline className="pt-12 ">
-            <TimelineItem>
-              <TimelineOppositeContent className="flex-none w-1/5">
-                <Chip
-                  label={
-                    <>
-      27 Dec 2023<br />
-      9.30 pm
-    </>
-                  }
-                  
-                  component="a"
-                  href="#basic-chip"
-                  variant="outlined"
-                  className="bg-[#B9D4F3] w-[335px] h-[45px]  text-black  border-none  space-x-5 shadow-md rounded-md "
-                />
-              </TimelineOppositeContent>
-              <TimelineSeparator>
-                <TimelineDot className="bg-[#777BCB]" />
-                <TimelineConnector />
-              </TimelineSeparator>
-              <TimelineContent>
-                <Chip
-                 label="Inventory Adjustment approved."
-                  component="a"
-                  href="#basic-chip"
-                  variant="outlined"
-                  className="bg-[#B9D4F3] w-[335px] h-[45px]  text-black   rounded-none   space-x-5 shadow-md  "
-                  clickable
-                />
-              </TimelineContent>
-            </TimelineItem>
-            <TimelineItem>
-              <TimelineOppositeContent className="flex-none w-1/5">
-                <Chip
-                  label={
-                    <>
-      27 Dec 2023<br />
-      5.30 pm
-    </>
-                  }
-                  component="a"
-                  href="#basic-chip"
-                  variant="outlined"
-                  className="bg-[#B9D4F3] w-[335px] h-[45px]  text-black   border-none  rounded-md   space-x-5 shadow-md  "
-                />
-              </TimelineOppositeContent>
-              <TimelineSeparator>
-                <TimelineDot className="bg-[#777BCB]" />
-                <TimelineConnector />
-              </TimelineSeparator>
-              <TimelineContent>
-                <Chip
-                  label="New User Added"
-                  component="a"
-                  href="#basic-chip"
-                  variant="outlined"
-                  className="bg-[#B9D4F3] w-[335px] h-[45px]  text-black    rounded-none   space-x-5 shadow-md "
-                  clickable
-                />
-              </TimelineContent>
-            </TimelineItem>
-            <TimelineItem>
-              <TimelineOppositeContent className="flex-none w-1/5">
-                <Chip
-                  label={
-                    <>
-      27 Dec 2023<br />
-      10.30 am
-    </>
-                  }
-                  component="a"
-                  href="#basic-chip"
-                  variant="outlined"
-                  className="bg-[#B9D4F3] w-[335px] h-[45px]  text-black  border-none  rounded-md  space-x-5 "
-                />
-              </TimelineOppositeContent>
-              <TimelineSeparator>
-                <TimelineDot className="bg-[#777BCB]" />
-                <TimelineConnector />
-              </TimelineSeparator>
-              <TimelineContent>
-                <Chip
-                   label="Inventory Adjustment approved."
-                    
-                  component="a"
-                  href="#basic-chip"
-                  variant="outlined"
-                  className="bg-[#B9D4F3] w-[335px] h-[45px]  text-black   border-none  rounded-none   space-x-5 "
-                  clickable
-                />
-              </TimelineContent>
-            </TimelineItem>
+            {activityLogs.map((log) => (
+              <TimelineItem key={log.id}>
+                <TimelineOppositeContent className="flex-none w-1/5">
+                  <Chip
+                    label={<>{log.date}<br/>{log.time}</>}
+                    component="a"
+                    href="#basic-chip"
+                    variant="outlined"
+                    className="bg-[#B9D4F3] w-[335px] h-[45px]  text-black  border-none  space-x-5 shadow-md rounded-md "
+                  />
+                </TimelineOppositeContent>
+                <TimelineSeparator>
+                  <TimelineDot className="bg-[#777BCB]" />
+                  <TimelineConnector />
+                </TimelineSeparator>
+                <TimelineContent>
+                  <Chip
+                    label={log.action}
+                    component="a"
+                    href="#basic-chip"
+                    variant="outlined"
+                    className="bg-[#B9D4F3] w-[335px] h-[45px]  text-black   rounded-none   space-x-5 shadow-md  "
+                    clickable
+                  />
+                </TimelineContent>
+                
+              </TimelineItem>
+            ))}
           </Timeline>
         </div>
       </div>
+   
     </React.Fragment>
   );
-}
+};
+
+export default UserActivityHistory;
+
