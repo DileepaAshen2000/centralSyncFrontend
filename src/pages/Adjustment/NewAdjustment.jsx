@@ -11,14 +11,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
-function createData(name, calories, fat, carbs) {
-  return { name, calories, fat, carbs };
-}
-
-const rows = [
-  createData('Computer SSD HD', 159, 6.0, 24)
-];
-
 const NewAdjustment = () => {
 
   let navigate = useNavigate();
@@ -137,9 +129,9 @@ const NewAdjustment = () => {
             <Grid item sm={9} xs={9}>
               <FormControl style={{ width: '300px' }}>
                 <Select  value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason'>
-                  <MenuItem value="reason1">Damaged Item</MenuItem>
-                  <MenuItem value="reason2">Stolen Item</MenuItem>
-                  <MenuItem value="reason3">Others</MenuItem>
+                  <MenuItem value="Damaged Item">Damaged Item</MenuItem>
+                  <MenuItem value="Stolen Item">Stolen Item</MenuItem>
+                  <MenuItem value="Others">Others</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -175,25 +167,20 @@ const NewAdjustment = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rows.map((row) => (
-                    <TableRow
-                      key={row.name}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
+                    <TableRow>
                       {/* item name */}
                       <TableCell component="th" scope="row">
-                        {row.name}  
+                        keyboard
                       </TableCell>
                       {/* available Qty */}
-                      <TableCell align="right">{row.calories}</TableCell>
+                      <TableCell align="right">100</TableCell>
                       {/* new Qty */}
                       <TableCell align="right">
                         <TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}></TextField>
                       </TableCell>
                       {/* adjust Qty */}
-                      <TableCell align="right">{row.carbs}</TableCell>
+                      <TableCell align="right">-2</TableCell>
                     </TableRow>
-                  ))}
                 </TableBody>
               </Table>
             </TableContainer>
