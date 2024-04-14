@@ -82,8 +82,9 @@ const OrderDataGrid = () => {
 
   return (
     <Box className="h-[400px] w-full">
-      <Box>
-        <h1 className="inline-block text-3xl font-bold p-4">Orders</h1>
+      <Box className="py-4">
+        <h1 className="block text-3xl font-bold">Orders</h1>
+        <p className="inline-block">Here are all orders!!</p>
         {rowSelectionModel > 0 ? (
           <>
           <Button
@@ -96,7 +97,7 @@ const OrderDataGrid = () => {
 
             <Button
               variant="contained"
-              className="bg-blue-600  py-2 text-white rounded left-[54%] w-[145px]"
+              className="bg-blue-600  py-2 text-white rounded left-[55%] w-[145px]"
               onClick={handleView}
             >
               View
@@ -106,7 +107,7 @@ const OrderDataGrid = () => {
         ) : (
           <Button
             variant="contained"
-            className="bg-blue-600 px-6 py-2 text-white rounded left-[69%] w-[145px]"
+            className="bg-blue-600 px-6 py-2 text-white rounded left-[70%] w-[145px]"
             onClick={() => navigate("/order/new-order")}
           >
             New Order
