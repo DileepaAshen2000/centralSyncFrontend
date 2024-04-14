@@ -12,10 +12,12 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 
+
 const handlePrint=()=>{
   window.print();
 }
 const AdjustmentDocument = () => {
+  const [fetchData, setFetchData] = useState(false);
   const navigate = useNavigate();
   const {adjId} = useParams(); // get the adjustment id from the url
   const [adj,setAdj] = useState({  // create state for adjustment, initial state is empty with object.
@@ -24,7 +26,7 @@ const AdjustmentDocument = () => {
     description:"",
     newQuantity:"",
     status:"",
-    itemID:""
+    itemId:""
   })
 
 const{reason,date,description,newQuantity,status,itemId} = adj;
@@ -35,6 +37,9 @@ const [item,setItem] = useState({  // create state for adjustment, initial state
 })
 const{itemName,quantity} = item;
 
+//const [statusButtonColor, setStatusButtonColor] = useState('blue-300'); //change status button color
+
+
 useEffect(() => {
   loadAdjustment();
 },[]);
@@ -44,15 +49,25 @@ const loadAdjustment = async () => {
   try {
     const result = await axios.get(`http://localhost:8080/adjustment/getById/${adjId}`);
     setAdj(result.data);  // Make sure the fetched data structure matches the structure of your state
-
-    const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${itemId}`);
+    console.log(result.data.itemId);
+    const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${result.data.itemId}`);
     setItem(result1.data);
-    console.log(result1.data); 
-    
   } catch (error) {
     console.error('Error loading adjustment:', error);
   }
 }
+
+// var status1 = adj.status;
+// const [statusButtonColor, setStatusButtonColor] = useState(() => {
+//   console.log(status); //for testing
+//   if (status1 === "ACCEPTED") {
+//     return 'green-300';
+//   } else if (status1 === "REJECTED") {
+//     return 'red-300';
+//   } else {
+//     return 'blue-300';
+//   }
+// });
 
   // Get the current date and time
   const currentDate = new Date();
@@ -67,6 +82,30 @@ const loadAdjustment = async () => {
 
   // Format the date and time as needed
   const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+  const handleAccept = () => {
+    axios
+      .patch("http://localhost:8080/adjustment/updateStatus/accept/" + adjId)
+      .then(() => {
+        setFetchData(!fetchData); 
+        navigate("/adjustment", { fetchData });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  
+  const handleReject = () => {
+    axios
+      .patch("http://localhost:8080/adjustment/updateStatus/reject/" + adjId)
+      .then(() => {
+        setFetchData(!fetchData); 
+        navigate("/adjustment", { fetchData }); 
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <div>
@@ -85,7 +124,7 @@ const loadAdjustment = async () => {
         <div className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section>
-              <button className="w-40 h-10 m-5 text-blue-800 bg-blue-300 rounded-2xl">{status}</button>
+              <button id="statusButton" className={`w-40 h-10 m-5 text-blue-800 bg-blue-300 rounded-2xl`}>{status}</button>
             </section>
           </div>
           <div>
@@ -153,10 +192,12 @@ const loadAdjustment = async () => {
           <Button className="px-6 py-2 text-white bg-blue-600 rounded"
                 variant='contained'
                 type='submit'
+                onClick={handleAccept}
                   >approve & adjust</Button>
           <Button className="px-6 py-2 text-white bg-blue-600 rounded"
                 variant='contained'
                 type='submit'
+                onClick={handleReject}
                   >reject</Button>
           <Button className="px-6 py-2 rounded"
                 variant='outlined'
