@@ -20,13 +20,17 @@ const EditAdjustment = () => {
     description:"",
     newQuantity:"",
     name:"",
-    group:"",
-    itemId:"",
-    itemName:"",
-    availableQuantity:""
+    itemId:""
   })
 
-  const{reason,date,description,newQuantity,itemName,group,itemId,availableQuantity} = adj;
+  const{reason,date,description,newQuantity,itemId,availableQuantity} = adj;
+
+  const [item,setItem] = useState({  // create state for adjustment, initial state is empty with object.
+    itemName:"",
+    quantity:"",
+    itemGroup:""
+  })
+  const{itemName,quantity,itemGroup} = item;
   
   //Add onChange event to the input fields
   const onInputChange=(e)=>{
@@ -48,16 +52,11 @@ const EditAdjustment = () => {
     try {
       const result = await axios.get(`http://localhost:8080/adjustment/getById/${adjId}`);
       setAdj(result.data);  // Make sure the fetched data structure matches the structure of your state
-      if (itemId) {
-        // Fetch item details based on itemId
-        const itemResult = await axios.get(`http://localhost:8080/inventory-item/getById/${itemId}`);
-        setAdj(prevState => ({
-            ...prevState,
-            itemName: itemResult.data.itemName,
-            group: itemResult.data.itemGroup,
-            availableQuantity : itemResult.data.quantity
-        }));
-      }
+      
+      // Fetch item details based on itemId
+      const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${result.data.itemId}`);
+      setItem(result1.data);
+
     } catch (error) {
       console.error('Error loading adjustment:', error);
     }
@@ -135,9 +134,9 @@ const EditAdjustment = () => {
                     <TextField
                         style={{ width: '300px' }}
                         label='Group'
-                        value={group}
+                        value={itemGroup}
                         onChange={(e)=>onInputChange(e)}
-                        name='group'
+                        name='itemGroup'
                         size='small' 
                         InputProps={{
                             readOnly: true,
@@ -213,9 +212,9 @@ const EditAdjustment = () => {
                       <TableCell component="th" scope="row">
                         {itemName}
                       </TableCell>
-                      <TableCell align="right">{availableQuantity}</TableCell>
+                      <TableCell align="right">{quantity}</TableCell>
                       <TableCell align="right"><TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}></TextField></TableCell>
-                      <TableCell align="right">{newQuantity - availableQuantity}</TableCell>
+                      <TableCell align="right">{newQuantity - quantity}</TableCell>
                     </TableRow>
                 </TableBody>
               </Table>
