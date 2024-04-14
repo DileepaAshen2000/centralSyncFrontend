@@ -1,11 +1,4 @@
-import {
-  Button,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
+import { Button, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -14,7 +7,7 @@ import axios from "axios";
 
 const EditItem = () => {
   const [itemName, setItemName] = useState("");
-  const [itemGroup, setItemGroup] = useState("select an item group");
+  const [itemGroup, setItemGroup] = useState("");
   const [unit, setUnit] = useState("");
   const [brand, setBrand] = useState("");
   const [dimension, setDimension] = useState("");
@@ -22,7 +15,8 @@ const EditItem = () => {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
   const [quantity, setQuantity] = useState("");
-  
+  const [errors, setErrors] = useState({});
+
   const { ID } = useParams();
 
   const [fetchData, setFetchData] = useState(false);
@@ -54,15 +48,11 @@ const EditItem = () => {
         setDescription(data.description);
         setQuantity(data.quantity);
         setStatus(data.status);
-        
-       
       })
       .catch((error) => {
         console.log(error);
       });
   }, [ID]);
-
- 
 
   const handleSave = () => {
     const item = {
@@ -74,23 +64,24 @@ const EditItem = () => {
       weight,
       description,
       quantity,
-      status
-    
+      status,
     };
 
     axios
       .put(`http://localhost:8080/inventory-item/updateById/${ID}`, item)
-      .then(() => {
-        console.log("Successfully updated");
+      .then((response) => {
+        if (response.status===200) {
+          console.log(response.data);
+          setFetchData(!fetchData);
+          navigate("/item", { fetchData });
+        }
       })
       .catch((error) => {
-        console.log(error);
+        if (error.response) {
+          setErrors(error.response.data);
+        }
       });
-
-    setFetchData(!fetchData);
-    navigate("/item");
   };
-
 
   return (
     <form className="grid grid-cols-8 gap-y-10 pl-12 ">
@@ -112,24 +103,25 @@ const EditItem = () => {
       </div>
 
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel
-          htmlFor="name"
-          className="flex-none text-black w-32 "
-          required
-        >
+        <InputLabel htmlFor="name" className="flex-none text-black w-32 ">
           Item name
         </InputLabel>
-        <TextField
-          value={itemName}
-          onChange={(e) => setItemName(e.target.value)}
-          id="name"
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
+        <div>
+          {errors.itemName && (
+            <div className="text-[#FC0000] text-sm ml-6">{errors.itemName}</div>
+          )}
+          <TextField
+            value={itemName}
+            onChange={(e) => setItemName(e.target.value)}
+            id="name"
+            variant="outlined"
+            InputProps={{
+              className:
+                "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
               readOnly: false,
-          }}
-        />
+            }}
+          />
+        </div>
       </div>
 
       <div className="col-start-1 col-span-4 flex items-center">
@@ -137,18 +129,22 @@ const EditItem = () => {
           Item group
         </InputLabel>
         <div className="flex-grow">
+          {errors.itemGroup && (
+            <div className="text-[#FC0000] text-sm ml-6">
+              {errors.itemGroup}
+            </div>
+          )}
           <Select
             value={itemGroup}
             onChange={(e) => setItemGroup(e.target.value)}
             id="itemGroup"
             className="bg-white  w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
-           
           >
             <MenuItem disabled value={itemGroup}></MenuItem>
             <MenuItem value="computerAccessories">
               Computer accessories
             </MenuItem>
-            <MenuItem value="printers">Printers</MenuItem>
+            <MenuItem value="printer">Printers</MenuItem>
             <MenuItem value="computerHardware">Computer hardware</MenuItem>
             <MenuItem value="other">other</MenuItem>
           </Select>
@@ -159,36 +155,43 @@ const EditItem = () => {
         <InputLabel htmlFor="unit" className="flex-none text-black w-32 ">
           Unit
         </InputLabel>
-        <TextField
-          value={unit}
-          onChange={(e) => setUnit(e.target.value)}
-          id="unit"
-          variant="outlined"
-          InputProps={{
-            endAdornment: <InputAdornment position="end">pcs</InputAdornment>,
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+        <div>
+          {errors.unit && (
+            <div className="text-[#FC0000] text-sm ml-6">{errors.unit}</div>
+          )}
+          <TextField
+            value={unit}
+            onChange={(e) => setUnit(e.target.value)}
+            id="unit"
+            variant="outlined"
+            InputProps={{
+              className:
+                "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
               readOnly: false,
-           
-          }}
-        />
+            }}
+          />
+        </div>
       </div>
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel htmlFor="brand" className="flex-none text-black w-32 ">
           Brand
         </InputLabel>
-        <TextField
-          value={brand}
-          onChange={(e) => setBrand(e.target.value)}
-          id="brand"
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+        <div>
+          {errors.brand && (
+            <div className="text-[#FC0000] text-sm ml-6">{errors.brand}</div>
+          )}
+          <TextField
+            value={brand}
+            onChange={(e) => setBrand(e.target.value)}
+            id="brand"
+            variant="outlined"
+            InputProps={{
+              className:
+                "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
               readOnly: false,
-             
-          }}
-        />
+            }}
+          />
+        </div>
       </div>
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel htmlFor="dimension" className="flex-none text-black  w-32">
@@ -202,8 +205,7 @@ const EditItem = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-              readOnly: false,
-           
+            readOnly: false,
           }}
         />
       </div>
@@ -219,8 +221,7 @@ const EditItem = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-              readOnly: false,
-           
+            readOnly: false,
           }}
         />
       </div>
@@ -241,8 +242,7 @@ const EditItem = () => {
           InputProps={{
             className:
               "w-[400px] rounded-2xl border border-gray-400 ml-5 bg-white",
-              readOnly: false,
-           
+            readOnly: false,
           }}
         />
       </div>
@@ -250,36 +250,40 @@ const EditItem = () => {
         <InputLabel htmlFor="quantity" className="flex-none text-black w-32 ">
           Initial quantity
         </InputLabel>
-        <TextField
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          id="quantity"
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-              readOnly: false,
-           
-          }}
-        />
-      </div>
-      
-        <>
-          <Button
-            variant="contained"
-            className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
-            onClick={handleSave}
-          >
-            Save
-          </Button>
-          <Button
+        <div>
+          {errors.quantity && (
+            <div className="text-[#FC0000] text-sm ml-6">{errors.quantity}</div>
+          )}
+          <TextField
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            id="quantity"
             variant="outlined"
-            className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
-            onClick={() => navigate("/item")}
-          >
-            Cancel
-          </Button>
-        </>
+            InputProps={{
+              className:
+                "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+              readOnly: false,
+            }}
+          />
+        </div>
+      </div>
+
+      <>
+        <Button
+          variant="contained"
+          className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
+          onClick={handleSave}
+        >
+          Save
+        </Button>
+        <Button
+          variant="outlined"
+          className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
+          onClick={() => navigate("/item")}
+        >
+          Cancel
+        </Button>
+      </>
     </form>
   );
 };
