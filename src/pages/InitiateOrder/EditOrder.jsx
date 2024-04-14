@@ -6,7 +6,7 @@ import {
   
   import { useEffect, useState } from "react";
   import { useParams, useNavigate } from "react-router-dom";
-  
+  import Swal from "sweetalert2";
   import axios from "axios";
   
   const EditOrderDetails = () => {
@@ -21,7 +21,7 @@ import {
     const [description, setDescription] = useState("");
   
     const { ID } = useParams();
-  
+  const [errors,setErrors]=useState({});
     const [fetchData, setFetchData] = useState(false);
   
     const navigate = useNavigate();
@@ -51,6 +51,7 @@ import {
           setBrandName(data.brandName);
           setQuantity(data.quantity);
           setDescription(data.description);
+
         })
         .catch((error) => {
           console.log(error);
@@ -71,15 +72,29 @@ import {
       };
   
       axios
-        .put(`http://localhost:8080/orders/updateById/${ID}`, order)
-        .then(() => {
-          console.log("Successfully updated");
+      .put(`http://localhost:8080/orders/updateById/${ID}`, order)
+      .then((response) => {
+        if (response.status===200) {
+          console.log(response.data);
+          Swal.fire({
+            icon:'success',
+            title:'Success!',
+            text:'Order details successfully edited!'
+          });
           setFetchData(!fetchData);
-          navigate("/order");
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+          navigate("/order", { fetchData });
+        }
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon:'error',
+          title:'Error!',
+          text:'Failed to edit order details. Please check your inputs.'
+        }); 
+        if (error.response) {
+          setErrors(error.response.data);
+        }
+      });
     };
   
     
@@ -91,10 +106,13 @@ import {
           <InputLabel
             htmlFor="vendorName"
             className="flex-none text-black w-32 "
-            required
           >
             Vendor name
           </InputLabel>
+          <div>
+          {errors.vendorName && (
+            <div className="text-[#FC0000] text-sm ml-6">{errors.vendorName}</div>
+          )}
           <TextField
             id="vendorName"
             value={vendorName}
@@ -106,28 +124,9 @@ import {
               readOnly: false,
             }}
           />
+          </div>
         </div>
-  
-        <div className="col-start-1 col-span-4 flex items-center">
-          <InputLabel
-            htmlFor="companyName"
-            className="flex-none text-black w-32 "
-          >
-            Company Name
-          </InputLabel>
-          <TextField
-            id="companyName"
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
-            variant="outlined"
-            InputProps={{
-              className:
-                "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
-              readOnly: false,
-            }}
-          />
-        </div>
-  
+        
         <div className="col-start-1 col-span-4 flex items-center">
           <InputLabel
             htmlFor="vendorEmail"
@@ -135,6 +134,10 @@ import {
           >
             Email Address
           </InputLabel>
+          <div>
+          {errors.vendorEmail && (
+            <div className="text-[#FC0000] text-sm ml-6">{errors.vendorEmail}</div>
+          )}
           <TextField
             id="vendorEmail"
             value={vendorEmail}
@@ -146,11 +149,42 @@ import {
               readOnly: false,
             }}
           />
+          </div>
         </div>
+  
+        <div className="col-start-1 col-span-4 flex items-center">
+          <InputLabel
+            htmlFor="companyName"
+            className="flex-none text-black w-32 "
+          >
+            Company Name
+          </InputLabel>
+          <div>
+          {errors.companyName && (
+            <div className="text-[#FC0000] text-sm ml-6">{errors.companyName}</div>
+          )}
+          <TextField
+            id="companyName"
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
+            variant="outlined"
+            InputProps={{
+              className:
+                "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
+              readOnly: false,
+            }}
+          />
+          </div>
+        </div>
+  
         <div className="col-start-1 col-span-4 flex items-center">
           <InputLabel htmlFor="mobile" className="flex-none text-black w-32 ">
             Mobile
           </InputLabel>
+          <div>
+          {errors.mobile && (
+            <div className="text-[#FC0000] text-sm ml-6">{errors.mobile}</div>
+          )}
           <TextField
             id="mobile"
             value={mobile}
@@ -162,6 +196,7 @@ import {
               readOnly: false,
             }}
           />
+          </div>
         </div>
         <div className="col-start-1 col-span-4 flex items-center">
           <InputLabel htmlFor="date" className="flex-none text-black  w-32">
@@ -176,7 +211,7 @@ import {
             InputProps={{
               className:
                 "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-              readOnly: false,
+              readOnly: true,
             }}
           />
         </div>
@@ -184,6 +219,10 @@ import {
           <InputLabel htmlFor="itemName" className="flex-none text-black  w-32">
             Item Name
           </InputLabel>
+          <div>
+          {errors.itemName && (
+            <div className="text-[#FC0000] text-sm ml-6">{errors.itemName}</div>
+          )}
           <TextField
             id="itemName"
             value={itemName}
@@ -195,6 +234,7 @@ import {
               readOnly: false,
             }}
           />
+          </div>
         </div>
         <div className="col-start-1 col-span-4 flex items-center">
           <InputLabel
@@ -203,6 +243,10 @@ import {
           >
             Brand Name
           </InputLabel>
+          <div>
+          {errors.brandName && (
+            <div className="text-[#FC0000] text-sm ml-6">{errors.brandName}</div>
+          )}
           <TextField
             id="brandName"
             value={brandName}
@@ -214,11 +258,16 @@ import {
               readOnly: false,
             }}
           />
+          </div>
         </div>
         <div className="col-start-1 col-span-4 flex items-center">
           <InputLabel htmlFor="quantity" className="flex-none text-black w-32 ">
             Quantity
           </InputLabel>
+          <div>
+          {errors.quantity && (
+            <div className="text-[#FC0000] text-sm ml-6">{errors.quantity}</div>
+          )}
           <TextField
             id="quantity"
             value={quantity}
@@ -230,6 +279,7 @@ import {
               readOnly: false,
             }}
           />
+          </div>
         </div>
         <div className="col-start-1 col-span-4 flex items-center">
           <InputLabel
