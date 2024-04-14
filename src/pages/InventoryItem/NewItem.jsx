@@ -8,6 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Button } from "@mui/material";
+import Swal from "sweetalert2";
 import axios from "axios";
 
 const AddItemForm = () => {
@@ -42,12 +43,21 @@ const AddItemForm = () => {
       .post("http://localhost:8080/inventory-item/add", item)
       .then((response) => {
         if (response.status===200) {
-          console.log(response.data);
+          Swal.fire({
+            icon:'success',
+            title:'Success!',
+            text:'Item successfully added!'
+          });
           setFetchData(!fetchData);   
           navigate("/item", { fetchData });
         }
       })
       .catch((error) => {
+        Swal.fire({
+          icon:'error',
+          title:'Error!',
+          text:'Failed to add new item. Please check your inputs.'
+        }); 
         if (error.response) {
           setErrors(error.response.data);
         }

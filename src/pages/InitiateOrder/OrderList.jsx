@@ -16,15 +16,15 @@ const columns = [
     flex: 1,
   },
   {
-    field: "vendor",
-    headerName: "Vendor",
+    field: "vendor_name",
+    headerName: "Vendor Name",
     minwidth: 200,
     editable: false,
     flex: 1,
   },
   {
-    field: "topic",
-    headerName: "Topic",
+    field: "date",
+    headerName: "Date",
     type: "number",
     minwidth: 150,
     editable: true,
@@ -52,10 +52,12 @@ const OrderDataGrid = () => {
       .get("http://localhost:8080/orders/getAll")
       .then((response) => {
         const data = response.data.map((order, index) => ({
+          
           id: order.orderId,
           email_address: order.vendorEmail,
-          vendor: order.vendorName,
-          topic: order.description,
+          vendor_name: order.vendorName,
+          //exclude timezone and time
+          date: new Date(order.date).toLocaleDateString(),
           status: order.status,
         }));
         setRows(data);

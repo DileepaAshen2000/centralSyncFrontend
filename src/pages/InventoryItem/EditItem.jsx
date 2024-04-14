@@ -2,7 +2,7 @@ import { Button, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-
+import Swal from "sweetalert2";
 import axios from "axios";
 
 const EditItem = () => {
@@ -71,12 +71,21 @@ const EditItem = () => {
       .put(`http://localhost:8080/inventory-item/updateById/${ID}`, item)
       .then((response) => {
         if (response.status===200) {
-          console.log(response.data);
+          Swal.fire({
+            icon:'success',
+            title:'Success!',
+            text:'Item details successfully edited!'
+          });
           setFetchData(!fetchData);
           navigate("/item", { fetchData });
         }
       })
       .catch((error) => {
+        Swal.fire({
+          icon:'error',
+          title:'Error!',
+          text:'Failed to edit item details. Please check your inputs.'
+        }); 
         if (error.response) {
           setErrors(error.response.data);
         }
