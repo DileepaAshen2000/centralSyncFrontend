@@ -27,6 +27,7 @@ import OrderDataGrid from "./InitiateOrder/OrderList";
 import NewOrderForm from './InitiateOrder/NewOrder'
 import ViewOrderDetails from './InitiateOrder/ViewOrder'
 import EditOrderDetails from './InitiateOrder/EditOrder'
+import CreateTicket from "./Ticket/CreateTicket";
 
 const Home = () => {
   return (
@@ -77,6 +78,8 @@ const Home = () => {
               <Route path="/newUser" element={<CreateUser/>}/>
               <Route path="/user/users/:ID" element={<EditUser/>}/>
               <Route path="/history" element={<UserActivityHistory/>}></Route>
+
+              <Route path='/newTicket' element={<CreateTicket/>}></Route>
 
               
               {/* Inventory Item routing */} 
