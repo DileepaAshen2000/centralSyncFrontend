@@ -29,7 +29,7 @@ const AdjustmentList = () => {
             description: adj.description,
             adjusted_Qty: adj.newQuantity,
             date: adj.date,
-            status: 'pending', // only for testing
+            status:adj.status
         }));
         setRows(data);
       })
@@ -113,7 +113,7 @@ const AdjustmentList = () => {
         autoHeight
         pageSizeOptions={[5]}
         checkboxSelection
-        disableRowSelectionOnClick
+        // disableRowSelectionOnClick
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={handlerowSelectionModelChange}
       />

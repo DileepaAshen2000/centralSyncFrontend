@@ -2,51 +2,36 @@ import React, { useEffect, useState } from "react";
 import { TextField, Button, Stack, Select,MenuItem } from "@mui/material";
 import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
-import SelectR from "./Select_R";
-import SelectD from "./Select_D";
 //import DragDrop from "./Drag&Drop";
 //import { DropzoneArea } from 'material-ui-dropzone';
 //import Dropzone from "./Dropzone";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Description } from "@mui/icons-material";
+ 
 
 const TicketForm= () => {
   const form = useForm();
-  const [firstName, setfName] = useState("");
-  const [lastName, setlName] = useState("");
-  const [dateOfBirth, setDOb] = useState("");
-  const [mobileNo, setMNumber] = useState("");
-  const [telNo, setTelNUmber] = useState("");
-  const [address, setAddress] = useState("");
-  const [email, setEmail] = useState("");
-  const [department, setDepartment] = useState("");
-  const [role, setRole] = useState("");
+  const [topic, settopic] = useState("");
+  const [description, setdescription] = useState("");
+  const [date, setdate] = useState("");
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
 
   const handleClick = (e) => {
     e.preventDefault();
-    const user = {
-      firstName,
-      lastName,
-      dateOfBirth,
-      mobileNo,
-      address,
-      email,
-      telNo,
-      department,
-      role,
-      
-    };
-    console.log(user);
-    fetch("http://localhost:8080/user/add", {
+    const ticket = {
+      topic,
+      description,
+      date,
+        };
+    console.log(ticket);
+    fetch("http://localhost:8080/ticket/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(user),
+      body: JSON.stringify(ticket),
     })
     .then(response => {
       if(response.ok){
-        console.log("New User added");
+        console.log("New ticket added");
 
       }
       else{
@@ -72,13 +57,12 @@ const TicketForm= () => {
             <TextField
               id="name"
               variant="outlined"
-              placeholder="First Name"
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
               }}
-              value={firstName}
-              onChange={(e) => setfName(e.target.value)}
+              //value={fir}
+              //onChange={(e) => setfName(e.target.value)}
             />
            
           </div>{" "}
@@ -101,15 +85,15 @@ const TicketForm= () => {
                 className:
                   "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
               }}
-              value={lastName}
-              onChange={(e) => setlName(e.target.value)}
+              //value={lastName}
+              //onChange={(e) => setlName(e.target.value)}
             />
           </div>
           <div></div>
           <div></div>
            
           <div className="col-span-1 row-span-1">
-            <label htmlFor="2">Topic for ticket</label>
+            <label htmlFor="topic">Topic for ticket</label>
           </div>
           <div className="col-span-2">
           {errors.department && <div className="text-[#FC0000] text-sm">{errors.department}</div>}
@@ -117,8 +101,9 @@ const TicketForm= () => {
               
               id="topic"
               className="w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2"
+              onChange={(e) => settopic(e.target.value)}
             >
-              <MenuItem disabled value={department}></MenuItem>
+              <MenuItem disabled value={topic}></MenuItem>
               <MenuItem value="Network Issues">Network Issues</MenuItem>
               <MenuItem value="Hardware Problems">Hardware Problems</MenuItem>
               <MenuItem value="Other">Other</MenuItem>
@@ -129,9 +114,27 @@ const TicketForm= () => {
           <div></div>
           <div></div>
           <div className="col-span-1 row-span-1">
-            <label htmlFor="3">Description</label>
+            <label htmlFor="description">Date</label>
           </div>
-          <div className="col-span-2 row-span-3 ">
+          <div className="col-span-2">
+          {errors.role && <div className="text-[#FC0000] text-sm">{errors.role}</div>}
+          <TextField
+              variant="outlined"
+              InputProps={{
+                className:
+                  "w-[375px] cursor-auto border border-[#857A7A] rounded-xl px-2 h-9 ",
+              }}
+              value={date}
+              onChange={(e) => setdate(e.target.value)}
+            />
+          </div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div className="col-span-1">
+            <label htmlFor="description">Description</label>
+          </div>
+          <div className="col-span-2 row-span-2">
           {errors.role && <div className="text-[#FC0000] text-sm">{errors.role}</div>}
           <TextField
               variant="outlined"
@@ -139,19 +142,18 @@ const TicketForm= () => {
                 className:
                   "w-[450px] cursor-auto h-[100px] border border-[#857A7A] rounded-xl px-2 ",
               }}
-              //value={}
-              //onChange={(e) => setlName(e.target.value)}
+              value={description}
+              onChange={(e) => setdescription(e.target.value)}
             />
           </div>
           <div></div>
           <div></div>
           <div></div>
-            
+    
           
-          </div>
-          <div></div>
-          <div></div>
-          <div></div>
+         
+        </div>
+           
        
 
        

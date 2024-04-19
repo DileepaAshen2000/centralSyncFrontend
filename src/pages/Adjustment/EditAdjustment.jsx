@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { FormControl, Select, MenuItem, TextField, Grid, Box, Typography, Button } from '@mui/material';
-
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -11,18 +10,9 @@ import Paper from '@mui/material/Paper';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24)
-];
-
 const EditAdjustment = () => {
 
   let navigate = useNavigate();
-
   const {adjId} = useParams(); // To get the id from the url
   const [adj,setAdj] = useState({  // create state for adjustment, initial state is empty with object.
     reason:"",
@@ -30,10 +20,17 @@ const EditAdjustment = () => {
     description:"",
     newQuantity:"",
     name:"",
-    group:""
+    itemId:""
   })
 
-  const{reason,date,description,newQuantity,name,group} = adj;
+  const{reason,date,description,newQuantity,itemId,availableQuantity} = adj;
+
+  const [item,setItem] = useState({  // create state for item, initial state is empty with object.
+    itemName:"",
+    quantity:"",
+    itemGroup:""
+  })
+  const{itemName,quantity,itemGroup} = item;
   
   //Add onChange event to the input fields
   const onInputChange=(e)=>{
@@ -55,11 +52,16 @@ const EditAdjustment = () => {
     try {
       const result = await axios.get(`http://localhost:8080/adjustment/getById/${adjId}`);
       setAdj(result.data);  // Make sure the fetched data structure matches the structure of your state
+      
+      // Fetch item details based on itemId
+      const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${result.data.itemId}`);
+      setItem(result1.data);
+
     } catch (error) {
       console.error('Error loading adjustment:', error);
     }
   }
-
+  
   return (
     <Box className='p-10 bg-white rounded-2xl ml-14 mr-14'>
       <Box className="pb-4">
@@ -67,7 +69,6 @@ const EditAdjustment = () => {
       </Box>
       <form onSubmit={(e)=> onSubmit(e)}>
         <Grid container spacing={2}  padding={4} >
-
             <Grid container display='flex' mt={4}>
                 <Grid item sm={2} xs={2}>
                     <Typography>Adjustment ID</Typography>
@@ -94,10 +95,10 @@ const EditAdjustment = () => {
                 <Grid item sm={9} xs={9}>
                     <TextField
                     style={{ width: '300px' }}
-                    name='id'
+                    name='itemId'
                     label='Item ID'
                     size='small'
-                    
+                    value={itemId}
                     onChange={(e)=>onInputChange(e)}
                     InputProps={{
                         readOnly: true,
@@ -116,7 +117,7 @@ const EditAdjustment = () => {
                     name='name'
                     label='Item Name'
                     size='small'
-                    value={name}
+                    value={itemName}
                     onChange={(e)=>onInputChange(e)}
                     InputProps={{
                         readOnly: true,
@@ -133,9 +134,9 @@ const EditAdjustment = () => {
                     <TextField
                         style={{ width: '300px' }}
                         label='Group'
-                        value={group}
+                        value={itemGroup}
                         onChange={(e)=>onInputChange(e)}
-                        name='group'
+                        name='itemGroup'
                         size='small' 
                         InputProps={{
                             readOnly: true,
@@ -163,8 +164,6 @@ const EditAdjustment = () => {
               />
             </Grid>
           </Grid>
-
-          
           <Grid container display='flex' mt={4}>
             <Grid item sm={2} xs={2}>
               <Typography>Reason</Typography>
@@ -172,21 +171,19 @@ const EditAdjustment = () => {
             <Grid item sm={9} xs={9}>
               <FormControl style={{ width: '300px' }}>
                 <Select value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason'>
-                  <MenuItem value="reason1">Reason 1</MenuItem>
-                  <MenuItem value="reason2">Reason 2</MenuItem>
-                  <MenuItem value="reason3">Reason 3</MenuItem>
+                  <MenuItem value="Damaged Item">Damaged Item</MenuItem>
+                  <MenuItem value="Stolen Item">Stolen Item</MenuItem>
+                  <MenuItem value="Others">Others</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
-          </Grid>
-          
+          </Grid> 
           <Grid container display='flex' mt={4}>
             <Grid item sm={2} xs={2}>
               <Typography>Description</Typography>
             </Grid>
             <Grid item sm={9} xs={9}>
               <TextField
-                // id="outlined-multiline-static"
                 label="Description"
                 name='description'
                 multiline
@@ -211,19 +208,14 @@ const EditAdjustment = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rows.map((row) => (
-                    <TableRow
-                      key={row.name}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
+                    <TableRow>
                       <TableCell component="th" scope="row">
-                        {row.name}
+                        {itemName}
                       </TableCell>
-                      <TableCell align="right">{row.calories}</TableCell>
+                      <TableCell align="right">{quantity}</TableCell>
                       <TableCell align="right"><TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}></TextField></TableCell>
-                      <TableCell align="right">{row.carbs}</TableCell>
+                      <TableCell align="right">{newQuantity - quantity}</TableCell>
                     </TableRow>
-                  ))}
                 </TableBody>
               </Table>
             </TableContainer>

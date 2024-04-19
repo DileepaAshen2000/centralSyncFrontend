@@ -9,25 +9,29 @@ import CreateUser from "./User/CreateUser";
 import EditUser from "../components/UserEditForm";
 import { Grid } from "@mui/material";
 import AdjustmentDocument from "./Adjustment/AdjustmentDocument";
-import ItemDataGrid from './InventoryItem/ItemList'
-import AddItemForm from './InventoryItem/NewItem'
-import ViewItemDetails from './InventoryItem/ViewDetails'
-import EditItem from './InventoryItem/EditItem'
-import RequestList from './InventoryRequest/RequestsList'
-import AdminRequestList from './InventoryRequest/AdminRequestList'
-import RequestDocumentPending from './InventoryRequest/RequestDocumentPending'
-import CreateNewRequest from './InventoryRequest/CreateNewRequest'
-import EditRequest from './InventoryRequest/EditRequest'
+import ItemDataGrid from "./InventoryItem/ItemList";
+import AddItemForm from "./InventoryItem/NewItem";
+import ViewItemDetails from "./InventoryItem/ViewDetails";
+import EditItem from "./InventoryItem/EditItem";
+import RequestList from "./InventoryRequest/RequestsList";
+import AdminRequestList from "./InventoryRequest/AdminRequestList";
+import RequestDocumentPending from "./InventoryRequest/RequestDocumentPending";
+import CreateNewRequest from "./InventoryRequest/CreateNewRequest";
+import EditRequest from "./InventoryRequest/EditRequest";
 import UserActivityHistory from "./User/History";
-import EditAdjustment from './Adjustment/EditAdjustment'
-import StockInList from './StockIn/StockInList'
-import StockOutList from './StockOut/StockOutList'
-import AdjustmentList from './Adjustment/AdjustmentList'
+import EditAdjustment from "./Adjustment/EditAdjustment";
+import StockInList from "./StockIn/StockInList";
+import StockOutList from "./StockOut/StockOutList";
+import AdjustmentList from "./Adjustment/AdjustmentList";
 import OrderDataGrid from "./InitiateOrder/OrderList";
-import NewOrderForm from './InitiateOrder/NewOrder'
-import ViewOrderDetails from './InitiateOrder/ViewOrder'
-import EditOrderDetails from './InitiateOrder/EditOrder'
 import CreateTicket from "./Ticket/CreateTicket";
+import NewOrderForm from "./InitiateOrder/NewOrder";
+import ViewOrderDetails from "./InitiateOrder/ViewOrder";
+import EditOrderDetails from "./InitiateOrder/EditOrder";
+import Usage from "./UsageReport/UsageReport";
+import StockInDocument from "./StockIn/StockInDocument";
+import NewStockIn from "./StockIn/NewStockIn";
+ 
 
 const Home = () => {
   return (
@@ -74,22 +78,22 @@ const Home = () => {
               ></Route>
 
               {/* User routing */}
-              <Route path='/user' element={<User/>}></Route>
-              <Route path="/newUser" element={<CreateUser/>}/>
-              <Route path="/user/users/:ID" element={<EditUser/>}/>
-              <Route path="/history" element={<UserActivityHistory/>}></Route>
-
+              <Route path="/user" element={<User />}></Route>
+              <Route path="/newUser" element={<CreateUser />} />
+              <Route path="/user/users/:ID" element={<EditUser />} />
+              <Route path="/history" element={<UserActivityHistory />}></Route>
               <Route path='/newTicket' element={<CreateTicket/>}></Route>
 
-              
-              {/* Inventory Item routing */} 
-
-              
-              <Route path='/item' element={<ItemDataGrid/>}></Route>
-              <Route path='/item/add-item' element={<AddItemForm/>}></Route>
-              <Route path='/item/edit-item/:ID' element={<EditItem/>}></Route>
-              <Route path='/item/view-item/:ID' element={<ViewItemDetails/>}></Route>
+              {/* Inventory Item routing */}
  
+
+              <Route path="/item" element={<ItemDataGrid />}></Route>
+              <Route path="/item/add-item" element={<AddItemForm />}></Route>
+              <Route path="/item/edit-item/:ID" element={<EditItem />}></Route>
+              <Route
+                path="/item/view-item/:ID"
+                element={<ViewItemDetails />}
+              ></Route>
 
               {/* Inventory Request routing */}
               <Route path="/inventoryRequest" element={<RequestList />}></Route>
@@ -114,15 +118,32 @@ const Home = () => {
                 element={<EditRequest />}
               ></Route>
 
-              {/* Stock In/Out routing */}
+              {/* Stock In routing */}
               <Route path="/stockIn" element={<StockInList />}></Route>
+              <Route path="/stockIn/:sinId" element={<StockInDocument/>}></Route>
+              <Route path="/new-stockin" element={<NewStockIn/>}></Route>
+
+              {/* Stock Out routing */}
               <Route path="/stockOut" element={<StockOutList />}></Route>
 
               {/*Initiate order routing*/}
               <Route path="/order" element={<OrderDataGrid />}></Route>
-              <Route path='/order/new-order' element={<NewOrderForm/>}></Route>
-              <Route path='/order/view-order/:ID' element={<ViewOrderDetails/>}></Route>
-              <Route path='/order/edit-order/:ID' element={<EditOrderDetails/>}></Route>
+              <Route path="/order/new-order" element={<NewOrderForm />}></Route>
+              <Route
+                path="/order/view-order/:ID"
+                element={<ViewOrderDetails />}
+              ></Route>
+              <Route
+                path="/order/edit-order/:ID"
+                element={<EditOrderDetails />}
+              ></Route>
+ {/*Reports routing*/}
+ <Route
+                path="/report/item-usage-analysis"
+                element={<Usage />}
+              ></Route>
+
+
             </Routes>
           </BrowserRouter>
         </Grid>
