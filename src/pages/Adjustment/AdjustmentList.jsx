@@ -113,7 +113,7 @@ const AdjustmentList = () => {
         autoHeight
         pageSizeOptions={[5]}
         checkboxSelection
-        disableRowSelectionOnClick
+        // disableRowSelectionOnClick
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={handlerowSelectionModelChange}
       />

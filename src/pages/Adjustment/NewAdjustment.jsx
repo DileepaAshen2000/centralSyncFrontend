@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FormControl, Select, MenuItem, TextField, Grid, Box, Typography, Button } from '@mui/material';
+import { FormControl, Select, MenuItem, TextField, Grid, Box, Typography, Button ,Autocomplete } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -10,6 +10,7 @@ import Paper from '@mui/material/Paper';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { useEffect } from 'react';
 
 const NewAdjustment = () => {
 
@@ -22,18 +23,63 @@ const NewAdjustment = () => {
     itemId:""
   })
 
-  const{reason,date,description,newQuantity,itemId} = adj; // Destructure the state
+  const{reason,date,description,newQuantity,itemId} = adj; // Destructure the adj state
+
+  const [item,setItem] = useState({ // create state for item, initial state is empty with object.
+    itemName:"",
+    quantity:""
+  })
+
+  //item fetching
+  const [options, setOptions] = useState([]);
+  const [selectedItemId, setSelectedItemId] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/inventory-item/getAll');
+        setOptions(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+  const handleItemChange = (event, value) => {
+    if (value) {
+      setSelectedItemId(value.itemId);
+      setAdj({ ...adj, itemId: value.itemId }); // Update the itemId in the adj state
+      fetchItemDetails(value.itemId);
+    } else {
+      setSelectedItemId(null);
+      setAdj({ ...adj, itemId: "" });
+    }
+    
+  };
+  // end of item fetching part
   
+  // Fetch item details
+  const fetchItemDetails = async (itemId) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/inventory-item/getById/${itemId}`);
+      setItem({ ...item, quantity: response.data.quantity }); // Update the newQuantity in the adj state
+    } catch (error) {
+      console.error('Error fetching item data:', error);
+    }
+  }
   //Add onChange event to the input fields
-  const onInputChange=(e)=>{
+  const onInputChange= async (e)=>{
     setAdj({...adj,[e.target.name]:e.target.value});
   };
 
   const onSubmit=async(e)=>{
     e.preventDefault(); // To remove unwanted url tail part
     const result = await axios.post("http://localhost:8080/adjustment/add",adj) // To send data to the server
-    console.log(result.data)
-    navigate('/adjustment') // To navigate to the adjustment page
+    console.log(result.data);
+    navigate('/adjustment');// To navigate to the adjustment page
   }
 
   // handle the onClick event of Submit button
@@ -60,7 +106,7 @@ const NewAdjustment = () => {
             </Grid>
             <Grid item sm={9} xs={9}>   
               <FormControl style={{ width: '300px' }}>
-                <Select size='small' name='group'>
+                <Select size='small'>
                   <MenuItem value="option1">Group 1</MenuItem>
                   <MenuItem value="option2">Group 2</MenuItem>
                   <MenuItem value="option3">Group 3</MenuItem>
@@ -74,14 +120,16 @@ const NewAdjustment = () => {
               <Typography>Item Name</Typography>
             </Grid>
             <Grid item sm={9} xs={9}>
-              <TextField
-                style={{ width: '300px' }}
-                label="Item Name"
-                type="search"
-                name='itemName'
-                size='small'  
-                helperText='Please select the item name.'     
-              />
+                <Autocomplete
+                  disablePortal
+                  // id="combo-box-demo"
+                  options={options} 
+                  getOptionLabel={(option) => option.itemName}
+                  onChange={handleItemChange}
+                  sx={{ width: 300 }}
+                  renderInput={(params) => <TextField {...params} label="Item Name"  helperText='Please select the item name.'/>}
+                  size='small' 
+                />
             </Grid>
           </Grid>
           
@@ -90,13 +138,16 @@ const NewAdjustment = () => {
               <Typography>Item ID</Typography>
             </Grid>
             <Grid item sm={9} xs={9}>
-              <TextField
-              style={{ width: '300px' }}
-               label="Item ID" 
-               name='itemId'
-               size='small'
-               value={itemId}
-               onChange={(e)=>onInputChange(e)}
+              <Autocomplete
+                disabled
+                // id="combo-box-selected"
+                options={[{ itemId: selectedItemId }]} // Provide the selected itemId as an option
+                getOptionLabel={(option) => option.itemId} // Display itemId in the Autocomplete
+                name='itemId' // Add name to the Autocomplete
+                value={{ itemId: selectedItemId }} // Set the value to the selected itemId
+                sx={{ width: 300 }}
+                renderInput={(params) => <TextField {...params} label="Item ID" />}
+                size='small'
               />
             </Grid>
           </Grid>
@@ -170,16 +221,18 @@ const NewAdjustment = () => {
                     <TableRow>
                       {/* item name */}
                       <TableCell component="th" scope="row">
-                        keyboard
+                      {options.find(option => option.itemId === selectedItemId)?.itemName || 'Loading...'}
                       </TableCell>
                       {/* available Qty */}
-                      <TableCell align="right">100</TableCell>
+                      <TableCell align="right">
+                      {item.quantity}
+                      </TableCell>
                       {/* new Qty */}
                       <TableCell align="right">
                         <TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}></TextField>
                       </TableCell>
-                      {/* adjust Qty */}
-                      <TableCell align="right">-2</TableCell>
+                      {/* adjusted Qty */}
+                      <TableCell align="right">{adj.newQuantity - item.quantity}</TableCell>
                     </TableRow>
                 </TableBody>
               </Table>

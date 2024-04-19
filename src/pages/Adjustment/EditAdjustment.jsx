@@ -25,7 +25,7 @@ const EditAdjustment = () => {
 
   const{reason,date,description,newQuantity,itemId,availableQuantity} = adj;
 
-  const [item,setItem] = useState({  // create state for adjustment, initial state is empty with object.
+  const [item,setItem] = useState({  // create state for item, initial state is empty with object.
     itemName:"",
     quantity:"",
     itemGroup:""
