@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Stack, Select,MenuItem } from "@mui/material";
+import { TextField, Button, Stack, Select,MenuItem,Autocomplete } from "@mui/material";
 import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
 //import DragDrop from "./Drag&Drop";
 //import { DropzoneArea } from 'material-ui-dropzone';
 //import Dropzone from "./Dropzone";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import axios from 'axios';
  
 
 const TicketForm= () => {
@@ -13,8 +14,44 @@ const TicketForm= () => {
   const [topic, settopic] = useState("");
   const [description, setdescription] = useState("");
   const [date, setdate] = useState("");
+  const [itemName, setItemName] = useState("");
+  const [brand, setBrand] = useState("");
+
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
+  const [options, setOptions] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/inventory-item/getAll');
+        setOptions(response.data);
+      } catch (error) {
+        console.error('Error fetching item data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  
+
+  console.log('Options:', options);
+
+  const handleItemChange = (event, value) => {
+    if (value) {
+      setItemName(value.itemName);
+    } else {
+      setItemName('');
+    }
+  };
+
+  const handleItembrandChange = (event, value) => {
+    if (value) {
+      setBrand(value.brand);
+    } else {
+      setBrand('');
+    }
+  };
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -22,6 +59,8 @@ const TicketForm= () => {
       topic,
       description,
       date,
+      itemName,
+      brand
         };
     console.log(ticket);
     fetch("http://localhost:8080/ticket/add", {
@@ -48,22 +87,21 @@ const TicketForm= () => {
       <form>
         <div className="grid grid-cols-6 grid-rows-6  gap-x-5 gap-y-5">
           <div className="col-span-1">
-            <label htmlFor="name">Item id</label>
+            <label htmlFor="name">Item Name</label>
             
            
           </div>
           <div className="col-span-2">
           {errors.firstName && <div className="text-[#FC0000] text-sm">{errors.firstName}</div>}
-            <TextField
-              id="name"
-              variant="outlined"
-              InputProps={{
-                className:
-                  "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
-              }}
-              //value={fir}
-              //onChange={(e) => setfName(e.target.value)}
-            />
+          <Autocomplete
+                options={options}
+                getOptionLabel={(option) => option.itemName}
+                onChange={handleItemChange}
+                value={options.find((option) => option.itemName === itemName) || null}
+                renderInput={(params) => (
+                  <TextField {...params} label="Item Name" variant="outlined" fullWidth />
+                )}
+              />
            
           </div>{" "}
           <div className="col-span-3">
@@ -71,23 +109,22 @@ const TicketForm= () => {
 
           </div>
           <div className="col-span-1">
-            <label htmlFor="name">Item Name</label>
+            <label htmlFor="name">Item Brand</label>
             
            
           </div>
           <div className="col-span-3">
           {errors.lastName && <div className="text-[#FC0000] text-sm">{errors.lastName}</div>}
             
-            <TextField
-              variant="outlined"
-             // placeholder="Item Name"
-              InputProps={{
-                className:
-                  "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
-              }}
-              //value={lastName}
-              //onChange={(e) => setlName(e.target.value)}
-            />
+          <Autocomplete
+                options={options}
+                getOptionLabel={(option) => option.brand}
+                onChange={handleItembrandChange}
+                value={options.find((option) => option.brand === brand) || null}
+                renderInput={(params) => (
+                  <TextField {...params} label="brand" variant="outlined" fullWidth />
+                )}
+              />
           </div>
           <div></div>
           <div></div>
