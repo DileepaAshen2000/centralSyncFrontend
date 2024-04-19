@@ -23,9 +23,8 @@ const ViewOrderDetails = () => {
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
 
-
   const { ID } = useParams();
-
+  
   const [fetchData, setFetchData] = useState(false);
 
   const navigate = useNavigate();
@@ -61,8 +60,6 @@ const ViewOrderDetails = () => {
       });
   }, [ID]);
 
- 
-
   const [anchorEl, setAnchorEl] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -93,8 +90,8 @@ const ViewOrderDetails = () => {
     axios
       .patch("http://localhost:8080/orders/updateStatus/" + ID)
       .then(() => {
-        setFetchData(!fetchData);
-        navigate("/order", { fetchData });
+        setFetchData(!fetchData); 
+        navigate("/order", { fetchData }); 
       })
       .catch((error) => {
         console.log(error);
@@ -102,13 +99,13 @@ const ViewOrderDetails = () => {
   };
 
   return (
-    <form className="grid grid-cols-8 gap-y-10 pl-12 ">
-      <h1 className=" col-span-4 text-2xl ">Order Details</h1>
+    <form className="grid grid-cols-8 pl-12 gap-y-10 ">
+      <h1 className="col-span-4 text-2xl ">Order Details</h1>
 
-      <div className="col-start-1 col-span-4 flex items-center">
+      <div className="flex items-center col-span-4 col-start-1">
         <InputLabel
           htmlFor="vendorName"
-          className="flex-none text-black w-32 "
+          className="flex-none w-32 text-black "
           required
         >
           Vendor name
@@ -126,10 +123,10 @@ const ViewOrderDetails = () => {
         />
       </div>
 
-      <div className="col-start-1 col-span-4 flex items-center">
+      <div className="flex items-center col-span-4 col-start-1">
         <InputLabel
           htmlFor="companyName"
-          className="flex-none text-black w-32 "
+          className="flex-none w-32 text-black "
         >
           Company Name
         </InputLabel>
@@ -146,10 +143,10 @@ const ViewOrderDetails = () => {
         />
       </div>
 
-      <div className="col-start-1 col-span-4 flex items-center">
+      <div className="flex items-center col-span-4 col-start-1">
         <InputLabel
           htmlFor="vendorEmail"
-          className="flex-none text-black w-32 "
+          className="flex-none w-32 text-black "
         >
           Email Address
         </InputLabel>
@@ -165,8 +162,8 @@ const ViewOrderDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="mobile" className="flex-none text-black w-32 ">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="mobile" className="flex-none w-32 text-black ">
           Mobile
         </InputLabel>
         <TextField
@@ -181,8 +178,8 @@ const ViewOrderDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="date" className="flex-none text-black  w-32">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="date" className="flex-none w-32 text-black">
           Date
         </InputLabel>
         <TextField
@@ -198,8 +195,8 @@ const ViewOrderDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="itemName" className="flex-none text-black  w-32">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="itemName" className="flex-none w-32 text-black">
           Item Name
         </InputLabel>
         <TextField
@@ -214,10 +211,10 @@ const ViewOrderDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
+      <div className="flex items-center col-span-4 col-start-1">
         <InputLabel
           htmlFor="brandName"
-          className="flex-none text-black  w-32 mt-0"
+          className="flex-none w-32 mt-0 text-black"
         >
           Brand Name
         </InputLabel>
@@ -233,8 +230,8 @@ const ViewOrderDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="quantity" className="flex-none text-black w-32 ">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="quantity" className="flex-none w-32 text-black ">
           Quantity
         </InputLabel>
         <TextField
@@ -249,10 +246,10 @@ const ViewOrderDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
+      <div className="flex items-center col-span-4 col-start-1">
         <InputLabel
           htmlFor="description"
-          className="flex-none text-black w-32 "
+          className="flex-none w-32 text-black "
         >
           Description
         </InputLabel>

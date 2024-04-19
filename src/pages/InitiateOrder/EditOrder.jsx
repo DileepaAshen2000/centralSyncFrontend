@@ -41,7 +41,6 @@ import {
             quantity: response.data.quantity,
             description: response.data.description,
           };
-  
           setVendorName(data.vendorName);
           setCompanyName(data.companyName);
           setVendorEmail(data.vendorEmail);
@@ -57,7 +56,6 @@ import {
           console.log(error);
         });
     }, [ID]);
-  
  
     const handleSave = () => {
       const order = {
@@ -96,13 +94,12 @@ import {
         }
       });
     };
-  
-    
+
     return (
-      <form className="grid grid-cols-8 gap-y-10 pl-12 ">
-        <h1 className=" col-span-4 text-2xl ">Order Details</h1>
+      <form className="grid grid-cols-8 pl-12 gap-y-10 ">
+        <h1 className="col-span-4 text-2xl ">Order Details</h1>
   
-        <div className="col-start-1 col-span-4 flex items-center">
+        <div className="flex items-center col-span-4 col-start-1">
           <InputLabel
             htmlFor="vendorName"
             className="flex-none text-black w-32 "
@@ -126,7 +123,6 @@ import {
           />
           </div>
         </div>
-        
         <div className="col-start-1 col-span-4 flex items-center">
           <InputLabel
             htmlFor="vendorEmail"
@@ -152,7 +148,7 @@ import {
           </div>
         </div>
   
-        <div className="col-start-1 col-span-4 flex items-center">
+        <div className="flex items-center col-span-4 col-start-1">
           <InputLabel
             htmlFor="companyName"
             className="flex-none text-black w-32 "
@@ -198,8 +194,8 @@ import {
           />
           </div>
         </div>
-        <div className="col-start-1 col-span-4 flex items-center">
-          <InputLabel htmlFor="date" className="flex-none text-black  w-32">
+        <div className="flex items-center col-span-4 col-start-1">
+          <InputLabel htmlFor="date" className="flex-none w-32 text-black">
             Date
           </InputLabel>
           <TextField
@@ -215,8 +211,8 @@ import {
             }}
           />
         </div>
-        <div className="col-start-1 col-span-4 flex items-center">
-          <InputLabel htmlFor="itemName" className="flex-none text-black  w-32">
+        <div className="flex items-center col-span-4 col-start-1">
+          <InputLabel htmlFor="itemName" className="flex-none w-32 text-black">
             Item Name
           </InputLabel>
           <div>
@@ -236,10 +232,10 @@ import {
           />
           </div>
         </div>
-        <div className="col-start-1 col-span-4 flex items-center">
+        <div className="flex items-center col-span-4 col-start-1">
           <InputLabel
             htmlFor="brandName"
-            className="flex-none text-black  w-32 mt-0"
+            className="flex-none w-32 mt-0 text-black"
           >
             Brand Name
           </InputLabel>
@@ -260,8 +256,8 @@ import {
           />
           </div>
         </div>
-        <div className="col-start-1 col-span-4 flex items-center">
-          <InputLabel htmlFor="quantity" className="flex-none text-black w-32 ">
+        <div className="flex items-center col-span-4 col-start-1">
+          <InputLabel htmlFor="quantity" className="flex-none w-32 text-black ">
             Quantity
           </InputLabel>
           <div>
@@ -281,10 +277,10 @@ import {
           />
           </div>
         </div>
-        <div className="col-start-1 col-span-4 flex items-center">
+        <div className="flex items-center col-span-4 col-start-1">
           <InputLabel
             htmlFor="description"
-            className="flex-none text-black w-32 "
+            className="flex-none w-32 text-black "
           >
             Description
           </InputLabel>
@@ -305,14 +301,14 @@ import {
           <>
             <Button
               variant="contained"
-              className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
+              className="col-start-6 ml-10 bg-blue-600 rounded-sm row-start-11"
               onClick={handleSave}
             >
               Save
             </Button>
             <Button
               variant="outlined"
-              className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
+              className="col-start-8 text-blue-600 bg-white border-blue-600 rounded-sm row-start-11"
               onClick={() => navigate("/order")}
             >
               Cancel
