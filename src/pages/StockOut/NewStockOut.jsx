@@ -4,18 +4,18 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
-const NewStockIn = () => {
+const NewStockOut = () => {
 
   let navigate = useNavigate();
-  const [stockIn,setStockIn] = useState({  // create state for adjustment, initial state is empty with object.
-    location:"",
+  const [stockOut,setStockOut] = useState({  // create state for adjustment, initial state is empty with object.
+    department:"",
     date:"",
     description:"",
-    inQty:"",
+    outQty:"",
     itemId:""
   })
 
-  const{location,date,description,inQty,itemId} = stockIn; // Destructure the state
+  const{department,date,description,outQty,itemId} = stockOut; // Destructure the state
 
   // item fetching
   const [options, setOptions] = useState([]);
@@ -38,32 +38,31 @@ const NewStockIn = () => {
   const handleItemChange = (event, value) => {
     if (value) {
       setSelectedItemId(value.itemId);
-      setStockIn({ ...stockIn, itemId: value.itemId }); // Update the itemId in the adj state
-      // fetchItemDetails(value.itemId);
+      setStockOut({ ...stockOut, itemId: value.itemId }); // Update the itemId in the adj state
     } else {
       setSelectedItemId(null);
-      setStockIn({ ...stockIn, itemId: "" });
+      setStockOut({ ...stockOut, itemId: "" });
     }
     
   };
   
   //Add onChange event to the input fields
   const onInputChange=(e)=>{
-    setStockIn({...stockIn,[e.target.name]:e.target.value});
+    setStockOut({...stockOut,[e.target.name]:e.target.value});
   };
 
   const onSubmit=async(e)=>{
     e.preventDefault(); // To remove unwanted url tail part
-    const result = await axios.post("http://localhost:8080/stock-in/add",stockIn) // To send data to the server
+    const result = await axios.post("http://localhost:8080/stock-out/add",stockOut) // To send data to the server
     console.log(result.data)
-    navigate('/stockIn') // To navigate to the stockin page
+    navigate('/stockOut') // To navigate to the stockin page
   }
 
   // handle the onClick event of Submit button
   const handleClick = () => {
     Swal.fire({
       title: "Good Job!",
-      text: "You Added a New Stock!",
+      text: "You Added a New Stock-Out !",
       icon: "success"
     });
     
@@ -72,7 +71,7 @@ const NewStockIn = () => {
   return (
     <Box className='p-10 bg-white rounded-2xl ml-14 mr-14'>
       <Box className="pb-4">
-        <h1 className="pt-2 pb-3 text-3xl font-bold ">New Stock-In</h1>
+        <h1 className="pt-2 pb-3 text-3xl font-bold ">New Stock-Out</h1>
       </Box>
       <form onSubmit={(e)=> onSubmit(e)}>
         <Grid container spacing={2}  padding={4} >
@@ -110,7 +109,7 @@ const NewStockIn = () => {
                   getOptionLabel={(option) => option.itemName}
                   onChange={handleItemChange}
                   sx={{ width: 300 }}
-                  renderInput={(params) => <TextField {...params} label="Item Name"  helperText='Please select the item name.'/>}
+                  renderInput={(params) => <TextField {...params} label="Item Name"  helperText='Please select the Item Name.'/>}
                   size='small' 
                 />
             </Grid>
@@ -142,6 +141,21 @@ const NewStockIn = () => {
               />
             </Grid>
           </Grid>
+
+          <Grid container display='flex' mt={4}>
+            <Grid item sm={2} xs={2}>
+              <Typography>Department</Typography>
+            </Grid>
+            <Grid item sm={9} xs={9}>
+              <FormControl style={{ width: '300px' }}>
+                <Select  value={department} onChange={(e)=>onInputChange(e)} size='small' name='department'>
+                  <MenuItem value="Department 01">Department 01</MenuItem>
+                  <MenuItem value="Department 02">Department 02</MenuItem>
+                  <MenuItem value="Department 03">Department 03</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
           
           <Grid container display='flex' mt={4}>
             <Grid item sm={2} xs={2}>
@@ -163,33 +177,17 @@ const NewStockIn = () => {
             </Grid>
           </Grid>
 
-          
           <Grid container display='flex' mt={4}>
             <Grid item sm={2} xs={2}>
-              <Typography>Location</Typography>
-            </Grid>
-            <Grid item sm={9} xs={9}>
-              <FormControl style={{ width: '300px' }}>
-                <Select  value={location} onChange={(e)=>onInputChange(e)} size='small' name='location'>
-                  <MenuItem value="Store 01">Store 01</MenuItem>
-                  <MenuItem value="Store 02">Store 02</MenuItem>
-                  <MenuItem value="Store 03">Store 03</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
-
-          <Grid container display='flex' mt={4}>
-            <Grid item sm={2} xs={2}>
-              <Typography>Quantity In</Typography>
+              <Typography>Quantity Out</Typography>
             </Grid>
             <Grid item sm={9} xs={9}>
                 <TextField 
                 size='small' 
-                placeholder='Enter Quantity In' 
+                placeholder='Enter Quantity Out' 
                 type='Number' 
-                name='inQty' 
-                value={inQty} 
+                name='outQty' 
+                value={outQty} 
                 onChange={(e)=>onInputChange(e)}/>
             </Grid>
           </Grid>
@@ -222,7 +220,7 @@ const NewStockIn = () => {
                variant='contained'
                type='submit'
               onClick={handleClick}
-                >Stock In</Button>
+                >Stock Out</Button>
             <Button className="px-6 py-2 rounded"
                variant='outlined'
                onClick={() => navigate("/stockIn")}
@@ -233,4 +231,4 @@ const NewStockIn = () => {
   );
 };
 
-export default NewStockIn;
+export default NewStockOut;

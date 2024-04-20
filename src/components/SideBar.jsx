@@ -70,9 +70,11 @@ const SideBar = () => {
               <ListItemText primary="Stock In" />
             </ListItem>
           </a>
-          <ListItem button className="pl-8 rounded-lg">
-            <ListItemText primary="Stock Out" />
-          </ListItem>
+          <a href="/stockOut">
+            <ListItem button className="pl-8 rounded-lg">
+              <ListItemText primary="Stock Out" />
+            </ListItem>
+          </a>
         </List>
       </Collapse>
 
@@ -127,10 +129,9 @@ const SideBar = () => {
       <Collapse in={openReport} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
           <a href="/history">
-          <ListItem button className="pl-8 rounded-lg">
-            <ListItemText primary="View History" />
-        
-          </ListItem>
+            <ListItem button className="pl-8 rounded-lg">
+              <ListItemText primary="View History" />
+            </ListItem>
           </a>
           <ListItem button className="pl-8 rounded-lg">
             <ListItemText primary="Inventory Summary" />

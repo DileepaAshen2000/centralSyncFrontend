@@ -30,6 +30,8 @@ import EditOrderDetails from "./InitiateOrder/EditOrder";
 import Usage from "./UsageReport/UsageReport";
 import StockInDocument from "./StockIn/StockInDocument";
 import NewStockIn from "./StockIn/NewStockIn";
+import NewStockOut from "./StockOut/NewStockOut";
+import StockOutDocument from "./StockOut/StockOutDocument";
 
 const Home = () => {
   return (
@@ -121,6 +123,8 @@ const Home = () => {
 
               {/* Stock Out routing */}
               <Route path="/stockOut" element={<StockOutList />}></Route>
+              <Route path="/new-stockout" element={<NewStockOut/>}></Route>
+              <Route path="/stockOut/:soutId" element={<StockOutDocument/>}></Route>
 
               {/*Initiate order routing*/}
               <Route path="/order" element={<OrderDataGrid />}></Route>

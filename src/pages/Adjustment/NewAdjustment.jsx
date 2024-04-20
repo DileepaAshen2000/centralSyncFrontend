@@ -122,7 +122,6 @@ const NewAdjustment = () => {
             <Grid item sm={9} xs={9}>
                 <Autocomplete
                   disablePortal
-                  // id="combo-box-demo"
                   options={options} 
                   getOptionLabel={(option) => option.itemName}
                   onChange={handleItemChange}
@@ -140,7 +139,6 @@ const NewAdjustment = () => {
             <Grid item sm={9} xs={9}>
               <Autocomplete
                 disabled
-                // id="combo-box-selected"
                 options={[{ itemId: selectedItemId }]} // Provide the selected itemId as an option
                 getOptionLabel={(option) => option.itemId} // Display itemId in the Autocomplete
                 name='itemId' // Add name to the Autocomplete
@@ -172,7 +170,6 @@ const NewAdjustment = () => {
             </Grid>
           </Grid>
 
-          
           <Grid container display='flex' mt={4}>
             <Grid item sm={2} xs={2}>
               <Typography>Reason</Typography>
