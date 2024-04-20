@@ -7,12 +7,12 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const columns = [
-    { field: 'id', headerName: 'StockIn ID', width: 150 },
-    { field: 'itemId', headerName: 'Item ID', width: 180 },
+    { field: 'id', headerName: 'StockIn ID', width: 120 },
+    { field: 'itemId', headerName: 'Item ID', width: 120 },
     { field: 'description', headerName: 'Description', width: 300 },
     { field: 'quantity', headerName: 'Quantity In', width: 150 },
-    { field: 'date', headerName: 'Date', width: 150 },
-    { field: 'location', headerName: 'Location', width: 100 },
+    { field: 'date', headerName: 'Date', width: 160 },
+    { field: 'location', headerName: 'Location', width: 180 },
   ];
 
 const StockInList = () => {
@@ -75,7 +75,7 @@ const StockInList = () => {
         ) : (
           <Button
             variant="contained"
-            className="bg-blue-600 px-6 text-white rounded left-[72%]"
+            className="bg-blue-600 text-white rounded left-[72%]"
             onClick={() => navigate("/new-stockin")}
           >
             New Stock-In

@@ -92,7 +92,7 @@ const AdjustmentList = () => {
         ) : (
           <Button
             variant="contained"
-            className="bg-blue-600 px-6 text-white rounded left-[62%]"
+            className="bg-blue-600 text-white rounded left-[62%]"
             onClick={() => navigate("/newadjustment")}
           >
             New Adjustment
@@ -113,7 +113,7 @@ const AdjustmentList = () => {
         autoHeight
         pageSizeOptions={[5]}
         checkboxSelection
-        // disableRowSelectionOnClick
+        disableRowSelectionOnClick
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={handlerowSelectionModelChange}
       />

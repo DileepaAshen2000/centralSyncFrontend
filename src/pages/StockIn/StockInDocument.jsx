@@ -82,7 +82,7 @@ const loadStockIn = async () => {
         </div>
         <div className="p-10 ml-6 mr-6 bg-white">
           <div>
-            <section className="flex flex-row items-end justify-end mb-6">
+            <section className="flex flex-row items-end justify-end mt-4 mb-10">
               <header className="text-3xl">Stock-In Report</header>
             </section>
             <section className="flex flex-row items-end justify-end gap-10">
