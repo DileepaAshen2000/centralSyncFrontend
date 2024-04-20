@@ -6,35 +6,47 @@ import {
   MenuItem,
   TextField,
 } from "@mui/material";
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-
 import axios from "axios";
 
 const ViewOrderDetails = () => {
-  const [vendorName, setVendorName] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [vendorEmail, setVendorEmail] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [date, setDate] = useState("");
-  const [itemName, setItemName] = useState("");
-  const [brandName, setBrandName] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [description, setDescription] = useState("");
-
-
-  const { ID } = useParams();
-
-  const [fetchData, setFetchData] = useState(false);
-
   const navigate = useNavigate();
+  // Getting the order ID from the URL params
+  const { orderID } = useParams();
 
+  //State for order object with properties -->initial state of properties=null
+  const [order, setOrder] = useState({
+    vendorName: "",
+    companyName: "",
+    vendorEmail: "",
+    mobile: "",
+    date: "",
+    itemName: "",
+    bandName: "",
+    quantity: "",
+    description: "",
+  });
+
+  //Destructure the state
+  const {
+    vendorName,
+    companyName,
+    vendorEmail,
+    mobile,
+    date,
+    itemName,
+    brandName,
+    quantity,
+    description,
+  } = order;
+
+  // Fetching the order details by ID
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/orders/getById/${ID}`)
+      .get(`http://localhost:8080/orders/getById/${orderID}`)
       .then((response) => {
-        const data = {
+        const order = {
           vendorName: response.data.vendorName,
           companyName: response.data.companyName,
           mobile: response.data.mobile,
@@ -46,81 +58,70 @@ const ViewOrderDetails = () => {
           description: response.data.description,
         };
 
-        setVendorName(data.vendorName);
-        setCompanyName(data.companyName);
-        setVendorEmail(data.vendorEmail);
-        setMobile(data.mobile);
-        setDate(data.date);
-        setItemName(data.itemName);
-        setBrandName(data.brandName);
-        setQuantity(data.quantity);
-        setDescription(data.description);
+        setOrder(order);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, [ID]);
+  }, [orderID]);
 
- 
-
+  // State variable to keep track of the anchor element for the popover
   const [anchorEl, setAnchorEl] = useState(null);
+
+  // State variable to manage the open/close state of the popover
   const [isOpen, setIsOpen] = useState(false);
 
+  // Handle click of "More" button
   const handleMoreButton = (event) => {
     setAnchorEl(event.currentTarget);
     setIsOpen(true);
   };
-
+  // Handle closing of the popover
   const handleClose = () => {
     setAnchorEl(null);
     setIsOpen(false);
   };
 
+  // Handle deletion of the order
   const handleDelete = () => {
     try {
       axios
-        .delete("http://localhost:8080/orders/deleteOrder/" + ID)
+        .delete("http://localhost:8080/orders/deleteOrder/" + orderID)
         .then(() => {
-          setFetchData(!fetchData);
-          navigate("/order", { fetchData });
+          navigate("/order");
         });
     } catch (error) {
       console.log(error);
     }
   };
 
+  // Handle marking the order as reviewed
   const handleMarkAsReviewed = () => {
     axios
-      .patch("http://localhost:8080/orders/updateStatus/" + ID)
+      .patch("http://localhost:8080/orders/updateStatus/" + orderID)
       .then(() => {
-        setFetchData(!fetchData);
-        navigate("/order", { fetchData });
+        navigate("/order");
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
+  //form that contains order details
   return (
-    <form className="grid grid-cols-8 gap-y-10 pl-12 ">
-      <h1 className=" col-span-4 text-2xl ">Order Details</h1>
+    <form className="grorderID grorderID-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
+      <h1 className=" col-span-4 text-3xl pt-2 font-bold ">Order Details</h1>
 
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel
-          htmlFor="vendorName"
-          className="flex-none text-black w-32 "
-          required
-        >
+        <InputLabel htmlFor="vendorName" className="flex-none text-black w-32 ">
           Vendor name
         </InputLabel>
         <TextField
-          id="vendorName"
+          orderID="vendorName"
           value={vendorName}
-          onChange={(e) => setVendorName(e.target.value)}
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
+            className: "w-[300px]   h-10 ml-5 bg-white  ",
             readOnly: true,
           }}
         />
@@ -134,13 +135,11 @@ const ViewOrderDetails = () => {
           Company Name
         </InputLabel>
         <TextField
-          id="companyName"
+          orderID="companyName"
           value={companyName}
-          onChange={(e) => setCompanyName(e.target.value)}
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
+            className: "w-[300px]   h-10 ml-5 bg-white  ",
             readOnly: true,
           }}
         />
@@ -154,13 +153,11 @@ const ViewOrderDetails = () => {
           Email Address
         </InputLabel>
         <TextField
-          id="vendorEmail"
+          orderID="vendorEmail"
           value={vendorEmail}
-          onChange={(e) => setVendorEmail(e.target.value)}
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+            className: "w-[300px]   h-10 ml-5 bg-white  ",
             readOnly: true,
           }}
         />
@@ -170,13 +167,11 @@ const ViewOrderDetails = () => {
           Mobile
         </InputLabel>
         <TextField
-          id="mobile"
+          orderID="mobile"
           value={mobile}
-          onChange={(e) => setMobile(e.target.value)}
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+            className: "w-[300px]   h-10 ml-5 bg-white  ",
             readOnly: true,
           }}
         />
@@ -186,14 +181,12 @@ const ViewOrderDetails = () => {
           Date
         </InputLabel>
         <TextField
-          id="date"
+          orderID="date"
           value={date}
           type="date"
-          onChange={(e) => setDate(e.target.value)}
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+            className: "w-[300px]   h-10 ml-5 bg-white  ",
             readOnly: true,
           }}
         />
@@ -203,13 +196,11 @@ const ViewOrderDetails = () => {
           Item Name
         </InputLabel>
         <TextField
-          id="itemName"
+          orderID="itemName"
           value={itemName}
-          onChange={(e) => setItemName(e.target.value)}
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+            className: "w-[300px]   h-10 ml-5 bg-white  ",
             readOnly: true,
           }}
         />
@@ -222,13 +213,11 @@ const ViewOrderDetails = () => {
           Brand Name
         </InputLabel>
         <TextField
-          id="brandName"
+          orderID="brandName"
           value={brandName}
-          onChange={(e) => setBrandName(e.target.value)}
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+            className: "w-[300px]   h-10 ml-5 bg-white  ",
             readOnly: true,
           }}
         />
@@ -238,18 +227,16 @@ const ViewOrderDetails = () => {
           Quantity
         </InputLabel>
         <TextField
-          id="quantity"
+          orderID="quantity"
           value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+            className: "w-[300px]   h-10 ml-5 bg-white  ",
             readOnly: true,
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
+      <div className="col-start-1 col-span-4 flex">
         <InputLabel
           htmlFor="description"
           className="flex-none text-black w-32 "
@@ -257,61 +244,57 @@ const ViewOrderDetails = () => {
           Description
         </InputLabel>
         <TextField
-          id="description"
+          orderID="description"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
           variant="outlined"
           multiline
-          rows={10}
+          rows={6}
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 ml-5 bg-white",
+            className: "w-[500px] ml-5 bg-white  ",
             readOnly: true,
           }}
         />
       </div>
 
-        <>
-          <Button
-            variant="contained"
-            className="row-start-1 col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
-            onClick={handleMoreButton}
-          >
-            More
-          </Button>
-          <Popover
-            open={isOpen}
-            anchorEl={anchorEl}
-            onClose={handleClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
-          >
-            <MenuList>
-             
-              <MenuItem>
-                <Button
-                  variant="contained"
-                  className="col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
-              </MenuItem>
-              <MenuItem>
-                <Button
-                  variant="contained"
-                  className=" col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
-                  onClick={handleMarkAsReviewed}
-                >
-                  Mark as reviewed
-                </Button>
-              </MenuItem>
-            </MenuList>
-          </Popover>
-        </>
-      
+      <>
+        <Button
+          variant="contained"
+          className="row-start-1 col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
+          onClick={handleMoreButton}
+        >
+          More
+        </Button>
+        <Popover
+          open={isOpen}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+        >
+          <MenuList>
+            <MenuItem>
+              <Button
+                variant="contained"
+                className="col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
+                onClick={handleDelete}
+              >
+                Delete
+              </Button>
+            </MenuItem>
+            <MenuItem>
+              <Button
+                variant="contained"
+                className=" col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
+                onClick={handleMarkAsReviewed}
+              >
+                Mark as reviewed
+              </Button>
+            </MenuItem>
+          </MenuList>
+        </Popover>
+      </>
     </form>
   );
 };

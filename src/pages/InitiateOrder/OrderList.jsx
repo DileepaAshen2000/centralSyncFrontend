@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
+//Define columns of the datagrid
 const columns = [
   { field: "id", headerName: "Order ID", width: 150 },
   {
@@ -43,21 +44,19 @@ const columns = [
 const OrderDataGrid = () => {
   const navigate = useNavigate();
 
-
-  
+  // State for storing the rows of the data grid
   const [rows, setRows] = useState([]);
-  const { fetchData } = useParams();
+
+  // Fetching data from the API
   useEffect(() => {
     axios
       .get("http://localhost:8080/orders/getAll")
       .then((response) => {
         const data = response.data.map((order, index) => ({
-          
           id: order.orderId,
           email_address: order.vendorEmail,
           vendor_name: order.vendorName,
-          //exclude timezone and time
-          date: new Date(order.date).toLocaleDateString(),
+          date: order.date,
           status: order.status,
         }));
         setRows(data);
@@ -65,22 +64,27 @@ const OrderDataGrid = () => {
       .catch((error) => {
         console.log(error);
       });
-  }, [fetchData]);
+  }, []);
 
+  // State for storing the selected rows of the data grid
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
+
+  // Handler for changing the selected rows
   const handleRowSelectionModelChange = (newSelectedRow) => {
     setRowSelectionModel(newSelectedRow);
   };
 
+  // Handler for viewing the selected order
   const handleView = () => {
     const selectedItemId = rowSelectionModel[0];
     navigate("/order/view-order/" + selectedItemId);
   };
 
-  const handleEdit=()=>{
+  // Handler for editing the selected order
+  const handleEdit = () => {
     const selectedItemId = rowSelectionModel[0];
     navigate("/order/edit-order/" + selectedItemId);
-  }
+  };
 
   return (
     <Box className="h-[400px] w-full">
@@ -89,7 +93,7 @@ const OrderDataGrid = () => {
         <p className="inline-block">Here are all orders!!</p>
         {rowSelectionModel > 0 ? (
           <>
-          <Button
+            <Button
               variant="contained"
               className="bg-blue-600 px-6 py-2 text-white rounded left-[45%] w-[145px]"
               onClick={handleEdit}
@@ -105,7 +109,6 @@ const OrderDataGrid = () => {
               View
             </Button>
           </>
-         
         ) : (
           <Button
             variant="contained"
@@ -117,6 +120,7 @@ const OrderDataGrid = () => {
         )}
       </Box>
 
+      {/* Data grid component */}
       <DataGrid
         rows={rows}
         columns={columns}

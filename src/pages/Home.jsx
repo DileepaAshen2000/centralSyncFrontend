@@ -83,9 +83,9 @@ const Home = () => {
 
               <Route path="/item" element={<ItemDataGrid />}></Route>
               <Route path="/item/add-item" element={<AddItemForm />}></Route>
-              <Route path="/item/edit-item/:ID" element={<EditItem />}></Route>
+              <Route path="/item/edit-item/:itemID" element={<EditItem />}></Route>
               <Route
-                path="/item/view-item/:ID"
+                path="/item/view-item/:itemID"
                 element={<ViewItemDetails />}
               ></Route>
 
@@ -120,11 +120,11 @@ const Home = () => {
               <Route path="/order" element={<OrderDataGrid />}></Route>
               <Route path="/order/new-order" element={<NewOrderForm />}></Route>
               <Route
-                path="/order/view-order/:ID"
+                path="/order/view-order/:orderID"
                 element={<ViewOrderDetails />}
               ></Route>
               <Route
-                path="/order/edit-order/:ID"
+                path="/order/edit-order/:orderID"
                 element={<EditOrderDetails />}
               ></Route>
  {/*Reports routing*/}

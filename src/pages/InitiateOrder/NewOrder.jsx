@@ -1,7 +1,6 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { InputLabel, TextField } from "@mui/material";
 import { Button } from "@mui/material";
 import axios from "axios";
@@ -10,19 +9,39 @@ import Swal from "sweetalert2";
 const NewOrderForm = () => {
   const navigate = useNavigate();
 
-  const [vendorName, setVendorName] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [vendorEmail, setVendorEmail] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [date, setDate] = useState("");
-  const [itemName, setItemName] = useState("");
-  const [brandName, setBrandName] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [description, setDescription] = useState("");
+  //state variable to catch error messages sent from API
+  const [errors, setErrors] = useState({});
 
-  const [errors,setErrors]=useState({});
+  //State for order object with properties -->initial state of properties=null
+  const [order, setOrder] = useState({
+    vendorName: "",
+    companyName: "",
+    vendorEmail: "",
+    mobile: "",
+    date: new Date().toISOString().split("T")[0], // Set to today's date
+    itemName: "",
+    bandName: "",
+    quantity: "",
+    description: "",
+  });
 
-  const [fetchData, setFetchData] = useState(false);
+  //Destructure the state
+  const {
+    vendorName,
+    companyName,
+    vendorEmail,
+    mobile,
+    date,
+    itemName,
+    brandName,
+    quantity,
+    description,
+  } = order;
+
+  //function to be called on input changing
+  const onInputChange = (e) => {
+    setOrder({ ...order, [e.target.id]: e.target.value });
+  };
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -35,68 +54,60 @@ const NewOrderForm = () => {
       itemName,
       brandName,
       quantity,
-     
     };
-   
 
     axios
       .post("http://localhost:8080/orders/add", order)
       .then((response) => {
-        if (response.status===200) {
+        if (response.status === 200) {
           console.log(response.data);
           Swal.fire({
-                icon:'success',
-                title:'Success!',
-                text:'Order successfully submitted!'
-              });
-          setFetchData(!fetchData);
-          navigate("/order", { fetchData });
+            icon: "success",
+            title: "Success!",
+            text: "Order successfully submitted!",
+          });
+          navigate("/order");
         }
       })
       .catch((error) => {
         if (error.response) {
           Swal.fire({
-            icon:'error',
-            title:'Error!',
-            text:'Failed to submit order. Please check your inputs.'
-          }); 
+            icon: "error",
+            title: "Error!",
+            text: "Failed to submit order. Please check your inputs.",
+          });
           setErrors(error.response.data);
         }
       });
   };
 
-
+  //Form for initiate a new order
   return (
-    
-   
-
-    <form className="grid grid-cols-8 gap-y-10 pl-12 ">
-      <h1 className=" col-span-4 text-2xl ">New Order</h1>
+    <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
+      <h1 className=" col-span-4 text-3xl pt-2 font-bold ">New Order</h1>
 
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel
-          htmlFor="vendorName"
-          className="flex-none text-black w-32 "
-        >
+        <InputLabel htmlFor="vendorName" className="flex-none text-black w-32 ">
           Vendor name
         </InputLabel>
         <div>
-        {errors.vendorName && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.vendorName}</div>
+          {errors.vendorName && (
+            <div className="text-[#FC0000] text-xs ml-6">
+              {errors.vendorName}
+            </div>
           )}
-        <TextField
-          id="vendorName"
-          value={vendorName}
-          onChange={(e) => setVendorName(e.target.value)}
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
-          }}
-        />
+          <TextField
+            id="vendorName"
+            value={vendorName}
+            onChange={onInputChange}
+            variant="outlined"
+            InputProps={{
+              className: "w-[300px]   h-10 ml-5 bg-white  ",
+            }}
+          />
         </div>
       </div>
-      
+
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel
           htmlFor="vendorEmail"
@@ -105,19 +116,20 @@ const NewOrderForm = () => {
           Email Address
         </InputLabel>
         <div>
-        {errors.vendorEmail && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.vendorEmail}</div>
+          {errors.vendorEmail && (
+            <div className="text-[#FC0000] text-xs ml-6">
+              {errors.vendorEmail}
+            </div>
           )}
-        <TextField
-          id="vendorEmail"
-          value={vendorEmail}
-          onChange={(e) => setVendorEmail(e.target.value)}
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-          }}
-        />
+          <TextField
+            id="vendorEmail"
+            value={vendorEmail}
+            onChange={onInputChange}
+            variant="outlined"
+            InputProps={{
+              className: "w-[300px]   h-10 ml-5 bg-white  ",
+            }}
+          />
         </div>
       </div>
 
@@ -126,19 +138,20 @@ const NewOrderForm = () => {
           Company Name
         </InputLabel>
         <div>
-        {errors.companyName && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.companyName}</div>
+          {errors.companyName && (
+            <div className="text-[#FC0000] text-xs ml-6">
+              {errors.companyName}
+            </div>
           )}
-        <TextField
-          id="companyName"
-          value={companyName}
-          onChange={(e) => setCompanyName(e.target.value)}
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
-          }}
-        />
+          <TextField
+            id="companyName"
+            value={companyName}
+            onChange={onInputChange}
+            variant="outlined"
+            InputProps={{
+              className: "w-[300px]   h-10 ml-5 bg-white  ",
+            }}
+          />
         </div>
       </div>
 
@@ -147,19 +160,18 @@ const NewOrderForm = () => {
           Mobile
         </InputLabel>
         <div>
-        {errors.mobile && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.mobile}</div>
+          {errors.mobile && (
+            <div className="text-[#FC0000] text-xs ml-6">{errors.mobile}</div>
           )}
-        <TextField
-          id="mobile"
-          value={mobile}
-          onChange={(e) => setMobile(e.target.value)}
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-          }}
-        />
+          <TextField
+            id="mobile"
+            value={mobile}
+            onChange={onInputChange}
+            variant="outlined"
+            InputProps={{
+              className: "w-[300px]   h-10 ml-5 bg-white  ",
+            }}
+          />
         </div>
       </div>
       <div className="col-start-1 col-span-4 flex items-center">
@@ -167,20 +179,16 @@ const NewOrderForm = () => {
           Date
         </InputLabel>
         <div>
-        {errors.date && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.date}</div>
-          )}
-        <TextField
-          id="date"
-          value={date}
-          type="date"
-          onChange={(e) => setDate(e.target.value)}
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-          }}
-        />
+          <TextField
+            id="date"
+            value={date}
+            type="date"
+            variant="outlined"
+            InputProps={{
+              className: "w-[300px]   h-10 ml-5 bg-white  ",
+              readOnly: true,
+            }}
+          />
         </div>
       </div>
       <div className="col-start-1 col-span-4 flex items-center">
@@ -188,19 +196,18 @@ const NewOrderForm = () => {
           Item Name
         </InputLabel>
         <div>
-        {errors.itemName && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.itemName}</div>
+          {errors.itemName && (
+            <div className="text-[#FC0000] text-xs ml-6">{errors.itemName}</div>
           )}
-        <TextField
-          id="itemName"
-          value={itemName}
-          onChange={(e) => setItemName(e.target.value)}
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-          }}
-        />
+          <TextField
+            id="itemName"
+            value={itemName}
+            onChange={onInputChange}
+            variant="outlined"
+            InputProps={{
+              className: "w-[300px]   h-10 ml-5 bg-white  ",
+            }}
+          />
         </div>
       </div>
       <div className="col-start-1 col-span-4 flex items-center">
@@ -211,20 +218,20 @@ const NewOrderForm = () => {
           Brand Name
         </InputLabel>
         <div>
-        {errors.brandName && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.brandName}</div>
+          {errors.brandName && (
+            <div className="text-[#FC0000] text-xs ml-6">
+              {errors.brandName}
+            </div>
           )}
-        <TextField
-          id="brandName"
-          value={brandName}
-          onChange={(e) => setBrandName(e.target.value)}
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-           
-          }}
-        />
+          <TextField
+            id="brandName"
+            value={brandName}
+            onChange={onInputChange}
+            variant="outlined"
+            InputProps={{
+              className: "w-[300px]   h-10 ml-5 bg-white  ",
+            }}
+          />
         </div>
       </div>
       <div className="col-start-1 col-span-4 flex items-center">
@@ -232,22 +239,21 @@ const NewOrderForm = () => {
           Quantity
         </InputLabel>
         <div>
-        {errors.quantity && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.quantity}</div>
+          {errors.quantity && (
+            <div className="text-[#FC0000] text-xs ml-6">{errors.quantity}</div>
           )}
-        <TextField
-          id="quantity"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-          }}
-        />
+          <TextField
+            id="quantity"
+            value={quantity}
+            onChange={onInputChange}
+            variant="outlined"
+            InputProps={{
+              className: "w-[300px]   h-10 ml-5 bg-white  ",
+            }}
+          />
         </div>
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
+      <div className="col-start-1 col-span-4 flex ">
         <InputLabel
           htmlFor="description"
           className="flex-none text-black w-32 "
@@ -257,14 +263,12 @@ const NewOrderForm = () => {
         <TextField
           id="description"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={onInputChange}
           variant="outlined"
           multiline
-          rows={10}
+          rows={6}
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 ml-5 bg-white",
-            
+            className: "w-[500px]  ml-5 bg-white  ",
           }}
         />
       </div>
@@ -284,7 +288,6 @@ const NewOrderForm = () => {
         Cancel
       </Button>
     </form>
-    
   );
 };
 
