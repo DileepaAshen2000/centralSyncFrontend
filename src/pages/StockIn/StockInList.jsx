@@ -10,7 +10,7 @@ const columns = [
     { field: 'id', headerName: 'StockIn ID', width: 150 },
     { field: 'itemId', headerName: 'Item ID', width: 180 },
     { field: 'description', headerName: 'Description', width: 300 },
-    { field: 'quantity', headerName: 'Quantity', width: 150 },
+    { field: 'quantity', headerName: 'Quantity In', width: 150 },
     { field: 'date', headerName: 'Date', width: 150 },
     { field: 'location', headerName: 'Location', width: 100 },
   ];

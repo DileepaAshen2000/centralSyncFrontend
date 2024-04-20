@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Typography,Button } from '@mui/material';
+import { Typography,Button, Alert,AlertTitle} from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -91,6 +91,16 @@ const loadAdjustment = async () => {
       });
   };
 
+  const getStatus = (status) => {
+    if (status === "ACCEPTED") {
+      return <Alert severity="success" sx={{ width: '300px' }}><AlertTitle>Accepted</AlertTitle></Alert>;
+    } else if (status === "REJECTED") {
+      return <Alert severity="error" sx={{ width: '300px' }}><AlertTitle>Rejected</AlertTitle></Alert>;
+    } else {
+      return <Alert severity="info" sx={{ width: '300px' }}><AlertTitle>Pending</AlertTitle></Alert>;
+    }
+  }
+
   return (
     <div>
       <div>
@@ -108,7 +118,8 @@ const loadAdjustment = async () => {
         <div className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section>
-              <button id="statusButton" className={`w-40 h-10 m-5 text-blue-800 bg-blue-300 rounded-2xl`}>{status}</button>
+              {/* <button id="statusButton" className={`w-40 h-10 m-5 text-blue-800 bg-blue-300 rounded-2xl`}>{status}</button> */}
+              {getStatus(status)}
             </section>
           </div>
           <div>
