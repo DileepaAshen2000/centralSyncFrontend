@@ -1,36 +1,23 @@
-import React, { useState } from 'react';
-import { FormControl, Select, MenuItem, TextField, Grid, Box, Typography, Button ,Autocomplete } from '@mui/material';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+import React, { useState , useEffect} from 'react';
+import { FormControl, Select, MenuItem, TextField, Grid, Box, Typography, Button, Autocomplete } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { useEffect } from 'react';
 
-const NewAdjustment = () => {
+const NewStockOut = () => {
 
   let navigate = useNavigate();
-  const [adj,setAdj] = useState({  // create state for adjustment, initial state is empty with object.
-    reason:"",
+  const [stockOut,setStockOut] = useState({  // create state for adjustment, initial state is empty with object.
+    department:"",
     date:"",
     description:"",
-    newQuantity:"",
+    outQty:"",
     itemId:""
   })
 
-  const{reason,date,description,newQuantity,itemId} = adj; // Destructure the adj state
+  const{department,date,description,outQty,itemId} = stockOut; // Destructure the state
 
-  const [item,setItem] = useState({ // create state for item, initial state is empty with object.
-    itemName:"",
-    quantity:""
-  })
-
-  //item fetching
+  // item fetching
   const [options, setOptions] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState(null);
 
@@ -51,42 +38,31 @@ const NewAdjustment = () => {
   const handleItemChange = (event, value) => {
     if (value) {
       setSelectedItemId(value.itemId);
-      setAdj({ ...adj, itemId: value.itemId }); // Update the itemId in the adj state
-      fetchItemDetails(value.itemId);
+      setStockOut({ ...stockOut, itemId: value.itemId }); // Update the itemId in the adj state
     } else {
       setSelectedItemId(null);
-      setAdj({ ...adj, itemId: "" });
+      setStockOut({ ...stockOut, itemId: "" });
     }
     
   };
-  // end of item fetching part
   
-  // Fetch item details
-  const fetchItemDetails = async (itemId) => {
-    try {
-      const response = await axios.get(`http://localhost:8080/inventory-item/getById/${itemId}`);
-      setItem({ ...item, quantity: response.data.quantity }); // Update the newQuantity in the adj state
-    } catch (error) {
-      console.error('Error fetching item data:', error);
-    }
-  }
   //Add onChange event to the input fields
-  const onInputChange= async (e)=>{
-    setAdj({...adj,[e.target.name]:e.target.value});
+  const onInputChange=(e)=>{
+    setStockOut({...stockOut,[e.target.name]:e.target.value});
   };
 
   const onSubmit=async(e)=>{
     e.preventDefault(); // To remove unwanted url tail part
-    const result = await axios.post("http://localhost:8080/adjustment/add",adj) // To send data to the server
-    console.log(result.data);
-    navigate('/adjustment');// To navigate to the adjustment page
+    const result = await axios.post("http://localhost:8080/stock-out/add",stockOut) // To send data to the server
+    console.log(result.data)
+    navigate('/stockOut') // To navigate to the stockin page
   }
 
   // handle the onClick event of Submit button
   const handleClick = () => {
     Swal.fire({
       title: "Good Job!",
-      text: "You submitted the Adjustment!",
+      text: "You Added a New Stock-Out !",
       icon: "success"
     });
     
@@ -95,18 +71,17 @@ const NewAdjustment = () => {
   return (
     <Box className='p-10 bg-white rounded-2xl ml-14 mr-14'>
       <Box className="pb-4">
-        <h1 className="pt-2 pb-3 text-3xl font-bold ">New Adjustment</h1>
+        <h1 className="pt-2 pb-3 text-3xl font-bold ">New Stock-Out</h1>
       </Box>
       <form onSubmit={(e)=> onSubmit(e)}>
         <Grid container spacing={2}  padding={4} >
-          
           <Grid container display='flex'>
             <Grid item sm={2} xs={2}>
               <Typography>Group</Typography>
             </Grid>
             <Grid item sm={9} xs={9}>   
               <FormControl style={{ width: '300px' }}>
-                <Select size='small'>
+                <Select size='small' name='group'>
                   <MenuItem value="option1">Group 1</MenuItem>
                   <MenuItem value="option2">Group 2</MenuItem>
                   <MenuItem value="option3">Group 3</MenuItem>
@@ -120,13 +95,21 @@ const NewAdjustment = () => {
               <Typography>Item Name</Typography>
             </Grid>
             <Grid item sm={9} xs={9}>
+              {/* <TextField
+                style={{ width: '300px' }}
+                label="Item Name"
+                type="search"
+                name='itemName'
+                size='small'  
+                helperText='Please select the item name.'     
+              /> */}
                 <Autocomplete
                   disablePortal
                   options={options} 
                   getOptionLabel={(option) => option.itemName}
                   onChange={handleItemChange}
                   sx={{ width: 300 }}
-                  renderInput={(params) => <TextField {...params} label="Item Name"  helperText='Please select the item name.'/>}
+                  renderInput={(params) => <TextField {...params} label="Item Name"  helperText='Please select the Item Name.'/>}
                   size='small' 
                 />
             </Grid>
@@ -137,6 +120,15 @@ const NewAdjustment = () => {
               <Typography>Item ID</Typography>
             </Grid>
             <Grid item sm={9} xs={9}>
+              {/* <TextField
+              style={{ width: '300px' }}
+               label="Item ID" 
+               name='itemId'
+               size='small'
+               value={itemId}
+               onChange={(e)=>onInputChange(e)}
+              /> */}
+
               <Autocomplete
                 disabled
                 options={[{ itemId: selectedItemId }]} // Provide the selected itemId as an option
@@ -147,6 +139,21 @@ const NewAdjustment = () => {
                 renderInput={(params) => <TextField {...params} label="Item ID" />}
                 size='small'
               />
+            </Grid>
+          </Grid>
+
+          <Grid container display='flex' mt={4}>
+            <Grid item sm={2} xs={2}>
+              <Typography>Department</Typography>
+            </Grid>
+            <Grid item sm={9} xs={9}>
+              <FormControl style={{ width: '300px' }}>
+                <Select  value={department} onChange={(e)=>onInputChange(e)} size='small' name='department'>
+                  <MenuItem value="Department 01">Department 01</MenuItem>
+                  <MenuItem value="Department 02">Department 02</MenuItem>
+                  <MenuItem value="Department 03">Department 03</MenuItem>
+                </Select>
+              </FormControl>
             </Grid>
           </Grid>
           
@@ -172,16 +179,16 @@ const NewAdjustment = () => {
 
           <Grid container display='flex' mt={4}>
             <Grid item sm={2} xs={2}>
-              <Typography>Reason</Typography>
+              <Typography>Quantity Out</Typography>
             </Grid>
             <Grid item sm={9} xs={9}>
-              <FormControl style={{ width: '300px' }}>
-                <Select  value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason'>
-                  <MenuItem value="Damaged Item">Damaged Item</MenuItem>
-                  <MenuItem value="Stolen Item">Stolen Item</MenuItem>
-                  <MenuItem value="Others">Others</MenuItem>
-                </Select>
-              </FormControl>
+                <TextField 
+                size='small' 
+                placeholder='Enter Quantity Out' 
+                type='Number' 
+                name='outQty' 
+                value={outQty} 
+                onChange={(e)=>onInputChange(e)}/>
             </Grid>
           </Grid>
           
@@ -202,42 +209,9 @@ const NewAdjustment = () => {
               />
             </Grid>
           </Grid>
-
-          <Box mt={4} className='pl-44'>
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650, border:2 }} aria-label="simple table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Item Details</TableCell>
-                    <TableCell align="right">Quantity Available</TableCell>
-                    <TableCell align="right">New Quantity</TableCell>
-                    <TableCell align="right">Adjusted Quantity</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                    <TableRow>
-                      {/* item name */}
-                      <TableCell component="th" scope="row">
-                      {options.find(option => option.itemId === selectedItemId)?.itemName || 'Loading...'}
-                      </TableCell>
-                      {/* available Qty */}
-                      <TableCell align="right">
-                      {item.quantity}
-                      </TableCell>
-                      {/* new Qty */}
-                      <TableCell align="right">
-                        <TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}></TextField>
-                      </TableCell>
-                      {/* adjusted Qty */}
-                      <TableCell align="right">{adj.newQuantity - item.quantity}</TableCell>
-                    </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
         </Grid>
         <Box>
-          <Typography display='block' gutterBottom>Attach File(s) to inventory adjustment </Typography>
+          <Typography display='block' gutterBottom>Attach File(s) to inventory stock-in </Typography>
           <input type='file' className="mt-4 mb-2"></input>
           <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
         </Box>
@@ -246,10 +220,10 @@ const NewAdjustment = () => {
                variant='contained'
                type='submit'
               onClick={handleClick}
-                >submit</Button>
+                >Stock Out</Button>
             <Button className="px-6 py-2 rounded"
                variant='outlined'
-               onClick={() => navigate("/adjustment")}
+               onClick={() => navigate("/stockIn")}
                 >cancel</Button>
         </div>
       </form>
@@ -257,4 +231,4 @@ const NewAdjustment = () => {
   );
 };
 
-export default NewAdjustment;
+export default NewStockOut;

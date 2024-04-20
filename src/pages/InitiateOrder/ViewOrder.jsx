@@ -109,7 +109,7 @@ const ViewOrderDetails = () => {
 
   //form that contains order details
   return (
-    <form className="grorderID grorderID-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
+    <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
       <h1 className=" col-span-4 text-3xl pt-2 font-bold ">Order Details</h1>
 
       <div className="col-start-1 col-span-4 flex items-center">
@@ -127,10 +127,10 @@ const ViewOrderDetails = () => {
         />
       </div>
 
-      <div className="col-start-1 col-span-4 flex items-center">
+      <div className="flex items-center col-span-4 col-start-1">
         <InputLabel
           htmlFor="companyName"
-          className="flex-none text-black w-32 "
+          className="flex-none w-32 text-black "
         >
           Company Name
         </InputLabel>
@@ -145,10 +145,10 @@ const ViewOrderDetails = () => {
         />
       </div>
 
-      <div className="col-start-1 col-span-4 flex items-center">
+      <div className="flex items-center col-span-4 col-start-1">
         <InputLabel
           htmlFor="vendorEmail"
-          className="flex-none text-black w-32 "
+          className="flex-none w-32 text-black "
         >
           Email Address
         </InputLabel>
@@ -162,8 +162,8 @@ const ViewOrderDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="mobile" className="flex-none text-black w-32 ">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="mobile" className="flex-none w-32 text-black ">
           Mobile
         </InputLabel>
         <TextField
@@ -176,8 +176,8 @@ const ViewOrderDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="date" className="flex-none text-black  w-32">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="date" className="flex-none w-32 text-black">
           Date
         </InputLabel>
         <TextField
@@ -191,8 +191,8 @@ const ViewOrderDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="itemName" className="flex-none text-black  w-32">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="itemName" className="flex-none w-32 text-black">
           Item Name
         </InputLabel>
         <TextField
@@ -205,10 +205,10 @@ const ViewOrderDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
+      <div className="flex items-center col-span-4 col-start-1">
         <InputLabel
           htmlFor="brandName"
-          className="flex-none text-black  w-32 mt-0"
+          className="flex-none w-32 mt-0 text-black"
         >
           Brand Name
         </InputLabel>
@@ -222,8 +222,8 @@ const ViewOrderDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="quantity" className="flex-none text-black w-32 ">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="quantity" className="flex-none w-32 text-black ">
           Quantity
         </InputLabel>
         <TextField
@@ -239,7 +239,7 @@ const ViewOrderDetails = () => {
       <div className="col-start-1 col-span-4 flex">
         <InputLabel
           htmlFor="description"
-          className="flex-none text-black w-32 "
+          className="flex-none w-32 text-black "
         >
           Description
         </InputLabel>

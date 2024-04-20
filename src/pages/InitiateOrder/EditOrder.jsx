@@ -103,18 +103,21 @@ const EditOrderDetails = () => {
           setErrors(error.response.data);
         }
       });
-  };
-
-  //Form element
-  return (
-    <form className="grorderID grorderID-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
-      <h1 className=" col-span-4 text-3xl pt-2 font-bold ">Order Details</h1>
-
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="vendorName" className="flex-none text-black w-32 ">
-          Vendor name
-        </InputLabel>
-        <div>
+    };
+  
+    
+    return (
+      <form className="grid grid-cols-8 gap-y-10 pl-12 ">
+        <h1 className=" col-span-4 text-2xl ">Order Details</h1>
+  
+        <div className="col-start-1 col-span-4 flex items-center">
+          <InputLabel
+            htmlFor="vendorName"
+            className="flex-none text-black w-32 "
+          >
+            Vendor name
+          </InputLabel>
+          <div>
           {errors.vendorName && (
             <div className="text-[#FC0000] text-xs ml-6">
               {errors.vendorName}
@@ -130,17 +133,17 @@ const EditOrderDetails = () => {
               readOnly: false,
             }}
           />
+          </div>
         </div>
-      </div>
-
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel
-          htmlFor="vendorEmail"
-          className="flex-none text-black w-32 "
-        >
-          Email Address
-        </InputLabel>
-        <div>
+        
+        <div className="col-start-1 col-span-4 flex items-center">
+          <InputLabel
+            htmlFor="vendorEmail"
+            className="flex-none text-black w-32 "
+          >
+            Email Address
+          </InputLabel>
+          <div>
           {errors.vendorEmail && (
             <div className="text-[#FC0000] text-xs ml-6">
               {errors.vendorEmail}
@@ -156,17 +159,17 @@ const EditOrderDetails = () => {
               readOnly: false,
             }}
           />
+          </div>
         </div>
-      </div>
-
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel
-          htmlFor="companyName"
-          className="flex-none text-black w-32 "
-        >
-          Company Name
-        </InputLabel>
-        <div>
+  
+        <div className="col-start-1 col-span-4 flex items-center">
+          <InputLabel
+            htmlFor="companyName"
+            className="flex-none text-black w-32 "
+          >
+            Company Name
+          </InputLabel>
+          <div>
           {errors.companyName && (
             <div className="text-[#FC0000] text-xs ml-6">
               {errors.companyName}
@@ -203,29 +206,29 @@ const EditOrderDetails = () => {
               readOnly: false,
             }}
           />
+          </div>
         </div>
-      </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="date" className="flex-none text-black  w-32">
-          Date
-        </InputLabel>
-        <TextField
-          orderID="date"
-          value={date}
-          type="date"
-          onChange={onInputChange}
-          variant="outlined"
-          InputProps={{
-            className: "w-[300px]   h-10 ml-5 bg-white  ",
-            readOnly: true,
-          }}
-        />
-      </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="itemName" className="flex-none text-black  w-32">
-          Item Name
-        </InputLabel>
-        <div>
+        <div className="col-start-1 col-span-4 flex items-center">
+          <InputLabel htmlFor="date" className="flex-none text-black  w-32">
+            Date
+          </InputLabel>
+          <TextField
+            id="date"
+            value={date}
+            type="date"
+            variant="outlined"
+            InputProps={{
+              className:
+                "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+              readOnly: true,
+            }}
+          />
+        </div>
+        <div className="col-start-1 col-span-4 flex items-center">
+          <InputLabel htmlFor="itemName" className="flex-none text-black  w-32">
+            Item Name
+          </InputLabel>
+          <div>
           {errors.itemName && (
             <div className="text-[#FC0000] text-xs ml-6">{errors.itemName}</div>
           )}
@@ -239,16 +242,16 @@ const EditOrderDetails = () => {
               readOnly: false,
             }}
           />
+          </div>
         </div>
-      </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel
-          htmlFor="brandName"
-          className="flex-none text-black  w-32 mt-0"
-        >
-          Brand Name
-        </InputLabel>
-        <div>
+        <div className="col-start-1 col-span-4 flex items-center">
+          <InputLabel
+            htmlFor="brandName"
+            className="flex-none text-black  w-32 mt-0"
+          >
+            Brand Name
+          </InputLabel>
+          <div>
           {errors.brandName && (
             <div className="text-[#FC0000] text-xs ml-6">
               {errors.brandName}
@@ -264,13 +267,13 @@ const EditOrderDetails = () => {
               readOnly: false,
             }}
           />
+          </div>
         </div>
-      </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="quantity" className="flex-none text-black w-32 ">
-          Quantity
-        </InputLabel>
-        <div>
+        <div className="col-start-1 col-span-4 flex items-center">
+          <InputLabel htmlFor="quantity" className="flex-none text-black w-32 ">
+            Quantity
+          </InputLabel>
+          <div>
           {errors.quantity && (
             <div className="text-[#FC0000] text-xs ml-6">{errors.quantity}</div>
           )}
@@ -284,46 +287,48 @@ const EditOrderDetails = () => {
               readOnly: false,
             }}
           />
+          </div>
         </div>
-      </div>
-      <div className="col-start-1 col-span-4 flex">
-        <InputLabel
-          htmlFor="description"
-          className="flex-none text-black w-32 "
-        >
-          Description
-        </InputLabel>
-        <TextField
-          orderID="description"
-          value={description}
-          onChange={onInputChange}
-          variant="outlined"
-          multiline
-          rows={6}
-          InputProps={{
-            className: "w-[500px]  ml-5 bg-white  ",
-            readOnly: false,
-          }}
-        />
-      </div>
-      <>
-        <Button
-          variant="contained"
-          className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
-          onClick={handleSave}
-        >
-          Save
-        </Button>
-        <Button
-          variant="outlined"
-          className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
-          onClick={() => navigate("/order")}
-        >
-          Cancel
-        </Button>
-      </>
-    </form>
-  );
-};
-
-export default EditOrderDetails;
+        <div className="col-start-1 col-span-4 flex items-center">
+          <InputLabel
+            htmlFor="description"
+            className="flex-none text-black w-32 "
+          >
+            Description
+          </InputLabel>
+          <TextField
+            id="description"
+            value={description}
+            onChange={onInputChange}
+            variant="outlined"
+            multiline
+            rows={10}
+            InputProps={{
+              className:
+                "w-[400px] rounded-2xl border border-gray-400 ml-5 bg-white",
+              readOnly: false,
+            }}
+          />
+        </div>
+          <>
+            <Button
+              variant="contained"
+              className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
+              onClick={handleSave}
+            >
+              Save
+            </Button>
+            <Button
+              variant="outlined"
+              className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
+              onClick={() => navigate("/order")}
+            >
+              Cancel
+            </Button>
+          </>
+      </form>
+    );
+  };
+  
+  export default EditOrderDetails;
+  
