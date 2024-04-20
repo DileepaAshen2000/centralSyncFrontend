@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import {
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
+import { InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { Button } from "@mui/material";
 import Swal from "sweetalert2";
 import axios from "axios";
@@ -14,18 +9,48 @@ import axios from "axios";
 const AddItemForm = () => {
   const navigate = useNavigate();
 
-  const [itemName, setItemName] = useState("");
-  const [itemGroup, setItemGroup] = useState("");
-  const [unit, setUnit] = useState("");
-  const [brand, setBrand] = useState("");
-  const [dimension, setdimension] = useState("");
-  const [weight, setWeight] = useState("");
-  const [description, setDescription] = useState("");
-  const [quantity, setQuantity] = useState("");
+   //state variable to catch error messages sent from API
   const [errors, setErrors] = useState({});
 
+  // State variable to trigger data fetchin
   const [fetchData, setFetchData] = useState(false);
-  const handleClick = (e) => {
+
+  //State for item object with properties -->initial state of properties=null
+  const [inventoryItem, setInventoryItem] = useState({
+    itemName: "",
+    itemGroup: "",
+    unit: "",
+    brand: "",
+    dimension: "",
+    weight: "",
+    description: "",
+    quantity: "",
+  });
+
+  //Destructure the state
+  const {
+    itemName,
+    itemGroup,
+    unit,
+    brand,
+    dimension,
+    weight,
+    description,
+    quantity,
+  } = inventoryItem;
+
+  //function to be called on input changing
+  const onInputChange = (e) => {
+    setInventoryItem({ ...inventoryItem, [e.target.id]: e.target.value });
+  };
+
+  //function to be called on item group selection
+  const onItemGroupChange = (e) => {
+    setInventoryItem({ ...inventoryItem, itemGroup: e.target.value });
+  };
+
+  // Handle form submission
+  const handleSave = (e) => {
     e.preventDefault();
     const item = {
       itemName,
@@ -39,72 +64,74 @@ const AddItemForm = () => {
     };
     console.log(item);
 
+    // Send a POST request to add the item
     axios
       .post("http://localhost:8080/inventory-item/add", item)
       .then((response) => {
-        if (response.status===200) {
+        if (response.status === 200) {
           Swal.fire({
-            icon:'success',
-            title:'Success!',
-            text:'Item successfully added!'
+            icon: "success",
+            title: "Success!",
+            text: "Item successfully added!",
           });
-          setFetchData(!fetchData);   
-          navigate("/item", { fetchData });
+          setFetchData(!fetchData);
+          navigate("/item");
         }
       })
       .catch((error) => {
+        // Show error message and set errors if any
         Swal.fire({
-          icon:'error',
-          title:'Error!',
-          text:'Failed to add new item. Please check your inputs.'
-        }); 
+          icon: "error",
+          title: "Error!",
+          text: "Failed to add new item. Please check your inputs.",
+        });
         if (error.response) {
           setErrors(error.response.data);
         }
       });
   };
 
+  //Form for adding a new item
   return (
-    <form className="grid grid-cols-8 gap-y-10 pl-12 ">
-      <h1 className=" col-span-4 text-2xl ">New item</h1>
+    <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
+      <h1 className=" col-span-4 text-3xl pt-2 font-bold">New item</h1>
 
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel
-          htmlFor="name"
-          className="flex-none text-black w-32 "
-        >
-          Item name
+        <InputLabel htmlFor="name" className="flex-none text-black w-32 ">
+          Item Name
         </InputLabel>
         <div>
           {errors.itemName && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.itemName}</div>
+            <div className="text-[#FC0000] text-xs ml-6">{errors.itemName}</div>
           )}
           <TextField
-            id="name"
+            id="itemName"
             value={itemName}
-            onChange={(e) => setItemName(e.target.value)}
+            placeholder="Item name"
+            onChange={onInputChange}
             variant="outlined"
             InputProps={{
-              className:
-                "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
+              className: "w-[300px]   h-10 ml-5 bg-white  ",
             }}
           />
         </div>
       </div>
 
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="Group" className="flex-none text-black w-32 ">
-          Item group
+        <InputLabel htmlFor="itemGroup" className="flex-none text-black w-32 ">
+          Item Group
         </InputLabel>
         <div className="flex-grow">
           {errors.itemGroup && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.itemGroup}</div>
+            <div className="text-[#FC0000] text-xs ml-6">
+              {errors.itemGroup}
+            </div>
           )}
           <Select
-            id="Group"
+            id="itemGroup"
             value={itemGroup}
-            onChange={(e) => setItemGroup(e.target.value)}
-            className=" bg-white w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
+            onChange={onItemGroupChange}
+            className="w-[300px] h-10 ml-5 bg-white  "
           >
             <MenuItem value="computerAccessories">
               Computer accessories
@@ -121,19 +148,19 @@ const AddItemForm = () => {
           Unit
         </InputLabel>
         <div>
-        {errors.unit && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.unit}</div>
+          {errors.unit && (
+            <div className="text-[#FC0000] text-xs ml-6">{errors.unit}</div>
           )}
-        <TextField
-          id="unit"
-          value={unit}
-          onChange={(e) => setUnit(e.target.value)}
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-          }}
-        />
+          <TextField
+            id="unit"
+            value={unit}
+            placeholder="Unit"
+            onChange={onInputChange}
+            variant="outlined"
+            InputProps={{
+              className: "w-[300px] h-10 ml-5 bg-white  ",
+            }}
+          />
         </div>
       </div>
       <div className="col-start-1 col-span-4 flex items-center">
@@ -141,19 +168,19 @@ const AddItemForm = () => {
           Brand
         </InputLabel>
         <div>
-        {errors.brand && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.brand}</div>
+          {errors.brand && (
+            <div className="text-[#FC0000] text-xs ml-6">{errors.brand}</div>
           )}
-        <TextField
-          id="brand"
-          value={brand}
-          onChange={(e) => setBrand(e.target.value)}
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-          }}
-        />
+          <TextField
+            id="brand"
+            value={brand}
+            placeholder="Brand"
+            onChange={onInputChange}
+            variant="outlined"
+            InputProps={{
+              className: "w-[300px] h-10 ml-5 bg-white  ",
+            }}
+          />
         </div>
       </div>
       <div className="col-start-1 col-span-4 flex items-center">
@@ -163,11 +190,11 @@ const AddItemForm = () => {
         <TextField
           id="dimension"
           value={dimension}
-          onChange={(e) => setdimension(e.target.value)}
+          placeholder="Dimension"
+          onChange={onInputChange}
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+            className: "w-[300px] h-10 ml-5 bg-white  ",
           }}
         />
       </div>
@@ -178,15 +205,15 @@ const AddItemForm = () => {
         <TextField
           id="weight"
           value={weight}
-          onChange={(e) => setWeight(e.target.value)}
+          placeholder="Weight"
+          onChange={onInputChange}
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+            className: "w-[300px] h-10 ml-5 bg-white  ",
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
+      <div className="col-start-1 col-span-4 flex ">
         <InputLabel
           htmlFor="description"
           className="flex-none text-black  w-32 mt-0"
@@ -196,47 +223,47 @@ const AddItemForm = () => {
         <TextField
           id="description"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Description"
+          onChange={onInputChange}
           variant="outlined"
           multiline
-          rows={10}
+          rows={6}
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 ml-5 bg-white",
+            className: "w-[500px] ml-5 bg-white  ",
           }}
         />
       </div>
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel htmlFor="quantity" className="flex-none text-black w-32 ">
-          Initial quantity
+          Initial Quantity
         </InputLabel>
         <div>
-        {errors.quantity && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.quantity}</div>
+          {errors.quantity && (
+            <div className="text-[#FC0000] text-xs ml-6">{errors.quantity}</div>
           )}
-        <TextField
-          id="quantity"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          variant="outlined"
-          InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-          }}
-        />
+          <TextField
+            id="quantity"
+            value={quantity}
+            placeholder="Initial Quantity"
+            onChange={onInputChange}
+            variant="outlined"
+            InputProps={{
+              className: "w-[300px] h-10 ml-5 bg-white  ",
+            }}
+          />
         </div>
       </div>
 
       <Button
         variant="contained"
-        className="row-start-10 col-start-6 rounded-sm bg-blue-600 ml-10"
-        onClick={handleClick}
+        className="row-start-10 col-start-6 rounded-sm bg-blue-600 "
+        onClick={handleSave}
       >
         Save
       </Button>
       <Button
         variant="outlined"
-        className="row-start-10 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
+        className="row-start-10 col-start-8 rounded-sm bg-white text-blue-60-lue-600 "
         onClick={() => navigate("/item")}
       >
         Cancel

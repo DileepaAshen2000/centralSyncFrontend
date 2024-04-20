@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
+//columns for the datagrid
 const columns = [
   { field: "id", headerName: "Item ID", width: 150 },
   {
@@ -43,8 +44,13 @@ const columns = [
 const ItemDataGrid = () => {
   const navigate = useNavigate();
 
-  const [rows, setRows] = useState([]);
-  const { fetchData } = useParams();
+  // State variables for rows and selected row model
+  const [rows, setRows] = useState([]); //data for the data grid
+
+  // State variable for row selection model
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
+
+  //fetch data from the API
   useEffect(() => {
     axios
       .get("http://localhost:8080/inventory-item/getAll")
@@ -61,23 +67,24 @@ const ItemDataGrid = () => {
       .catch((error) => {
         console.log(error);
       });
-  }, [fetchData]);
+  }, []);
 
-  const [rowSelectionModel, setRowSelectionModel] = useState([]);
-
+   // Handle change in row selection model
   const handleRowSelectionModelChange = (newSelectedRow) => {
     setRowSelectionModel(newSelectedRow);
   };
 
+  //Handle view button
   const handleView = () => {
     const selectedItemId = rowSelectionModel[0];
     navigate("/item/view-item/" + selectedItemId);
   };
 
-  const handleEdit=()=>{
+  //Handle edit button
+  const handleEdit = () => {
     const selectedItemId = rowSelectionModel[0];
     navigate("/item/edit-item/" + selectedItemId);
-  }
+  };
 
   return (
     <Box className="h-[400px] w-full">
@@ -129,7 +136,6 @@ const ItemDataGrid = () => {
         disableRowSelectionOnClick
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={handleRowSelectionModelChange}
-       
       />
     </Box>
   );
