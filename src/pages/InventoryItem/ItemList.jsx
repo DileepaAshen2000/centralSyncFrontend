@@ -81,13 +81,14 @@ const ItemDataGrid = () => {
 
   return (
     <Box className="h-[400px] w-full">
-      <Box>
-        <h1 className="inline-block text-3xl font-bold p-4">All items</h1>
+      <Box className="py-4">
+        <h1 className="block text-3xl font-bold">All items</h1>
+        <p className="inline-block">Here are all inventory items!!</p>
         {rowSelectionModel > 0 ? (
           <>
             <Button
               variant="contained"
-              className="bg-blue-600 px-6 py-2 text-white rounded left-[45%] w-[145px]"
+              className="bg-blue-600  py-2 text-white rounded left-[40%] w-[145px]"
               onClick={handleEdit}
             >
               Edit
@@ -95,7 +96,7 @@ const ItemDataGrid = () => {
 
             <Button
               variant="contained"
-              className="bg-blue-600  py-2 text-white rounded left-[54%] w-[145px]"
+              className="bg-blue-600  py-2 text-white rounded left-[48%] w-[145px]"
               onClick={handleView}
             >
               View
@@ -104,7 +105,7 @@ const ItemDataGrid = () => {
         ) : (
           <Button
             variant="contained"
-            className="bg-blue-600 px-6 py-2 text-white rounded left-[69%] w-[145px]"
+            className="bg-blue-600 px-6 py-2 text-white rounded left-[62%] w-[145px]"
             onClick={() => navigate("/item/add-item")}
           >
             Add items
@@ -128,6 +129,7 @@ const ItemDataGrid = () => {
         disableRowSelectionOnClick
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={handleRowSelectionModelChange}
+       
       />
     </Box>
   );
