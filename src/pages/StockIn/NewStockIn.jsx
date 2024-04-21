@@ -55,11 +55,6 @@ const NewStockIn = () => {
   };
 
   const onSubmit=async(e)=>{
-    // e.preventDefault(); // To remove unwanted url tail part
-    // const result = await axios.post("http://localhost:8080/stock-in/add",stockIn) // To send data to the server
-    // console.log(result.data)
-    // navigate('/stockIn') // To navigate to the stockin page
-
     e.preventDefault();
     const validationErrors = validateInputs();
     console.log(Object.keys(validationErrors).length)
@@ -71,6 +66,7 @@ const NewStockIn = () => {
     try {
       const result = await axios.post("http://localhost:8080/stock-in/add",stockIn);
       console.log(result.data);
+      navigate('/stockIn') // To navigate to the stockin page
       Swal.fire({
         title: "Done !",
         text: "You submitted a stock-in!",
@@ -85,16 +81,6 @@ const NewStockIn = () => {
       });
     }
   }
-
-  // handle the onClick event of Submit button
-  // const handleClick = () => {
-  //   Swal.fire({
-  //     title: "Good Job!",
-  //     text: "You Added a New Stock!",
-  //     icon: "success"
-  //   });
-    
-  // }
 
   const validateInputs = () => {
     const errors = {};
@@ -137,14 +123,6 @@ const NewStockIn = () => {
               <Typography>Item Name</Typography>
             </Grid>
             <Grid item sm={9} xs={9}>
-              {/* <TextField
-                style={{ width: '300px' }}
-                label="Item Name"
-                type="search"
-                name='itemName'
-                size='small'  
-                helperText='Please select the item name.'     
-              /> */}
                 <Autocomplete
                   disablePortal
                   options={options} 
@@ -162,15 +140,6 @@ const NewStockIn = () => {
               <Typography>Item ID</Typography>
             </Grid>
             <Grid item sm={9} xs={9}>
-              {/* <TextField
-              style={{ width: '300px' }}
-               label="Item ID" 
-               name='itemId'
-               size='small'
-               value={itemId}
-               onChange={(e)=>onInputChange(e)}
-              /> */}
-
               <Autocomplete
                 disabled
                 options={[{ itemId: selectedItemId }]} // Provide the selected itemId as an option
@@ -206,8 +175,7 @@ const NewStockIn = () => {
               />
             </Grid>
           </Grid>
-
-          
+      
           <Grid container display='flex' mt={4}>
             <Grid item sm={2} xs={2}>
               <Typography>Location</Typography>
