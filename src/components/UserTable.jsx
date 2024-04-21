@@ -35,7 +35,7 @@ useEffect(() => {
    
       const mappedData= data.map((user,index) => ({
       
-      id: index + 102,
+      id: index+1,
       employeesName: `${user.firstName} ${user.lastName}`,
       email: user.email,
       department: user.department,

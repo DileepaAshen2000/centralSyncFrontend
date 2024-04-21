@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Stack, Select,MenuItem,Autocomplete } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Stack,
+  Select,
+  MenuItem,
+  Autocomplete,
+} from "@mui/material";
 import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
 //import DragDrop from "./Drag&Drop";
 //import { DropzoneArea } from 'material-ui-dropzone';
 //import Dropzone from "./Dropzone";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import axios from 'axios';
- 
+import axios from "axios";
 
-const TicketForm= () => {
+const TicketForm = () => {
   const form = useForm();
   const [topic, settopic] = useState("");
   const [description, setdescription] = useState("");
@@ -24,32 +30,34 @@ const TicketForm= () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/inventory-item/getAll');
+        const response = await axios.get(
+          "http://localhost:8080/inventory-item/getAll"
+        );
         setOptions(response.data);
       } catch (error) {
-        console.error('Error fetching item data:', error);
+        console.error("Error fetching item data:", error);
       }
     };
     fetchData();
   }, []);
 
-  
+  console.log("Options:", options);
 
-  console.log('Options:', options);
-
+  //function for respond changes in the selected item in item name
   const handleItemChange = (event, value) => {
     if (value) {
       setItemName(value.itemName);
     } else {
-      setItemName('');
+      setItemName("");
     }
   };
 
+  //function for respond changes in the selected item in item brand
   const handleItembrandChange = (event, value) => {
     if (value) {
       setBrand(value.brand);
     } else {
-      setBrand('');
+      setBrand("");
     }
   };
 
@@ -60,27 +68,23 @@ const TicketForm= () => {
       description,
       date,
       itemName,
-      brand
-        };
+      brand,
+    };
     console.log(ticket);
     fetch("http://localhost:8080/ticket/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(ticket),
-    })
-    .then(response => {
-      if(response.ok){
+    }).then((response) => {
+      if (response.ok) {
         console.log("New ticket added");
-
-      }
-      else{
-        response.json().then(errors =>{
+      } else {
+        response.json().then((errors) => {
           setErrors(errors);
         });
       }
     });
   };
-    
 
   return (
     <>
@@ -88,54 +92,90 @@ const TicketForm= () => {
         <div className="grid grid-cols-6 grid-rows-6  gap-x-5 gap-y-5">
           <div className="col-span-1">
             <label htmlFor="name">Item Name</label>
-            
-           
           </div>
           <div className="col-span-2">
-          {errors.firstName && <div className="text-[#FC0000] text-sm">{errors.firstName}</div>}
-          <Autocomplete
-                options={options}
-                getOptionLabel={(option) => option.itemName}
-                onChange={handleItemChange}
-                value={options.find((option) => option.itemName === itemName) || null}
-                renderInput={(params) => (
-                  <TextField {...params} label="Item Name" variant="outlined" fullWidth />
-                )}
-              />
+            {errors.itemName && (
+              <div className="text-[#FC0000] text-sm">{errors.itemName}</div>
+            )}
+            <Autocomplete
+              options={options}
+              getOptionLabel={(option) => option.itemName}
+              onChange={handleItemChange}
+              value={
+                options.find((option) => option.itemName === itemName) || null
+              } //setting initial seleted value
+              renderInput={(params) => (
+                <TextField
+          {...params}
+          label="Item name"
+          variant="outlined"
+          sx={{
+            fieldset: {
+              //border: "2px",
+              borderRadius: "12px",
+              height:'45px'
+              
+            },
+           width: 375,
+         
+          }}
+        
            
+         
+        />  //define input field apperance
+              )}
+            />
           </div>{" "}
-          <div className="col-span-3">
-          
-
-          </div>
+          <div className="col-span-3"></div>
           <div className="col-span-1">
             <label htmlFor="name">Item Brand</label>
-            
-           
           </div>
           <div className="col-span-3">
-          {errors.lastName && <div className="text-[#FC0000] text-sm">{errors.lastName}</div>}
+            {errors.brand && (
+              <div className="text-[#FC0000] text-sm">{errors.brand}</div>
+            )}
+
+            <Autocomplete
+              options={options}
+              getOptionLabel={(option) => option.brand}
+              onChange={handleItembrandChange}
+              value={options.find((option) => option.brand === brand) || null}
+              variant="outlined"
+             
+              renderInput={(params) => (
+                <TextField
+          {...params}
+          label="Brand"
+          variant="outlined"
+          sx={{
+            fieldset: {
+              //border: "2px",
+              borderRadius: "12px",
+              height:'45px'
+              
+            },
+           width: 375,
+         
+          }}
+        
+           
+         
+        />  )}
+       
+  
             
-          <Autocomplete
-                options={options}
-                getOptionLabel={(option) => option.brand}
-                onChange={handleItembrandChange}
-                value={options.find((option) => option.brand === brand) || null}
-                renderInput={(params) => (
-                  <TextField {...params} label="brand" variant="outlined" fullWidth />
-                )}
-              />
+            />
           </div>
           <div></div>
           <div></div>
-           
           <div className="col-span-1 row-span-1">
             <label htmlFor="topic">Topic for ticket</label>
           </div>
           <div className="col-span-2">
-          {errors.department && <div className="text-[#FC0000] text-sm">{errors.department}</div>}
-          <Select
-              
+            {errors.topic && (
+              <div className="text-[#FC0000] text-sm">{errors.topic}</div>
+            )}
+            <Select
               id="topic"
               className="w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2"
               onChange={(e) => settopic(e.target.value)}
@@ -145,7 +185,6 @@ const TicketForm= () => {
               <MenuItem value="Hardware Problems">Hardware Problems</MenuItem>
               <MenuItem value="Other">Other</MenuItem>
             </Select>
-            
           </div>
           <div></div>
           <div></div>
@@ -154,8 +193,10 @@ const TicketForm= () => {
             <label htmlFor="description">Date</label>
           </div>
           <div className="col-span-2">
-          {errors.role && <div className="text-[#FC0000] text-sm">{errors.role}</div>}
-          <TextField
+            {errors.date && (
+              <div className="text-[#FC0000] text-sm">{errors.date}</div>
+            )}
+            <TextField
               variant="outlined"
               InputProps={{
                 className:
@@ -172,8 +213,10 @@ const TicketForm= () => {
             <label htmlFor="description">Description</label>
           </div>
           <div className="col-span-2 row-span-2">
-          {errors.role && <div className="text-[#FC0000] text-sm">{errors.role}</div>}
-          <TextField
+            {errors.description && (
+              <div className="text-[#FC0000] text-sm">{errors.description}</div>
+            )}
+            <TextField
               variant="outlined"
               InputProps={{
                 className:
@@ -186,16 +229,7 @@ const TicketForm= () => {
           <div></div>
           <div></div>
           <div></div>
-    
-          
-         
         </div>
-           
-       
-
-       
-              
-             
 
         <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] mt-12 ">
           <div className="col-start-5">
@@ -217,8 +251,6 @@ const TicketForm= () => {
           </div>
         </div>
       </form>
-      
-       
     </>
   );
 };
