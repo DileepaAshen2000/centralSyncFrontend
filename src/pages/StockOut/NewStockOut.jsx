@@ -72,6 +72,7 @@ const NewStockOut = () => {
       // Your axios post request here
       const result = await axios.post("http://localhost:8080/stock-out/add",stockOut);
       console.log(result.data);
+      navigate('/stockOut');
       Swal.fire({
         title: "Done !",
         text: "You submitted a Stock-Out!",
