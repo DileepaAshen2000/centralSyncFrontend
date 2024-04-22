@@ -139,7 +139,7 @@ const loadStockOut = async () => {
           <Button className="px-6 py-2 rounded"
                 variant='outlined'
                 type='submit'
-                onClick={() => navigate("/stockIn")}
+                onClick={() => navigate("/stockOut")}
                   >cancel</Button>
         </div>
       </main>

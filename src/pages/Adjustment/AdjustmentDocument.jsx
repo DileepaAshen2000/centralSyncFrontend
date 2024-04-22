@@ -12,7 +12,6 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 
-
 const handlePrint=()=>{
   window.print();
 }
@@ -30,7 +29,6 @@ const AdjustmentDocument = () => {
   })
 
 const{reason,date,description,newQuantity,status,itemId} = adj;
-
 const [item,setItem] = useState({  // create state for adjustment, initial state is empty with object.
   itemName:"",
   quantity:""
@@ -39,7 +37,7 @@ const{itemName,quantity} = item;
 
 useEffect(() => {
   loadAdjustment();
-},[]);
+},[adjId]);
 
 //get selected adjustment data
 const loadAdjustment = async () => {
@@ -64,7 +62,7 @@ const loadAdjustment = async () => {
   const minutes = currentDate.getMinutes().toString().padStart(2, '0');
   const seconds = currentDate.getSeconds().toString().padStart(2, '0');
 
-  // Format the date and time as needed
+  // Format the date and time
   const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
   const handleAccept = () => {
@@ -177,28 +175,44 @@ const loadAdjustment = async () => {
             <Typography variant="caption" gutterBottom>{formattedDateTime}</Typography>
           </div>
         </div>
+       
+       {/* Footer part */}
+        <div>
+          {status === 'PENDING' && (
+            <div>
+              <div className='flex gap-6 mt-6 ml-6'>
+                <h4>Note :</h4>
+                <textarea className="w-2/3 h-20 p-2 mt-2 border-2 border-gray-300 rounded-md" placeholder='Write something here..'></textarea>
+              </div>
 
-        <div className='flex gap-6 mt-6 ml-6'>
-          <h4>Note :</h4>
-          <textarea className="w-2/3 h-20 p-2 mt-2 border-2 border-gray-300 rounded-md" placeholder='Write something here..'></textarea>
-        </div>
-
-        <div className='flex gap-4 ml-[60%] mt-6'>
-          <Button className="px-6 py-2 text-white bg-blue-600 rounded"
-                variant='contained'
-                type='submit'
-                onClick={handleAccept}
-                  >approve & adjust</Button>
-          <Button className="px-6 py-2 text-white bg-blue-600 rounded"
-                variant='contained'
-                type='submit'
-                onClick={handleReject}
-                  >reject</Button>
-          <Button className="px-6 py-2 rounded"
-                variant='outlined'
-                type='submit'
-                onClick={() => navigate("/adjustment")}
-                  >cancel</Button>
+              <div className='flex gap-4 ml-[60%] mt-6'>
+                <Button className="px-6 py-2 text-white bg-blue-600 rounded"
+                      variant='contained'
+                      type='submit'
+                      onClick={handleAccept}
+                        >approve & adjust</Button>
+                <Button className="px-6 py-2 text-white bg-blue-600 rounded"
+                      variant='contained'
+                      type='submit'
+                      onClick={handleReject}
+                        >reject</Button>
+                <Button className="px-6 py-2 rounded"
+                      variant='outlined'
+                      type='submit'
+                      onClick={() => navigate("/adjustment")}
+                        >cancel</Button>
+              </div>
+            </div>
+          )}
+          {status !== 'PENDING' && (
+            <div className='flex gap-4 ml-[86%] mt-6'>
+              <Button className="px-6 py-2 rounded"
+                    variant='outlined'
+                    type='submit'
+                    onClick={() => navigate("/adjustment")}
+                      >cancel</Button>
+            </div>
+          )}
         </div>
       </main>
     </div>
