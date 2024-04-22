@@ -114,7 +114,7 @@ const EditItem = () => {
 
   // Form for editing item details
   return (
-    <form className="gritemID gritemID-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
+    <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
       <h1 className=" col-span-4 text-3xl pt-2  font-bold">Item Details</h1>
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel htmlFor="itemID" className="flex-none text-black w-32 ">
