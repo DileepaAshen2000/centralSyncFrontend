@@ -107,8 +107,8 @@ const EditOrderDetails = () => {
   
     
     return (
-      <form className="grid grid-cols-8 gap-y-10 pl-12 ">
-        <h1 className=" col-span-4 text-2xl ">Order Details</h1>
+      <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
+      <h1 className=" col-span-4 text-3xl pt-2 font-bold ">Order Details</h1>
   
         <div className="col-start-1 col-span-4 flex items-center">
           <InputLabel
@@ -219,8 +219,7 @@ const EditOrderDetails = () => {
             variant="outlined"
             InputProps={{
               className:
-                "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-              readOnly: true,
+              "w-[300px] h-10 ml-5 bg-white  ",              readOnly: true,
             }}
           />
         </div>
@@ -289,7 +288,7 @@ const EditOrderDetails = () => {
           />
           </div>
         </div>
-        <div className="col-start-1 col-span-4 flex items-center">
+        <div className="col-start-1 col-span-4 flex">
           <InputLabel
             htmlFor="description"
             className="flex-none text-black w-32 "
@@ -302,11 +301,10 @@ const EditOrderDetails = () => {
             onChange={onInputChange}
             variant="outlined"
             multiline
-            rows={10}
+            rows={6}
             InputProps={{
               className:
-                "w-[400px] rounded-2xl border border-gray-400 ml-5 bg-white",
-              readOnly: false,
+              "w-[500px] ml-5 bg-white  ",              readOnly: false,
             }}
           />
         </div>
