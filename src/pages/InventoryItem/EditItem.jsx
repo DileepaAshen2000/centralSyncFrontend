@@ -23,8 +23,7 @@ const EditItem = () => {
     dimension: "",
     weight: "",
     description: "",
-    quantity: "",
-    status: "",
+    quantity: ""
   });
 
   //Destructure the state
@@ -36,13 +35,12 @@ const EditItem = () => {
     dimension,
     weight,
     description,
-    quantity,
-    status,
+    quantity
   } = inventoryItem;
 
   //function to be called on input changing
   const onInputChange = (e) => {
-    setInventoryItem({ ...inventoryItem, [e.target.itemID]: e.target.value });
+    setInventoryItem({ ...inventoryItem, [e.target.id]: e.target.value });
   };
 
   //function to be called on item group selection
@@ -75,20 +73,9 @@ const EditItem = () => {
 
   // Handle saving edited item details
   const handleSave = () => {
-    const item = {
-      itemName,
-      itemGroup,
-      unit,
-      brand,
-      dimension,
-      weight,
-      description,
-      quantity,
-      status,
-    };
-
+  
     axios
-      .put(`http://localhost:8080/inventory-item/updateByitemID/${itemID}`, item)
+      .put(`http://localhost:8080/inventory-item/updateById/${itemID}`, inventoryItem)
       .then((response) => {
         if (response.status === 200) {
           // Show error message and set errors for form valitemIDation
@@ -118,11 +105,11 @@ const EditItem = () => {
       <h1 className=" col-span-4 text-3xl pt-2  font-bold">Item Details</h1>
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel htmlFor="itemID" className="flex-none text-black w-32 ">
-          Item itemID
+          Item Id
         </InputLabel>
         <TextField
           value={itemID}
-          itemID="itemID"
+          id="itemId"
           variant="outlined"
           InputProps={{
             className: "w-[300px] h-10 ml-5 bg-white  ",
@@ -136,10 +123,10 @@ const EditItem = () => {
         </InputLabel>
         <div>
           {errors.itemName && (
-            <div className="text-[#FC0000] text-xs ml-6">{errors.itemName}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.itemName}</div>
           )}
           <TextField
-            itemID="itemName"
+            id="itemName"
             value={itemName}
             onChange={onInputChange}
             variant="outlined"
@@ -157,12 +144,12 @@ const EditItem = () => {
         </InputLabel>
         <div className="flex-grow">
           {errors.itemGroup && (
-            <div className="text-[#FC0000] text-xs ml-6">
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
               {errors.itemGroup}
             </div>
           )}
           <Select
-            itemID="itemGroup"
+            id="itemGroup"
             value={itemGroup}
             onChange={onItemGroupChange}
             className="w-[300px] h-10 ml-5 bg-white  "
@@ -183,12 +170,12 @@ const EditItem = () => {
         </InputLabel>
         <div>
           {errors.unit && (
-            <div className="text-[#FC0000] text-xs ml-6">{errors.unit}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.unit}</div>
           )}
           <TextField
             value={unit}
             onChange={onInputChange}
-            itemID="unit"
+            id="unit"
             variant="outlined"
             InputProps={{
               className: "w-[300px] h-10 ml-5 bg-white  ",
@@ -202,12 +189,12 @@ const EditItem = () => {
         </InputLabel>
         <div>
           {errors.brand && (
-            <div className="text-[#FC0000] text-xs ml-6">{errors.brand}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.brand}</div>
           )}
           <TextField
             value={brand}
             onChange={onInputChange}
-            itemID="brand"
+            id="brand"
             variant="outlined"
             InputProps={{
               className: "w-[300px] h-10 ml-5 bg-white  ",
@@ -222,7 +209,7 @@ const EditItem = () => {
         <TextField
           value={dimension}
           onChange={onInputChange}
-          itemID="dimension"
+          id="dimension"
           variant="outlined"
           InputProps={{
             className: "w-[300px] h-10 ml-5 bg-white  ",
@@ -237,7 +224,7 @@ const EditItem = () => {
         <TextField
           value={weight}
           onChange={onInputChange}
-          itemID="weight"
+          id="weight"
           variant="outlined"
           InputProps={{
             className: "w-[300px] h-10 ml-5 bg-white  ",
@@ -255,7 +242,7 @@ const EditItem = () => {
         <TextField
           value={description}
           onChange={onInputChange}
-          itemID="description"
+          id="description"
           variant="outlined"
           multiline
           rows={6}
@@ -271,12 +258,12 @@ const EditItem = () => {
         </InputLabel>
         <div>
           {errors.quantity && (
-            <div className="text-[#FC0000] text-xs ml-6">{errors.quantity}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.quantity}</div>
           )}
           <TextField
             value={quantity}
             onChange={onInputChange}
-            itemID="quantity"
+            id="quantity"
             variant="outlined"
             InputProps={{
               className: "w-[300px] h-10 ml-5 bg-white  ",
