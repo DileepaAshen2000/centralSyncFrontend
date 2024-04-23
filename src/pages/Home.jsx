@@ -31,7 +31,7 @@ import EditOrderDetails from "./InitiateOrder/EditOrder";
 import Usage from "./UsageReport/UsageReport";
 import StockInDocument from "./StockIn/StockInDocument";
 import NewStockIn from "./StockIn/NewStockIn";
- 
+import Userupdate from "./User/Edit_user";
 
 const Home = () => {
   return (
@@ -80,7 +80,7 @@ const Home = () => {
               {/* User routing */}
               <Route path="/user" element={<User />}></Route>
               <Route path="/newUser" element={<CreateUser />} />
-              <Route path="/user/editUser/:ID" element={<EditUser />} />
+              <Route path="/user/editUser/:ID" element={<Userupdate />} />
               <Route path="/history" element={<UserActivityHistory />}></Route>
               <Route path='/newTicket' element={<CreateTicket/>}></Route>
 

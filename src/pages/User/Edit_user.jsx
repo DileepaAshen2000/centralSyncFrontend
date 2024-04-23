@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { TextField, Button, Stack, Select } from "@mui/material";
 // import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
-import SelectD from "./Select_D";
-import SelectR from "./Select_R";
 import axios from "axios";
 import MenuItem from "@mui/material/MenuItem";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -12,83 +10,56 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 //import Dropzone from "./Dropzone";
 
 const Userupdate = () => {
-  const [firstName, setfName] = useState("");
-  const [lastName, setlName] = useState("");
-  const [dateOfBirth, setDOb] = useState("");
-  const [mobileNo, setMNumber] = useState("");
-  const [telNo, setTelNumber] = useState("");
-  const [address, setAddress] = useState("");
-  const [email, setEmail] = useState("");
-  const [department, setDepartment] = useState("");
-  const [role, setRole] = useState("");
+  // State for user details
+  const [user, setUser] = useState({
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    mobileNo: "",
+    telNo: "",
+    address: "",
+    email: "",
+    department: "",
+    role: "",
+  });
   const { ID } = useParams();
-  const [isEditable, setIsEditable] = useState(true);
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch user details by ID on component mount
     axios
-      .get(`http://localhost:8080/user/users/` + ID)
-
+      .get(`http://localhost:8080/user/users/${ID}`)
       .then((response) => {
-        const data = {
-          id: response.data.index + 102,
-          firstName: response.data.firstName,
-          lastName: response.data.lastName,
-          dateOfBirth: response.data.dateOfBirth,
-          mobileNo: response.data.mobileNo,
-          telNo: response.data.telNo,
-          address: response.data.address,
-          email: response.data.email,
-          department: response.data.department,
-          role: response.data.role,
-        };
-        setfName(data.firstName);
-        setlName(data.lastName);
-        setDOb(data.dateOfBirth);
-        setMNumber(data.mobileNo);
-        setTelNumber(data.telNo);
-        setAddress(data.address);
-        setEmail(data.email);
-        setDepartment(data.department);
-        setRole(data.role);
+        // Update user state with fetched data
+        setUser(response.data);
       })
       .catch((error) => {
-        console.log(error);
+        console.log("Error fetching user:", error);
       });
   }, [ID]);
 
-  const handleEdit = () => {
-    console.log("Edit button clicked");
-    setIsEditable(!isEditable);
-    console.log(isEditable);
+  // Function to handle input change
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUser((prevUser) => ({
+      ...prevUser,
+      [name]: value,
+    }));
   };
 
-  
-
-
-  const handleSave = (e) => {
-    const user = {
-      firstName,
-      lastName,
-      dateOfBirth,
-      mobileNo,
-      telNo,
-      address,
-      email,
-      department,
-      role,
-    };
-
+  // Function to save updated user data
+  const handleSave = () => {
+    // Make PUT request to update the user data
     axios
-      .put("http://localhost:8080/user/update/" + ID, user)
+      .put(`http://localhost:8080/user/update/${ID}`, user)
       .then(() => {
-        console.log("Successfully updated");
-
+        console.log("User updated successfully");
+        // Redirect to user list page after successful update
         navigate("/user");
       })
       .catch((error) => {
-        console.log(error);
+        console.log("Error updating user:", error);
       });
   };
 
@@ -101,7 +72,6 @@ const Userupdate = () => {
           </div>
           <div className="col-span-2">
             <TextField
-               
               name="id"
               placeholder=""
               InputProps={{
@@ -126,10 +96,10 @@ const Userupdate = () => {
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
-                readOnly: isEditable,
               }}
-              value={firstName}
-              onChange={(e) => setfName(e.target.value)}
+              value={user.firstName}
+              onChange={handleInputChange}
+              name="firstName"
             />
           </div>
           <div className="col-span-3"> </div>
@@ -138,12 +108,12 @@ const Userupdate = () => {
               variant="outlined"
               placeholder="Last Name"
               id="lastName"
-              value={lastName}
-              onChange={(e) => setlName(e.target.value)}
+              value={user.lastName}
+              onChange={handleInputChange}
+              name="firstName"
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
-                readOnly: isEditable,
               }}
             />
           </div>
@@ -155,15 +125,13 @@ const Userupdate = () => {
           </div>
           <div className="col-span-2">
             <Select
-              value={department}
-              onChange={(e) => {
-                console.log("Selected Department:", e.target.value);
-                setDepartment(e.target.value);
-              }}
+              value={user.department}
+              onChange={handleInputChange}
+              name="department"
               id="department"
               className="w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2"
             >
-              <MenuItem disabled value={department}></MenuItem>
+              <MenuItem disabled value={user.department}></MenuItem>
               <MenuItem value="Programming">Programming</MenuItem>
               <MenuItem value="Cybersecurity">Cybersecurity</MenuItem>
             </Select>
@@ -176,15 +144,12 @@ const Userupdate = () => {
           </div>
           <div className="col-span-2">
             <Select
-              value={role}
-              onChange={(e) => {
-                console.log("Selected Role:", e.target.value);
-                setRole(e.target.value);
-              }}
-              id="role"
+              value={user.role}
+              onChange={handleInputChange}
+              name="role"
               className="w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2"
             >
-              <MenuItem disabled value={role}></MenuItem>
+              <MenuItem disabled value={user.role}></MenuItem>
               <MenuItem value="Web Developer">Web Developer</MenuItem>
               <MenuItem value="Software Architect">Software Architect</MenuItem>
             </Select>
@@ -197,18 +162,16 @@ const Userupdate = () => {
           </div>
           <div className="col-span-2">
             <TextField
-          
               id="date"
               placeholder="dd/mm/yy"
               name="dateOfBirth"
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
-                readOnly: isEditable,
               }}
               InputLabelProps={{ shrink: true }}
-              value={dateOfBirth}
-              onChange={(e) => setDOb(e.target.value)}
+              value={user.dateOfBirth}
+              onChange={handleInputChange}
             />
           </div>
           <div></div>
@@ -226,10 +189,9 @@ const Userupdate = () => {
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-[65px] border border-[#857A7A] rounded-xl px-2",
-                readOnly: isEditable,
               }}
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              value={user.address}
+              onChange={handleInputChange}
             />
           </div>
           <div></div>
@@ -254,12 +216,11 @@ const Userupdate = () => {
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2 ",
-                readOnly: isEditable,
               }}
-              value={mobileNo}
+              value={user.mobileNo}
+              onChange={handleInputChange}
               name="mobileNo"
-              onChange={(e) => setMNumber(e.target.value)}
-            />{" "}
+            />
           </div>
           <div className="col-span-1">
             <label htmlFor="name" className="pl-20">
@@ -274,11 +235,10 @@ const Userupdate = () => {
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2 ",
-                readOnly: isEditable,
               }}
-              value={telNo}
               name="telNo"
-              onChange={(e) => setTelNumber(e.target.value)}
+              value={user.telNo}
+              onChange={handleInputChange}
             />
           </div>
           <div className="col-span-1">
@@ -292,11 +252,10 @@ const Userupdate = () => {
               InputProps={{
                 className:
                   "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2",
-                readOnly: isEditable,
               }}
               name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={user.email}
+              onChange={handleInputChange}
             />
           </div>
           <div></div>
@@ -349,23 +308,20 @@ const Userupdate = () => {
         <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] mt-12 ">
           <div className="col-start-5">
             <Button
-      
               variant="outlined"
               className="bg-[#007EF2] w-[150px] rounded-md text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
-              onClick={handleEdit}
+              onClick={handleSave}
             >
-              
-              Edit
+              Edit & Save
             </Button>
           </div>
           <div className="col-start-6">
             <Button
               variant="outlined"
               className="bg-white w-[150px] rounded-md text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-[#007EF2]"
-              onClick={handleSave}
+              onClick={()=>navigate("/user")}
             >
-              
-              Save
+              Cancel
             </Button>
           </div>
         </div>
