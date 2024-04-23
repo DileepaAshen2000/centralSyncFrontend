@@ -59,7 +59,7 @@ const handleClick = () => {
 const handleViewClick = () => {
   if (rowSelectionModel > 0) {
     const selectedUserId = rowSelectionModel[0];
-    navigate("/user/editUser" + selectedUserId);
+    navigate("/user/users/" + selectedUserId);
   } else {
     navigate("/newUser");
   }
@@ -90,7 +90,7 @@ const handleViewClick = () => {
                 <Button
                     variant="contained"
                     className="bg-blue-600 px-6 py-2 text-white rounded left-[68%]"
-                    onClick={handleClick}
+                    onClick={handleViewClick}
                 >
                     View
                 </Button>

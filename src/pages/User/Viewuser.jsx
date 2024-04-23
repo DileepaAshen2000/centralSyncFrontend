@@ -22,6 +22,7 @@ const ViewUser = () => {
     department: "",
     role: "",
   });
+  const [fetchData, setFetchData] = useState(false);
   const { ID } = useParams();
 
   const navigate = useNavigate();
@@ -39,29 +40,22 @@ const ViewUser = () => {
       });
   }, [ID]);
 
-  // Function to handle input change
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setUser((prevUser) => ({
-      ...prevUser,
-      [name]: value,
-    }));
+  const handleDelete = () => {
+    try {
+      axios
+        .delete(`http://localhost:8080/user/delete/${ID}`)
+        .then(() => {
+          setFetchData(!fetchData);
+          navigate("/user", { fetchData });
+        });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  // Function to save updated user data
-  const handleSave = () => {
-    // Make PUT request to update the user data
-    axios
-      .put(`http://localhost:8080/user/update/${ID}`, user)
-      .then(() => {
-        console.log("User updated successfully");
-        // Redirect to user list page after successful update
-        navigate("/user");
-      })
-      .catch((error) => {
-        console.log("Error updating user:", error);
-      });
-  };
+   
+
+  
 
   return (
 
@@ -101,10 +95,10 @@ const ViewUser = () => {
               placeholder="First Name"
               InputProps={{
                 className:
-                  "w-[300px] ",
+                  "w-[300px] ",readOnly: true,
               }}
               value={user.firstName}
-              onChange={handleInputChange}
+            
               name="firstName"
               size="small"
             />
@@ -116,11 +110,11 @@ const ViewUser = () => {
               placeholder="Last Name"
               id="lastName"
               value={user.lastName}
-              onChange={handleInputChange}
+            
               name="firstName"
               InputProps={{
                 className:
-                  "w-[300px] ",
+                  "w-[300px] ",readOnly: true,
               }}
               size="small"
               
@@ -136,11 +130,14 @@ const ViewUser = () => {
           <div className="col-span-2">
             <Select
               value={user.department}
-              onChange={handleInputChange}
+            
               name="department"
               id="department"
-              className="w-[300px]"
+              className="w-[300px] "
               size="small"
+              InputProps={{
+                readOnly: true,
+              }}
             >
               <MenuItem disabled value={user.department}></MenuItem>
               <MenuItem value="Programming">Programming</MenuItem>
@@ -156,10 +153,13 @@ const ViewUser = () => {
           <div className="col-span-2">
             <Select
               value={user.role}
-              onChange={handleInputChange}
+              InputProps={{
+                readOnly: true,
+              }}
               name="role"
               className="w-[300px]"
               size="small"
+              
             >
               <MenuItem disabled value={user.role}></MenuItem>
               <MenuItem value="Web Developer">Web Developer</MenuItem>
@@ -179,11 +179,11 @@ const ViewUser = () => {
               name="dateOfBirth"
               InputProps={{
                 className:
-                  "w-[300px] ",
+                  "w-[300px] ",readOnly: true,
               }}
               InputLabelProps={{ shrink: true }}
               value={user.dateOfBirth}
-              onChange={handleInputChange}
+            
               size="small"
             />
           </div>
@@ -201,10 +201,10 @@ const ViewUser = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[300px]",
+                  "w-[300px]",readOnly: true,
               }}
               value={user.address}
-              onChange={handleInputChange}
+            
               size="small"
             />
           </div>
@@ -229,10 +229,10 @@ const ViewUser = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[300px] ",
+                  "w-[300px] ",readOnly: true,
               }}
               value={user.mobileNo}
-              onChange={handleInputChange}
+            
               name="mobileNo"
               size="small"
             />
@@ -249,11 +249,11 @@ const ViewUser = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[300px] ",
+                  "w-[300px] ",readOnly: true,
               }}
               name="telNo"
               value={user.telNo}
-              onChange={handleInputChange}
+            
               size="small"
             />
           </div>
@@ -267,11 +267,11 @@ const ViewUser = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[300px]",
+                  "w-[300px]",readOnly: true,
               }}
               name="email"
               value={user.email}
-              onChange={handleInputChange}
+            
               size="small"
             />
           </div>
@@ -280,58 +280,18 @@ const ViewUser = () => {
           <div></div>
         </div>
 
-        <div className="flex items-center">
-          <h3 className="pt-10 pb-10 text-[#796F6F]"> User Credentials</h3>
-          <hr className="border-[#796F6F] ml-4 flex-grow" />
-        </div>
+        
 
-        <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] ">
-          <div className="col-span-1">
-            <label htmlFor="name">Password</label>
-          </div>
-          <div className="col-span-2">
-            <TextField
-              type="password"
-              id="password"
-              placeholder=""
-              InputProps={{
-                className:
-                  "w-[300px] ",
-              }}
-              size="small"
-            />{" "}
-          </div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div className="col-span-1">
-            <label htmlFor="name">Confirm Password</label>
-          </div>
-          <div className="col-span-2">
-            <TextField
-              type="password"
-              id="cpassword"
-              placeholder=""
-              InputProps={{
-                className:
-                  "w-[300px]",
-              }}
-              size="small"
-            />
-          </div>
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
+        
 
         <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] mt-12 ">
           <div className="col-start-5">
             <Button
               variant="contained"
               className="bg-blue-600 w-[150px] rounded text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
-              onClick={handleSave}
+              onClick={ handleDelete }
             >
-              Edit & Save
+              Delete
             </Button>
           </div>
           <div className="col-start-6">
@@ -349,4 +309,4 @@ const ViewUser = () => {
     </>
   );
 };
-export default Userupdate;
+export default ViewUser;

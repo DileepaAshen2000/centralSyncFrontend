@@ -33,6 +33,7 @@ import StockInDocument from "./StockIn/StockInDocument";
 import NewStockIn from "./StockIn/NewStockIn";
 import Userupdate from "./User/Edit_user";
 import Ticket from "./Ticket/Ticketlist";
+import ViewUser from "./User/Viewuser";
 
 const Home = () => {
   return (
@@ -83,6 +84,7 @@ const Home = () => {
               <Route path="/newUser" element={<CreateUser />} />
               <Route path="/user/editUser/:ID" element={<Userupdate />} />
               <Route path="/history" element={<UserActivityHistory />}></Route>
+              <Route path="/user/users/:ID" element={<ViewUser/>}></Route>
 
 
               {/* Ticket routing */}
