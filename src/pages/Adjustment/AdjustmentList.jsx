@@ -43,14 +43,31 @@ const AdjustmentList = () => {
     setRowSelectionModel(newSelectedRow);
   };
 
+  // const handleClick = () => {
+  //   if (rowSelectionModel > 0) {
+  //     const selectedAdjId = rowSelectionModel[0];
+  //     console.log("selected adj id :" + selectedAdjId);
+  //     navigate("/adjustment/editadjustment/" + selectedAdjId);
+  //   } else {
+  //     navigate("/newadjustment");
+  //   }
+  // };
+
   const handleClick = () => {
-    if (rowSelectionModel > 0) {
+    // console.log("rowSelectionModel.length :"+rowSelectionModel.length); // check the length of the selected row
+    if (rowSelectionModel.length > 0) {
       const selectedAdjId = rowSelectionModel[0];
-      navigate("/adjustment/editadjustment/" + selectedAdjId);
+      const selectedAdj = rows.find(row => row.id === selectedAdjId);
+      if (selectedAdj.status === "PENDING") {
+        navigate("/adjustment/editadjustment/" + selectedAdjId);
+      }else{
+        alert("You can't edit this adjustment because it is already "+selectedAdj.status);
+      }
     } else {
       navigate("/newadjustment");
     }
   };
+  
 
   const handleViewClick = () => {
     if (rowSelectionModel > 0) {
@@ -92,7 +109,7 @@ const AdjustmentList = () => {
         ) : (
           <Button
             variant="contained"
-            className="bg-blue-600 px-6 text-white rounded left-[62%]"
+            className="bg-blue-600 text-white rounded left-[62%]"
             onClick={() => navigate("/newadjustment")}
           >
             New Adjustment
@@ -113,7 +130,7 @@ const AdjustmentList = () => {
         autoHeight
         pageSizeOptions={[5]}
         checkboxSelection
-        // disableRowSelectionOnClick
+        disableRowSelectionOnClick
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={handlerowSelectionModelChange}
       />

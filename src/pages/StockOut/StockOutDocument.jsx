@@ -16,20 +16,20 @@ import { useEffect } from 'react';
 const handlePrint=()=>{
   window.print();
 }
-const StockInDocument = () => {
+const StockOutDocument = () => {
   const navigate = useNavigate();
-  const {sinId} = useParams(); // get the StockIn id from the url
-  const [stockIn,setStockIn] = useState({  // create state for StockIn, initial state is empty with object.
+  const {soutId} = useParams(); // get the StockOut id from the url
+  const [stockOut,setStockOut] = useState({  // create state for StockOut, initial state is empty with object.
     date:"",
     description:"",
-    inQty:"",
-    location:"",
+    outQty:"",
+    department:"",
     itemId:""
   })
 
-const{date,description,inQty,location,itemId} = stockIn;
+const{date,description,outQty,department,itemId} = stockOut;
 
-const [item,setItem] = useState({  // create state for StockIn, initial state is empty with object.
+const [item,setItem] = useState({  // create state for stockOut, initial state is empty with object.
   itemName:"",
   quantity:"",
   itemGroup:""
@@ -37,19 +37,19 @@ const [item,setItem] = useState({  // create state for StockIn, initial state is
 const{itemName,quantity,itemGroup} = item;
 
 useEffect(() => {
-  loadStockIn();
+  loadStockOut();
 },[]);
 
 //get selected StockIn data
-const loadStockIn = async () => {
+const loadStockOut = async () => {
   try {
-    const result = await axios.get(`http://localhost:8080/stock-in/getById/${sinId}`);
-    setStockIn(result.data);  // Make sure the fetched data structure matches the structure of your state
+    const result = await axios.get(`http://localhost:8080/stock-out/getById/${soutId}`);
+    setStockOut(result.data);  // Make sure the fetched data structure matches the structure of your state
     
     const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${result.data.itemId}`);
     setItem(result1.data);
   } catch (error) {
-    console.error('Error loading StockIn:', error);
+    console.error('Error loading Stock-Out:', error);
   }
 }
   // Get the current date and time
@@ -69,7 +69,7 @@ const loadStockIn = async () => {
   return (
     <div>
       <div>
-        <header className="text-3xl">Stock-In Details</header>
+        <header className="text-3xl">Stock-Out Details</header>
       </div>
       
       <main>
@@ -83,7 +83,7 @@ const loadStockIn = async () => {
         <div className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section className="flex flex-row items-end justify-end mt-4 mb-10">
-              <header className="text-3xl">Stock-In Report</header>
+              <header className="text-3xl">Stock-Out Report</header>
             </section>
             <section className="flex flex-row items-end justify-end gap-10">
               <ul className='flex flex-col gap-2'>
@@ -93,7 +93,7 @@ const loadStockIn = async () => {
                 <li className="font-bold">Date</li>
               </ul>
               <ul className='flex flex-col gap-2'>
-                <li>{sinId}</li>
+                <li>{soutId}</li>
                 <li>{itemGroup}</li>
                 <li>Dileepa Ashen</li>
                 <li>{date}</li>
@@ -106,8 +106,8 @@ const loadStockIn = async () => {
                 <TableRow className=" bg-zinc-800">
                   <TableCell align="right" className="text-white">Item ID</TableCell>
                   <TableCell align="right" className="text-white">Item Name</TableCell>
-                  <TableCell align="right" className="text-white">Location</TableCell>
-                  <TableCell align="right" className="text-white">Quantity In</TableCell>
+                  <TableCell align="right" className="text-white">Department</TableCell>
+                  <TableCell align="right" className="text-white">Quantity Out</TableCell>
                   <TableCell align="right" className="text-white">New Quantity On Hand</TableCell>
                 </TableRow>
               </TableHead>
@@ -115,9 +115,9 @@ const loadStockIn = async () => {
                   <TableRow>
                     <TableCell align="right">{itemId}</TableCell>
                     <TableCell align="right">{itemName}</TableCell>
-                    <TableCell align="right">{location}</TableCell>
-                    <TableCell align="right">{inQty}</TableCell>
-                    <TableCell align="right">{quantity + inQty}</TableCell>
+                    <TableCell align="right">{department}</TableCell>
+                    <TableCell align="right">{outQty}</TableCell>
+                    <TableCell align="right">{quantity - outQty}</TableCell>
                   </TableRow>
               </TableBody>
             </Table>
@@ -139,11 +139,11 @@ const loadStockIn = async () => {
           <Button className="px-6 py-2 rounded"
                 variant='outlined'
                 type='submit'
-                onClick={() => navigate("/stockIn")}
+                onClick={() => navigate("/stockOut")}
                   >cancel</Button>
         </div>
       </main>
     </div>
   )
 }
-export default StockInDocument;
+export default StockOutDocument;

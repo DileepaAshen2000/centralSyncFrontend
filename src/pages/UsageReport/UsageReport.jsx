@@ -7,7 +7,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
-import ItemPieChart from "./PieChart";
+import AvgGauge from "./AvgGauge";
 import UsageBarChart from "./ItemUsageBarGraph";
 import StockLineChart from "./StockIn&OutChart";
 import { YearCalendar, LocalizationProvider } from "@mui/x-date-pickers";
@@ -62,11 +62,10 @@ const Usage = () => {
         <DialogContent>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <YearCalendar
-           
               minDate={dayjs([2020, 1, 1])}
               maxDate={dayjs().endOf("year")}
               onChange={handleYearChange}
-              className=" col-start-4"
+              className="col-start-4"
             />
           </LocalizationProvider>
         </DialogContent>
@@ -80,18 +79,17 @@ const Usage = () => {
         Print
       </Button>
       <h1 className="row start-2 col-span-10 text-3xl text-center p-10 ">
-        {category.toUpperCase()} ITEM USAGE ANALYSIS REPORT
+        USAGE ANALYSIS REPORT OF ITEM CATEGORY {category.toUpperCase()} 
         <br /> (JAN-DEC)
         <br/> {year}
       </h1>
-      <div className="row-start-3 col-span-3  bg-white">
-        <h1 className=" text-xl text-center p-4 ">All Items</h1>
-        <hr className="border-t border-gray-200" />
-        <div>
-          <ItemPieChart />
+     
+        <div className="row-start-3 col-span-3" >
+          <AvgGauge category={category} year={year}/>
+          
         </div>
-      </div>
-      <div className="row-start-3 col-start-4 col-span-7 ml-10 mt-10 h-[400px] bg-white ">
+     
+      <div className="row-start-3 col-start-4 col-span-7 ml-10  h-[400px] bg-white ">
         <h2 className=" text-xl  p-4 ">Monitor Usage</h2>
         <hr className="col-span-4 border-t border-gray-200" />
         <UsageBarChart category={category} year={year} />

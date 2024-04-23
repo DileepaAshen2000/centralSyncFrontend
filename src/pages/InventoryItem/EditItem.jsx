@@ -1,132 +1,137 @@
 import { Button, InputLabel, MenuItem, Select, TextField } from "@mui/material";
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
 
 const EditItem = () => {
-  const [itemName, setItemName] = useState("");
-  const [itemGroup, setItemGroup] = useState("");
-  const [unit, setUnit] = useState("");
-  const [brand, setBrand] = useState("");
-  const [dimension, setDimension] = useState("");
-  const [weight, setWeight] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [errors, setErrors] = useState({});
-
-  const { ID } = useParams();
-
-  const [fetchData, setFetchData] = useState(false);
-
   const navigate = useNavigate();
 
+  //state variable to catch error messages sent from API
+  const [errors, setErrors] = useState({});
+
+  // Get item itemID from route parameters
+  const { itemID } = useParams();
+
+
+  //State for item object with properties -->initial state of properties=null
+  const [inventoryItem, setInventoryItem] = useState({
+    itemName: "",
+    itemGroup: "",
+    unit: "",
+    brand: "",
+    dimension: "",
+    weight: "",
+    description: "",
+    quantity: ""
+  });
+
+  //Destructure the state
+  const {
+    itemName,
+    itemGroup,
+    unit,
+    brand,
+    dimension,
+    weight,
+    description,
+    quantity
+  } = inventoryItem;
+
+  //function to be called on input changing
+  const onInputChange = (e) => {
+    setInventoryItem({ ...inventoryItem, [e.target.id]: e.target.value });
+  };
+
+  //function to be called on item group selection
+  const onItemGroupChange = (e) => {
+    setInventoryItem({ ...inventoryItem, itemGroup: e.target.value });
+  };
+
+  // Fetch item details from the API on component mount
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/inventory-item/getById/${ID}`)
+      .get(`http://localhost:8080/inventory-item/getById/${itemID}`)
       .then((response) => {
-        const data = {
+        const item = {
           itemName: response.data.itemName,
           itemGroup: response.data.itemGroup,
-          brand: response.data.brand,
           unit: response.data.unit,
+          brand: response.data.brand,
           dimension: response.data.dimension,
           weight: response.data.weight,
           description: response.data.description,
           quantity: response.data.quantity,
           status: response.data.status,
         };
-
-        setItemName(data.itemName);
-        setItemGroup(data.itemGroup);
-        setBrand(data.brand);
-        setUnit(data.unit);
-        setDimension(data.dimension);
-        setWeight(data.weight);
-        setDescription(data.description);
-        setQuantity(data.quantity);
-        setStatus(data.status);
+        setInventoryItem(item); // Make sure the fetched data structure matches the structure of your state
       })
       .catch((error) => {
         console.log(error);
       });
-  }, [ID]);
+  }, [itemID]);
 
+  // Handle saving edited item details
   const handleSave = () => {
-    const item = {
-      itemName,
-      itemGroup,
-      unit,
-      brand,
-      dimension,
-      weight,
-      description,
-      quantity,
-      status,
-    };
-
+  
     axios
-      .put(`http://localhost:8080/inventory-item/updateById/${ID}`, item)
+      .put(`http://localhost:8080/inventory-item/updateById/${itemID}`, inventoryItem)
       .then((response) => {
-        if (response.status===200) {
+        if (response.status === 200) {
+          // Show error message and set errors for form valitemIDation
           Swal.fire({
-            icon:'success',
-            title:'Success!',
-            text:'Item details successfully edited!'
+            icon: "success",
+            title: "Success!",
+            text: "Item details successfully edited!",
           });
-          setFetchData(!fetchData);
-          navigate("/item", { fetchData });
+          navigate("/item");
         }
       })
       .catch((error) => {
         Swal.fire({
-          icon:'error',
-          title:'Error!',
-          text:'Failed to edit item details. Please check your inputs.'
-        }); 
+          icon: "error",
+          title: "Error!",
+          text: "Failed to edit item details. Please check your inputs.",
+        });
         if (error.response) {
           setErrors(error.response.data);
         }
       });
   };
 
+  // Form for editing item details
   return (
-    <form className="grid grid-cols-8 gap-y-10 pl-12 ">
-      <h1 className=" col-span-4 text-2xl ">Item Details</h1>
+    <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
+      <h1 className=" col-span-4 text-3xl pt-2  font-bold">Item Details</h1>
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="id" className="flex-none text-black w-32 ">
-          Item id
+        <InputLabel htmlFor="itemID" className="flex-none text-black w-32 ">
+          Item Id
         </InputLabel>
         <TextField
-          value={ID}
-          id="id"
+          value={itemID}
+          id="itemId"
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
-            readOnly: true,
+            className: "w-[300px] h-10 ml-5 bg-white  ",
           }}
         />
       </div>
 
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel htmlFor="name" className="flex-none text-black w-32 ">
-          Item name
+          Item Name
         </InputLabel>
         <div>
           {errors.itemName && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.itemName}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.itemName}</div>
           )}
           <TextField
+            id="itemName"
             value={itemName}
-            onChange={(e) => setItemName(e.target.value)}
-            id="name"
+            onChange={onInputChange}
             variant="outlined"
             InputProps={{
-              className:
-                "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
+              className: "w-[300px] h-10 ml-5 bg-white  ",
               readOnly: false,
             }}
           />
@@ -135,21 +140,20 @@ const EditItem = () => {
 
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel htmlFor="itemGroup" className="flex-none text-black w-32 ">
-          Item group
+          Item Group
         </InputLabel>
         <div className="flex-grow">
           {errors.itemGroup && (
-            <div className="text-[#FC0000] text-sm ml-6">
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
               {errors.itemGroup}
             </div>
           )}
           <Select
-            value={itemGroup}
-            onChange={(e) => setItemGroup(e.target.value)}
             id="itemGroup"
-            className="bg-white  w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
+            value={itemGroup}
+            onChange={onItemGroupChange}
+            className="w-[300px] h-10 ml-5 bg-white  "
           >
-            <MenuItem disabled value={itemGroup}></MenuItem>
             <MenuItem value="computerAccessories">
               Computer accessories
             </MenuItem>
@@ -166,17 +170,15 @@ const EditItem = () => {
         </InputLabel>
         <div>
           {errors.unit && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.unit}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.unit}</div>
           )}
           <TextField
             value={unit}
-            onChange={(e) => setUnit(e.target.value)}
+            onChange={onInputChange}
             id="unit"
             variant="outlined"
             InputProps={{
-              className:
-                "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-              readOnly: false,
+              className: "w-[300px] h-10 ml-5 bg-white  ",
             }}
           />
         </div>
@@ -187,17 +189,15 @@ const EditItem = () => {
         </InputLabel>
         <div>
           {errors.brand && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.brand}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.brand}</div>
           )}
           <TextField
             value={brand}
-            onChange={(e) => setBrand(e.target.value)}
+            onChange={onInputChange}
             id="brand"
             variant="outlined"
             InputProps={{
-              className:
-                "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-              readOnly: false,
+              className: "w-[300px] h-10 ml-5 bg-white  ",
             }}
           />
         </div>
@@ -208,12 +208,11 @@ const EditItem = () => {
         </InputLabel>
         <TextField
           value={dimension}
-          onChange={(e) => setDimension(e.target.value)}
+          onChange={onInputChange}
           id="dimension"
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+            className: "w-[300px] h-10 ml-5 bg-white  ",
             readOnly: false,
           }}
         />
@@ -224,17 +223,16 @@ const EditItem = () => {
         </InputLabel>
         <TextField
           value={weight}
-          onChange={(e) => setWeight(e.target.value)}
+          onChange={onInputChange}
           id="weight"
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+            className: "w-[300px] h-10 ml-5 bg-white  ",
             readOnly: false,
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
+      <div className="col-start-1 col-span-4 flex">
         <InputLabel
           htmlFor="description"
           className="flex-none text-black  w-32 mt-0"
@@ -243,34 +241,32 @@ const EditItem = () => {
         </InputLabel>
         <TextField
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={onInputChange}
           id="description"
           variant="outlined"
           multiline
-          rows={10}
+          rows={6}
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 ml-5 bg-white",
+            className: "w-[500px] ml-5 bg-white  ",
             readOnly: false,
           }}
         />
       </div>
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel htmlFor="quantity" className="flex-none text-black w-32 ">
-          Initial quantity
+          Initial Quantity
         </InputLabel>
         <div>
           {errors.quantity && (
-            <div className="text-[#FC0000] text-sm ml-6">{errors.quantity}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.quantity}</div>
           )}
           <TextField
             value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
+            onChange={onInputChange}
             id="quantity"
             variant="outlined"
             InputProps={{
-              className:
-                "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+              className: "w-[300px] h-10 ml-5 bg-white  ",
               readOnly: false,
             }}
           />
@@ -287,7 +283,7 @@ const EditItem = () => {
         </Button>
         <Button
           variant="outlined"
-          className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
+          className="row-start-11 col-start-8 rounded-sm bg-white text-blue-60blue-600"
           onClick={() => navigate("/item")}
         >
           Cancel

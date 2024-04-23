@@ -138,8 +138,8 @@ const StockLineChart = ({category, year} ) => {
 
   
   // Create arrays of data for the chart y axis
-  const uData = xLabels.map((label) => sumByMonthSI[label]);
-  const pData = xLabels.map((label) => sumByMonthSO[label]);
+  const stockInData = xLabels.map((label) => sumByMonthSI[label]);
+  const stockOutData = xLabels.map((label) => sumByMonthSO[label]);
 
   return (
 
@@ -148,8 +148,8 @@ const StockLineChart = ({category, year} ) => {
       width={1000}
       height={300}
       series={[
-        { data: uData, label: "Stock In" },
-        { data: pData, label: "Stock Out" },
+        { data: stockInData, label: "Stock In" },
+        { data: stockOutData, label: "Stock Out" },
       ]}
       xAxis={[
         {

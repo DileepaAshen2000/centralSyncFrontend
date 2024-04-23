@@ -9,6 +9,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const EditAdjustment = () => {
 
@@ -22,19 +23,22 @@ const EditAdjustment = () => {
     name:"",
     itemId:""
   })
-
-  const{reason,date,description,newQuantity,itemId,availableQuantity} = adj;
-
+  const{reason,date,description,newQuantity,itemId} = adj;
+  
   const [item,setItem] = useState({  // create state for item, initial state is empty with object.
     itemName:"",
     quantity:"",
     itemGroup:""
   })
   const{itemName,quantity,itemGroup} = item;
+
+  const [errors, setErrors] = useState({}); // State to manage errors for input fields
+  const [flag,setFalg] = useState(0); // To check whether the input fields are changed or not
   
-  //Add onChange event to the input fields
   const onInputChange=(e)=>{
     setAdj({...adj,[e.target.name]:e.target.value});
+    setErrors({ ...errors, [e.target.name]: '' });
+    setFalg(1);
   };
 
   useEffect(() => {
@@ -42,10 +46,59 @@ const EditAdjustment = () => {
   },[]);
 
   const onSubmit=async(e)=>{
-    e.preventDefault(); // To remove unwanted url tail part
-    await axios.put(`http://localhost:8080/adjustment/updateById/${adjId}`,adj); // To send data to the server
-    console.log(adj);
-    navigate('/adjustment');
+    if(flag === 1){
+      e.preventDefault(); // To remove unwanted url tail part
+      const validationErrors = validateInputs();
+      console.log(Object.keys(validationErrors).length)
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        return;
+      }
+
+      try {
+        await axios.put(`http://localhost:8080/adjustment/updateById/${adjId}`,adj); // To send data to the server
+        navigate('/adjustment');
+        Swal.fire({
+          title: "Done!",
+          text: "You submitted the Adjustment!",
+          icon: "success"
+        });
+      } catch (error) {
+        console.error("Error:", error);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to submit Adjustment. Please try again later.",
+          icon: "error"
+        });
+      }
+    }else{
+      navigate('/adjustment');
+      Swal.fire({
+        title: "No Changes ?",
+        text: "No any changes Found.",
+        icon: "question"
+      });
+    } 
+  };
+
+  // Validate the input fields
+  const validateInputs = () => {
+    const errors = {};
+    if (!reason) {
+      errors.reason = 'Reason is required';
+    }
+    if (!date) {
+      errors.date = 'Date is required';
+    }
+    
+    if (!newQuantity) {
+      errors.newQuantity = 'New Quantity is required';
+    }
+    if (!itemId) {
+      errors.itemId = 'Item ID is required';
+    }
+    
+    return errors;
   };
 
   const loadAdjustment = async () => {
@@ -67,7 +120,7 @@ const EditAdjustment = () => {
       <Box className="pb-4">
         <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit Adjustment</h1>
       </Box>
-      <form onSubmit={(e)=> onSubmit(e)}>
+      <form onSubmit={(e)=> onSubmit(e,flag)}>
         <Grid container spacing={2}  padding={4} >
             <Grid container display='flex' mt={4}>
                 <Grid item sm={2} xs={2}>
@@ -100,9 +153,11 @@ const EditAdjustment = () => {
                     size='small'
                     value={itemId}
                     onChange={(e)=>onInputChange(e)}
+                    error={!!errors.itemId}
+                    helperText={errors.itemId}
                     InputProps={{
                         readOnly: true,
-                      }}
+                      }} 
                     />
                 </Grid>
             </Grid>
@@ -158,6 +213,8 @@ const EditAdjustment = () => {
                 value={date}
                 onChange={(e)=>onInputChange(e)}
                 size='small'
+                error={!!errors.date}
+                helperText={errors.date}
                 InputLabelProps={{ // To shrink the label
                   shrink: true,
                 }}
@@ -170,7 +227,9 @@ const EditAdjustment = () => {
             </Grid>
             <Grid item sm={9} xs={9}>
               <FormControl style={{ width: '300px' }}>
-                <Select value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason'>
+                <Select value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason'
+                  error={!!errors.reason}
+                  helperText={errors.reason}>
                   <MenuItem value="Damaged Item">Damaged Item</MenuItem>
                   <MenuItem value="Stolen Item">Stolen Item</MenuItem>
                   <MenuItem value="Others">Others</MenuItem>
@@ -213,7 +272,9 @@ const EditAdjustment = () => {
                         {itemName}
                       </TableCell>
                       <TableCell align="right">{quantity}</TableCell>
-                      <TableCell align="right"><TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}></TextField></TableCell>
+                      <TableCell align="right"><TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}
+                        error={!!errors.newQuantity}
+                        helperText={errors.newQuantity}></TextField></TableCell>
                       <TableCell align="right">{newQuantity - quantity}</TableCell>
                     </TableRow>
                 </TableBody>

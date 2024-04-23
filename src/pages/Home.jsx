@@ -34,6 +34,8 @@ import NewStockIn from "./StockIn/NewStockIn";
 import Userupdate from "./User/Edit_user";
 import Ticket from "./Ticket/Ticketlist";
 import ViewUser from "./User/Viewuser";
+import NewStockOut from "./StockOut/NewStockOut";
+import StockOutDocument from "./StockOut/StockOutDocument";
 
 const Home = () => {
   return (
@@ -96,9 +98,9 @@ const Home = () => {
 
               <Route path="/item" element={<ItemDataGrid />}></Route>
               <Route path="/item/add-item" element={<AddItemForm />}></Route>
-              <Route path="/item/edit-item/:ID" element={<EditItem />}></Route>
+              <Route path="/item/edit-item/:itemID" element={<EditItem />}></Route>
               <Route
-                path="/item/view-item/:ID"
+                path="/item/view-item/:itemID"
                 element={<ViewItemDetails />}
               ></Route>
 
@@ -132,16 +134,18 @@ const Home = () => {
 
               {/* Stock Out routing */}
               <Route path="/stockOut" element={<StockOutList />}></Route>
+              <Route path="/new-stockout" element={<NewStockOut/>}></Route>
+              <Route path="/stockOut/:soutId" element={<StockOutDocument/>}></Route>
 
               {/*Initiate order routing*/}
               <Route path="/order" element={<OrderDataGrid />}></Route>
               <Route path="/order/new-order" element={<NewOrderForm />}></Route>
               <Route
-                path="/order/view-order/:ID"
+                path="/order/view-order/:orderID"
                 element={<ViewOrderDetails />}
               ></Route>
               <Route
-                path="/order/edit-order/:ID"
+                path="/order/edit-order/:orderID"
                 element={<EditOrderDetails />}
               ></Route>
  {/*Reports routing*/}

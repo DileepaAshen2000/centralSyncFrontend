@@ -6,12 +6,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Typography,Button } from '@mui/material';
+import { Typography,Button, Alert,AlertTitle} from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
-
 
 const handlePrint=()=>{
   window.print();
@@ -30,7 +29,6 @@ const AdjustmentDocument = () => {
   })
 
 const{reason,date,description,newQuantity,status,itemId} = adj;
-
 const [item,setItem] = useState({  // create state for adjustment, initial state is empty with object.
   itemName:"",
   quantity:""
@@ -39,7 +37,7 @@ const{itemName,quantity} = item;
 
 useEffect(() => {
   loadAdjustment();
-},[]);
+},[adjId]);
 
 //get selected adjustment data
 const loadAdjustment = async () => {
@@ -64,7 +62,7 @@ const loadAdjustment = async () => {
   const minutes = currentDate.getMinutes().toString().padStart(2, '0');
   const seconds = currentDate.getSeconds().toString().padStart(2, '0');
 
-  // Format the date and time as needed
+  // Format the date and time
   const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
   const handleAccept = () => {
@@ -91,6 +89,16 @@ const loadAdjustment = async () => {
       });
   };
 
+  const getStatus = (status) => {
+    if (status === "ACCEPTED") {
+      return <Alert severity="success" sx={{ width: '300px' }}><AlertTitle>Accepted</AlertTitle></Alert>;
+    } else if (status === "REJECTED") {
+      return <Alert severity="error" sx={{ width: '300px' }}><AlertTitle>Rejected</AlertTitle></Alert>;
+    } else {
+      return <Alert severity="info" sx={{ width: '300px' }}><AlertTitle>Pending</AlertTitle></Alert>;
+    }
+  }
+
   return (
     <div>
       <div>
@@ -108,7 +116,8 @@ const loadAdjustment = async () => {
         <div className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section>
-              <button id="statusButton" className={`w-40 h-10 m-5 text-blue-800 bg-blue-300 rounded-2xl`}>{status}</button>
+              {/* <button id="statusButton" className={`w-40 h-10 m-5 text-blue-800 bg-blue-300 rounded-2xl`}>{status}</button> */}
+              {getStatus(status)}
             </section>
           </div>
           <div>
@@ -166,28 +175,44 @@ const loadAdjustment = async () => {
             <Typography variant="caption" gutterBottom>{formattedDateTime}</Typography>
           </div>
         </div>
+       
+       {/* Footer part */}
+        <div>
+          {status === 'PENDING' && (
+            <div>
+              <div className='flex gap-6 mt-6 ml-6'>
+                <h4>Note :</h4>
+                <textarea className="w-2/3 h-20 p-2 mt-2 border-2 border-gray-300 rounded-md" placeholder='Write something here..'></textarea>
+              </div>
 
-        <div className='flex gap-6 mt-6 ml-6'>
-          <h4>Note :</h4>
-          <textarea className="w-2/3 h-20 p-2 mt-2 border-2 border-gray-300 rounded-md" placeholder='Write something here..'></textarea>
-        </div>
-
-        <div className='flex gap-4 ml-[60%] mt-6'>
-          <Button className="px-6 py-2 text-white bg-blue-600 rounded"
-                variant='contained'
-                type='submit'
-                onClick={handleAccept}
-                  >approve & adjust</Button>
-          <Button className="px-6 py-2 text-white bg-blue-600 rounded"
-                variant='contained'
-                type='submit'
-                onClick={handleReject}
-                  >reject</Button>
-          <Button className="px-6 py-2 rounded"
-                variant='outlined'
-                type='submit'
-                onClick={() => navigate("/adjustment")}
-                  >cancel</Button>
+              <div className='flex gap-4 ml-[60%] mt-6'>
+                <Button className="px-6 py-2 text-white bg-blue-600 rounded"
+                      variant='contained'
+                      type='submit'
+                      onClick={handleAccept}
+                        >approve & adjust</Button>
+                <Button className="px-6 py-2 text-white bg-blue-600 rounded"
+                      variant='contained'
+                      type='submit'
+                      onClick={handleReject}
+                        >reject</Button>
+                <Button className="px-6 py-2 rounded"
+                      variant='outlined'
+                      type='submit'
+                      onClick={() => navigate("/adjustment")}
+                        >cancel</Button>
+              </div>
+            </div>
+          )}
+          {status !== 'PENDING' && (
+            <div className='flex gap-4 ml-[86%] mt-6'>
+              <Button className="px-6 py-2 rounded"
+                    variant='outlined'
+                    type='submit'
+                    onClick={() => navigate("/adjustment")}
+                      >cancel</Button>
+            </div>
+          )}
         </div>
       </main>
     </div>
