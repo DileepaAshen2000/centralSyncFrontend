@@ -79,61 +79,62 @@ const AdjustmentList = () => {
   };
 
   return (
-    <Box
-      sx={{
-        height: 400,
-        width: "100%",
-      }}
-    >
-      <Box className='flex pt-2 pb-2'>
-        <h1 className="inline-block p-4 text-3xl font-bold">Adjustment</h1>
-        {/* <p>Here are all Adjustment</p> */}
+    <Box className="h-[400px] w-full flex-row space-y-4">
+      <Box className="flex py-4 space-x-96">
+        <div>
+          <h1 className="inline-block text-3xl font-bold">All Adjustment</h1>
+          <p>Here are all Adjustment</p>
+        </div>
         {rowSelectionModel > 0 ? (
-            <div className="flex items-center gap-4 ml-[48%]">
-                <Button
-                    variant="contained"
-                    className="bg-blue-600 px-6 py-2 text-white rounded left-[68%]"
-                    onClick={handleClick}
-                >
-                    Edit
-                </Button>
+          <div className="flex items-center gap-4  ml-[75%]">
+            <Button
+              variant="contained"
+              className="bg-blue-600 py-2  text-white rounded w-[auto] "
+              onClick={handleClick}
+            >
+              Edit
+            </Button>
 
-                <Button
-                    variant="contained"
-                    className="bg-blue-600 px-6 py-2 text-white rounded left-[68%]"
-                    onClick={handleViewClick}
-                >
-                    View
-                </Button>
-            </div>
+            <Button
+              variant="contained"
+              className="bg-blue-600  py-2 text-white rounded w-[auto]"
+              onClick={handleViewClick}
+            >
+              View
+            </Button>
+          </div>
         ) : (
-          <Button
-            variant="contained"
-            className="bg-blue-600 text-white rounded left-[62%]"
-            onClick={() => navigate("/newadjustment")}
-          >
+          
+          <div className="flex items-center ml-[70%]">
+            <Button
+              variant="contained"
+              className="bg-blue-600 py-2 text-white rounded w-[auto]"
+              onClick={() => navigate("/newadjustment")}
+            >
             New Adjustment
-          </Button>
+            </Button>
+          </div>
+          
         )}
       </Box>
 
-      <DataGrid className='shadow-lg'
-        rows={rows}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
+        <DataGrid className='shadow-lg'
+          rows={rows}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 5,
+              },
             },
-          },
-        }}
-        autoHeight
-        pageSizeOptions={[5]}
-        checkboxSelection
-        disableRowSelectionOnClick
-        rowSelectionModel={rowSelectionModel}
-        onRowSelectionModelChange={handlerowSelectionModelChange}
-      />
+          }}
+          autoHeight
+          pageSizeOptions={[5]}
+          checkboxSelection
+          disableRowSelectionOnClick
+          rowSelectionModel={rowSelectionModel}
+          onRowSelectionModelChange={handlerowSelectionModelChange}
+        />
     </Box>
   );
 };

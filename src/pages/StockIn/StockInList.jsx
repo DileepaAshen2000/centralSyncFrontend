@@ -53,33 +53,32 @@ const StockInList = () => {
   };
 
   return (
-    <Box
-      sx={{
-        height: 400,
-        width: "100%",
-      }}
-    >
-      <Box className='flex pt-2 pb-2'>
-        <h1 className="inline-block p-4 text-3xl font-bold">Stock In</h1>
-        {/* <p>Here are all Stock In</p> */}
+    <Box className="h-[400px] w-full flex-row space-y-4">
+      <Box className='flex py-4 space-x-96"'>
+        <div>
+          <h1 className="inline-block text-3xl font-bold">Stock In</h1>
+          <p>Here are all Stock-In</p>
+        </div>
         {rowSelectionModel > 0 ? (
-            <div className="flex items-center gap-4 ml-[48%]">
+            <div className="flex items-center ml-[75%]">
                 <Button
                     variant="contained"
-                    className="px-6 py-2 text-white bg-blue-600 rounded ml-60"
+                    className="bg-blue-600 py-2  text-white rounded w-[auto]"
                     onClick={handleViewClick}
                 >
                     View
                 </Button>
             </div>
         ) : (
-          <Button
-            variant="contained"
-            className="bg-blue-600 text-white rounded left-[72%]"
-            onClick={() => navigate("/new-stockin")}
-          >
-            New Stock-In
-          </Button>
+          <div className="flex items-center ml-[70%]">
+            <Button
+              variant="contained"
+              className="bg-blue-600 py-2  text-white rounded w-[auto]"
+              onClick={() => navigate("/new-stockin")}
+            >
+              New Stock-In
+            </Button>
+          </div>
         )}
       </Box>
 
