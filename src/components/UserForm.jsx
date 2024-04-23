@@ -293,6 +293,7 @@ const UserForm = () => {
             <Button
               variant="outlined"
               className="bg-white w-[150px] rounded-md text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-[#007EF2]"
+              onClick={() => navigate("/user")}
             >
               Cancel
             </Button>

@@ -80,7 +80,7 @@ const Home = () => {
               {/* User routing */}
               <Route path="/user" element={<User />}></Route>
               <Route path="/newUser" element={<CreateUser />} />
-              <Route path="/user/users/:ID" element={<EditUser />} />
+              <Route path="/user/editUser/:ID" element={<EditUser />} />
               <Route path="/history" element={<UserActivityHistory />}></Route>
               <Route path='/newTicket' element={<CreateTicket/>}></Route>
 

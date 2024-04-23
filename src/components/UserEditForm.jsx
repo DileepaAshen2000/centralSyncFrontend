@@ -11,7 +11,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 //import { DropzoneArea } from 'material-ui-dropzone';
 //import Dropzone from "./Dropzone";
 
-const EditUser = () => {
+const Userupdate = () => {
   const [firstName, setfName] = useState("");
   const [lastName, setlName] = useState("");
   const [dateOfBirth, setDOb] = useState("");
@@ -373,4 +373,4 @@ const EditUser = () => {
     </>
   );
 };
-export default EditUser;
+export default Userupdate;
