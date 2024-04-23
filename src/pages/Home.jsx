@@ -1,7 +1,7 @@
 import React from 'react'
+import { BrowserRouter, Route, Routes} from 'react-router-dom'
 import NavBar from '../components/NavBar'
 import SideBar from '../components/SideBar'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import AdminDashboard from './AdminDashboard'
 import Adjustment from './Adjustment/Adjustment'
 import NewAdjustment from './Adjustment/NewAdjustment'
@@ -15,15 +15,21 @@ import AdjustmentDocument from './Adjustment/AdjustmentDocument'
 import ItemDataGrid from './InventoryItem/InventoryItems'
 import AddItemForm from './InventoryItem/NewItem'
 import ViewItemDetails from './InventoryItem/ViewDetails'
-import RequestList from './InventoryRequest/RequestsList'
-import AdminRequestList from './InventoryRequest/AdminRequestList'
-import RequestDocumentPending from './InventoryRequest/RequestDocumentPending'
-import CreateNewRequest from './InventoryRequest/CreateNewRequest'
-import EditRequest from './InventoryRequest/EditRequest'
+
+import AdminInRequestList from './InventoryRequest/AdminInRequestList'
+import AdminInRequestDocument from './InventoryRequest/AdminInRequestDocument'
+import InRequestHandlerRequestList from './InventoryRequest/InRequestHandlerInRequestList'
+import InRequestHandlerInRequestDocument from './InventoryRequest/InRequestHandlerInRequestDocument'
+import EmployeeInRequestList from './InventoryRequest/EmployeeInRequestList'
+import EmployeeInRequestDocument from './InventoryRequest/EmployeeInRequestDocument'
+import CreateNewRequest from './InventoryRequest/CreateNewInRequest'
+import EditRequest from './InventoryRequest/EditInRequest'
 
 import EditAdjustment from './Adjustment/EditAdjustment'
 import StockInList from './StockIn/StockInList'
 import StockOutList from './StockOut/StockOutList'
+
+
 
 
 const Home = () => {
@@ -64,12 +70,18 @@ const Home = () => {
               <Route path='/item/edit-item/:ID' element={<ViewItemDetails/>}></Route>
               
               {/* Inventory Request routing */}
-              <Route path='/inventoryRequest' element={<RequestList/>}></Route>
-              <Route path='/inventory-request' element={<RequestList/>}></Route>
-              <Route path='/admin-inventory-request-list' element={<AdminRequestList/>}></Route>
-              <Route path='/inventory-request/request-document-pending' element={<RequestDocumentPending/>}></Route>
-              <Route path='/inventory-request/create-new-request' element={<CreateNewRequest/>}></Route>
-              <Route path='/inventory-request/edit-request' element={<EditRequest/>}></Route>
+              {/*Admin view routing */}
+              <Route path='/admin-in-request-list' element={<AdminInRequestList/>}></Route>
+              <Route path='/admin/in-request-document/:reqId' element={<AdminInRequestDocument/>}></Route>
+               {/*InRequest Handler view routing */}
+              <Route path='/in-requestHandler-in-request-list' element={<InRequestHandlerRequestList/>}></Route>
+              <Route path='/in-request-handler/in-request-document/:reqId' element={<InRequestHandlerInRequestDocument/>}></Route>
+               {/*Employee view routing */}
+               <Route path='/employee-in-request-list' element={<EmployeeInRequestList/>}></Route>
+               <Route path='/employee/in-request-document/:reqId' element={<EmployeeInRequestDocument/>}></Route>
+            {/*Common views for three actors rounting*/ }
+              <Route path='/in-request/create-new-in-request' element={<CreateNewRequest/>}></Route>
+              <Route path='/in-request/edit-request/:reqId' element={<EditRequest/>}></Route>
 
               {/* Stock In/Out routing */}
               <Route path='/stockIn' element={<StockInList/>}></Route>

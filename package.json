@@ -7,6 +7,7 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.11",
+    "@mui/lab": "^5.0.0-alpha.170",
     "@mui/material": "^5.15.6",
     "@mui/x-data-grid": "^6.19.3",
     "@testing-library/jest-dom": "^5.17.0",
@@ -16,7 +17,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.0",
-    "react-router-dom": "^6.22.2",
+    "react-router-dom": "^6.22.3",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
