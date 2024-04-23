@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Stack, Select } from "@mui/material";
+import { TextField, Button, Stack, Select,Box } from "@mui/material";
 // import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
 import axios from "axios";
@@ -64,9 +64,14 @@ const Userupdate = () => {
   };
 
   return (
+
     <>
+     <Box className='p-5 bg-white rounded-2xl w-[1122.7px]'>
+      <Box className="pb-4">
+        <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit User</h1>
+      </Box>
       <form noValidate>
-        <div className="grid grid-cols-6 grid-rows-7  gap-x-[0.25rem] ">
+        <div className="grid grid-cols-6 grid-rows-7  gap-x-[0.25rem] gap-y-7 ">
           <div className="col-span-1 row-span-1">
             <label htmlFor="5">Employee Id</label>
           </div>
@@ -76,10 +81,11 @@ const Userupdate = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
+                  "w-[300px] ",
                 readOnly: true,
               }}
               value={ID}
+              size="small"
             />
           </div>
           <div></div>
@@ -95,11 +101,12 @@ const Userupdate = () => {
               placeholder="First Name"
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
+                  "w-[300px] ",
               }}
               value={user.firstName}
               onChange={handleInputChange}
               name="firstName"
+              size="small"
             />
           </div>
           <div className="col-span-3"> </div>
@@ -113,8 +120,11 @@ const Userupdate = () => {
               name="firstName"
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
+                  "w-[300px] ",
               }}
+              size="small"
+              
+            
             />
           </div>
           <div></div>
@@ -129,7 +139,8 @@ const Userupdate = () => {
               onChange={handleInputChange}
               name="department"
               id="department"
-              className="w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2"
+              className="w-[300px]"
+              size="small"
             >
               <MenuItem disabled value={user.department}></MenuItem>
               <MenuItem value="Programming">Programming</MenuItem>
@@ -147,7 +158,8 @@ const Userupdate = () => {
               value={user.role}
               onChange={handleInputChange}
               name="role"
-              className="w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2"
+              className="w-[300px]"
+              size="small"
             >
               <MenuItem disabled value={user.role}></MenuItem>
               <MenuItem value="Web Developer">Web Developer</MenuItem>
@@ -167,11 +179,12 @@ const Userupdate = () => {
               name="dateOfBirth"
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
+                  "w-[300px] ",
               }}
               InputLabelProps={{ shrink: true }}
               value={user.dateOfBirth}
               onChange={handleInputChange}
+              size="small"
             />
           </div>
           <div></div>
@@ -188,10 +201,11 @@ const Userupdate = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-[65px] border border-[#857A7A] rounded-xl px-2",
+                  "w-[300px]",
               }}
               value={user.address}
               onChange={handleInputChange}
+              size="small"
             />
           </div>
           <div></div>
@@ -215,11 +229,12 @@ const Userupdate = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2 ",
+                  "w-[300px] ",
               }}
               value={user.mobileNo}
               onChange={handleInputChange}
               name="mobileNo"
+              size="small"
             />
           </div>
           <div className="col-span-1">
@@ -234,11 +249,12 @@ const Userupdate = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2 ",
+                  "w-[300px] ",
               }}
               name="telNo"
               value={user.telNo}
               onChange={handleInputChange}
+              size="small"
             />
           </div>
           <div className="col-span-1">
@@ -251,11 +267,12 @@ const Userupdate = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2",
+                  "w-[300px]",
               }}
               name="email"
               value={user.email}
               onChange={handleInputChange}
+              size="small"
             />
           </div>
           <div></div>
@@ -279,8 +296,9 @@ const Userupdate = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2 ",
+                  "w-[300px] ",
               }}
+              size="small"
             />{" "}
           </div>
           <div></div>
@@ -296,8 +314,9 @@ const Userupdate = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2 ",
+                  "w-[300px]",
               }}
+              size="small"
             />
           </div>
           <div></div>
@@ -308,8 +327,8 @@ const Userupdate = () => {
         <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] mt-12 ">
           <div className="col-start-5">
             <Button
-              variant="outlined"
-              className="bg-[#007EF2] w-[150px] rounded-md text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
+              variant="contained"
+              className="bg-blue-600 w-[150px] rounded text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
               onClick={handleSave}
             >
               Edit & Save
@@ -318,7 +337,7 @@ const Userupdate = () => {
           <div className="col-start-6">
             <Button
               variant="outlined"
-              className="bg-white w-[150px] rounded-md text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-[#007EF2]"
+              className="bg-white w-[150px] rounded text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-blue-600"
               onClick={()=>navigate("/user")}
             >
               Cancel
@@ -326,6 +345,7 @@ const Userupdate = () => {
           </div>
         </div>
       </form>
+      </Box>
     </>
   );
 };

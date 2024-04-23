@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Stack, Select } from "@mui/material";
+import { TextField, Button, Stack, Select,Box,MenuItem} from "@mui/material";
 import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
 import SelectR from "./Select_R";
@@ -9,7 +9,7 @@ import SelectD from "./Select_D";
 //import Dropzone from "./Dropzone";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-const UserForm = () => {
+const CreateUser= () => {
   const form = useForm();
   const [firstName, setfName] = useState("");
   const [lastName, setlName] = useState("");
@@ -59,8 +59,14 @@ const UserForm = () => {
 
   return (
     <>
+    <Box className='p-5 bg-white rounded-2xl w-[1122.7px]'>
+      <Box className="pb-4">
+        <h1 className="pt-2 pb-3 text-3xl font-bold ">New User</h1>
+      </Box>
+
+    
       <form>
-        <div className="grid grid-cols-6 grid-rows-6  gap-x-[0.25rem] ">
+        <div className="grid grid-cols-6 grid-rows-6 gap-y-7 gap-x-[0.25rem] ">
           <div className="col-span-1 row-span-2">
             <label htmlFor="name">Name</label>
             
@@ -74,10 +80,11 @@ const UserForm = () => {
               placeholder="First Name"
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
+                  "w-[300px]",
               }}
               value={firstName}
               onChange={(e) => setfName(e.target.value)}
+              size="small"
             />
            
           </div>{" "}
@@ -93,10 +100,11 @@ const UserForm = () => {
               placeholder="Last Name"
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
+                  " w-[300px]",
               }}
               value={lastName}
               onChange={(e) => setlName(e.target.value)}
+              size="small"
             />
           </div>
           <div></div>
@@ -107,10 +115,18 @@ const UserForm = () => {
           </div>
           <div className="col-span-2">
           {errors.department && <div className="text-[#FC0000] text-sm">{errors.department}</div>}
-            <SelectD
+          <Select
               value={department}
-              onChange={(selectedOption) => setDepartment(selectedOption)}
-            />
+              onChange={(e) => setDepartment(e.target.value)}
+              name="department"
+              id="department"
+              className="w-[300px]"
+              size="small"
+            >
+              <MenuItem disabled value={department}></MenuItem>
+              <MenuItem value="Programming">Programming</MenuItem>
+              <MenuItem value="Cybersecurity">Cybersecurity</MenuItem>
+            </Select>
           </div>
           <div></div>
           <div></div>
@@ -121,10 +137,17 @@ const UserForm = () => {
           <div className="col-span-2">
           {errors.role && <div className="text-[#FC0000] text-sm">{errors.role}</div>}
             {" "}
-            <SelectR
+            <Select
               value={role}
-              onChange={(selectedOption) => setRole(selectedOption)}
-            />{" "}
+              onChange={(e)=>setRole(e.target.value)}
+              name="role"
+              className="w-[300px]"
+              size="small"
+            >
+              <MenuItem disabled value={role}></MenuItem>
+              <MenuItem value="Web Developer">Web Developer</MenuItem>
+              <MenuItem value="Software Architect">Software Architect</MenuItem>
+            </Select>{" "}
           </div>
           <div></div>
           <div></div>
@@ -139,11 +162,12 @@ const UserForm = () => {
               type="date"
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-9 border border-[#857A7A] rounded-xl px-2 ",
+                  " w-[300px]",
               }}
               InputLabelProps={{ shrink: true }}
               value={dateOfBirth}
               onChange={(e) => setDOb(e.target.value)}
+              size="small"
             />
           </div>
           <div></div>
@@ -160,10 +184,11 @@ const UserForm = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-[65px] border border-[#857A7A] rounded-xl px-2",
+                  " w-[300px]",
               }}
               value={address}
               onChange={(e) => setAddress(e.target.value)}
+              size="small"
             />
           </div>
           <div></div>
@@ -188,10 +213,11 @@ const UserForm = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2 ",
+                  " w-[300px] ",
               }}
               value={mobileNo}
               onChange={(e) => setMNumber(e.target.value)}
+              size="small"
             />{" "}
           </div>
           <div className="col-span-1">
@@ -207,10 +233,11 @@ const UserForm = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2 ",
+                  " w-[300px] ",
               }}
               value={telNo}
               onChange={(e) => setTelNUmber(e.target.value)}
+              size="small"
             />
           </div>
           <div className="col-span-1">
@@ -224,10 +251,11 @@ const UserForm = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2",
+                  " w-[300px]",
               }}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              size="small"
             />
           </div>
           <div></div>
@@ -252,8 +280,9 @@ const UserForm = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2 ",
+                  " w-[300px] ",
               }}
+              size="small"
             />{" "}
           </div>
           <div></div>
@@ -270,8 +299,9 @@ const UserForm = () => {
               placeholder=""
               InputProps={{
                 className:
-                  "w-[375px] cursor-auto h-[35px] border border-[#857A7A] rounded-xl px-2 ",
+                  " w-[300px] ",
               }}
+              size="small"
             />
           </div>
           <div></div>
@@ -282,8 +312,8 @@ const UserForm = () => {
         <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] mt-12 ">
           <div className="col-start-5">
             <Button
-              variant="outlined"
-              className="bg-[#007EF2] w-[150px] rounded-md text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
+              variant="contained"
+              className="px-6 py-2 bg-blue-600 rounded w-[150px] text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
               onClick={handleClick}
             >
               Save
@@ -292,7 +322,7 @@ const UserForm = () => {
           <div className="col-start-6">
             <Button
               variant="outlined"
-              className="bg-white w-[150px] rounded-md text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-[#007EF2]"
+              className="px-6 py-2 rounded w-[150px] text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-[#007EF2]"
               onClick={() => navigate("/user")}
             >
               Cancel
@@ -300,9 +330,10 @@ const UserForm = () => {
           </div>
         </div>
       </form>
+      </Box>
       
        
     </>
   );
 };
-export default UserForm;
+export default CreateUser;

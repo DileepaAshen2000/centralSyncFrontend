@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {TextField , Button, Stack, Select } from "@mui/material";
 import { useEffect, useState } from 'react'
 import Box from "@mui/material/Box";
-
+import axios from "axios";
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 200 },
@@ -24,7 +24,7 @@ export default function User() {
   const [rows, setRows] = useState([])
   const [selectedRows, setSelectedRows] = useState([]);
 useEffect(() => {
-  fetch('http://localhost:8080/user/getAll')
+  axios.get('http://localhost:8080/user/getAll')
     .then((response) => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -103,13 +103,18 @@ const handleViewClick = () => {
                 </Button>
             </div>
         ) : (
+          <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-6 mt-12 ">
+          <div className="col-start-6">
           <Button
             variant="contained"
-            className="bg-blue-600 px-6 text-white rounded left-[62%]"
+            className="bg-blue-600 w-[150px] rounded text-white h-10"
             onClick={() => navigate("/newUser")}
           >
-            New Adjustment
+          
+            New User
           </Button>
+          </div>
+          </div>
         )}
       </Box>
       <DataGrid
