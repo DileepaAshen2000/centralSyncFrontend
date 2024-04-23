@@ -56,7 +56,7 @@ const AddItemForm = () => {
         Swal.fire({
           icon:'error',
           title:'Error!',
-          text:'Failed to add new item. Please check your inputs.'
+          text:'Failed to add new Item. Please check your inputs.'
         }); 
         if (error.response) {
           setErrors(error.response.data);

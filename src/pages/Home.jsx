@@ -32,6 +32,7 @@ import Usage from "./UsageReport/UsageReport";
 import StockInDocument from "./StockIn/StockInDocument";
 import NewStockIn from "./StockIn/NewStockIn";
 import Userupdate from "./User/Edit_user";
+import Ticket from "./Ticket/Ticketlist";
 
 const Home = () => {
   return (
@@ -82,7 +83,11 @@ const Home = () => {
               <Route path="/newUser" element={<CreateUser />} />
               <Route path="/user/editUser/:ID" element={<Userupdate />} />
               <Route path="/history" element={<UserActivityHistory />}></Route>
+
+
+              {/* Ticket routing */}
               <Route path='/newTicket' element={<CreateTicket/>}></Route>
+              <Route path='/ticket' element={<Ticket/>}></Route>
 
               {/* Inventory Item routing */}
  

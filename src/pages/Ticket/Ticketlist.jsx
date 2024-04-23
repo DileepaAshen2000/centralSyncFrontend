@@ -1,39 +1,40 @@
 import * as React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { useNavigate } from 'react-router-dom';  
+import { useNavigate ,useParams} from 'react-router-dom';  
 import {TextField , Button, Stack, Select } from "@mui/material";
 import { useEffect, useState } from 'react'
 import Box from "@mui/material/Box";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 200 },
-  { field: 'employeesName', headerName: 'Employees Name', width: 200 },
-  { field: 'email', headerName: 'Email Address', width: 230 },
-  { field: 'department', headerName: 'Department', width: 200 },
-  { field: 'role', headerName: 'Role', width: 200 },
+  { field: 'topic', headerName: 'Topic', width: 200 },
+  { field: 'date', headerName: 'Date', width: 200 },
+ 
+ 
   //{ field: 'status', headerName: 'Status', width: 130 },
   
   
 ];
 
-export default function User() {
+const Ticket= () => {
 
   const navigate= useNavigate();
 
   const [rows, setRows] = useState([])
   const [selectedRows, setSelectedRows] = useState([]);
+  const [fetchData, setFetchData] = useState(false);
+  const { ID } = useParams();
 useEffect(() => {
   axios
-  .get("http://localhost:8080/user/getAll")
+  .get("http://localhost:8080/ticket/getAll")
   .then((response) => {
-    const data = response.data.map((user) => ({
-      id: user.userId,
-      employeesName: `${user.firstName} ${user.lastName}`,
-      email: user.email,
-      department: user.department,
-      role: user.role,
-      status: user.status
+    const data = response.data.map((ticket) => ({
+      id: ticket.ticketId,
+      topic:ticket.topic,
+      date: ticket.date,
+      
     }));
     setRows(data);
   })
@@ -47,14 +48,19 @@ const handleRowSelectionModelChange = (newSelectedRow) => {
   setRowSelectionModel(newSelectedRow);
 };
 
-const handleClick = () => {
-  if (rowSelectionModel > 0) {
-    const selectedUserId = rowSelectionModel[0];
-    navigate("/user/editUser/" + selectedUserId);
-  } else {
-    navigate("/newUser");
-  }
-};
+const handleDelete = () => {
+    try {
+      axios
+        .delete(`http://localhost:8080/ticket/delete/${ID}`)
+        .then(() => {
+          setFetchData(!fetchData);
+          navigate({ fetchData })
+          
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 const handleViewClick = () => {
   if (rowSelectionModel > 0) {
@@ -76,24 +82,18 @@ const handleViewClick = () => {
       }}
     >
        <Box className='flex pt-2 pb-2'>
-        <h1 className="inline-block p-4 text-3xl font-bold">User</h1>
+        <h1 className="inline-block p-4 text-3xl font-bold">Maintenance Ticket</h1>
         {rowSelectionModel > 0 ? (
             <div className="flex items-center gap-4 ml-[48%]">
                 <Button
                     variant="contained"
                     className="bg-blue-600 px-6 py-2 text-white rounded left-[68%]"
-                    onClick={handleClick}
+                    onClick={handleDelete}
                 >
-                    Edit
+                    Delete
                 </Button>
 
-                <Button
-                    variant="contained"
-                    className="bg-blue-600 px-6 py-2 text-white rounded left-[68%]"
-                    onClick={handleClick}
-                >
-                    View
-                </Button>
+                
             </div>
         ) : (
           <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-6 mt-12 ">
@@ -101,10 +101,10 @@ const handleViewClick = () => {
           <Button
             variant="contained"
             className="bg-blue-600 w-[150px] rounded text-white h-10"
-            onClick={() => navigate("/newUser")}
+            onClick={() => navigate("/newTicket")}
           >
           
-            New User
+            New Ticket
           </Button>
           </div>
           </div>
@@ -132,3 +132,4 @@ const handleViewClick = () => {
     
   );
 }
+export default Ticket;

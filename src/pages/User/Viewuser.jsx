@@ -1,129 +1,130 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Stack, Select,Box,MenuItem} from "@mui/material";
-import { useForm } from "react-hook-form";
+import { TextField, Button, Stack, Select,Box } from "@mui/material";
+// import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
+import axios from "axios";
+import MenuItem from "@mui/material/MenuItem";
+import { Link, useNavigate, useParams } from "react-router-dom";
 //import DragDrop from "./Drag&Drop";
 //import { DropzoneArea } from 'material-ui-dropzone';
 //import Dropzone from "./Dropzone";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import Swal from "sweetalert2";
-import axios from "axios";
 
-const CreateUser= () => {
-  const form = useForm();
-  const [firstName, setfName] = useState("");
-  const [lastName, setlName] = useState("");
-  const [dateOfBirth, setDOb] = useState("");
-  const [mobileNo, setMNumber] = useState("");
-  const [telNo, setTelNUmber] = useState("");
-  const [address, setAddress] = useState("");
-  const [email, setEmail] = useState("");
-  const [department, setDepartment] = useState("");
-  const [role, setRole] = useState("");
-  const [password,setPassword]=useState("");
+const ViewUser = () => {
+  // State for user details
+  const [user, setUser] = useState({
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    mobileNo: "",
+    telNo: "",
+    address: "",
+    email: "",
+    department: "",
+    role: "",
+  });
+  const { ID } = useParams();
+
   const navigate = useNavigate();
-  const [errors, setErrors] = useState({});
-  const [fetchData, setFetchData] = useState(false);
-  //set default password
-  useEffect(() => {
- 
-    setPassword("centralSync123");
-  }, []);
 
-  const handleClick = (e) => {
-    e.preventDefault();
-    const user = {
-      firstName,
-      lastName,
-      dateOfBirth,
-      mobileNo,
-      address,
-      email,
-      telNo,
-      department,
-      role,
-      password
-      
-    };
-    console.log(user);
+  useEffect(() => {
+    // Fetch user details by ID on component mount
     axios
-      .post("http://localhost:8080/user/add", user)
+      .get(`http://localhost:8080/user/users/${ID}`)
       .then((response) => {
-        if (response.status===200) {
-          Swal.fire({
-            icon:'success',
-            title:'Success!',
-            text:'User successfully added!'
-          });
-          setFetchData(!fetchData);   
-          navigate("/user", { fetchData });
-        }
+        // Update user state with fetched data
+        setUser(response.data);
       })
       .catch((error) => {
-        Swal.fire({
-          icon:'error',
-          title:'Error!',
-          text:'Failed to add new user. Please check your inputs.'
-        }); 
-        if (error.response) {
-          setErrors(error.response.data);
-        }
+        console.log("Error fetching user:", error);
+      });
+  }, [ID]);
+
+  // Function to handle input change
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUser((prevUser) => ({
+      ...prevUser,
+      [name]: value,
+    }));
+  };
+
+  // Function to save updated user data
+  const handleSave = () => {
+    // Make PUT request to update the user data
+    axios
+      .put(`http://localhost:8080/user/update/${ID}`, user)
+      .then(() => {
+        console.log("User updated successfully");
+        // Redirect to user list page after successful update
+        navigate("/user");
+      })
+      .catch((error) => {
+        console.log("Error updating user:", error);
       });
   };
-    
-    
-
-    
 
   return (
-    <>
-    <Box className='p-5 bg-white rounded-2xl w-[1122.7px]'>
-      <Box className="pb-4">
-        <h1 className="pt-2 pb-3 text-3xl font-bold ">New User</h1>
-      </Box>
 
-    
-      <form>
-        <div className="grid grid-cols-6 grid-rows-6 gap-y-7 gap-x-[0.25rem] ">
-          <div className="col-span-1 row-span-2">
-            <label htmlFor="name">Name</label>
-            
-           
+    <>
+     <Box className='p-5 bg-white rounded-2xl w-[1122.7px]'>
+      <Box className="pb-4">
+        <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit User</h1>
+      </Box>
+      <form noValidate>
+        <div className="grid grid-cols-6 grid-rows-7  gap-x-[0.25rem] gap-y-7 ">
+          <div className="col-span-1 row-span-1">
+            <label htmlFor="5">Employee Id</label>
           </div>
           <div className="col-span-2">
-          {errors.firstName && <div className="text-[#FC0000] text-sm">{errors.firstName}</div>}
             <TextField
-              id="name"
-              label="Firstname"
-              variant="outlined"
-              //placeholder="First Name"
+              name="id"
+              placeholder=""
               InputProps={{
                 className:
-                  "w-[300px]",
+                  "w-[300px] ",
+                readOnly: true,
               }}
-              value={firstName}
-              onChange={(e) => setfName(e.target.value)}
+              value={ID}
               size="small"
             />
-           
-          </div>{" "}
-          <div className="col-span-3">
-          
-
+          </div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div className="col-span-1 row-span-2">
+            <label htmlFor="name">Name</label>
           </div>
           <div className="col-span-2">
-          {errors.lastName && <div className="text-[#FC0000] text-sm">{errors.lastName}</div>}
-            
             <TextField
+              id="firstName"
               variant="outlined"
-              label="Last Name"
+              placeholder="First Name"
               InputProps={{
                 className:
-                  " w-[300px]",
+                  "w-[300px] ",
               }}
-              value={lastName}
-              onChange={(e) => setlName(e.target.value)}
+              value={user.firstName}
+              onChange={handleInputChange}
+              name="firstName"
               size="small"
+            />
+          </div>
+          <div className="col-span-3"> </div>
+          <div className="col-span-2">
+            <TextField
+              variant="outlined"
+              placeholder="Last Name"
+              id="lastName"
+              value={user.lastName}
+              onChange={handleInputChange}
+              name="firstName"
+              InputProps={{
+                className:
+                  "w-[300px] ",
+              }}
+              size="small"
+              
+            
             />
           </div>
           <div></div>
@@ -133,17 +134,15 @@ const CreateUser= () => {
             <label htmlFor="2">Department</label>
           </div>
           <div className="col-span-2">
-          {errors.department && <div className="text-[#FC0000] text-sm">{errors.department}</div>}
-          <Select
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
+            <Select
+              value={user.department}
+              onChange={handleInputChange}
               name="department"
               id="department"
               className="w-[300px]"
               size="small"
-              label="Department"
             >
-              <MenuItem disabled value={department}></MenuItem>
+              <MenuItem disabled value={user.department}></MenuItem>
               <MenuItem value="Programming">Programming</MenuItem>
               <MenuItem value="Cybersecurity">Cybersecurity</MenuItem>
             </Select>
@@ -155,20 +154,17 @@ const CreateUser= () => {
             <label htmlFor="3">Role</label>
           </div>
           <div className="col-span-2">
-          {errors.role && <div className="text-[#FC0000] text-sm">{errors.role}</div>}
-            {" "}
             <Select
-              value={role}
-              onChange={(e)=>setRole(e.target.value)}
+              value={user.role}
+              onChange={handleInputChange}
               name="role"
               className="w-[300px]"
               size="small"
-              label="Role"
             >
-              <MenuItem disabled value={role}></MenuItem>
+              <MenuItem disabled value={user.role}></MenuItem>
               <MenuItem value="Web Developer">Web Developer</MenuItem>
               <MenuItem value="Software Architect">Software Architect</MenuItem>
-            </Select>{" "}
+            </Select>
           </div>
           <div></div>
           <div></div>
@@ -177,19 +173,18 @@ const CreateUser= () => {
             <label htmlFor="4">Date Of Birth</label>
           </div>
           <div className="col-span-2">
-          {errors.dateOfBirth && <div className="text-[#FC0000] text-sm">{errors.dateOfBirth}</div>}
             <TextField
               id="date"
-              type="date"
+              placeholder="dd/mm/yy"
+              name="dateOfBirth"
               InputProps={{
                 className:
-                  " w-[300px]",
+                  "w-[300px] ",
               }}
               InputLabelProps={{ shrink: true }}
-              value={dateOfBirth}
-              onChange={(e) => setDOb(e.target.value)}
+              value={user.dateOfBirth}
+              onChange={handleInputChange}
               size="small"
-              label="Date Of Birth"
             />
           </div>
           <div></div>
@@ -199,19 +194,18 @@ const CreateUser= () => {
             <label htmlFor="5">Adress</label>
           </div>
           <div className="col-span-2">
-          {errors.address && <div className="text-[#FC0000] text-sm">{errors.address}</div>}
             <TextField
               type="text"
               id="adress"
+              name="address"
               placeholder=""
               InputProps={{
                 className:
-                  " w-[300px]",
+                  "w-[300px]",
               }}
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              value={user.address}
+              onChange={handleInputChange}
               size="small"
-              label="Address"
             />
           </div>
           <div></div>
@@ -229,20 +223,19 @@ const CreateUser= () => {
             <label htmlFor="name">Mobile No </label>
           </div>
           <div className="col-span-2">
-          {errors.mobileNo && <div className="text-[#FC0000] text-sm">{errors.mobileNo}</div>}
             <TextField
               type="text"
               id="mno"
               placeholder=""
               InputProps={{
                 className:
-                  " w-[300px] ",
+                  "w-[300px] ",
               }}
-              value={mobileNo}
-              onChange={(e) => setMNumber(e.target.value)}
+              value={user.mobileNo}
+              onChange={handleInputChange}
+              name="mobileNo"
               size="small"
-              label="Mobile No"
-            />{" "}
+            />
           </div>
           <div className="col-span-1">
             <label htmlFor="name" className="pl-20">
@@ -250,38 +243,36 @@ const CreateUser= () => {
             </label>
           </div>
           <div className="col-span-2">
-          {errors.telNo&& <div className="text-[#FC0000] text-sm">{errors.telNo}</div>}
             <TextField
               type="text"
               id="Tno"
               placeholder=""
               InputProps={{
                 className:
-                  " w-[300px] ",
+                  "w-[300px] ",
               }}
-              value={telNo}
-              onChange={(e) => setTelNUmber(e.target.value)}
+              name="telNo"
+              value={user.telNo}
+              onChange={handleInputChange}
               size="small"
-              label="Tel No"
             />
           </div>
           <div className="col-span-1">
             <label htmlFor="name">Email Adress</label>
           </div>
           <div className="col-span-2">
-          {errors.email && <div className="text-[#FC0000] text-sm">{errors.email}</div>}
             <TextField
               type="text"
               id="email"
               placeholder=""
               InputProps={{
                 className:
-                  " w-[300px]",
+                  "w-[300px]",
               }}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              value={user.email}
+              onChange={handleInputChange}
               size="small"
-              label="Email"
             />
           </div>
           <div></div>
@@ -294,48 +285,60 @@ const CreateUser= () => {
           <hr className="border-[#796F6F] ml-4 flex-grow" />
         </div>
 
-        <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.25rem] ">
+        <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] ">
           <div className="col-span-1">
             <label htmlFor="name">Password</label>
           </div>
           <div className="col-span-2">
-          {errors.password && <div className="text-[#FC0000] text-sm">{errors.password}</div>}
             <TextField
               type="password"
               id="password"
               placeholder=""
               InputProps={{
                 className:
-                  " w-[300px] ",
+                  "w-[300px] ",
               }}
               size="small"
-              
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
             />{" "}
           </div>
           <div></div>
           <div></div>
           <div></div>
-           
-          
+          <div className="col-span-1">
+            <label htmlFor="name">Confirm Password</label>
+          </div>
+          <div className="col-span-2">
+            <TextField
+              type="password"
+              id="cpassword"
+              placeholder=""
+              InputProps={{
+                className:
+                  "w-[300px]",
+              }}
+              size="small"
+            />
+          </div>
+          <div></div>
+          <div></div>
+          <div></div>
         </div>
 
         <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] mt-12 ">
           <div className="col-start-5">
             <Button
               variant="contained"
-              className="px-6 py-2 bg-blue-600 rounded w-[150px] text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
-              onClick={handleClick}
+              className="bg-blue-600 w-[150px] rounded text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
+              onClick={handleSave}
             >
-              Save
+              Edit & Save
             </Button>
           </div>
           <div className="col-start-6">
             <Button
               variant="outlined"
-              className="px-6 py-2 rounded w-[150px] text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-[#007EF2]"
-              onClick={() => navigate("/user")}
+              className="bg-white w-[150px] rounded text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-blue-600"
+              onClick={()=>navigate("/user")}
             >
               Cancel
             </Button>
@@ -343,9 +346,7 @@ const CreateUser= () => {
         </div>
       </form>
       </Box>
-      
-       
     </>
   );
 };
-export default CreateUser;
+export default Userupdate;
