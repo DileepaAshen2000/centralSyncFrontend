@@ -121,11 +121,11 @@ const ViewItemDetails = () => {
       <h1 className=" col-span-4 text-3xl pt-2 font-bold ">Item Details</h1>
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel htmlFor="itemID" className="flex-none text-black w-32 ">
-          Item itemID
+          Item Id
         </InputLabel>
         <TextField
           value={itemID}
-          itemID="itemID"
+          id="itemId"
           variant="outlined"
           InputProps={{
             className: "w-[300px] h-10 ml-5 bg-white  ",
@@ -144,7 +144,7 @@ const ViewItemDetails = () => {
         </InputLabel>
         <TextField
           value={itemName}
-          itemID="name"
+          id="name"
           variant="outlined"
           InputProps={{
             className: "w-[300px] h-10 ml-5 bg-white  ",
@@ -158,7 +158,7 @@ const ViewItemDetails = () => {
         </InputLabel>
         <div className="flex-grow">
           <Select
-           itemID="itemGroup"
+           id="itemGroup"
             value={itemGroup}
            
             className="w-[300px] h-10 ml-5 bg-white  "
@@ -166,7 +166,7 @@ const ViewItemDetails = () => {
             <MenuItem value="computerAccessories">
               Computer accessories
             </MenuItem>
-            <MenuItem value="printers">Printers</MenuItem>
+            <MenuItem value="printer">Printer</MenuItem>
             <MenuItem value="computerHardware">Computer hardware</MenuItem>
             <MenuItem value="other">other</MenuItem>
           </Select>
@@ -178,7 +178,7 @@ const ViewItemDetails = () => {
           Unit
         </InputLabel>
         <TextField
-         itemID="unit"
+         id="unit"
           value={unit}
          
           variant="outlined"
@@ -193,7 +193,7 @@ const ViewItemDetails = () => {
           Brand
         </InputLabel>
         <TextField
-         itemID="brand"
+         id="brand"
           value={brand}
          
           variant="outlined"
@@ -208,7 +208,7 @@ const ViewItemDetails = () => {
           Dimension
         </InputLabel>
         <TextField
-           itemID="dimension"
+           id="dimension"
           value={dimension}
        
           variant="outlined"
@@ -223,7 +223,7 @@ const ViewItemDetails = () => {
           Weight
         </InputLabel>
         <TextField
-          itemID="weight"
+          id="weight"
           value={weight}
         
           variant="outlined"
@@ -241,8 +241,9 @@ const ViewItemDetails = () => {
           Description
         </InputLabel>
         <TextField
+          
+          id="description"
           value={description}
-          itemID="description"
           variant="outlined"
           multiline
           rows={6}
@@ -257,8 +258,9 @@ const ViewItemDetails = () => {
           Initial quantity
         </InputLabel>
         <TextField
+          
+          id="quantity"
           value={quantity}
-          itemID="quantity"
           variant="outlined"
           InputProps={{
             className: "w-[300px] h-10 ml-5 bg-white  ",

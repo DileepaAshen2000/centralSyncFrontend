@@ -62,11 +62,10 @@ const Usage = () => {
         <DialogContent>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <YearCalendar
-           
               minDate={dayjs([2020, 1, 1])}
               maxDate={dayjs().endOf("year")}
               onChange={handleYearChange}
-              className=" col-start-4"
+              className="col-start-4"
             />
           </LocalizationProvider>
         </DialogContent>
@@ -80,7 +79,7 @@ const Usage = () => {
         Print
       </Button>
       <h1 className="row start-2 col-span-10 text-3xl text-center p-10 ">
-        {category.toUpperCase()} ITEM USAGE ANALYSIS REPORT
+        USAGE ANALYSIS REPORT OF ITEM CATEGORY {category.toUpperCase()} 
         <br /> (JAN-DEC)
         <br/> {year}
       </h1>
