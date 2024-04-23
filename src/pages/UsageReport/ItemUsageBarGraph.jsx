@@ -23,8 +23,6 @@ const UsageBarChart = ({ category, year }) => {
       });
   }, [category, year]);
 
-  console.log(requests);
-
   // Process requests data by month
   const requestsByMonth = requests
     .map((req) => ({
@@ -59,7 +57,7 @@ const UsageBarChart = ({ category, year }) => {
   ];
 
   //map requestsByMonth object key values with the xlabels using  optional chaining operator
-  const pData = xLabels.map((label) => requestsByMonth[label]?.length ?? 0);
+  const noOfItemsUsed = xLabels.map((label) => requestsByMonth[label]?.length ?? 0);
 
 
   return (
@@ -67,7 +65,7 @@ const UsageBarChart = ({ category, year }) => {
       colors={colour}
       width={650}
       height={300}
-      series={[{ data: pData, label: "no of items", id: "pvId", type: "bar" }]}
+      series={[{ data: noOfItemsUsed, label: "no of items", id: "pvId", type: "bar" }]}
       xAxis={[{ data: xLabels, scaleType: "band" }]}
     />
   );
