@@ -20,6 +20,7 @@ const NewStockIn = () => {
   // item fetching
   const [options, setOptions] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState(null);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,24 +51,50 @@ const NewStockIn = () => {
   //Add onChange event to the input fields
   const onInputChange=(e)=>{
     setStockIn({...stockIn,[e.target.name]:e.target.value});
+    setErrors({ ...errors, [e.target.name]: '' }); 
   };
 
   const onSubmit=async(e)=>{
-    e.preventDefault(); // To remove unwanted url tail part
-    const result = await axios.post("http://localhost:8080/stock-in/add",stockIn) // To send data to the server
-    console.log(result.data)
-    navigate('/stockIn') // To navigate to the stockin page
+    e.preventDefault();
+    const validationErrors = validateInputs();
+    console.log(Object.keys(validationErrors).length)
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    try {
+      const result = await axios.post("http://localhost:8080/stock-in/add",stockIn);
+      console.log(result.data);
+      navigate('/stockIn') // To navigate to the stockin page
+      Swal.fire({
+        title: "Done !",
+        text: "You submitted a stock-in!",
+        icon: "success"
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to submit Stock-In. Please try again later.",
+        icon: "error"
+      });
+    }
   }
 
-  // handle the onClick event of Submit button
-  const handleClick = () => {
-    Swal.fire({
-      title: "Good Job!",
-      text: "You Added a New Stock!",
-      icon: "success"
-    });
-    
-  }
+  const validateInputs = () => {
+    const errors = {};
+    if (!location) {
+      errors.location = 'Location is required';
+    }
+    if (!date) {
+      errors.date = 'Date is required';
+    }
+    if (!inQty) {
+      errors.inQty = 'Quantity In is required';
+    }
+    return errors;
+  };
 
   return (
     <Box className='p-10 bg-white rounded-2xl ml-14 mr-14'>
@@ -96,14 +123,6 @@ const NewStockIn = () => {
               <Typography>Item Name</Typography>
             </Grid>
             <Grid item sm={9} xs={9}>
-              {/* <TextField
-                style={{ width: '300px' }}
-                label="Item Name"
-                type="search"
-                name='itemName'
-                size='small'  
-                helperText='Please select the item name.'     
-              /> */}
                 <Autocomplete
                   disablePortal
                   options={options} 
@@ -121,15 +140,6 @@ const NewStockIn = () => {
               <Typography>Item ID</Typography>
             </Grid>
             <Grid item sm={9} xs={9}>
-              {/* <TextField
-              style={{ width: '300px' }}
-               label="Item ID" 
-               name='itemId'
-               size='small'
-               value={itemId}
-               onChange={(e)=>onInputChange(e)}
-              /> */}
-
               <Autocomplete
                 disabled
                 options={[{ itemId: selectedItemId }]} // Provide the selected itemId as an option
@@ -137,7 +147,8 @@ const NewStockIn = () => {
                 name='itemId' // Add name to the Autocomplete
                 value={{ itemId: selectedItemId }} // Set the value to the selected itemId
                 sx={{ width: 300 }}
-                renderInput={(params) => <TextField {...params} label="Item ID" />}
+                renderInput={(params) => <TextField {...params} label="Item ID" error={!!errors.itemId}
+                helperText={errors.itemId}/>}
                 size='small'
               />
             </Grid>
@@ -156,21 +167,24 @@ const NewStockIn = () => {
                 value={date}
                 onChange={(e)=>onInputChange(e)}
                 size='small'
+                error={!!errors.date}
+                helperText={errors.date}
                 InputLabelProps={{ // To shrink the label
                   shrink: true,
                 }}
               />
             </Grid>
           </Grid>
-
-          
+      
           <Grid container display='flex' mt={4}>
             <Grid item sm={2} xs={2}>
               <Typography>Location</Typography>
             </Grid>
             <Grid item sm={9} xs={9}>
               <FormControl style={{ width: '300px' }}>
-                <Select  value={location} onChange={(e)=>onInputChange(e)} size='small' name='location'>
+                <Select  value={location} onChange={(e)=>onInputChange(e)} size='small' name='location' 
+                error={!!errors.location}
+                helperText={errors.location}>
                   <MenuItem value="Store 01">Store 01</MenuItem>
                   <MenuItem value="Store 02">Store 02</MenuItem>
                   <MenuItem value="Store 03">Store 03</MenuItem>
@@ -190,7 +204,10 @@ const NewStockIn = () => {
                 type='Number' 
                 name='inQty' 
                 value={inQty} 
+                error={!!errors.inQty}
+                helperText={errors.inQty}
                 onChange={(e)=>onInputChange(e)}/>
+                
             </Grid>
           </Grid>
           
@@ -221,7 +238,6 @@ const NewStockIn = () => {
             <Button className="px-6 py-2 text-white bg-blue-600 rounded"
                variant='contained'
                type='submit'
-              onClick={handleClick}
                 >Stock In</Button>
             <Button className="px-6 py-2 rounded"
                variant='outlined'

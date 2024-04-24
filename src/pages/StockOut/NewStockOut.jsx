@@ -20,6 +20,7 @@ const NewStockOut = () => {
   // item fetching
   const [options, setOptions] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState(null);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,25 +50,61 @@ const NewStockOut = () => {
   //Add onChange event to the input fields
   const onInputChange=(e)=>{
     setStockOut({...stockOut,[e.target.name]:e.target.value});
+    setErrors({ ...errors, [e.target.name]: '' });
   };
 
   const onSubmit=async(e)=>{
+    // e.preventDefault(); // To remove unwanted url tail part
+    // const result = await axios.post("http://localhost:8080/stock-out/add",stockOut) // To send data to the server
+    // console.log(result.data)
+    // navigate('/stockOut') // To navigate to the stockin page
+
     e.preventDefault(); // To remove unwanted url tail part
-    const result = await axios.post("http://localhost:8080/stock-out/add",stockOut) // To send data to the server
-    console.log(result.data)
-    navigate('/stockOut') // To navigate to the stockin page
-  }
+    const validationErrors = validateInputs();
+    console.log(Object.keys(validationErrors).length)
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      console.log('error');
+      return;
+    }
 
-  // handle the onClick event of Submit button
-  const handleClick = () => {
-    Swal.fire({
-      title: "Good Job!",
-      text: "You Added a New Stock-Out !",
-      icon: "success"
-    });
-    
-  }
+    try {
+      // Your axios post request here
+      const result = await axios.post("http://localhost:8080/stock-out/add",stockOut);
+      console.log(result.data);
+      navigate('/stockOut');
+      Swal.fire({
+        title: "Done !",
+        text: "You submitted a Stock-Out!",
+        icon: "success"
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to submit Stock-Out. Please try again later.",
+        icon: "error"
+      });
+    }
+  };
 
+  const validateInputs = () => {
+    const errors = {};
+    if (!department) {
+      errors.department = 'Department is required';
+    }
+    if (!date) {
+      errors.date = 'Date is required';
+    }
+    if (!outQty) {
+      errors.outQty = 'Quantity out is required';
+    }
+    if (!itemId) {
+      errors.itemId = 'Item ID is required';
+    }
+    return errors;
+  };
+  
   return (
     <Box className='p-10 bg-white rounded-2xl ml-14 mr-14'>
       <Box className="pb-4">
@@ -94,15 +131,7 @@ const NewStockOut = () => {
             <Grid item sm={2} xs={2}>
               <Typography>Item Name</Typography>
             </Grid>
-            <Grid item sm={9} xs={9}>
-              {/* <TextField
-                style={{ width: '300px' }}
-                label="Item Name"
-                type="search"
-                name='itemName'
-                size='small'  
-                helperText='Please select the item name.'     
-              /> */}
+            <Grid item sm={9} xs={9}> 
                 <Autocomplete
                   disablePortal
                   options={options} 
@@ -119,16 +148,7 @@ const NewStockOut = () => {
             <Grid item sm={2} xs={2}>
               <Typography>Item ID</Typography>
             </Grid>
-            <Grid item sm={9} xs={9}>
-              {/* <TextField
-              style={{ width: '300px' }}
-               label="Item ID" 
-               name='itemId'
-               size='small'
-               value={itemId}
-               onChange={(e)=>onInputChange(e)}
-              /> */}
-
+            <Grid item sm={9} xs={9}> 
               <Autocomplete
                 disabled
                 options={[{ itemId: selectedItemId }]} // Provide the selected itemId as an option
@@ -136,7 +156,9 @@ const NewStockOut = () => {
                 name='itemId' // Add name to the Autocomplete
                 value={{ itemId: selectedItemId }} // Set the value to the selected itemId
                 sx={{ width: 300 }}
-                renderInput={(params) => <TextField {...params} label="Item ID" />}
+                renderInput={(params) => <TextField {...params} label="Item ID" 
+                  error={!!errors.itemId}
+                  helperText={errors.itemId} />}
                 size='small'
               />
             </Grid>
@@ -148,7 +170,9 @@ const NewStockOut = () => {
             </Grid>
             <Grid item sm={9} xs={9}>
               <FormControl style={{ width: '300px' }}>
-                <Select  value={department} onChange={(e)=>onInputChange(e)} size='small' name='department'>
+                <Select  value={department} onChange={(e)=>onInputChange(e)} size='small' name='department'
+                error={!!errors.department}
+                helperText={errors.department}>
                   <MenuItem value="Department 01">Department 01</MenuItem>
                   <MenuItem value="Department 02">Department 02</MenuItem>
                   <MenuItem value="Department 03">Department 03</MenuItem>
@@ -170,6 +194,8 @@ const NewStockOut = () => {
                 value={date}
                 onChange={(e)=>onInputChange(e)}
                 size='small'
+                error={!!errors.date}
+                helperText={errors.date}
                 InputLabelProps={{ // To shrink the label
                   shrink: true,
                 }}
@@ -188,6 +214,8 @@ const NewStockOut = () => {
                 type='Number' 
                 name='outQty' 
                 value={outQty} 
+                error={!!errors.outQty}
+                helperText={errors.outQty}
                 onChange={(e)=>onInputChange(e)}/>
             </Grid>
           </Grid>
@@ -219,11 +247,10 @@ const NewStockOut = () => {
             <Button className="px-6 py-2 text-white bg-blue-600 rounded"
                variant='contained'
                type='submit'
-              onClick={handleClick}
                 >Stock Out</Button>
             <Button className="px-6 py-2 rounded"
                variant='outlined'
-               onClick={() => navigate("/stockIn")}
+               onClick={() => navigate("/stockOut")}
                 >cancel</Button>
         </div>
       </form>

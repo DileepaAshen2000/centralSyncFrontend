@@ -22,17 +22,15 @@ const NewAdjustment = () => {
     newQuantity:"",
     itemId:""
   })
-
-  const{reason,date,description,newQuantity,itemId} = adj; // Destructure the adj state
-
   const [item,setItem] = useState({ // create state for item, initial state is empty with object.
     itemName:"",
     quantity:""
   })
-
-  //item fetching
+  const [errors, setErrors] = useState({}); // State to manage errors for input fields
   const [options, setOptions] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState(null);
+  
+  const{reason,date,description,newQuantity,itemId} = adj; // Destructure the adj state
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,13 +38,12 @@ const NewAdjustment = () => {
         const response = await axios.get('http://localhost:8080/inventory-item/getAll');
         setOptions(response.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching item details:', error);
       }
     };
 
     fetchData();
   }, []);
-
 
   const handleItemChange = (event, value) => {
     if (value) {
@@ -59,38 +56,69 @@ const NewAdjustment = () => {
     }
     
   };
-  // end of item fetching part
   
-  // Fetch item details
+  // Fetch the item details
   const fetchItemDetails = async (itemId) => {
     try {
       const response = await axios.get(`http://localhost:8080/inventory-item/getById/${itemId}`);
       setItem({ ...item, quantity: response.data.quantity }); // Update the newQuantity in the adj state
     } catch (error) {
-      console.error('Error fetching item data:', error);
+      console.error('Error fetching item details:', error);
     }
   }
   //Add onChange event to the input fields
   const onInputChange= async (e)=>{
     setAdj({...adj,[e.target.name]:e.target.value});
+    setErrors({ ...errors, [e.target.name]: '' }); // Clear error when input changes
   };
 
   const onSubmit=async(e)=>{
-    e.preventDefault(); // To remove unwanted url tail part
-    const result = await axios.post("http://localhost:8080/adjustment/add",adj) // To send data to the server
-    console.log(result.data);
-    navigate('/adjustment');// To navigate to the adjustment page
+    e.preventDefault();
+    const validationErrors = validateInputs();
+    console.log(Object.keys(validationErrors).length)
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    try {
+      const result = await axios.post("http://localhost:8080/adjustment/add", adj);
+      console.log(result.data);
+      navigate('/adjustment');// To navigate to the adjustment page
+      Swal.fire({
+        title: "Done!",
+        text: "You submitted the Adjustment!",
+        icon: "success"
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to submit Adjustment. Please try again later.",
+        icon: "error"
+      });
+    }
   }
 
-  // handle the onClick event of Submit button
-  const handleClick = () => {
-    Swal.fire({
-      title: "Good Job!",
-      text: "You submitted the Adjustment!",
-      icon: "success"
-    });
+  // Validate the input fields
+  const validateInputs = () => {
+    const errors = {};
+    if (!reason) {
+      errors.reason = 'Reason is required';
+    }
+    if (!date) {
+      errors.date = 'Date is required';
+    }
     
-  }
+    if (!newQuantity) {
+      errors.newQuantity = 'New Quantity is required';
+    }
+    if (!itemId) {
+      errors.itemId = 'Item ID is required';
+    }
+    
+    return errors;
+  };
 
   return (
     <Box className='p-10 bg-white rounded-2xl ml-14 mr-14'>
@@ -144,7 +172,8 @@ const NewAdjustment = () => {
                 name='itemId' // Add name to the Autocomplete
                 value={{ itemId: selectedItemId }} // Set the value to the selected itemId
                 sx={{ width: 300 }}
-                renderInput={(params) => <TextField {...params} label="Item ID" />}
+                renderInput={(params) => <TextField {...params} label="Item ID" 
+                error={!!errors.itemId} helperText={errors.itemId}/>}
                 size='small'
               />
             </Grid>
@@ -163,6 +192,8 @@ const NewAdjustment = () => {
                 value={date}
                 onChange={(e)=>onInputChange(e)}
                 size='small'
+                error={!!errors.date}
+                helperText={errors.date}
                 InputLabelProps={{ // To shrink the label
                   shrink: true,
                 }}
@@ -176,7 +207,9 @@ const NewAdjustment = () => {
             </Grid>
             <Grid item sm={9} xs={9}>
               <FormControl style={{ width: '300px' }}>
-                <Select  value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason'>
+                <Select  value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason' 
+                  error={!!errors.reason}
+                  helperText={errors.reason}>
                   <MenuItem value="Damaged Item">Damaged Item</MenuItem>
                   <MenuItem value="Stolen Item">Stolen Item</MenuItem>
                   <MenuItem value="Others">Others</MenuItem>
@@ -226,7 +259,9 @@ const NewAdjustment = () => {
                       </TableCell>
                       {/* new Qty */}
                       <TableCell align="right">
-                        <TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}></TextField>
+                        <TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)} 
+                          error={!!errors.newQuantity}
+                          helperText={errors.newQuantity}></TextField>
                       </TableCell>
                       {/* adjusted Qty */}
                       <TableCell align="right">{adj.newQuantity - item.quantity}</TableCell>
@@ -245,7 +280,6 @@ const NewAdjustment = () => {
             <Button className="px-6 py-2 text-white bg-blue-600 rounded"
                variant='contained'
                type='submit'
-              onClick={handleClick}
                 >submit</Button>
             <Button className="px-6 py-2 rounded"
                variant='outlined'
