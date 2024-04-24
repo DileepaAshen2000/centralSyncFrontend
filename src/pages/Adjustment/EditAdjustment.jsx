@@ -17,7 +17,7 @@ const EditAdjustment = () => {
   const {adjId} = useParams(); // To get the id from the url
   const [adj,setAdj] = useState({  // create state for adjustment, initial state is empty with object.
     reason:"",
-    date:"",
+    date:new Date().toISOString().split("T")[0], // Set to today's date
     description:"",
     newQuantity:"",
     name:"",
@@ -60,7 +60,7 @@ const EditAdjustment = () => {
         navigate('/adjustment');
         Swal.fire({
           title: "Done!",
-          text: "You submitted the Adjustment!",
+          text: "Adjustment Successfully Submitted !",
           icon: "success"
         });
       } catch (error) {
@@ -187,9 +187,7 @@ const EditAdjustment = () => {
           style={{ width: '300px' }}
           label="Date"
           name='date'
-          type="date"
           value={date}
-          onChange={(e)=>onInputChange(e)}
           size='small'
           error={!!errors.date}
           helperText={errors.date}
@@ -283,7 +281,7 @@ const EditAdjustment = () => {
         <Button className="col-start-6 text-white bg-blue-600 rounded row-start-10"
             variant='contained'
             type='submit'
-          >edit & submit</Button>
+          >Edit</Button>
           <Button className="col-start-8 rounded row-start-10"
             variant='outlined'
             onClick={() => navigate("/adjustment")}
