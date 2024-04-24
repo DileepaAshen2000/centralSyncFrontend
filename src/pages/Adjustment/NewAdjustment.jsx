@@ -61,7 +61,7 @@ const NewAdjustment = () => {
   const fetchItemDetails = async (itemId) => {
     try {
       const response = await axios.get(`http://localhost:8080/inventory-item/getById/${itemId}`);
-      setItem({ ...item, quantity: response.data.quantity }); // Update the newQuantity in the adj state
+      setItem({ ...item, quantity: response.data.quantity }); 
     } catch (error) {
       console.error('Error fetching item details:', error);
     }
@@ -151,7 +151,7 @@ const NewAdjustment = () => {
             disabled
             options={[{ itemId: selectedItemId }]} // Provide the selected itemId as an option
             getOptionLabel={(option) => option.itemId} // Display itemId in the Autocomplete
-            name='itemId' // Add name to the Autocomplete
+            name='itemId' 
             value={{ itemId: selectedItemId }} // Set the value to the selected itemId
             sx={{ width: 300 }}
             renderInput={(params) => <TextField {...params} label="Item ID" 
@@ -172,7 +172,6 @@ const NewAdjustment = () => {
             name='date'
             value={date}
             size='small'
-            // onChange={(e)=>onInputChange(e)}
             error={!!errors.date}
             helperText={errors.date}
             InputLabelProps={{ // To shrink the label
