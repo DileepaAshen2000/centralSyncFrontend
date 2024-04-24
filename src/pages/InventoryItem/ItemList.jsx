@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 //columns for the datagrid
@@ -50,12 +50,14 @@ const ItemDataGrid = () => {
   // State variable for row selection model
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
 
-  //fetch data from the API
+  // Fetch data from the API
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/inventory-item/getAll")
-      .then((response) => {
-        const data = response.data.map((item, index) => ({
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/inventory-item/getAll"
+        );
+        const data = response.data.map((item) => ({
           id: item.itemId,
           item_name: item.itemName,
           group: item.itemGroup,
@@ -63,13 +65,15 @@ const ItemDataGrid = () => {
           status: item.status,
         }));
         setRows(data);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log(error);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
-   // Handle change in row selection model
+  // Handle change in row selection model
   const handleRowSelectionModelChange = (newSelectedRow) => {
     setRowSelectionModel(newSelectedRow);
   };

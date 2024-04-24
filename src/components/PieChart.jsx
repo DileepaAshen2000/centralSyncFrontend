@@ -10,7 +10,6 @@ const size = {
   height: 400,
 };
 
-
 //define a colour palatte
 const palette = ["#4583DE", "#FFB946"];
 
@@ -26,16 +25,20 @@ const ItemPieChart = () => {
   //state variables
   const [itemData, setItemData] = useState([]);
 
-  //fetch data
+  // Fetch data
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/inventory-item/getAll")
-      .then((response) => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/inventory-item/getAll"
+        );
         setItemData(response.data);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log(error);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
   // calculate the total number of active items
