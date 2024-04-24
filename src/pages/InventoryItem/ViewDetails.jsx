@@ -44,11 +44,10 @@ const ViewItemDetails = () => {
     quantity,
   } = inventoryItem;
 
-    // Fetch item details from the API 
   useEffect(() => {
-    axios
-      .get(`http://localhost:8080/inventory-item/getById/${itemID}`)
-      .then((response) => {
+    const fetchItemDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/inventory-item/getById/${itemID}`);
         const item = {
           itemName: response.data.itemName,
           itemGroup: response.data.itemGroup,
@@ -59,14 +58,15 @@ const ViewItemDetails = () => {
           description: response.data.description,
           quantity: response.data.quantity,
         };
-        setInventoryItem(item); // Make sure the fetched data structure matches the structure of your state
-
-  
-      })
-      .catch((error) => {
+        setInventoryItem(item);
+      } catch (error) {
         console.log(error);
-      });
+      }
+    };
+  
+    fetchItemDetails();
   }, [itemID]);
+  
 
   // State variable to keep track of the anchor element for the popover
   const [anchorEl, setAnchorEl] = useState(null);

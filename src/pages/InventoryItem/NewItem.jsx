@@ -50,35 +50,34 @@ const AddItemForm = () => {
   };
 
   // Handle form submission
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
   
-    // Send a POST request to add the item
-    axios
-      .post("http://localhost:8080/inventory-item/add", inventoryItem)
-      .then((response) => {
-        if (response.status === 200) {
-          Swal.fire({
-            icon: "success",
-            title: "Success!",
-            text: "Item successfully added!",
-          });
-          setFetchData(!fetchData);
-          navigate("/item");
-        }
-      })
-      .catch((error) => {
-        // Show error message and set errors if any
+    try {
+      // Send a POST request to add the item
+      const response = await axios.post("http://localhost:8080/inventory-item/add", inventoryItem);
+      if (response.status === 200) {
         Swal.fire({
-          icon: "error",
-          title: "Error!",
-          text: "Failed to add new item. Please check your inputs.",
+          icon: "success",
+          title: "Success!",
+          text: "Item successfully added!",
         });
-        if (error.response) {
-          setErrors(error.response.data);
-        }
+        setFetchData(!fetchData);
+        navigate("/item");
+      }
+    } catch (error) {
+      // Show error message and set errors if any
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Failed to add new item. Please check your inputs.",
       });
+      if (error.response) {
+        setErrors(error.response.data);
+      }
+    }
   };
+  
 
   //Form for adding a new item
   return (

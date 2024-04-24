@@ -43,7 +43,7 @@ const NewOrderForm = () => {
     setOrder({ ...order, [e.target.id]: e.target.value });
   };
 
-  const handleClick = (e) => {
+  const handleClick = async (e) => {
     e.preventDefault();
     const order = {
       vendorName,
@@ -55,31 +55,37 @@ const NewOrderForm = () => {
       brandName,
       quantity,
     };
-
-    axios
-      .post("http://localhost:8080/orders/add", order)
-      .then((response) => {
-        if (response.status === 200) {
-          console.log(response.data);
-          Swal.fire({
-            icon: "success",
-            title: "Success!",
-            text: "Order successfully submitted!",
-          });
-          navigate("/order");
-        }
-      })
-      .catch((error) => {
-        if (error.response) {
-          Swal.fire({
-            icon: "error",
-            title: "Error!",
-            text: "Failed to submit order. Please check your inputs.",
-          });
-          setErrors(error.response.data);
-        }
-      });
+  
+    try {
+      const response = await axios.post("http://localhost:8080/orders/add", order);
+      if (response.status === 200) {
+        console.log(response.data);
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Order successfully submitted!",
+        });
+        navigate("/order");
+      }
+    } catch (error) {
+      if (error.response) {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Failed to submit order. Please check your inputs.",
+        });
+        setErrors(error.response.data);
+      } else {
+        console.log("Network error:", error.message);
+        Swal.fire({
+          icon: "error",
+          title: "Network Error!",
+          text: "Failed to submit order due to network issues.",
+        });
+      }
+    }
   };
+  
 
   //Form for initiate a new order
   return (
@@ -275,14 +281,14 @@ const NewOrderForm = () => {
 
       <Button
         variant="contained"
-        className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
+        className="row-start-11 col-start-6 col-span-3 w-[60%]  rounded-sm bg-blue-600  m-5"
         onClick={handleClick}
       >
-        Place the Order
+        Initiate the Order
       </Button>
       <Button
         variant="outlined"
-        className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
+        className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600 m-5"
         onClick={() => navigate("/order")}
       >
         Cancel
