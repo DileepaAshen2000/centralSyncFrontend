@@ -13,13 +13,13 @@ const StyledText = styled("text")(({ theme }) => ({
   fontWeight: "bold",
 }));
 
-const PieCenterLastatusel = () => {
+const PieCenterLabel = () => {
   // State to store data fetched from the API
   const [data, setData] = useState([]);
 
   //fetch data
   useEffect(() => {
-    axios
+    axios 
       .get("http://localhost:8080/inventory-item/getAll")
       .then((response) => {
         setData(response.data);
@@ -52,4 +52,4 @@ const PieCenterLastatusel = () => {
   );
 };
 
-export default PieCenterLastatusel;
+export default PieCenterLabel;
