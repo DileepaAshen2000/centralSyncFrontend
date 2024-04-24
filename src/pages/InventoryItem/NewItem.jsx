@@ -70,10 +70,12 @@ const AddItemForm = () => {
       .catch((error) => {
         // Show error message and set errors if any
         Swal.fire({
+ 
           icon: "error",
           title: "Error!",
           text: "Failed to add new item. Please check your inputs.",
         });
+ 
         if (error.response) {
           setErrors(error.response.data);
         }
