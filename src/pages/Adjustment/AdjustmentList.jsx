@@ -70,7 +70,7 @@ const AdjustmentList = () => {
           <p>Here are all Adjustment</p>
         </div>
         {rowSelectionModel > 0 ? (
-          <div className="flex items-center gap-4  ml-[75%]">
+          <div className="flex items-center pl-72">
             {rows.find(row => row.id === rowSelectionModel[0]).status === "PENDING" && (
               <Button
                 variant="contained"
@@ -80,18 +80,22 @@ const AdjustmentList = () => {
                 Edit
               </Button>
             )}
-
-            <Button
-              variant="contained"
-              className="bg-blue-600  py-2 text-white rounded w-[auto]"
-              onClick={handleViewClick}
-            >
-              View
-            </Button>
+            
+            <div className="pl-10">
+              <Button
+                variant="contained"
+                className="bg-blue-600  py-2 text-white rounded w-[auto]"
+                onClick={handleViewClick}
+              >
+                View
+              </Button>
+            </div>
+            
+            
           </div>
         ) : (
           
-          <div className="flex items-center ml-[70%]">
+          <div className="flex items-center pl-72">
             <Button
               variant="contained"
               className="bg-blue-600 py-2 text-white rounded w-[auto]"

@@ -17,7 +17,7 @@ const NewAdjustment = () => {
   let navigate = useNavigate();
   const [adj,setAdj] = useState({  // create state for adjustment, initial state is empty with object.
     reason:"",
-    date: "",
+    date:new Date().toISOString().split("T")[0], // Set to today's date
     description:"",
     newQuantity:"",
     itemId:""
@@ -83,11 +83,11 @@ const NewAdjustment = () => {
 
     try {
       const result = await axios.post("http://localhost:8080/adjustment/add", adj);
-      console.log(result.data);
+      console.log(result);
       navigate('/adjustment');// To navigate to the adjustment page
       Swal.fire({
         title: "Done!",
-        text: "You submitted the Adjustment!",
+        text: "Adjustment Successfully Submitted!",
         icon: "success"
       });
     } catch (error) {
@@ -121,7 +121,7 @@ const NewAdjustment = () => {
   };
 
   return (
-    <form className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14" onSubmit={(e)=> onSubmit(e)}>
+    <form className="grid grid-cols-12 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14" onSubmit={(e)=> onSubmit(e)}>
       <h1 className="col-span-4 pt-2 text-3xl font-bold ">New Adjustment</h1>
 
       <div className="flex items-center col-span-4 col-start-1">
@@ -170,10 +170,9 @@ const NewAdjustment = () => {
             style={{ width: '300px' }}
             label="Date"
             name='date'
-            type="date"
             value={date}
-            onChange={(e)=>onInputChange(e)}
             size='small'
+            // onChange={(e)=>onInputChange(e)}
             error={!!errors.date}
             helperText={errors.date}
             InputLabelProps={{ // To shrink the label
@@ -270,16 +269,15 @@ const NewAdjustment = () => {
         <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
       </div>
 
-      <div className='flex col-start-7 gap-6'>
-        <Button className="text-white bg-blue-600 rounded "
+      
+        <Button className="col-start-10 text-white bg-blue-600 rounded"
           variant='contained'
           type='submit'
         >submit</Button>
-        <Button className="rounded "
+        <Button className="col-start-12 rounded"
           variant='outlined'
           onClick={() => navigate("/adjustment")}
         >cancel</Button>
-      </div>
     </form>
   );
 };

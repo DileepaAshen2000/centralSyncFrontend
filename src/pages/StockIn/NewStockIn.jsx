@@ -69,7 +69,7 @@ const NewStockIn = () => {
       navigate('/stockIn') // To navigate to the stockin page
       Swal.fire({
         title: "Done !",
-        text: "You submitted a stock-in!",
+        text: "Stock-In Successfully Submitted!",
         icon: "success"
       });
     } catch (error) {
@@ -169,9 +169,9 @@ const NewStockIn = () => {
                 <Select  value={location} onChange={(e)=>onInputChange(e)} size='small' name='location' 
                 error={!!errors.location}
                 helperText={errors.location}>
-                  <MenuItem value="Store 01">Store 01</MenuItem>
-                  <MenuItem value="Store 02">Store 02</MenuItem>
-                  <MenuItem value="Store 03">Store 03</MenuItem>
+                  <MenuItem value="Store A">Store A</MenuItem>
+                  <MenuItem value="Store B">Store B</MenuItem>
+                  <MenuItem value="Store C">Store C</MenuItem>
                 </Select>
                 <Typography variant='caption' className='text-red-600'>{errors.location}</Typography>
               </FormControl>
@@ -224,7 +224,7 @@ const NewStockIn = () => {
           <Button className="text-white bg-blue-600 rounded "
             variant='contained'
             type='submit'
-              >Stock In</Button>
+              >Submit</Button>
           <Button className="rounded"
             variant='outlined'
             onClick={() => navigate("/stockIn")}
