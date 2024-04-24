@@ -43,32 +43,16 @@ const AdjustmentList = () => {
     setRowSelectionModel(newSelectedRow);
   };
 
-  // const handleClick = () => {
-  //   if (rowSelectionModel > 0) {
-  //     const selectedAdjId = rowSelectionModel[0];
-  //     console.log("selected adj id :" + selectedAdjId);
-  //     navigate("/adjustment/editadjustment/" + selectedAdjId);
-  //   } else {
-  //     navigate("/newadjustment");
-  //   }
-  // };
-
   const handleClick = () => {
-    // console.log("rowSelectionModel.length :"+rowSelectionModel.length); // check the length of the selected row
-    if (rowSelectionModel.length > 0) {
+    if (rowSelectionModel > 0) {
       const selectedAdjId = rowSelectionModel[0];
-      const selectedAdj = rows.find(row => row.id === selectedAdjId);
-      if (selectedAdj.status === "PENDING") {
-        navigate("/adjustment/editadjustment/" + selectedAdjId);
-      }else{
-        alert("You can't edit this adjustment because it is already "+selectedAdj.status);
-      }
+      console.log("selected adj id :" + selectedAdjId);
+      navigate("/adjustment/editadjustment/" + selectedAdjId);
     } else {
       navigate("/newadjustment");
     }
   };
   
-
   const handleViewClick = () => {
     if (rowSelectionModel > 0) {
       const selectedAdjId = rowSelectionModel[0];
@@ -87,13 +71,15 @@ const AdjustmentList = () => {
         </div>
         {rowSelectionModel > 0 ? (
           <div className="flex items-center gap-4  ml-[75%]">
-            <Button
-              variant="contained"
-              className="bg-blue-600 py-2  text-white rounded w-[auto] "
-              onClick={handleClick}
-            >
-              Edit
-            </Button>
+            {rows.find(row => row.id === rowSelectionModel[0]).status === "PENDING" && (
+              <Button
+                variant="contained"
+                className="bg-blue-600 py-2 text-white rounded w-[auto]"
+                onClick={handleClick}
+              >
+                Edit
+              </Button>
+            )}
 
             <Button
               variant="contained"
@@ -132,6 +118,7 @@ const AdjustmentList = () => {
           pageSizeOptions={[5]}
           checkboxSelection
           disableRowSelectionOnClick
+          disableMultipleSelection={true} // Prevent multiple row selection
           rowSelectionModel={rowSelectionModel}
           onRowSelectionModelChange={handlerowSelectionModelChange}
         />
