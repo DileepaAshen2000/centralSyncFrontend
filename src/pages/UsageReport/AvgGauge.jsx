@@ -65,7 +65,7 @@ const AvgGauge = ({ category, year }) => {
     return data
       .map((stock) => stock.inQty)
       .reduce((tot, stIn) => {
-        return (tot = tot + 1);
+        return (tot = tot + stIn);
       }, 0);
   };
 
@@ -74,7 +74,7 @@ const AvgGauge = ({ category, year }) => {
     return data
       .map((stock) => stock.outQty)
       .reduce((tot, stOut) => {
-        return (tot = tot + 1);
+        return (tot = tot + stOut);
       }, 0);
   };
 
@@ -100,6 +100,7 @@ const AvgGauge = ({ category, year }) => {
     ]);
   }, [requests, stockIn, stockOut]);
 
+
   useEffect(() => {
     // Function to update the value index every 5 seconds
     const intervalId = setInterval(() => {
@@ -110,6 +111,8 @@ const AvgGauge = ({ category, year }) => {
     return () => clearInterval(intervalId);
   }, [values.length]);
 
+
+  
   return (
     <div className=" w-full h-full bg-white p-4 ">
     {/* Check if values array is not empty */}
@@ -134,8 +137,8 @@ const AvgGauge = ({ category, year }) => {
                 valueIndex === 0
                   ? "#52b202"
                   : valueIndex === 1
-                  ? "#ff4500"
-                  : "#4169e1",
+                  ? "#4169e1"
+                  : "#ff4500",
             },
             [`& .${gaugeClasses.referenceArc}`]: {
               fill: theme.palette.text.disabled,

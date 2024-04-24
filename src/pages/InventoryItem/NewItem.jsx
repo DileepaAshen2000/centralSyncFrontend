@@ -52,21 +52,10 @@ const AddItemForm = () => {
   // Handle form submission
   const handleSave = (e) => {
     e.preventDefault();
-    const item = {
-      itemName,
-      itemGroup,
-      brand,
-      unit,
-      dimension,
-      weight,
-      description,
-      quantity,
-    };
-    console.log(item);
-
+  
     // Send a POST request to add the item
     axios
-      .post("http://localhost:8080/inventory-item/add", item)
+      .post("http://localhost:8080/inventory-item/add", inventoryItem)
       .then((response) => {
         if (response.status === 200) {
           Swal.fire({
@@ -102,12 +91,11 @@ const AddItemForm = () => {
         </InputLabel>
         <div>
           {errors.itemName && (
-            <div className="text-[#FC0000] text-xs ml-6">{errors.itemName}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.itemName}</div>
           )}
           <TextField
             id="itemName"
             value={itemName}
-            placeholder="Item name"
             onChange={onInputChange}
             variant="outlined"
             InputProps={{
@@ -123,7 +111,7 @@ const AddItemForm = () => {
         </InputLabel>
         <div className="flex-grow">
           {errors.itemGroup && (
-            <div className="text-[#FC0000] text-xs ml-6">
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
               {errors.itemGroup}
             </div>
           )}
@@ -143,23 +131,23 @@ const AddItemForm = () => {
         </div>
       </div>
 
-      <div className="flex items-center col-span-4 col-start-1">
-        <InputLabel htmlFor="unit" className="flex-none w-32 text-black ">
+      <div className="col-start-1 col-span-4 flex ">
+        <InputLabel htmlFor="unit" className="flex-none text-black w-32 ">
           Unit
         </InputLabel>
         <div>
           {errors.unit && (
-            <div className="text-[#FC0000] text-xs ml-6">{errors.unit}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.unit}</div>
           )}
           <TextField
             id="unit"
             value={unit}
-            placeholder="Unit"
             onChange={onInputChange}
             variant="outlined"
             InputProps={{
               className: "w-[300px] h-10 ml-5 bg-white  ",
             }}
+            helperText="Enter the quantity measurement unit(e.g., pcs, kg, boxes,)."
           />
         </div>
       </div>
@@ -169,12 +157,11 @@ const AddItemForm = () => {
         </InputLabel>
         <div>
           {errors.brand && (
-            <div className="text-[#FC0000] text-xs ml-6">{errors.brand}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.brand}</div>
           )}
           <TextField
             id="brand"
             value={brand}
-            placeholder="Brand"
             onChange={onInputChange}
             variant="outlined"
             InputProps={{
@@ -187,33 +174,41 @@ const AddItemForm = () => {
         <InputLabel htmlFor="dimension" className="flex-none w-32 text-black">
           Dimension
         </InputLabel>
+        <div>
+        {errors.dimension && (
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.dimension}</div>
+          )}
         <TextField
           id="dimension"
           value={dimension}
-          placeholder="Dimension"
           onChange={onInputChange}
           variant="outlined"
           InputProps={{
             className: "w-[300px] h-10 ml-5 bg-white  ",
           }}
         />
+        </div>
       </div>
-      <div className="flex items-center col-span-4 col-start-1">
-        <InputLabel htmlFor="weight" className="flex-none w-32 text-black">
+      <div className="col-start-1 col-span-4 flex items-center">
+        <InputLabel htmlFor="weight" className="flex-none text-black  w-32">
           Weight
         </InputLabel>
+        <div>
+        {errors.weight && (
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.weight}</div>
+          )}
         <TextField
           id="weight"
           value={weight}
-          placeholder="Weight"
           onChange={onInputChange}
           variant="outlined"
           InputProps={{
             className: "w-[300px] h-10 ml-5 bg-white  ",
           }}
         />
+        </div>
       </div>
-      <div className="flex col-span-4 col-start-1 ">
+      <div className="col-start-1 col-span-4 flex ">
         <InputLabel
           htmlFor="description"
           className="flex-none w-32 mt-0 text-black"
@@ -223,7 +218,6 @@ const AddItemForm = () => {
         <TextField
           id="description"
           value={description}
-          placeholder="Description"
           onChange={onInputChange}
           variant="outlined"
           multiline
@@ -239,12 +233,11 @@ const AddItemForm = () => {
         </InputLabel>
         <div>
           {errors.quantity && (
-            <div className="text-[#FC0000] text-xs ml-6">{errors.quantity}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.quantity}</div>
           )}
           <TextField
             id="quantity"
             value={quantity}
-            placeholder="Initial Quantity"
             onChange={onInputChange}
             variant="outlined"
             InputProps={{
