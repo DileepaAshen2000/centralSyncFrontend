@@ -285,7 +285,7 @@ const Userupdate = () => {
           <hr className="border-[#796F6F] ml-4 flex-grow" />
         </div>
 
-        <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] ">
+        <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.25rem] ">
           <div className="col-span-1">
             <label htmlFor="name">Password</label>
           </div>
@@ -304,24 +304,7 @@ const Userupdate = () => {
           <div></div>
           <div></div>
           <div></div>
-          <div className="col-span-1">
-            <label htmlFor="name">Confirm Password</label>
-          </div>
-          <div className="col-span-2">
-            <TextField
-              type="password"
-              id="cpassword"
-              placeholder=""
-              InputProps={{
-                className:
-                  "w-[300px]",
-              }}
-              size="small"
-            />
-          </div>
-          <div></div>
-          <div></div>
-          <div></div>
+          
         </div>
 
         <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] mt-12 ">
