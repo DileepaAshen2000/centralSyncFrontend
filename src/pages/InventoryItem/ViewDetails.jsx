@@ -1,35 +1,55 @@
 import {
-  InputAdornment,
+  Button,
+  MenuList,
+  Popover,
   InputLabel,
   MenuItem,
   Select,
   TextField,
 } from "@mui/material";
-import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+
 import axios from "axios";
 
 const ViewItemDetails = () => {
-  const [itemName, setItemName] = useState("");
-  const [itemGroup, setItemGroup] = useState("select an item group");
-  const [unit, setUnit] = useState("");
-  const [brand, setBrand] = useState("");
-  const [dimension, setDimension] = useState("");
-  const [weight, setWeight] = useState("");
-  const [description, setDescription] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [isEditable, setIsEditable] = useState(true);
-  const { ID } = useParams();
+  const navigate = useNavigate();
+  // Get item itemID from route parameters
+  const { itemID } = useParams();
 
 
 
+  //State for item object with properties -->initial state of properties=null
+  const [inventoryItem, setInventoryItem] = useState({
+    itemName: "",
+    itemGroup: "",
+    unit: "",
+    brand: "",
+    dimension: "",
+    weight: "",
+    description: "",
+    quantity: "",
+    status: "",
+  });
+
+  //Destructure the state
+  const {
+    itemName,
+    itemGroup,
+    unit,
+    brand,
+    dimension,
+    weight,
+    description,
+    quantity,
+  } = inventoryItem;
+
+    // Fetch item details from the API 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/inventory-item/getById/" + ID)
+      .get(`http://localhost:8080/inventory-item/getById/${itemID}`)
       .then((response) => {
-        const data = {
-          id: response.data.index + 1,
+        const item = {
           itemName: response.data.itemName,
           itemGroup: response.data.itemGroup,
           brand: response.data.brand,
@@ -39,67 +59,76 @@ const ViewItemDetails = () => {
           description: response.data.description,
           quantity: response.data.quantity,
         };
+        setInventoryItem(item); // Make sure the fetched data structure matches the structure of your state
 
-        setItemName(data.itemName);
-        setItemGroup(data.itemGroup);
-        setBrand(data.brand);
-        setUnit(data.unit);
-        setDimension(data.dimension);
-        setWeight(data.weight);
-        setDescription(data.description);
-        setQuantity(data.quantity);
+  
       })
       .catch((error) => {
         console.log(error);
       });
-  }, [ID]);
+  }, [itemID]);
 
-  const handleEdit = () => {
-    setIsEditable(!isEditable);
+  // State variable to keep track of the anchor element for the popover
+  const [anchorEl, setAnchorEl] = useState(null);
+
+    // State variable to manage the open/close state of the popover
+  const [isOpen, setIsOpen] = useState(false);
+
+  
+  // Handle click of "More" button
+  const handleMoreButton = (event) => {
+    setAnchorEl(event.currentTarget);
+    setIsOpen(true);
   };
 
-  const handleSave = (e) => {
-    const item = {
-      itemName,
-      itemGroup,
-      unit,
-      brand,
-      dimension,
-      weight,
-      description,
-      quantity,
-    };
+    // Handle closing of the popover
+  const handleClose = () => {
+    setAnchorEl(null);
+    setIsOpen(false);
+  };
 
+    // Handle deletion of the item
+  const handleDelete = () => {
+    try {
+      axios
+        .delete(`http://localhost:8080/inventory-item/deleteItem/${itemID}`)
+        .then(() => {
+  
+          navigate("/item");
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+    // Handle marking the item as inactive
+  const handleMarkAsInactiveButton = () => {
     axios
-      .put("http://localhost:8080/inventory-item/updateById/" + ID, item)
+      .patch(`http://localhost:8080/inventory-item/updateStatus/${itemID}`)
       .then(() => {
-        console.log("Successfully updated");
+
+        navigate("/item");
       })
       .catch((error) => {
         console.log(error);
       });
-      
-
-
   };
 
+
+  //form that contains item details
   return (
-    <form className="bg-[#F5F5F5] grid grid-cols-8 gap-y-10 pl-12 ">
-      <h1 className=" col-span-4 text-2xl ">Item Details</h1>
+    <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
+      <h1 className=" col-span-4 text-3xl pt-2 font-bold ">Item Details</h1>
       <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel
-          htmlFor="id"
-          className="flex-none text-black w-32 "
-        >
-          Item id
+        <InputLabel htmlFor="itemID" className="flex-none text-black w-32 ">
+          Item Id
         </InputLabel>
         <TextField
-          value={ID}
-          id="id"
+          value={itemID}
+          id="itemId"
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
+            className: "w-[300px] h-10 ml-5 bg-white  ",
             readOnly: true,
           }}
         />
@@ -111,38 +140,34 @@ const ViewItemDetails = () => {
           className="flex-none text-black w-32 "
           required
         >
-          Item name
+          Item Name
         </InputLabel>
         <TextField
           value={itemName}
-          onChange={(e) => setItemName(e.target.value)}
           id="name"
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white  ",
-            readOnly: isEditable,
+            className: "w-[300px] h-10 ml-5 bg-white  ",
           }}
         />
       </div>
 
       <div className="col-start-1 col-span-4 flex items-center">
         <InputLabel htmlFor="itemGroup" className="flex-none text-black w-32 ">
-          Item group
+          Item Group
         </InputLabel>
         <div className="flex-grow">
           <Select
+           id="itemGroup"
             value={itemGroup}
-            onChange={(e) => setItemGroup(e.target.value)}
-            id="itemGroup"
-            className="  w-[400px] h-10 border border-gray-400 rounded-2xl  ml-5"
+           
+            className="w-[300px] h-10 ml-5 bg-white  "
           >
-            <MenuItem disabled value={itemGroup}></MenuItem>
-            <MenuItem value="computer accessories">
+            <MenuItem value="computerAccessories">
               Computer accessories
             </MenuItem>
-            <MenuItem value="printers">Printers</MenuItem>
-            <MenuItem value="hardware">Hardware</MenuItem>
+            <MenuItem value="printer">Printer</MenuItem>
+            <MenuItem value="computerHardware">Computer hardware</MenuItem>
             <MenuItem value="other">other</MenuItem>
           </Select>
         </div>
@@ -153,15 +178,13 @@ const ViewItemDetails = () => {
           Unit
         </InputLabel>
         <TextField
+         id="unit"
           value={unit}
-          onChange={(e) => setUnit(e.target.value)}
-          id="unit"
+         
           variant="outlined"
           InputProps={{
-            endAdornment: <InputAdornment position="end">pcs</InputAdornment>,
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: isEditable,
+            className: "w-[300px] h-10 ml-5 bg-white  ",
+            readOnly: true,
           }}
         />
       </div>
@@ -170,13 +193,13 @@ const ViewItemDetails = () => {
           Brand
         </InputLabel>
         <TextField
+         id="brand"
           value={brand}
-          onChange={(e) => setBrand(e.target.value)}
-          id="brand"
+         
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
+            className: "w-[300px] h-10 ml-5 bg-white  ",
+            readOnly: true,
           }}
         />
       </div>
@@ -185,14 +208,13 @@ const ViewItemDetails = () => {
           Dimension
         </InputLabel>
         <TextField
+           id="dimension"
           value={dimension}
-          onChange={(e) => setDimension(e.target.value)}
-          id="dimension"
+       
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: isEditable,
+            className: "w-[300px] h-10 ml-5 bg-white  ",
+            readOnly: true,
           }}
         />
       </div>
@@ -201,18 +223,17 @@ const ViewItemDetails = () => {
           Weight
         </InputLabel>
         <TextField
-          value={weight}
-          onChange={(e) => setWeight(e.target.value)}
           id="weight"
+          value={weight}
+        
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: isEditable,
+            className: "w-[300px] h-10 ml-5 bg-white  ",
+            readOnly: true,
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
+      <div className="col-start-1 col-span-4 flex">
         <InputLabel
           htmlFor="description"
           className="flex-none text-black  w-32 mt-0"
@@ -220,16 +241,15 @@ const ViewItemDetails = () => {
           Description
         </InputLabel>
         <TextField
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          
           id="description"
+          value={description}
           variant="outlined"
           multiline
-          rows={10}
+          rows={6}
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 ml-5 bg-white",
-            readOnly: isEditable,
+            className: "w-[500px] ml-5 bg-white  ",
+            readOnly: true,
           }}
         />
       </div>
@@ -238,31 +258,64 @@ const ViewItemDetails = () => {
           Initial quantity
         </InputLabel>
         <TextField
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
+          
           id="quantity"
+          value={quantity}
           variant="outlined"
           InputProps={{
-            className:
-              "w-[400px] rounded-2xl border border-gray-400 h-10 ml-5 bg-white",
-            readOnly: isEditable,
+            className: "w-[300px] h-10 ml-5 bg-white  ",
+            readOnly: true,
           }}
         />
       </div>
 
-      <Button
-        variant="contained"
-        className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
-        onClick={handleEdit}
-      >
-        Edit
-      </Button>
+      {/*Buttons*/}
+      <>
+        <Button
+          variant="contained"
+          className="row-start-1 col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
+          onClick={handleMoreButton}
+        >
+          More
+        </Button>
+        <Popover
+          open={isOpen}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+        >
+          <MenuList>
+            <MenuItem>
+              <Button
+                variant="contained"
+                className="col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
+                onClick={handleDelete}
+              >
+                Delete
+              </Button>
+            </MenuItem>
+            <MenuItem>
+              <Button
+                variant="contained"
+                className=" col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
+                onClick={handleMarkAsInactiveButton}
+              >
+                Mark as inactive
+              </Button>
+            </MenuItem>
+          </MenuList>
+        </Popover>
+      </>
+
       <Button
         variant="outlined"
-        className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600"
-        onClick={handleSave}
+        className="row-start-11 col-start-8 rounded-sm bg-white text-blue-60blue-600"
+        onClick={() => navigate("/item")}
       >
-        Save
+        Cancel
       </Button>
     </form>
   );

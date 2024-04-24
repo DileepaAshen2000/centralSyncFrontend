@@ -15,22 +15,20 @@ const columns = [
 
 
 export default function Table() {
-const [rows, setData] = useState([])
+const [rows,setRows] = useState([])
 useEffect(() => {
   axios.get('http://localhost:8080/adjustment/getAll')
     .then((response) => {
    
-    const data = response.data.map((adj) => ({
-      
-      id: adj.adjId,
+    const data = response.data.map((adj,index) => ({
+      id: index + 1,
       reason: adj.reason,
       description: adj.description,
       adjusted_Qty: adj.newQuantity,
       date: adj.date,
       status: 'pending',
-
     }));
-    setData(data);
+  setRows(data);
     })
     .catch((error) => {
       console.log(error);
@@ -39,7 +37,6 @@ useEffect(() => {
 
   return (
     <div>
-    
       <DataGrid
       className='shadow-lg'
         rows={rows}

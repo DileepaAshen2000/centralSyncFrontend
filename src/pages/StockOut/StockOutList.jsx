@@ -1,37 +1,105 @@
-import React from 'react'
-import { Box } from '@mui/material'
-import Button from '@mui/material/Button'
-import { useNavigate } from 'react-router-dom'
-import StockOutTable from '../../components/StockOutTable'
+import * as React from "react";
+import Box from "@mui/material/Box";
+import { Button } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+const columns = [
+    { field: 'id', headerName: 'Stock-Out ID', width: 120 },
+    { field: 'itemId', headerName: 'Item ID', width: 120 },
+    { field: 'description', headerName: 'Description', width: 300 },
+    { field: 'quantity', headerName: 'Quantity Out', width: 150 },
+    { field: 'date', headerName: 'Date', width: 160 },
+    { field: 'department', headerName: 'Department', width: 180 }
+  ];
 
 const StockOutList = () => {
   const navigate = useNavigate();
-  return (
-    <Box>
-        <Box className="flex pb-4 gap-96">
-            <Box>
-              <h1 className="pt-2 pb-3 text-3xl font-bold ">Stock Out</h1>
-              <p>Here are all stock out items. !!</p>
-            </Box>
-            <Box className="flex items-center ml-[28%]">
-              <Button className="px-6 py-2 text-white bg-blue-600 rounded"
-               variant='contained'
-               onClick={() => navigate("/newstockin")}
-                >Stock Out</Button>
-            </Box>
-        </Box>
-        <StockOutTable/>
-        <Box className='mt-10'>
-          <Box className="flex pb-4 gap-96">
-              <Box>
-                <h1 className="pt-2 pb-3 text-3xl font-bold ">Stock Out For Work From Home Employee</h1>
-                <p>Here are all stock out items. !!</p>
-              </Box>
-          </Box>
-          <StockOutTable/>
-        </Box>
-    </Box>
-  )
-}
 
-export default StockOutList
+  const [rows, setRows] = useState([]);
+  useEffect(() => {
+    axios
+      .get("http://localhost:8080/stock-out/getAll")
+      .then((response) => {
+        const data = response.data.map((stockIOut) => ({
+            id: stockIOut.soutId,
+            itemId: stockIOut.itemId,
+            description: stockIOut.description,
+            quantity: stockIOut.outQty,
+            date: stockIOut.date,
+            department:stockIOut.department
+        }));
+        setRows(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
+  const handlerowSelectionModelChange = (newSelectedRow) => {
+    setRowSelectionModel(newSelectedRow);
+  };
+
+  const handleViewClick = () => {
+    if (rowSelectionModel > 0) {
+      const selectedStockOutId = rowSelectionModel[0];
+      navigate("/stockOut/" + selectedStockOutId);
+    } else {
+      navigate("/stockOut");
+    }
+  };
+
+  return (
+    <Box className="h-[400px] w-full flex-row space-y-4">
+      <Box className='flex py-4 space-x-96"'>
+        <div>
+          <h1 className="inline-block text-3xl font-bold">Stock Out</h1>
+          <p>Here are all Stock-Out</p>
+        </div>
+        {rowSelectionModel > 0 ? (
+            <div className="flex items-center ml-[75%]">
+                <Button
+                    variant="contained"
+                    className="bg-blue-600 py-2  text-white rounded w-[auto]"
+                    onClick={handleViewClick}
+                >
+                    View
+                </Button>
+            </div>
+        ) : (
+          <div className="flex items-center ml-[70%]">
+            <Button
+              variant="contained"
+              className="bg-blue-600 py-2  text-white rounded w-[auto]"
+              onClick={() => navigate("/new-stockout")}
+            >
+              New Stock-Out
+            </Button>
+          </div>
+        )}
+      </Box>
+
+      <DataGrid className='shadow-lg'
+        rows={rows}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
+            },
+          },
+        }}
+        autoHeight
+        pageSizeOptions={[5]}
+        checkboxSelection
+        disableRowSelectionOnClick
+        rowSelectionModel={rowSelectionModel}
+        onRowSelectionModelChange={handlerowSelectionModelChange}
+      />
+    </Box>
+  );
+};
+export default StockOutList;
