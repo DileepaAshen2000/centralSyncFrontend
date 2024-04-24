@@ -7,15 +7,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Typography, Button } from '@mui/material';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
 
-
-
-
-
-//Utility Functions section
+// Function to determine the color and text of a button based on request status
 const buttonColor = (reqStatus) => {
     const commonStyles = "w-40 h-10 m-5 text-center rounded-full";
     if (reqStatus === 'pending') {
@@ -31,20 +26,16 @@ const buttonColor = (reqStatus) => {
   }
 
 
-
-
-
-
 const EmployeeInRequestDocument = () => {
-
+ // Extracting request ID from URL params
   const { reqId } = useParams();
+  // State variables for managing inventory request data
   const [inventoryRequest, setInventoryRequest] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchInvetoryRequest = async () => {
       try {
-
         const response = await fetch(`http://localhost:8080/request/getById/${reqId}`);//${reqId}
         const data = await response.json();
         setInventoryRequest(data);
@@ -58,7 +49,7 @@ const EmployeeInRequestDocument = () => {
 
 
 
-
+//State variable to hold the note text
   const [note, setNote] = useState('');
 
   /*const sendNoteEmail = (email, subject, body) => {
@@ -74,11 +65,13 @@ const EmployeeInRequestDocument = () => {
   });
 };*/
 
+ // Function to handle printing
   const handlePrint = () => { };
 
   return (
     <div>
       <main>
+        {/* Buttons for editing and printing */}
         <div className="flex items-end justify-end p-6 mr-10 space-x-10 ...">
         {inventoryRequest && inventoryRequest.reqStatus === 'pending' &&(
         <Button className="px-6 py-2 text-white bg-blue-600 rounded"
@@ -94,13 +87,15 @@ const EmployeeInRequestDocument = () => {
           >print</Button>
         </div>
 
+ {/* Displaying request status seal */}
         <div className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section>
-
               {buttonColor(inventoryRequest.reqStatus)}
             </section>
           </div>
+
+          {/* Displaying request details */}
           <div>
             <section className="flex flex-row items-end justify-end mb-6">
               <header className="text-3xl">INVENTORY REQUEST</header>
@@ -125,6 +120,8 @@ const EmployeeInRequestDocument = () => {
               </ul>
             </section>
           </div>
+
+           {/* Displaying table of items */}
           <TableContainer component={Paper} className="p-8 mt-8">
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
@@ -144,13 +141,10 @@ const EmployeeInRequestDocument = () => {
                   <TableCell align="right">{inventoryRequest.quantity}</TableCell>
                   <TableCell align="right">{inventoryRequest.itemGroup}</TableCell>
                 </TableRow>
-
-
-
               </TableBody>
             </Table>
           </TableContainer>
-
+ {/* Displaying description */}
           <div className="mt-16 mb-32">
             <Typography variant="body1" gutterBottom>Description : </Typography>
             <div className="w-2/3">
@@ -158,7 +152,7 @@ const EmployeeInRequestDocument = () => {
             </div>
           </div>
         </div>
-
+{/* Input field for note */}
         <div className='flex gap-6 mt-6 ml-6'>
           <h4>Note :</h4>
           <textarea
@@ -169,8 +163,8 @@ const EmployeeInRequestDocument = () => {
           </textarea>
         </div>
 
+{/* Cancel button */}
         <div className='flex justify-end gap-4 ml-[60%] mt-6'>
-        
           <Button className="px-6 py-2  hover:bg-white rounded"
             variant='outlined'
             type='submit'
@@ -182,5 +176,4 @@ const EmployeeInRequestDocument = () => {
     </div>
   )
 }
-
 export default EmployeeInRequestDocument
