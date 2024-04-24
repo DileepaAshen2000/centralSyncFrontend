@@ -10,32 +10,29 @@ import { Typography, Button } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
-
+import axios from 'axios';
 
 
 
 
 //Utility Functions section
 const buttonColor = (reqStatus) => {
-    const commonStyles = "w-40 h-10 m-5 text-center rounded-full";
-    if (reqStatus === 'pending') {
-      return <div className={`flex justify-center items-center text-blue-800 bg-blue-300 ${commonStyles}`}>Pending</div>;
-    } else if (reqStatus === 'accepted') {
-      return <div className={`flex justify-center items-center text-green-800 bg-green-300 ${commonStyles}`}>Accepted</div>;
-    } else if (reqStatus === 'rejected') {
-      return <div className={`flex justify-center items-center text-red-800 bg-red-300 ${commonStyles}`}>Rejected</div>;
-    }
-    else if (reqStatus === 'sentToAdmin') {
-      return <div className={`flex justify-center items-center text-yellow-800 bg-yellow-300 ${commonStyles}`}>sentToAdmin</div>;
-    }
+  const commonStyles = "w-40 h-10 m-5 text-center rounded-full";
+  if (reqStatus === 'pending') {
+    return <div className={`flex justify-center items-center text-blue-800 bg-blue-300 ${commonStyles}`}>Pending</div>;
+  } else if (reqStatus === 'accepted') {
+    return <div className={`flex justify-center items-center text-green-800 bg-green-300 ${commonStyles}`}>Accepted</div>;
+  } else if (reqStatus === 'rejected') {
+    return <div className={`flex justify-center items-center text-red-800 bg-red-300 ${commonStyles}`}>Rejected</div>;
   }
+}
 
 
 
 
 
 
-const EmployeeInRequestDocument = () => {
+const InventoryRequestDocument = () => {
 
   const { reqId } = useParams();
   const [inventoryRequest, setInventoryRequest] = useState(false);
@@ -45,19 +42,38 @@ const EmployeeInRequestDocument = () => {
     const fetchInvetoryRequest = async () => {
       try {
 
-        const response = await fetch(`http://localhost:8080/request/getById/${reqId}`);//${reqId}
+        const response = await fetch(`http://localhost:8080/request/getById/${reqId}`);
         const data = await response.json();
         setInventoryRequest(data);
-        console.log(data);
       } catch (error) {
         console.error('Error fetching inventory Request details:', error);
       }
     };
     fetchInvetoryRequest();
   }, [reqId]);
+  const handleAccept = () => {
+    axios
+      .patch("http://localhost:8080/request/updateStatus/accept/" + reqId)
+      .then(() => {
+        setInventoryRequest(!inventoryRequest);
+        navigate("/admin-inventory-request-list", { inventoryRequest });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
-
-
+  const handleReject = () => {
+    axios
+      .patch("http://localhost:8080/request/updateStatus/reject/" + reqId)
+      .then(() => {
+        setInventoryRequest(!inventoryRequest);
+        navigate("/admin-inventory-request-list", { inventoryRequest });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+};
 
   const [note, setNote] = useState('');
 
@@ -79,14 +95,7 @@ const EmployeeInRequestDocument = () => {
   return (
     <div>
       <main>
-        <div className="flex items-end justify-end p-6 mr-10 space-x-10 ...">
-        {inventoryRequest && inventoryRequest.reqStatus === 'pending' &&(
-        <Button className="px-6 py-2 text-white bg-blue-600 rounded"
-            variant='contained'
-            type='submit'
-            onClick={() => navigate(`/in-request/edit-request/${reqId}`)}
-          >Edit</Button>
-          )}
+        <div className="flex items-end justify-end p-6 mr-10">
           <Button className="px-6 py-2 text-white bg-blue-600 rounded"
             variant='contained'
             type='submit'
@@ -170,11 +179,28 @@ const EmployeeInRequestDocument = () => {
         </div>
 
         <div className='flex justify-end gap-4 ml-[60%] mt-6'>
-        
+        {inventoryRequest && inventoryRequest.reqStatus === 'pending' &&(<>
+          <Button className="px-6 py-2 hover:bg-white text-green-800 bg-green-300 rounded"
+            variant='contained'
+            type='submit'
+            onClick={() => {
+              handleAccept();
+              //sendNoteEmail("maleeshavidurath@gmail.com", "Note for Inventory Request", note);
+            }}
+          >Accept</Button>
+          <Button className="px-6 py-2 hover:bg-white text-red-800 bg-red-300 rounded"
+            variant='contained'
+            type='submit'
+            onClick={() => {
+              handleReject();
+              //sendNoteEmail("maleeshavidurath@gmail.com", "Note for Inventory Request", note);
+            }}
+          >Reject</Button>
+          </>)}
           <Button className="px-6 py-2  hover:bg-white rounded"
             variant='outlined'
             type='submit'
-            onClick={() => navigate("/admin-in-request-list")}
+            onClick={() => navigate("/admin-inventory-request-list")}
           >cancel</Button>
         </div>
 
@@ -183,4 +209,4 @@ const EmployeeInRequestDocument = () => {
   )
 }
 
-export default EmployeeInRequestDocument
+export default InventoryRequestDocument
