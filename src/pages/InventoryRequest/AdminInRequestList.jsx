@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { DataGrid } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
 
+//colomn names for the table
 const columns = [
   { field: 'id', headerName: 'Request ID', width: 150 },
   { field: 'reason', headerName: 'Reason', width: 180 },
@@ -13,69 +14,64 @@ const columns = [
   { field: 'status', headerName: 'Status', width: 100 },
 ];
 
-
+//Table component creation
 function Table() {
+
   const navigate = useNavigate();
   const [rows, setData] = useState([])
+
+  //fetching all inventory requests
   useEffect(() => {
     axios.get('http://localhost:8080/request/getAll')
-    
       .then((response) => {
-     
-      const data = response.data.map((inventoryRequest,index) => ({
-        
-        id: index+1,
-        reason: inventoryRequest.reason,
-        department: inventoryRequest.department,
-        employeeName: inventoryRequest.employeeName,
-        status: inventoryRequest.reqStatus,
-      }));
-      setData(data);
-      console.log(data);
+        const data = response.data.map((inventoryRequest, index) => ({
+          id: index + 1,
+          reason: inventoryRequest.reason,
+          department: inventoryRequest.department,
+          employeeName: inventoryRequest.employeeName,
+          status: inventoryRequest.reqStatus,
+        }));
+        setData(data);
+        console.log(data);
       })
       .catch((error) => {
         console.log(error);
       });
   }, [])
 
-    return (
-      <div>
-      
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          onRowClick={(row) => {
-            navigate(`/admin/in-request-document/${row.id}`)
-          }}
-          initialState={{
-          pagination: {
-          paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          pageSizeOptions={[5, 10]}
-        
-        />
-        
-      </div>
-    
-    );
-  }
- 
-const AdminInRequestList = () => {
-  return (
-  
 
-<Box>
-<Box className="flex pb-4">
-    <Box>
-      <h1 className="pt-2 pb-3 text-3xl font-bold ">Request List</h1>
-      <p>Here is a list of all request</p>
-    </Box>
-   
-</Box>
-<Table/>
-</Box>
-)
+  return (
+    <div>
+      {/* Table creation */}
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        onRowClick={(row) => {
+          navigate(`/admin/in-request-document/${row.id}`)
+        }}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: 5 },
+          },
+        }}
+        pageSizeOptions={[5, 10]}
+      />
+    </div>
+
+  );
 }
 
+const AdminInRequestList = () => {
+  return (
+    <Box>
+      <Box className="flex pb-4">
+        <Box>
+          <h1 className="pt-2 pb-3 text-3xl font-bold ">Request List</h1>
+          <p>Here is a list of all request</p>
+        </Box>
+      </Box>
+      <Table />
+    </Box>
+  )
+}
 export default AdminInRequestList

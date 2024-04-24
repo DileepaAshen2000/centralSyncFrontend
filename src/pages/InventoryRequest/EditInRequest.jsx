@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { TextField, Grid, Box, Typography, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 
 
 
 const EditInventoryRequest = () => {
-
+  // Define state variables to hold form data
   const [itemId, setItemId] = useState("")
   const [itemName, setItemName] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -17,17 +16,19 @@ const EditInventoryRequest = () => {
   const [employeeName, setEmpName] = useState("");
   const [employeeID, setemployeeID] = useState("");
   const [department, setDepartment] = useState("");
+
+  // Get the request ID from the URL params
   const { reqId } = useParams();
- 
 
-
-
-
+  // Initialize navigate function from react-router-dom
   const navigate = useNavigate();
+
+  // Fetch the request data from the backend
   useEffect(() => {
     axios
       .get(`http://localhost:8080/request/getById/${reqId}`)
       .then((response) => {
+        //Extract the data from the response and set the state variables
         const data = {
           id: response.data.id,
           itemId: response.data.itemId,
@@ -56,6 +57,7 @@ const EditInventoryRequest = () => {
       });
   }, [reqId]);
 
+  // Function to handle form submission and update request
   const handleSave = (e) => {
     const inventoryRequest = {
       itemId,
@@ -73,15 +75,11 @@ const EditInventoryRequest = () => {
       .put(`http://localhost:8080/request/updateById/${reqId}`, inventoryRequest)
       .then(() => {
         console.log("Successfully updated");
-        navigate("/inventory-request");
       })
       .catch((error) => {
         console.log(error);
       });
-
-
   };
-
 
 
   return (
@@ -91,11 +89,11 @@ const EditInventoryRequest = () => {
           <Box className="pb-4">
             <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit Request</h1>
           </Box>
-
+          {/* Inputs for InRequest ID and Employee Name */}
           <Grid container spacing={2} padding={4} >
+
             <Grid container display='flex' mt={4}>
               <Grid item sm={1.5}>
-
                 <Typography>InRequest ID</Typography>
               </Grid>
               <Grid item sm={4.5}>
@@ -103,8 +101,8 @@ const EditInventoryRequest = () => {
                   size='small'
                   style={{ width: '300px' }}
                   inputProps={{
-                  readOnly: true,
-                  style: { color: 'gray'},
+                    readOnly: true,
+                    style: { color: 'gray' },
                   }}
                   value={reqId}
                 />
@@ -119,15 +117,15 @@ const EditInventoryRequest = () => {
                   style={{ width: '300px' }}
                   inputProps={{
                     readOnly: true,
-                    style: { color: 'gray'},
-                    }}
+                    style: { color: 'gray' },
+                  }}
                   value={employeeName}
                   onChange={(e) => setEmpName(e.target.value)}
                 />
               </Grid>
             </Grid>
 
-
+            {/* Inputs for Item and Emp.ID*/}
             <Grid container display='flex' mt={4}>
               <Grid item sm={1.5}>
                 <Typography>Item Name</Typography>
@@ -146,17 +144,18 @@ const EditInventoryRequest = () => {
               </Grid>
               <Grid item sm={4.5}>
                 <TextField
-                size='small'
-                style={{ width: '300px' }}
-                value={employeeID}
-                onChange={(e) => setemployeeID(e.target.value)}
+                  size='small'
+                  style={{ width: '300px' }}
+                  value={employeeID}
+                  onChange={(e) => setemployeeID(e.target.value)}
                 />
               </Grid>
             </Grid>
 
 
-
+            {/* Inputs for Quantity and Department*/}
             <Grid container display='flex' mt={4}>
+
               <Grid item sm={1.5}>
                 <Typography>Quantity</Typography>
               </Grid>
@@ -187,11 +186,7 @@ const EditInventoryRequest = () => {
 
             </Grid>
 
-
-
-
-
-
+            {/* Inputs for Date*/}
             <Grid container display='flex' mt={4}>
               <Grid item sm={1.5}>
                 <Typography>Date</Typography>
@@ -202,36 +197,28 @@ const EditInventoryRequest = () => {
                   type='date'
                   size='small'
                   InputLabelProps= // To shrink the label
-                    {{shrink: true}}
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                  
+                  {{ shrink: true }}
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
                 />
               </Grid>
             </Grid>
-
+            {/* Inputs for Reason*/}
             <Grid container display='flex' mt={4}>
               <Grid item sm={1.5}>
                 <Typography>Reason</Typography>
               </Grid>
-
               <Grid item sm={4.5}>
-              <TextField
-              size='small'
+                <TextField
+                  size='small'
                   value={reason}
                   style={{ width: '300px' }}
                   onChange={(e) => setReason(e.target.value)}
                 />
-                 
-
               </Grid>
             </Grid>
 
-
-
-
-
-
+            {/* Inputs for Description*/}
             <Grid container display='flex' mt={4}>
               <Grid item sm={1.5}>
                 <Typography>Description</Typography>
@@ -247,24 +234,26 @@ const EditInventoryRequest = () => {
                   style={{ width: '500px' }}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-
                 />
               </Grid>
             </Grid>
-
-
           </Grid>
+
+          {/* Attach File(s) to inventory request */}
           <Box>
-            <Typography display='block' gutterBottom>Attach File(s) to inventory adjustment </Typography>
+            <Typography display='block' gutterBottom>Attach File(s) to inventory Request </Typography>
             <input type='file' className="mt-4 mb-2" ></input>
             <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
           </Box>
+
+          {/* Save and Cancel buttons */}
           <div className='flex gap-6 mt-6 ml-[70%]'>
+
             <Button className="px-6 py-2 text-white bg-blue-600 rounded"
               variant='contained'
               type='submit'
               onClick={handleSave}
-            >Edit</Button>
+            >Save</Button>
 
             <Button className="px-6 py-2 rounded"
               variant='outlined'
@@ -277,5 +266,4 @@ const EditInventoryRequest = () => {
     </>
   );
 };
-
 export default EditInventoryRequest;
