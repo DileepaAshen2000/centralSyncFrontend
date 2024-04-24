@@ -10,7 +10,7 @@
     "@mui/lab": "^5.0.0-alpha.169",
     "@mui/material": "^5.15.6",
     "@mui/system": "^5.15.15",
-    "@mui/x-charts": "^7.1.0",
+    "@mui/x-charts": "^7.3.0",
     "@mui/x-data-grid": "^6.19.3",
     "@mui/x-date-pickers": "^7.1.1",
     "@testing-library/jest-dom": "^5.17.0",

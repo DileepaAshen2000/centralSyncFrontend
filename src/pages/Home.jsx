@@ -32,6 +32,8 @@ import StockInDocument from "./StockIn/StockInDocument";
 import NewStockIn from "./StockIn/NewStockIn";
 import NewStockOut from "./StockOut/NewStockOut";
 import StockOutDocument from "./StockOut/StockOutDocument";
+import R_admin from "./Reservation/R_admin"
+import NewReservation from "./Reservation/NewReservation"
 
 const Home = () => {
   return (
@@ -142,6 +144,10 @@ const Home = () => {
                 path="/report/item-usage-analysis"
                 element={<Usage />}
               ></Route>
+
+              {/* Reservations routing */}
+              <Route path='/reservation' element={<R_admin/>}></Route>
+              <Route path='/newreservation' element={<NewReservation/>}></Route>
 
 
             </Routes>
