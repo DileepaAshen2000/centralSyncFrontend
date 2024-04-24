@@ -107,12 +107,20 @@ const SideBar = () => {
             </ListItem>
           </a>
 
+          <a href="/reservation">
           <ListItem button className="pl-8 rounded-lg">
             <ListItemText primary="Reservation" />
           </ListItem>
+          </a>
+
+          
+
+          
+          <a href="/ticket">
           <ListItem button className="pl-8 rounded-lg">
             <ListItemText primary="Maintain Ticket" />
           </ListItem>
+          </a>
         </List>
       </Collapse>
 

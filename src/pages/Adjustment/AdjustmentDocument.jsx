@@ -75,6 +75,15 @@ const loadAdjustment = async () => {
       .catch((error) => {
         console.log(error);
       });
+      // axios.post('http://localhost:8080/adjustment/send-email', { body: emailBody })
+      //   .then(response => {
+      //       console.log('Email sent successfully:', response.data);
+      //       // Handle success, e.g., show a success message to the user
+      //   })
+      //   .catch(error => {
+      //       console.error('Error sending email:', error);
+      //       // Handle error, e.g., show an error message to the user
+      //   });
   };
   
   const handleReject = () => {
@@ -116,7 +125,6 @@ const loadAdjustment = async () => {
         <div className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section>
-              {/* <button id="statusButton" className={`w-40 h-10 m-5 text-blue-800 bg-blue-300 rounded-2xl`}>{status}</button> */}
               {getStatus(status)}
             </section>
           </div>
