@@ -84,11 +84,11 @@ const AddItemForm = () => {
 
   //Form for adding a new item
   return (
-    <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
-      <h1 className=" col-span-4 text-3xl pt-2 font-bold">New item</h1>
+    <form className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14">
+      <h1 className="col-span-4 pt-2 text-3xl font-bold ">New item</h1>
 
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="name" className="flex-none text-black w-32 ">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
           Item Name
         </InputLabel>
         <div>
@@ -107,8 +107,8 @@ const AddItemForm = () => {
         </div>
       </div>
 
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="itemGroup" className="flex-none text-black w-32 ">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="itemGroup" className="flex-none w-32 text-black ">
           Item Group
         </InputLabel>
         <div className="flex-grow">
@@ -153,8 +153,8 @@ const AddItemForm = () => {
           />
         </div>
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="brand" className="flex-none text-black w-32 ">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="brand" className="flex-none w-32 text-black ">
           Brand
         </InputLabel>
         <div>
@@ -172,8 +172,8 @@ const AddItemForm = () => {
           />
         </div>
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="dimension" className="flex-none text-black  w-32">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="dimension" className="flex-none w-32 text-black">
           Dimension
         </InputLabel>
         <div>
@@ -213,7 +213,7 @@ const AddItemForm = () => {
       <div className="col-start-1 col-span-4 flex ">
         <InputLabel
           htmlFor="description"
-          className="flex-none text-black  w-32 mt-0"
+          className="flex-none w-32 mt-0 text-black"
         >
           Description
         </InputLabel>
@@ -229,8 +229,8 @@ const AddItemForm = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="quantity" className="flex-none text-black w-32 ">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="quantity" className="flex-none w-32 text-black ">
           Initial Quantity
         </InputLabel>
         <div>
@@ -251,14 +251,14 @@ const AddItemForm = () => {
 
       <Button
         variant="contained"
-        className="row-start-10 col-start-6 rounded-sm bg-blue-600 "
+        className="col-start-6 bg-blue-600 rounded-sm row-start-10 "
         onClick={handleSave}
       >
         Save
       </Button>
       <Button
         variant="outlined"
-        className="row-start-10 col-start-8 rounded-sm bg-white text-blue-60-lue-600 "
+        className="col-start-8 bg-white rounded-sm row-start-10 text-blue-60-lue-600 "
         onClick={() => navigate("/item")}
       >
         Cancel

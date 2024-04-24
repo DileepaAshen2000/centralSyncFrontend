@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FormControl, Select, MenuItem, TextField, Grid, Box, Typography, Button } from '@mui/material';
+import { InputLabel, Select, MenuItem, TextField, Typography, Button } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -116,190 +116,182 @@ const EditAdjustment = () => {
   }
   
   return (
-    <Box className='p-10 bg-white rounded-2xl ml-14 mr-14'>
-      <Box className="pb-4">
-        <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit Adjustment</h1>
-      </Box>
-      <form onSubmit={(e)=> onSubmit(e,flag)}>
-        <Grid container spacing={2}  padding={4} >
-            <Grid container display='flex' mt={4}>
-                <Grid item sm={2} xs={2}>
-                    <Typography>Adjustment ID</Typography>
-                </Grid>
-                <Grid item sm={9} xs={9}>
-                    <TextField
-                    style={{ width: '300px' }}
-                    name='id'
-                    label='Adjustment ID'
-                    size='small'
-                    value={adjId}
-                    onChange={(e)=>onInputChange(e)}
-                    InputProps={{
-                        readOnly: true,
-                      }}
-                    />
-                </Grid>
-            </Grid>
+    <form className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14" onSubmit={(e)=> onSubmit(e)}>
+      <h1 className="col-span-4 pt-2 text-3xl font-bold ">New Adjustment</h1>
 
-            <Grid container display='flex' mt={4}>
-                <Grid item sm={2} xs={2}>
-                    <Typography>Item ID</Typography>
-                </Grid>
-                <Grid item sm={9} xs={9}>
-                    <TextField
-                    style={{ width: '300px' }}
-                    name='itemId'
-                    label='Item ID'
-                    size='small'
-                    value={itemId}
-                    onChange={(e)=>onInputChange(e)}
-                    error={!!errors.itemId}
-                    helperText={errors.itemId}
-                    InputProps={{
-                        readOnly: true,
-                      }} 
-                    />
-                </Grid>
-            </Grid>
-
-            <Grid container display='flex' mt={4}>
-                <Grid item sm={2} xs={2}>
-                    <Typography>Item Name</Typography>
-                </Grid>
-                <Grid item sm={9} xs={9}>
-                <TextField
-                    style={{ width: '300px' }}
-                    name='name'
-                    label='Item Name'
-                    size='small'
-                    value={itemName}
-                    onChange={(e)=>onInputChange(e)}
-                    InputProps={{
-                        readOnly: true,
-                      }}
-                    />
-                </Grid>
-            </Grid>
-
-            <Grid container display='flex' mt={4}>
-                <Grid item sm={2} xs={2}>
-                    <Typography>Group</Typography>
-                </Grid>
-                <Grid item sm={9} xs={9}>
-                    <TextField
-                        style={{ width: '300px' }}
-                        label='Group'
-                        value={itemGroup}
-                        onChange={(e)=>onInputChange(e)}
-                        name='itemGroup'
-                        size='small' 
-                        InputProps={{
-                            readOnly: true,
-                          }}
-                    />
-                </Grid>
-            </Grid>
-
-          <Grid container display='flex' mt={4}>
-            <Grid item sm={2} xs={2}>
-              <Typography>Date</Typography>
-            </Grid>
-            <Grid item sm={9} xs={9}>
-              <TextField
-                style={{ width: '300px' }}
-                label="Date"
-                name='date'
-                type="date"
-                value={date}
-                onChange={(e)=>onInputChange(e)}
-                size='small'
-                error={!!errors.date}
-                helperText={errors.date}
-                InputLabelProps={{ // To shrink the label
-                  shrink: true,
-                }}
-              />
-            </Grid>
-          </Grid>
-          <Grid container display='flex' mt={4}>
-            <Grid item sm={2} xs={2}>
-              <Typography>Reason</Typography>
-            </Grid>
-            <Grid item sm={9} xs={9}>
-              <FormControl style={{ width: '300px' }}>
-                <Select value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason'
-                  error={!!errors.reason}
-                  helperText={errors.reason}>
-                  <MenuItem value="Damaged Item">Damaged Item</MenuItem>
-                  <MenuItem value="Stolen Item">Stolen Item</MenuItem>
-                  <MenuItem value="Others">Others</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid> 
-          <Grid container display='flex' mt={4}>
-            <Grid item sm={2} xs={2}>
-              <Typography>Description</Typography>
-            </Grid>
-            <Grid item sm={9} xs={9}>
-              <TextField
-                label="Description"
-                name='description'
-                multiline
-                rows={6}
-                placeholder='Enter Description Here...'
-                style={{ width: '500px' }}
-                value={description}
-                onChange={(e)=>onInputChange(e)}
-              />
-            </Grid>
-          </Grid>
-
-          <Box mt={4} className='pl-44'>
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650, border:2 }} aria-label="simple table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Item Details</TableCell>
-                    <TableCell align="right">Quantity Available</TableCell>
-                    <TableCell align="right">New Quantity</TableCell>
-                    <TableCell align="right">Adjusted Quantity</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                    <TableRow>
-                      <TableCell component="th" scope="row">
-                        {itemName}
-                      </TableCell>
-                      <TableCell align="right">{quantity}</TableCell>
-                      <TableCell align="right"><TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}
-                        error={!!errors.newQuantity}
-                        helperText={errors.newQuantity}></TextField></TableCell>
-                      <TableCell align="right">{newQuantity - quantity}</TableCell>
-                    </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-        </Grid>
-        <Box>
-          <Typography display='block' gutterBottom>Attach File(s) to inventory adjustment </Typography>
-          <input type='file' className="mt-4 mb-2" ></input>
-          <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
-        </Box>
-        <div className='flex gap-6 mt-6 ml-[70%]'>
-            <Button className="px-6 py-2 text-white bg-blue-600 rounded"
-               variant='contained'
-               type='submit'
-                >edit & submit</Button>
-
-            <Button className="px-6 py-2 rounded"
-               variant='outlined'
-               onClick={() => navigate("/adjustment")}
-                >cancel</Button>
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="adjId" className="flex-none w-32 text-black ">
+          Adjustment ID
+        </InputLabel>
+        <div>
+          <TextField
+              style={{ width: '300px' }}
+              name='id'
+              label='Adjustment ID'
+              size='small'
+              value={adjId}
+              onChange={(e)=>onInputChange(e)}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
         </div>
-      </form>
-    </Box>
+      </div>
+      
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="itemId" className="flex-none w-32 text-black ">
+          Item ID
+        </InputLabel>
+        <div>
+          <TextField
+            style={{ width: '300px' }}
+            name='itemId'
+            label='Item ID'
+            size='small'
+            value={itemId}
+            onChange={(e)=>onInputChange(e)}
+            error={!!errors.itemId}
+            helperText={errors.itemId}
+            InputProps={{
+                readOnly: true,
+            }} 
+          />
+        </div>
+      </div>
+      
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="date" className="flex-none w-32 text-black ">
+          Item Name
+        </InputLabel>
+        <div>
+          <TextField
+            style={{ width: '300px' }}
+            name='name'
+            label='Item Name'
+            size='small'
+            value={itemName}
+            onChange={(e)=>onInputChange(e)}
+            InputProps={{
+                readOnly: true,
+            }}
+          />
+        </div>
+      </div>
+      
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="date" className="flex-none w-32 text-black ">
+          Date
+        </InputLabel>
+        <div>
+        <TextField
+          style={{ width: '300px' }}
+          label="Date"
+          name='date'
+          type="date"
+          value={date}
+          onChange={(e)=>onInputChange(e)}
+          size='small'
+          error={!!errors.date}
+          helperText={errors.date}
+          InputLabelProps={{ // To shrink the label
+            shrink: true,
+          }}
+        />
+        </div>
+      </div>
+
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="reason" className="flex-none w-32 text-black ">
+          Reason
+        </InputLabel>
+        <div className="flex-grow">
+          <Select value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason'
+            error={!!errors.reason}
+            helperText={errors.reason}
+            className="w-[300px] h-10 bg-white">
+            <MenuItem value="Damaged Item">Damaged Item</MenuItem>
+            <MenuItem value="Stolen Item">Stolen Item</MenuItem>
+            <MenuItem value="Others">Others</MenuItem>
+          </Select>
+        </div>
+      </div>
+
+      <div className="flex col-span-4 col-start-1 ">
+        <InputLabel
+          htmlFor="description"
+          className="flex-none w-32 mt-0 text-black"
+        >
+          Description
+        </InputLabel>
+        <div>
+          <TextField
+            label="Description"
+            name='description'
+            multiline
+            rows={6}
+            placeholder='Enter Description Here...'
+            style={{ width: '500px' }}
+            value={description}
+            onChange={(e)=>onInputChange(e)}
+          />
+        </div>
+      </div>
+
+      <div className="flex col-span-4 col-start-1 ">
+        <InputLabel
+          htmlFor="description"
+          className="flex-none w-32 mt-0 text-black"
+        >
+          Item Details
+        </InputLabel>
+        <div>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650, border:2 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Item Details</TableCell>
+                  <TableCell align="right">Quantity Available</TableCell>
+                  <TableCell align="right">New Quantity</TableCell>
+                  <TableCell align="right">Adjusted Quantity</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                    <TableCell component="th" scope="row">
+                      {itemName}
+                    </TableCell>
+                    <TableCell align="right">{quantity}</TableCell>
+                    <TableCell align="right"><TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}
+                      error={!!errors.newQuantity}
+                      helperText={errors.newQuantity}></TextField></TableCell>
+                    <TableCell align="right">{newQuantity - quantity}</TableCell>
+                  </TableRow>
+              </TableBody>  
+            </Table>
+          </TableContainer>
+        </div>
+      </div>
+
+      <div className="flex-row col-span-10 col-start-1 ">
+        <Typography display='block' gutterBottom>Attach File(s) to inventory adjustment </Typography>
+        <input type='file' className="mt-4 mb-2"></input>
+        <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
+      </div>
+
+    
+      <div className='flex col-start-7 gap-6'>
+        <Button className="col-start-6 text-white bg-blue-600 rounded row-start-10"
+            variant='contained'
+            type='submit'
+          >edit & submit</Button>
+          <Button className="col-start-8 rounded row-start-10"
+            variant='outlined'
+            onClick={() => navigate("/adjustment")}
+          >cancel</Button>
+      </div>
+
+      
+    </form>
   );
 };
 
