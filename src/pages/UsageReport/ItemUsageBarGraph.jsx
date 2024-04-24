@@ -9,20 +9,21 @@ const colour = ["#5C998E"];
 const UsageBarChart = ({ category, year }) => {
   const [requests, setRequests] = useState([]);
 
- // Fetch requests data based on category and year
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8080/request/getAll?itemGroup=${category}&year=${year}`);
-      setRequests(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // Fetch requests data based on category and year
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/request/getAll?itemGroup=${category}&year=${year}`
+        );
+        setRequests(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-  fetchData();
-}, [category, year]);
-
+    fetchData();
+  }, [category, year]);
 
   // Process requests data by month
   const requestsByMonth = requests
@@ -40,7 +41,7 @@ useEffect(() => {
       return acc;
     }, {}); //array transformed into object ex={jan[{ date: "2024-01-15", status: "accepted"}, { date: "2024-01-20", status: "accepted" },] & soon },
 
-    console.log(requestsByMonth);
+  console.log(requestsByMonth);
   // Create labels for the x-axis (months)
   const xLabels = [
     "Jan",
@@ -58,15 +59,18 @@ useEffect(() => {
   ];
 
   //map requestsByMonth object key values with the xlabels using  optional chaining operator
-  const noOfItemsUsed = xLabels.map((label) => requestsByMonth[label]?.length ?? 0);
-
+  const noOfItemsUsed = xLabels.map(
+    (label) => requestsByMonth[label]?.length ?? 0
+  );
 
   return (
     <BarChart
       colors={colour}
       width={650}
       height={300}
-      series={[{ data: noOfItemsUsed, label: "no of items", id: "pvId", type: "bar" }]}
+      series={[
+        { data: noOfItemsUsed, label: "no of items", id: "pvId", type: "bar" },
+      ]}
       xAxis={[{ data: xLabels, scaleType: "band" }]}
     />
   );

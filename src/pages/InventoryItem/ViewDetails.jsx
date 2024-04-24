@@ -138,7 +138,6 @@ const ViewItemDetails = () => {
         <InputLabel
           htmlFor="name"
           className="flex-none text-black w-32 "
-          required
         >
           Item Name
         </InputLabel>

@@ -49,7 +49,7 @@ useEffect(() => {
    // Check if either stock in or stock out data is empty
   if (stockIn.length === 0 && stockOut.length === 0) {
     return (
-      <div className="text-center">
+      <div className="text-center m-10">
         No data to display
         
       </div>
@@ -138,7 +138,7 @@ useEffect(() => {
 
 
   
-  // Create arrays of data for the chart y axis
+  // Create  data array for the chart y axis from the object sumByMonth which has properties as name of month
   const stockInData = xLabels.map((label) => sumByMonthSI[label]);
   const stockOutData = xLabels.map((label) => sumByMonthSO[label]);
 

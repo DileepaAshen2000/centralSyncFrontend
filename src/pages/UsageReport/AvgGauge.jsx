@@ -112,7 +112,7 @@ const AvgGauge = ({ category, year }) => {
 
     // Clear the interval when the component unmounts
     return () => clearInterval(intervalId);
-  }, [values.length]);
+  }, [values.length]); 
 
   return (
     <div className=" w-full h-full bg-white p-4 ">

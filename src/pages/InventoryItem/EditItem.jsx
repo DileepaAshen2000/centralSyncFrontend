@@ -178,6 +178,7 @@ const handleSave = async () => {
             InputProps={{
               className: "w-[300px] h-10 ml-5 bg-white  ",
             }}
+            helperText="The quantity measurement unit(e.g., pcs, kg, boxes,)."
           />
         </div>
       </div>
