@@ -1,4 +1,5 @@
 import React from 'react'
+import axios from 'axios';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -10,13 +11,13 @@ import { Typography, Button } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
-import axios from 'axios';
 
 
 
 
-//Utility Functions section
-const buttonColor = (reqStatus) => {
+
+//Document Status seal color generating function creation
+const InRequestStatusColor = (reqStatus) => {
   const commonStyles = "w-40 h-10 m-5 text-center rounded-full";
   if (reqStatus === 'pending') {
     return <div className={`flex justify-center items-center text-blue-800 bg-blue-300 ${commonStyles}`}>Pending</div>;
@@ -28,20 +29,18 @@ const buttonColor = (reqStatus) => {
 }
 
 
-
-
-
-
 const AdminInRequestDocument = () => {
 
   const { reqId } = useParams();
   const [inventoryRequest, setInventoryRequest] = useState(false);
   const navigate = useNavigate();
+  const [note, setNote] = useState('');
 
   useEffect(() => {
+
+    //fetching invnetory request by id
     const fetchInvetoryRequest = async () => {
       try {
-
         const response = await fetch(`http://localhost:8080/request/getById/${reqId}`);//${reqId}
         const data = await response.json();
         setInventoryRequest(data);
@@ -51,6 +50,9 @@ const AdminInRequestDocument = () => {
     };
     fetchInvetoryRequest();
   }, [reqId]);
+
+
+  //Accepting the inventory request function creation
   const handleAccept = () => {
     axios
       .patch("http://localhost:8080/request/updateStatus/accept/" + reqId)
@@ -63,6 +65,7 @@ const AdminInRequestDocument = () => {
       });
   };
 
+  //Rejecting the inventory request function creation
   const handleReject = () => {
     axios
       .patch("http://localhost:8080/request/updateStatus/reject/" + reqId)
@@ -75,7 +78,7 @@ const AdminInRequestDocument = () => {
       });
 };
 
-  const [note, setNote] = useState('');
+
 
   /*const sendNoteEmail = (email, subject, body) => {
     axios.post("http://localhost:8080/request/mailing", {
@@ -107,7 +110,7 @@ const AdminInRequestDocument = () => {
           <div>
             <section>
 
-              {buttonColor(inventoryRequest.reqStatus)}
+              {InRequestStatusColor(inventoryRequest.reqStatus)}
             </section>
           </div>
           <div>
