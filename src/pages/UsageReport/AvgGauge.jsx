@@ -91,15 +91,15 @@ const AvgGauge = ({ category, year }) => {
     setValues([
       {
         title: "Average usage per month",
-        value: (totReq(requests) / 12).toFixed(2),
+        value: Math.ceil(totReq(requests) / 12),
       },
       {
         title: "Average stock in per month",
-        value: (totStockIn(stockIn) / 12).toFixed(2),
+        value: Math.ceil(totStockIn(stockIn) / 12),
       },
       {
         title: "Average stock out per month",
-        value: (totStockOut(stockOut) / 12).toFixed(2),
+        value: Math.ceil(totStockOut(stockOut) / 12),
       },
     ]);
   }, [requests, stockIn, stockOut]);
@@ -136,13 +136,13 @@ const AvgGauge = ({ category, year }) => {
                   // Determine the fill color based on valueIndex
                   fill:
                     valueIndex === 0
-                      ? "#52b202"
-                      : valueIndex === 1
                       ? "#4169e1"
-                      : "#ff4500",
+                      : valueIndex === 1
+                      ? "#357a38"
+                      : "#ff1744",
                 },
                 [`& .${gaugeClasses.referenceArc}`]: {
-                  fill: theme.palette.text.disabled,
+                  fill: "#D3D3D3",
                 },
               })}
             />
