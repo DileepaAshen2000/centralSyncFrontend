@@ -40,7 +40,7 @@ const EditOrderDetails = () => {
 
   //function to be called on input changing
   const onInputChange = (e) => {
-    setOrder({ ...order, [e.target.orderID]: e.target.value });
+    setOrder({ ...order, [e.target.id]: e.target.value });
   };
 
   // Fetching the order details by ID
@@ -68,20 +68,10 @@ const EditOrderDetails = () => {
 
   // Function to handle saving the edited order details
   const handleSave = () => {
-    const order = {
-      vendorName,
-      companyName,
-      vendorEmail,
-      mobile,
-      date,
-      itemName,
-      brandName,
-      quantity,
-    };
 
     // Updating the order details by ID
     axios
-      .put(`http://localhost:8080/orders/updateByorderID/${orderID}`, order)
+      .put(`http://localhost:8080/orders/updateById/${orderID}`, order)
       .then((response) => {
         if (response.status === 200) {
           console.log(response.data);
@@ -119,12 +109,12 @@ const EditOrderDetails = () => {
           </InputLabel>
           <div>
           {errors.vendorName && (
-            <div className="text-[#FC0000] text-xs ml-6">
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
               {errors.vendorName}
             </div>
           )}
           <TextField
-            orderID="vendorName"
+            id="vendorName"
             value={vendorName}
             onChange={onInputChange}
             variant="outlined"
@@ -145,12 +135,12 @@ const EditOrderDetails = () => {
           </InputLabel>
           <div>
           {errors.vendorEmail && (
-            <div className="text-[#FC0000] text-xs ml-6">
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
               {errors.vendorEmail}
             </div>
           )}
           <TextField
-            orderID="vendorEmail"
+            id="vendorEmail"
             value={vendorEmail}
             onChange={onInputChange}
             variant="outlined"
@@ -171,12 +161,12 @@ const EditOrderDetails = () => {
           </InputLabel>
           <div>
           {errors.companyName && (
-            <div className="text-[#FC0000] text-xs ml-6">
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
               {errors.companyName}
             </div>
           )}
           <TextField
-            orderID="companyName"
+            id="companyName"
             value={companyName}
             onChange={onInputChange}
             variant="outlined"
@@ -194,10 +184,10 @@ const EditOrderDetails = () => {
         </InputLabel>
         <div>
           {errors.mobile && (
-            <div className="text-[#FC0000] text-xs ml-6">{errors.mobile}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.mobile}</div>
           )}
           <TextField
-            orderID="mobile"
+            id="mobile"
             value={mobile}
             onChange={onInputChange}
             variant="outlined"
@@ -229,10 +219,10 @@ const EditOrderDetails = () => {
           </InputLabel>
           <div>
           {errors.itemName && (
-            <div className="text-[#FC0000] text-xs ml-6">{errors.itemName}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.itemName}</div>
           )}
           <TextField
-            orderID="itemName"
+            id="itemName"
             value={itemName}
             onChange={onInputChange}
             variant="outlined"
@@ -252,12 +242,12 @@ const EditOrderDetails = () => {
           </InputLabel>
           <div>
           {errors.brandName && (
-            <div className="text-[#FC0000] text-xs ml-6">
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
               {errors.brandName}
             </div>
           )}
           <TextField
-            orderID="brandName"
+            id="brandName"
             value={brandName}
             onChange={onInputChange}
             variant="outlined"
@@ -274,10 +264,10 @@ const EditOrderDetails = () => {
           </InputLabel>
           <div>
           {errors.quantity && (
-            <div className="text-[#FC0000] text-xs ml-6">{errors.quantity}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.quantity}</div>
           )}
           <TextField
-            orderID="quantity"
+            id="quantity"
             value={quantity}
             onChange={onInputChange}
             variant="outlined"

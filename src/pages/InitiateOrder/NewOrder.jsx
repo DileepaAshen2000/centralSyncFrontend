@@ -92,7 +92,7 @@ const NewOrderForm = () => {
         </InputLabel>
         <div>
           {errors.vendorName && (
-            <div className="text-[#FC0000] text-xs ml-6">
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
               {errors.vendorName}
             </div>
           )}
@@ -117,7 +117,7 @@ const NewOrderForm = () => {
         </InputLabel>
         <div>
           {errors.vendorEmail && (
-            <div className="text-[#FC0000] text-xs ml-6">
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
               {errors.vendorEmail}
             </div>
           )}
@@ -139,7 +139,7 @@ const NewOrderForm = () => {
         </InputLabel>
         <div>
           {errors.companyName && (
-            <div className="text-[#FC0000] text-xs ml-6">
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
               {errors.companyName}
             </div>
           )}
@@ -161,7 +161,7 @@ const NewOrderForm = () => {
         </InputLabel>
         <div>
           {errors.mobile && (
-            <div className="text-[#FC0000] text-xs ml-6">{errors.mobile}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.mobile}</div>
           )}
           <TextField
             id="mobile"
@@ -197,7 +197,7 @@ const NewOrderForm = () => {
         </InputLabel>
         <div>
           {errors.itemName && (
-            <div className="text-[#FC0000] text-xs ml-6">{errors.itemName}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.itemName}</div>
           )}
           <TextField
             id="itemName"
@@ -219,7 +219,7 @@ const NewOrderForm = () => {
         </InputLabel>
         <div>
           {errors.brandName && (
-            <div className="text-[#FC0000] text-xs ml-6">
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
               {errors.brandName}
             </div>
           )}
@@ -240,7 +240,7 @@ const NewOrderForm = () => {
         </InputLabel>
         <div>
           {errors.quantity && (
-            <div className="text-[#FC0000] text-xs ml-6">{errors.quantity}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.quantity}</div>
           )}
           <TextField
             id="quantity"
@@ -278,7 +278,7 @@ const NewOrderForm = () => {
         className="row-start-11 col-start-6 rounded-sm bg-blue-600 ml-10"
         onClick={handleClick}
       >
-        Save
+        Place the Order
       </Button>
       <Button
         variant="outlined"
