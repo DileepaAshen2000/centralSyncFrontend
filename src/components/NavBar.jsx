@@ -20,8 +20,6 @@ import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { useNavigate } from "react-router-dom";
 
-
-
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -194,7 +192,7 @@ export default function NavBar() {
        
       
       {/* side bar mobile menu */}
-      <div className={`${Open ? 'block' : 'hidden'} md:hidden bg-slate-300 ` }>
+      <div className={`${Open ? 'block' : 'hidden'} md:hidden bg-slate-300 `}>
         <SideBar></SideBar>
       </div>
 
