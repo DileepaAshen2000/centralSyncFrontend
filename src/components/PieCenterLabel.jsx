@@ -13,20 +13,24 @@ const StyledText = styled("text")(({ theme }) => ({
   fontWeight: "bold",
 }));
 
-const PieCenterLastatusel = () => {
+const PieCenterLabel = () => {
   // State to store data fetched from the API
   const [data, setData] = useState([]);
 
-  //fetch data
-  useEffect(() => {
-    axios
-      .get("http://localhost:8080/inventory-item/getAll")
-      .then((response) => {
+   // Fetch data
+   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/inventory-item/getAll"
+        );
         setData(response.data);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log(error);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
   // Calculate the total number of inventory items with status "ACTIVE"
@@ -52,4 +56,4 @@ const PieCenterLastatusel = () => {
   );
 };
 
-export default PieCenterLastatusel;
+export default PieCenterLabel;

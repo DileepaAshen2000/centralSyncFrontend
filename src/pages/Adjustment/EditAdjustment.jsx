@@ -97,6 +97,9 @@ const EditAdjustment = () => {
     if (!itemId) {
       errors.itemId = 'Item ID is required';
     }
+    if (newQuantity<0){
+      errors.newQuantity = 'Quantity should be positive value'
+    }
     
     return errors;
   };

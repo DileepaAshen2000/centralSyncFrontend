@@ -9,7 +9,7 @@ const NewStockIn = () => {
   let navigate = useNavigate();
   const [stockIn,setStockIn] = useState({  // create state for adjustment, initial state is empty with object.
     location:"",
-    date:"",
+    date:new Date().toISOString().split("T")[0], // Set to today's date
     description:"",
     inQty:"",
     itemId:""
@@ -93,6 +93,9 @@ const NewStockIn = () => {
     if (!inQty) {
       errors.inQty = 'Quantity In is required';
     }
+    if (inQty<0){
+      errors.inQty = 'Quantity should be positive value'
+    }
     return errors;
   };
 
@@ -147,9 +150,8 @@ const NewStockIn = () => {
                 style={{ width: '300px' }}
                 label="Date"
                 name='date'
-                type="date"
                 value={date}
-                onChange={(e)=>onInputChange(e)}
+                // onChange={(e)=>onInputChange(e)}
                 size='small'
                 error={!!errors.date}
                 helperText={errors.date}

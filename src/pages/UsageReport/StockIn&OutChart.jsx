@@ -16,34 +16,35 @@ const StockLineChart = ({category, year} ) => {
   const [stockIn, setStockIn] = useState([]);
   const [stockOut, setStockOut] = useState([]);
 
-  // Fetch stock in data based on category and year
-  useEffect(() => {
-    axios
-      .get(`http://localhost:8080/stock-in/getAll?itemGroup=${category}&year=${year}`)
-      .then((response) => {
-        setStockIn(response.data);
-        
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [category, year]);
+ // Fetch stock in data based on category and year
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/stock-in/getAll?itemGroup=${category}&year=${year}`);
+      setStockIn(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  fetchData();
+}, [category, year]);
 
 
-  // Fetch stock out data based on category and year
-  useEffect(() => {
-    axios
-      .get(`http://localhost:8080/stock-out/getAll?itemGroup=${category}&year=${year}`)
-      .then((response) => {
-        console.log(response);
-        setStockOut(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [category,year]);
+// Fetch stock out data based on category and year
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/stock-out/getAll?itemGroup=${category}&year=${year}`);
+      setStockOut(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  console.log(stockOut);
+  fetchData();
+}, [category, year]);
+
 
    // Check if either stock in or stock out data is empty
   if (stockIn.length === 0 && stockOut.length === 0) {

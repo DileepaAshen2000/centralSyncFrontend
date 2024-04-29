@@ -49,55 +49,53 @@ const EditItem = () => {
   };
 
   // Fetch item details from the API on component mount
-  useEffect(() => {
-    axios
-      .get(`http://localhost:8080/inventory-item/getById/${itemID}`)
-      .then((response) => {
-        const item = {
-          itemName: response.data.itemName,
-          itemGroup: response.data.itemGroup,
-          unit: response.data.unit,
-          brand: response.data.brand,
-          dimension: response.data.dimension,
-          weight: response.data.weight,
-          description: response.data.description,
-          quantity: response.data.quantity,
-          status: response.data.status,
-        };
-        setInventoryItem(item); // Make sure the fetched data structure matches the structure of your state
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [itemID]);
-
-  // Handle saving edited item details
-  const handleSave = () => {
-  
-    axios
-      .put(`http://localhost:8080/inventory-item/updateById/${itemID}`, inventoryItem)
-      .then((response) => {
-        if (response.status === 200) {
-          // Show error message and set errors for form valitemIDation
-          Swal.fire({
-            icon: "success",
-            title: "Success!",
-            text: "Item details successfully edited!",
-          });
-          navigate("/item");
-        }
-      })
-      .catch((error) => {
-        Swal.fire({
-          icon: "error",
-          title: "Error!",
-          text: "Failed to edit item details. Please check your inputs.",
-        });
-        if (error.response) {
-          setErrors(error.response.data);
-        }
-      });
+useEffect(() => {
+  const fetchItemDetails = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/inventory-item/getById/${itemID}`);
+      const item = {
+        itemName: response.data.itemName,
+        itemGroup: response.data.itemGroup,
+        unit: response.data.unit,
+        brand: response.data.brand,
+        dimension: response.data.dimension,
+        weight: response.data.weight,
+        description: response.data.description,
+        quantity: response.data.quantity,
+        status: response.data.status,
+      };
+      setInventoryItem(item); // Make sure the fetched data structure matches the structure of your state
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  fetchItemDetails();
+}, [itemID]);
+
+// Handle saving edited item details
+const handleSave = async () => {
+  try {
+    const response = await axios.put(`http://localhost:8080/inventory-item/updateById/${itemID}`, inventoryItem);
+    if (response.status === 200) {
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Item details successfully edited!",
+      });
+      navigate("/item");
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Error!",
+      text: "Failed to edit item details. Please check your inputs.",
+    });
+    if (error.response) {
+      setErrors(error.response.data);
+    }
+  }
+};
 
   // Form for editing item details
   return (
