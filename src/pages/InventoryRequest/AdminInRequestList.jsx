@@ -4,7 +4,6 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { Button } from '@mui/material';
 import axios from 'axios';
 import { useEffect, useState } from 'react'
 import { DataGrid } from '@mui/x-data-grid';
@@ -20,7 +19,7 @@ const columns = [
 ];
 
 // Define a functional component named MyRequestTable
-function OnsiteInvnetoryRequestTable() {
+function OnsiteInventoryRequestTable() {
   const navigate = useNavigate();
   const [rows, setData] = useState([])
 
@@ -65,7 +64,7 @@ function OnsiteInvnetoryRequestTable() {
 }
 
 // Component to display employee inventory request list
-function () {
+function WorkFromHomeInventroyRequestTable() {
   const navigate = useNavigate();
   const [rows, setData] = useState([])
 
@@ -118,37 +117,26 @@ export default function LabTabs() {
     setValue(newValue);
   };
 
-  // Access navigation functions
-  const navigate = useNavigate();
 
   return (
     <Box sx={{ width: '100%', typography: 'body1' }}>
-      {/* Render create new request button */}
-      <div class="flex justify-end ...">
-        {value !== '2' && (
-          <Button className="text-white
-       bg-blue-600 rounded
-        hover:bg-blue-300"
-            onClick={() => navigate("/inventory-request/create-new-request")}
-          >Create New Inventrory Request</Button>
-        )}
-      </div>
+      
 
       {/* Render tabs */}
       <h1 className="pt-2 pb-3 text-3xl font-bold ">&nbsp;&nbsp;Inventory Request Lists</h1>
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleChange} aria-label="lab API tabs example">
-            <Tab label="My Inventory Request List" value="1" />
-            <Tab label="Employee Inventroy Request List" value="2" />
+            <Tab label="Work From Home Inventroy Request Table" value="1" />
+            <Tab label="Onsite Inventory Request Table" value="2" />
           </TabList>
         </Box>
 
         {/* Render tab panels */}
         <TabPanel value="1">
-          <MyRequestTable />
+          <WorkFromHomeInventroyRequestTable/>
         </TabPanel>
-        <TabPanel value="2"><EmployeeRequestTable /></TabPanel>
+        <TabPanel value="2"><OnsiteInventoryRequestTable/></TabPanel>
       </TabContext>
     </Box>
   );
