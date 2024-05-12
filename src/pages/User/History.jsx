@@ -14,18 +14,18 @@ import { useParams } from "react-router-dom";
 
 const UserActivityHistory = () => {
   const [activityLogs, setActivityLogs] = useState([]);
- 
 
   useEffect(() => {
     // Fetch user activity logs from the backend API
     const fetchActivityLogs = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/user-activity-log/getAll");  
+        const response = await axios.get(
+          "http://localhost:8080/user-activity-log/getAll"
+        );
         setActivityLogs(response.data.reverse());
         console.log(response.data);
       } catch (error) {
         console.error("Error fetching user activity logs:", error);
-        
       }
     };
 
@@ -57,7 +57,13 @@ const UserActivityHistory = () => {
               <TimelineItem key={log.id}>
                 <TimelineOppositeContent className="flex-none w-1/5">
                   <Chip
-                    label={<>{log.date}<br/>{log.time}</>}
+                    label={
+                      <>
+                        {log.date}
+                        <br />
+                        {log.time}
+                      </>
+                    }
                     component="a"
                     href="#basic-chip"
                     variant="outlined"
@@ -78,16 +84,13 @@ const UserActivityHistory = () => {
                     clickable
                   />
                 </TimelineContent>
-                
               </TimelineItem>
             ))}
           </Timeline>
         </div>
       </div>
-   
     </React.Fragment>
   );
 };
 
 export default UserActivityHistory;
-
