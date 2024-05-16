@@ -20,7 +20,8 @@ const NewAdjustment = () => {
     date:new Date().toISOString().split("T")[0], // Set to today's date
     description:"",
     newQuantity:"",
-    itemId:""
+    itemId:"",
+    file: null
   })
   const [item,setItem] = useState({ // create state for item, initial state is empty with object.
     itemName:"",
@@ -30,7 +31,7 @@ const NewAdjustment = () => {
   const [options, setOptions] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState(null);
   
-  const{reason,date,description,newQuantity,itemId} = adj; // Destructure the adj state
+  const{reason,date,description,newQuantity,itemId,file} = adj; // Destructure the adj state
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,7 +62,7 @@ const NewAdjustment = () => {
   const fetchItemDetails = async (itemId) => {
     try {
       const response = await axios.get(`http://localhost:8080/inventory-item/getById/${itemId}`);
-      setItem({ ...item, quantity: response.data.quantity }); // Update the newQuantity in the adj state
+      setItem({ ...item, quantity: response.data.quantity }); 
     } catch (error) {
       console.error('Error fetching item details:', error);
     }
@@ -82,8 +83,19 @@ const NewAdjustment = () => {
     }
 
     try {
-      const result = await axios.post("http://localhost:8080/adjustment/add", adj);
-      console.log(result);
+      const formData = new FormData();
+      formData.append('reason', reason);
+      formData.append('date', date);
+      formData.append('description', description);
+      formData.append('newQuantity', newQuantity);
+      formData.append('itemId', itemId);
+      formData.append('file', file); // Append the file to the formData
+
+      const result = await axios.post("http://localhost:8080/adjustment/add", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       navigate('/adjustment');// To navigate to the adjustment page
       Swal.fire({
         title: "Done!",
@@ -116,8 +128,15 @@ const NewAdjustment = () => {
     if (!itemId) {
       errors.itemId = 'Item ID is required';
     }
+    if (newQuantity<0){
+      errors.newQuantity = 'Quantity should be positive value'
+    }
     
     return errors;
+  };
+
+  const handleFileChange = (e) => {
+    setAdj({ ...adj, file: e.target.files[0] });
   };
 
   return (
@@ -151,7 +170,7 @@ const NewAdjustment = () => {
             disabled
             options={[{ itemId: selectedItemId }]} // Provide the selected itemId as an option
             getOptionLabel={(option) => option.itemId} // Display itemId in the Autocomplete
-            name='itemId' // Add name to the Autocomplete
+            name='itemId' 
             value={{ itemId: selectedItemId }} // Set the value to the selected itemId
             sx={{ width: 300 }}
             renderInput={(params) => <TextField {...params} label="Item ID" 
@@ -172,7 +191,6 @@ const NewAdjustment = () => {
             name='date'
             value={date}
             size='small'
-            // onChange={(e)=>onInputChange(e)}
             error={!!errors.date}
             helperText={errors.date}
             InputLabelProps={{ // To shrink the label
@@ -265,7 +283,7 @@ const NewAdjustment = () => {
 
       <div className="flex-row col-span-10 col-start-1 ">
         <Typography display='block' gutterBottom>Attach File(s) to inventory adjustment </Typography>
-        <input type='file' className="mt-4 mb-2"></input>
+        <input type='file' className="mt-4 mb-2" onChange={handleFileChange}></input>
         <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
       </div>
 

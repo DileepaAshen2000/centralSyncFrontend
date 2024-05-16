@@ -20,10 +20,10 @@ const EditAdjustment = () => {
     date:new Date().toISOString().split("T")[0], // Set to today's date
     description:"",
     newQuantity:"",
-    name:"",
-    itemId:""
+    itemId:"",
+    file:null
   })
-  const{reason,date,description,newQuantity,itemId} = adj;
+  const{reason,date,description,newQuantity,itemId,file} = adj;
   
   const [item,setItem] = useState({  // create state for item, initial state is empty with object.
     itemName:"",
@@ -31,14 +31,13 @@ const EditAdjustment = () => {
     itemGroup:""
   })
   const{itemName,quantity,itemGroup} = item;
-
   const [errors, setErrors] = useState({}); // State to manage errors for input fields
-  const [flag,setFalg] = useState(0); // To check whether the input fields are changed or not
+  const [flag,setFlag] = useState(0); // To check whether the input fields are changed or not
   
   const onInputChange=(e)=>{
     setAdj({...adj,[e.target.name]:e.target.value});
     setErrors({ ...errors, [e.target.name]: '' });
-    setFalg(1);
+    setFlag(1);
   };
 
   useEffect(() => {
@@ -56,18 +55,31 @@ const EditAdjustment = () => {
       }
 
       try {
-        await axios.put(`http://localhost:8080/adjustment/updateById/${adjId}`,adj); // To send data to the server
+        const formData = new FormData();
+        formData.append('reason', reason);
+        formData.append('date', date);
+        formData.append('description', description);
+        formData.append('newQuantity', newQuantity);
+        formData.append('itemId', itemId);
+        formData.append('file', file); // Append the file to the formData
+
+        const result = await axios.put(`http://localhost:8080/adjustment/updateById/${adjId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      
         navigate('/adjustment');
         Swal.fire({
           title: "Done!",
-          text: "Adjustment Successfully Submitted !",
+          text: "Adjustment Successfully Editted !",
           icon: "success"
         });
       } catch (error) {
         console.error("Error:", error);
         Swal.fire({
           title: "Error!",
-          text: "Failed to submit Adjustment. Please try again later.",
+          text: "Failed to Edit Adjustment. Please try again later.",
           icon: "error"
         });
       }
@@ -97,8 +109,16 @@ const EditAdjustment = () => {
     if (!itemId) {
       errors.itemId = 'Item ID is required';
     }
+    if (newQuantity<0){
+      errors.newQuantity = 'Quantity should be positive value'
+    }
     
     return errors;
+  };
+
+  const handleFileChange = (e) => {
+    setAdj({ ...adj, file: e.target.files[0] });
+    setFlag(1);
   };
 
   const loadAdjustment = async () => {
@@ -117,7 +137,7 @@ const EditAdjustment = () => {
   
   return (
     <form className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14" onSubmit={(e)=> onSubmit(e)}>
-      <h1 className="col-span-4 pt-2 text-3xl font-bold ">New Adjustment</h1>
+      <h1 className="col-span-4 pt-2 text-3xl font-bold ">Edit Adjustment</h1>
 
       <div className="flex items-center col-span-4 col-start-1">
         <InputLabel htmlFor="adjId" className="flex-none w-32 text-black ">
@@ -272,11 +292,10 @@ const EditAdjustment = () => {
 
       <div className="flex-row col-span-10 col-start-1 ">
         <Typography display='block' gutterBottom>Attach File(s) to inventory adjustment </Typography>
-        <input type='file' className="mt-4 mb-2"></input>
+        <input type='file' onChange={handleFileChange} className="mt-4 mb-2"></input>
         <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
       </div>
 
-    
       <div className='flex col-start-7 gap-6'>
         <Button className="col-start-6 text-white bg-blue-600 rounded row-start-10"
             variant='contained'
@@ -287,8 +306,6 @@ const EditAdjustment = () => {
             onClick={() => navigate("/adjustment")}
           >cancel</Button>
       </div>
-
-      
     </form>
   );
 };
