@@ -12,10 +12,11 @@ const NewStockIn = () => {
     date:new Date().toISOString().split("T")[0], // Set to today's date
     description:"",
     inQty:"",
-    itemId:""
+    itemId:"",
+    file:null
   })
 
-  const{location,date,description,inQty,itemId} = stockIn; // Destructure the state
+  const{location,date,description,inQty,itemId,file} = stockIn; // Destructure the state
 
   // item fetching
   const [options, setOptions] = useState([]);
@@ -97,6 +98,11 @@ const NewStockIn = () => {
       errors.inQty = 'Quantity should be positive value'
     }
     return errors;
+  };
+
+  // Function to handle file selection
+  const handleFileChange = (e) => {
+    setStockIn({ ...stockIn, file: e.target.files[0] }); // Update file state with the selected file
   };
 
   return (
@@ -218,7 +224,7 @@ const NewStockIn = () => {
         
         <div className="flex-row col-span-10 col-start-1 ">
           <Typography display='block' gutterBottom>Attach File(s) to inventory stock-in </Typography>
-          <input type='file' className="mt-4 mb-2"></input>
+          <input type='file' onChange={handleFileChange} className="mt-4 mb-2"></input>
           <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
         </div>
         

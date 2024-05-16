@@ -20,7 +20,8 @@ const NewAdjustment = () => {
     date:new Date().toISOString().split("T")[0], // Set to today's date
     description:"",
     newQuantity:"",
-    itemId:""
+    itemId:"",
+    file: null
   })
   const [item,setItem] = useState({ // create state for item, initial state is empty with object.
     itemName:"",
@@ -30,7 +31,7 @@ const NewAdjustment = () => {
   const [options, setOptions] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState(null);
   
-  const{reason,date,description,newQuantity,itemId} = adj; // Destructure the adj state
+  const{reason,date,description,newQuantity,itemId,file} = adj; // Destructure the adj state
 
   useEffect(() => {
     const fetchData = async () => {
@@ -82,8 +83,19 @@ const NewAdjustment = () => {
     }
 
     try {
-      const result = await axios.post("http://localhost:8080/adjustment/add", adj);
-      console.log(result);
+      const formData = new FormData();
+      formData.append('reason', reason);
+      formData.append('date', date);
+      formData.append('description', description);
+      formData.append('newQuantity', newQuantity);
+      formData.append('itemId', itemId);
+      formData.append('file', file); // Append the file to the formData
+
+      const result = await axios.post("http://localhost:8080/adjustment/add", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       navigate('/adjustment');// To navigate to the adjustment page
       Swal.fire({
         title: "Done!",
@@ -121,6 +133,10 @@ const NewAdjustment = () => {
     }
     
     return errors;
+  };
+
+  const handleFileChange = (e) => {
+    setAdj({ ...adj, file: e.target.files[0] });
   };
 
   return (
@@ -267,7 +283,7 @@ const NewAdjustment = () => {
 
       <div className="flex-row col-span-10 col-start-1 ">
         <Typography display='block' gutterBottom>Attach File(s) to inventory adjustment </Typography>
-        <input type='file' className="mt-4 mb-2"></input>
+        <input type='file' className="mt-4 mb-2" onChange={handleFileChange}></input>
         <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
       </div>
 
