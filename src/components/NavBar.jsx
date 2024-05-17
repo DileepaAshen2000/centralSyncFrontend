@@ -13,8 +13,12 @@ import myLogo from '../assests/logo1.png';
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from './SideBar';
 import  { useState } from 'react';
-
-
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import { Button } from "@mui/material";
+import HistoryIcon from "@mui/icons-material/History";
+import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import { useNavigate } from "react-router-dom";
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -125,10 +129,11 @@ export default function NavBar() {
       
       {/* Sidebar Content */}
       <div
-        className={` w-80 absolute right-0 h-screen bg-slate-300 text-black ${SidebarOpen ? 'block' : 'hidden'}`}
+        
+        className={` w-80 absolute right-0 h-screen z-50 bg-[#9eaab2] text-black ${SidebarOpen ? 'block' : 'hidden'}`}
       >
         
-        <div className="flex flex-col gap-10 p-10">
+        <div className="flex flex-col gap-10 p-6">
           <div className='flex gap-4'>
             <div>Profile Picture</div>
             <div>
@@ -136,17 +141,58 @@ export default function NavBar() {
               <h4>User Role</h4>
             </div>
           </div>
-          <ul className='flex flex-col gap-6'>
-            <li><a href='https://example.com/' >Edit Profile</a></li>
-            <li><a href='https://example.com/' >View History</a></li>
-            <li><a href='https://example.com/' >Change Password</a></li>
-            <li><a href='https://example.com/' className='text-red-600'>Log Out</a></li>
-          </ul>
+          <div>
+              <div className="pb-4">
+                <Button
+                  variant="outlined"
+                  className="bg-[#D9D9D9] w-[100%] h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5 "
+                >
+                  <AccountCircleOutlinedIcon />
+                  <span>Edit Profile</span>
+                </Button>
+              </div>
+              <div className="pb-4">
+               
+                <Button
+                  variant="outlined"
+                  className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
+                  
+                >
+                
+                  <HistoryIcon />
+                  <span>View History</span>
+                </Button>
+               
+              </div>
+              <div className="pb-4">
+                <Button
+                  variant="outlined"
+                  className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
+                   
+                >
+
+                  <KeyOutlinedIcon />
+                  <span>Change Password</span>
+                </Button>
+              </div>
+              <div className="pb-4">
+                <Button
+                  variant="outlined"
+                  className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-red-600  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
+                >
+                  <LogoutOutlinedIcon className="text-red-600" />
+                  <span>Log out</span>
+                </Button>
+              </div>
+            </div>
+               
+          </div>
+           
         </div>
-      </div>
+       
       
       {/* side bar mobile menu */}
-      <div className={`${Open ? 'block' : 'hidden'} md:hidden bg-slate-300 ` }>
+      <div className={`${Open ? 'block' : 'hidden'} md:hidden bg-slate-300 `}>
         <SideBar></SideBar>
       </div>
 

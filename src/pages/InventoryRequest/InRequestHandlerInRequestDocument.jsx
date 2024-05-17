@@ -7,15 +7,12 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Typography, Button } from '@mui/material';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
 import axios from 'axios';
 
 
-
-
-//Utility Functions section
+// Function of request status color seal
 const buttonColor = (reqStatus) => {
   const commonStyles = "w-40 h-10 m-5 text-center rounded-full";
   if (reqStatus === 'pending') {
@@ -31,18 +28,20 @@ const buttonColor = (reqStatus) => {
 }
 
 
-
-
 const RequestHandlerInRequestDocument = () => {
 
+   // Extracting request ID from URL parameters
   const { reqId } = useParams();
+
+    // State variables
   const [inventoryRequest, setInventoryRequest] = useState(false);
   const navigate = useNavigate();
+  const [note, setNote] = useState('');
 
+  // Fetch inventory request details from the backend API
   useEffect(() => {
     const fetchInvetoryRequest = async () => {
       try {
-
         const response = await fetch(`http://localhost:8080/request/getById/${reqId}`);
         const data = await response.json();
         setInventoryRequest(data);
@@ -52,6 +51,8 @@ const RequestHandlerInRequestDocument = () => {
     };
     fetchInvetoryRequest();
   }, [reqId]);
+
+   // Function to handle accepting a inRequest
   const handleAccept = () => {
     axios
       .patch("http://localhost:8080/request/updateStatus/accept/" + reqId)
@@ -64,6 +65,7 @@ const RequestHandlerInRequestDocument = () => {
       });
   };
 
+  // Function to handle rejecting a inRequest
   const handleReject = () => {
     axios
       .patch("http://localhost:8080/request/updateStatus/reject/" + reqId)
@@ -75,6 +77,8 @@ const RequestHandlerInRequestDocument = () => {
         console.log(error);
       });
 };
+
+// Function to handle sending a inRequest sent to admin
 const handleSendToAdmin = () => {
   axios
     .patch("http://localhost:8080/request/updateStatus/sendToAdmin/" + reqId)
@@ -87,7 +91,7 @@ const handleSendToAdmin = () => {
     });
 };
 
-  const [note, setNote] = useState('');
+ 
 
   /*const sendNoteEmail = (email, subject, body) => {
     axios.post("http://localhost:8080/request/mailing", {
@@ -102,11 +106,13 @@ const handleSendToAdmin = () => {
   });
 };*/
 
+ // Function to handle printing
   const handlePrint = () => { };
 
   return (
     <div>
       <main>
+
         <div className="flex items-end justify-end p-6 mr-10 space-x-10 ...">
         {inventoryRequest && inventoryRequest.reqStatus === 'pending' &&(
         <Button className="px-6 py-2 text-white bg-blue-600 rounded"
@@ -114,6 +120,7 @@ const handleSendToAdmin = () => {
             type='submit'
             onClick={() => navigate(`/in-request/edit-request/${reqId}`)}
           >Edit</Button>
+
           )}
           <Button className="px-6 py-2 text-white bg-blue-600 rounded"
             variant='contained'
@@ -125,11 +132,12 @@ const handleSendToAdmin = () => {
 
         <div className="p-10 ml-6 mr-6 bg-white">
           <div>
+            {/* Displaying request status seal*/}
             <section>
-
               {buttonColor(inventoryRequest.reqStatus)}
             </section>
           </div>
+
           <div>
             <section className="flex flex-row items-end justify-end mb-6">
               <header className="text-3xl">INVENTORY REQUEST</header>
@@ -154,6 +162,8 @@ const handleSendToAdmin = () => {
               </ul>
             </section>
           </div>
+
+           {/* Displaying table of items */}
           <TableContainer component={Paper} className="p-8 mt-8">
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
@@ -173,13 +183,11 @@ const handleSendToAdmin = () => {
                   <TableCell align="right">{inventoryRequest.quantity}</TableCell>
                   <TableCell align="right">{inventoryRequest.itemGroup}</TableCell>
                 </TableRow>
-
-
-
               </TableBody>
             </Table>
           </TableContainer>
 
+ {/* Displaying inventory Request description */}
           <div className="mt-16 mb-32">
             <Typography variant="body1" gutterBottom>Description : </Typography>
             <div className="w-2/3">
@@ -188,6 +196,7 @@ const handleSendToAdmin = () => {
           </div>
         </div>
 
+ {/* Input for adding a note */}
         <div className='flex gap-6 mt-6 ml-6'>
           <h4>Note :</h4>
           <textarea
@@ -198,7 +207,9 @@ const handleSendToAdmin = () => {
           </textarea>
         </div>
 
+{/*Buttons for sending to admin, accepting, rejecting and cancel*/}
         <div className='flex justify-end gap-4 ml-[60%] mt-6'>
+
         {inventoryRequest && inventoryRequest.reqStatus === 'pending' &&(<>
           <Button className="px-6 py-2 hover:bg-white text-yellow-800 bg-yellow-300 rounded"
             variant='contained'
@@ -207,6 +218,7 @@ const handleSendToAdmin = () => {
               handleSendToAdmin();
               //sendNoteEmail("maleeshavidurath@gmail.com", "Note for Inventory Request", note);
             }}
+
           >Send To Admin</Button>
           <Button className="px-6 py-2 hover:bg-white text-green-800 bg-green-300 rounded"
             variant='contained'
@@ -215,6 +227,7 @@ const handleSendToAdmin = () => {
               handleAccept();
               //sendNoteEmail("maleeshavidurath@gmail.com", "Note for Inventory Request", note);
             }}
+
           >Accept</Button>
           <Button className="px-6 py-2 hover:bg-white text-red-800 bg-red-300 rounded"
             variant='contained'
@@ -223,6 +236,7 @@ const handleSendToAdmin = () => {
               handleReject();
               //sendNoteEmail("maleeshavidurath@gmail.com", "Note for Inventory Request", note);
             }}
+
           >Reject</Button>
           </>)}
           <Button className="px-6 py-2  hover:bg-white rounded"
@@ -231,7 +245,6 @@ const handleSendToAdmin = () => {
             onClick={() => navigate("/in-requestHandler-in-request-list")}
           >cancel</Button>
         </div>
-
       </main>
     </div>
   )
