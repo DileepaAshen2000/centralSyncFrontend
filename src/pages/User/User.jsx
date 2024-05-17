@@ -69,10 +69,11 @@ export default function User() {
         width: "100%",
       }}
     >
-      <Box className="flex pt-2 pb-2">
+       
         <h1 className="inline-block p-4 text-3xl font-bold">User</h1>
         {rowSelectionModel > 0 ? (
-          <div className="flex items-center gap-4 ml-[48%]">
+          <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.25rem] mt-12 ">
+          <div className="col-start-5">
             <Button
               variant="contained"
               className="bg-blue-600 px-6 py-2 text-white rounded left-[68%]"
@@ -80,7 +81,8 @@ export default function User() {
             >
               Edit
             </Button>
-
+          </div> 
+          <div className="col-start-6">
             <Button
               variant="contained"
               className="bg-blue-600 px-6 py-2 text-white rounded left-[68%]"
@@ -89,8 +91,9 @@ export default function User() {
               View
             </Button>
           </div>
+          </div>
         ) : (
-          <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-6 mt-12 ">
+          <div className="grid grid-cols-6 grid-rows-1 gap-y-7  gap-x-[0.25rem] mt-12 ">
             <div className="col-start-6">
               <Button
                 variant="contained"
@@ -102,7 +105,7 @@ export default function User() {
             </div>
           </div>
         )}
-      </Box>
+      
       <DataGrid
         rows={rows}
         columns={columns}

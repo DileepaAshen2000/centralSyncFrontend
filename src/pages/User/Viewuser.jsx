@@ -51,12 +51,41 @@ const ViewUser = () => {
     }
   };
 
+    // Handle marking the item as inactive
+    const handleMarkAsInactive = () => {
+      axios
+        .patch(`http://localhost:8080/user/updateStatus/${ID}`)
+        .then(() => {
+  
+          navigate("/user");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+  
+
   return (
     <>
       <Box className="p-5 bg-white rounded-2xl w-[1122.7px]">
-        <Box className="pb-4">
-          <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit User</h1>
-        </Box>
+
+        <div className="grid grid-cols-6 grid-rows-1 gap-y-10 gap-x-[0.25rem] mt-12 pb-10" >
+        <div className="col-start-1 col-span-2">
+        <h1 className="pt-2 pb-3 text-3xl font-bold ">User Details</h1>
+        
+        </div>
+            
+
+            <div className="col-start-6">
+              <Button
+                variant="contained"
+                className="bg-blue-600 w-[170px] h-[40px] rounded text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
+                onClick={handleMarkAsInactive}
+              >
+                Mark as Inactive
+              </Button>
+            </div>
+          </div>
         <form noValidate>
           <div className="grid grid-cols-6 grid-rows-7  gap-x-[0.25rem] gap-y-7 ">
             <div className="col-span-1 row-span-1">

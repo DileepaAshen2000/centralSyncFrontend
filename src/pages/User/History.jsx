@@ -11,9 +11,11 @@ import Chip from "@mui/material/Chip";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import Typography from "@mui/material/Typography";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const UserActivityHistory = () => {
   const [activityLogs, setActivityLogs] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch user activity logs from the backend API
@@ -31,6 +33,35 @@ const UserActivityHistory = () => {
 
     fetchActivityLogs();
   }, []);
+
+  // Function to handle action click
+  const handleActionClick = (entityId, action) => {
+    let path = "";
+    if (action.includes("User")) {
+      path = `/user/users/${entityId}`;
+      
+    } else if (action.includes("Ticket")) {
+      path = `/ticket/ticketdoc/${entityId}`;
+    } else if (action.includes("Stock In")) {
+      path = `/stockIn/${entityId}`;
+    } else if (action.includes("Stock Out")) {
+      path = `/stockOut/${entityId}`;
+    } else if (action.includes("Request")) {
+      path = `/item/view-item/${entityId}`;
+    } else if (action.includes("Reservation")) {
+      path = `/stockOut/${entityId}`;
+    } else if (action.includes("Item")) {
+      path = `/stockOut/${entityId}`;
+    } else if (action.includes("Order")) {
+      path = `/order/view-order/${entityId}`;
+    } else {
+    }
+
+    // Navigate to the appropriate path
+    if (path) {
+      navigate(path);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -82,6 +113,7 @@ const UserActivityHistory = () => {
                     variant="outlined"
                     className="bg-[#B9D4F3] w-[335px] h-[45px]  text-black   rounded-none   space-x-5 shadow-md  "
                     clickable
+                    onClick={() => handleActionClick(log.userId, log.action)}
                   />
                 </TimelineContent>
               </TimelineItem>

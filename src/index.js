@@ -10,9 +10,11 @@ root.render(
  
   <React.StrictMode>
     <StyledEngineProvider injectFirst>
+    
       <App />
     </StyledEngineProvider>
   </React.StrictMode>
+ 
   
 );
 
