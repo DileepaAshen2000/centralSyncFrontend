@@ -30,7 +30,7 @@ const UsageBarChart = ({ category, year }) => {
     .map((req) => ({
       date: req.date,
       status: req.reqStatus,
-    })) //an array containing objects with date and status
+    })) 
     .reduce((acc, rq) => {
       const date = new Date(rq.date);
       const month = date.toLocaleDateString("default", { month: "short" });
@@ -39,7 +39,7 @@ const UsageBarChart = ({ category, year }) => {
         acc[month].push(rq);
       }
       return acc;
-    }, {}); //array transformed into object ex={jan[{ date: "2024-01-15", status: "accepted"}, { date: "2024-01-20", status: "accepted" },] & soon },
+    }, {}); 
 
   console.log(requestsByMonth);
   // Create labels for the x-axis (months)
