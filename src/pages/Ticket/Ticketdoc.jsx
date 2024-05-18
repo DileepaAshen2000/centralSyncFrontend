@@ -30,14 +30,42 @@ const TicketDocument = () => {
       //console.log(result.data);
       
       const itemId = result.data.itemId;  
-      console.log(itemId);
-      const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${itemId}`);
+      //console.log("Item id",itemId.itemId);
+      const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${itemId.itemId}`);
       setItem(result1.data);
       //console.log(result1.data);
     } catch (error) {
       console.error('Error loading data:', error);
     }
   };
+
+  // Handle ticket send to admin
+  const handleSendToAdmin = () => {
+    axios
+      .patch(`http://localhost:8080/ticket/sendtoadmin/${id}`)
+      .then(() => {
+
+        navigate("/ticket");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  // Handle ticket Review
+  const handleReview = () => {
+    axios
+      .patch(`http://localhost:8080/ticket/review/${id}`)
+      .then(() => {
+
+        navigate("/ticket");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  
 
   // Get the current date and time
   const currentDate = new Date();
@@ -56,14 +84,14 @@ const TicketDocument = () => {
   return (
     <div>
       <div>
-        <header className="text-3xl">Maintenece Ticket</header>
+        <header className="text-3xl">Maintenance Ticket Details</header>
       </div>
       
       <main>
         <div className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section className="flex flex-row items-end justify-end mt-4 mb-10">
-              <header className="text-3xl">Stock-In Report</header>
+              <header className="text-3xl">Maintenance Ticket</header>
             </section>
             <section className="flex flex-row items-end justify-end gap-10">
               <ul className='flex flex-col gap-2'>
@@ -95,12 +123,28 @@ const TicketDocument = () => {
           </div>
         </div>
 
-        <div className='flex ml-[86%] mt-6'>
-          <Button className="px-6 py-2 rounded"
+        <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
+        <div className='col-start-4'>
+          <Button className="px-3 py-2 rounded w-[150px] h-[42px] bg-blue-600 text-[14px] text-white hover:text-blue-600"
+                  variant='outlined'
+                  type='submit'
+                  onClick={handleSendToAdmin}
+          >Send to Admin</Button>
+        </div>
+        <div className='col-start-5'>
+          <Button className="px-6 py-2 rounded w-[150px] bg-blue-600 text-white  hover:text-blue-600"
+                  variant='outlined'
+                  type='submit'
+                  onClick={handleReview}
+          >Review</Button>
+        </div>
+        <div className='col-start-6'>
+          <Button className="px-6 py-2 rounded w-[150px]"
                   variant='outlined'
                   type='submit'
                   onClick={() => navigate("/ticket")}
           >cancel</Button>
+        </div>
         </div>
       </main>
     </div>
