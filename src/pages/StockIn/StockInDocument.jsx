@@ -52,6 +52,36 @@ const loadStockIn = async () => {
     console.error('Error loading StockIn:', error);
   }
 }
+
+const handleFileDownload = async () => {
+  try {
+    const response = await axios.get("http://localhost:8080/stock-in/getFileById/" + sinId, {
+      responseType: 'blob'
+    });
+
+    // Create a blob object from the response data
+    const blob = new Blob([response.data], { type: 'application/pdf' }); // Ensure the blob is treated as a PDF
+    // Create a temporary URL for the blob object
+    const url = window.URL.createObjectURL(blob);
+    // Create an anchor tag
+    const link = document.createElement('a');
+    // Set the href attribute to the URL of the blob
+    link.href = url;
+    // Set the download attribute to specify the file name with .pdf extension
+    link.download = 'downloaded_file.pdf'; // Specify .pdf extension for the downloaded file
+    // Simulate a click on the anchor tag to trigger the download
+    document.body.appendChild(link);
+    link.click();
+    // Remove the anchor tag from the document
+    document.body.removeChild(link);
+    // Release the temporary URL
+    window.URL.revokeObjectURL(url);
+    
+    alert('PDF file download successful !!');
+  } catch (error) {
+    console.error('Error downloading PDF file:', error);
+  }
+};
   // Get the current date and time
   const currentDate = new Date();
 
@@ -123,13 +153,17 @@ const loadStockIn = async () => {
             </Table>
           </TableContainer>
 
-          <div className="mt-16 mb-32">
+          <div className="mt-16">
             <Typography variant="body1" gutterBottom>Description : </Typography>
             <div className="w-2/3">
               <Typography variant="body2">{description}</Typography>
             </div>
           </div>
-          <div>
+          <div className='mt-6'>
+              <h1>Download File :</h1>
+              <button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download</span></u></button>
+            </div>
+          <div className='mt-16'>
             <Typography variant="caption" gutterBottom>Generated Date/Time : </Typography>
             <Typography variant="caption" gutterBottom>{formattedDateTime}</Typography>
           </div>
