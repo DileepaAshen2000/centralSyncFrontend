@@ -29,7 +29,7 @@ const NewAdjustment = () => {
   })
   const [errors, setErrors] = useState({}); // State to manage errors for input fields
   const [options, setOptions] = useState([]);
-  const [selectedItemId, setSelectedItemId] = useState(null);
+  const [selectedItemId, setSelectedItemId] = useState("Select an Item");
   
   const{reason,date,description,newQuantity,itemId,file} = adj; // Destructure the adj state
 
@@ -284,7 +284,7 @@ const NewAdjustment = () => {
       <div className="flex-row col-span-10 col-start-1 ">
         <Typography display='block' gutterBottom>Attach File(s) to inventory adjustment </Typography>
         <input type='file' className="mt-4 mb-2" onChange={handleFileChange}></input>
-        <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
+        <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 1 file, 5MB each</Typography>
       </div>
 
       

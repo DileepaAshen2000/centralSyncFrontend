@@ -42,6 +42,8 @@ import NewStockOut from "./StockOut/NewStockOut";
 import StockOutDocument from "./StockOut/StockOutDocument";
 import R_admin from "./Reservation/R_admin"
 import NewReservation from "./Reservation/NewReservation"
+import TicketDocument from "./Ticket/Ticketdoc";
+
 
 const Home = () => {
   return (
@@ -98,6 +100,7 @@ const Home = () => {
               {/* Ticket routing */}
               <Route path='/newTicket' element={<CreateTicket/>}></Route>
               <Route path='/ticket' element={<Ticket/>}></Route>
+              <Route path='ticket/ticketdoc/:id' element={<TicketDocument/>}></Route>
 
               {/* Inventory Item routing */}
  

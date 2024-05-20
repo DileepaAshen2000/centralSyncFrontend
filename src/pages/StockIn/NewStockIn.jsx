@@ -65,12 +65,26 @@ const NewStockIn = () => {
     }
 
     try {
-      const result = await axios.post("http://localhost:8080/stock-in/add",stockIn);
-      console.log(result.data);
+      // const result = await axios.post("http://localhost:8080/stock-in/add",stockIn);
+      // console.log(result.data);
+      const formData = new FormData();
+      formData.append('location', location);
+      formData.append('date', date);
+      formData.append('description', description);
+      formData.append('inQty', inQty);
+      formData.append('itemId', itemId);
+      formData.append('file', file); // Append the file to the formData
+
+      const result = await axios.post("http://localhost:8080/stock-in/add", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
       navigate('/stockIn') // To navigate to the stockin page
       Swal.fire({
         title: "Done !",
-        text: "Stock-In Successfully Submitted!",
+        text: "Stock-In Successfully Submitted.!",
         icon: "success"
       });
     } catch (error) {
@@ -225,7 +239,7 @@ const NewStockIn = () => {
         <div className="flex-row col-span-10 col-start-1 ">
           <Typography display='block' gutterBottom>Attach File(s) to inventory stock-in </Typography>
           <input type='file' onChange={handleFileChange} className="mt-4 mb-2"></input>
-          <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
+          <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 1 file, 5MB each</Typography>
         </div>
         
         <div className='flex col-start-7 gap-6'>
