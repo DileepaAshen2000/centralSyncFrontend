@@ -168,6 +168,8 @@ const CreateUser= () => {
               <MenuItem disabled value={role}></MenuItem>
               <MenuItem value="Web Developer">Web Developer</MenuItem>
               <MenuItem value="Software Architect">Software Architect</MenuItem>
+              <MenuItem value="Request Handler">Request Handler</MenuItem>
+              
             </Select>{" "}
           </div>
           <div></div>
