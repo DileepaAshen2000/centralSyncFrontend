@@ -167,6 +167,7 @@ const handleFileDownload = async () => {
             <Typography variant="caption" gutterBottom>Generated Date/Time : </Typography>
             <Typography variant="caption" gutterBottom>{formattedDateTime}</Typography>
           </div>
+          <Typography variant="caption" gutterBottom>Computer Generated Report By CENTRAL SYNC &#174; | No Signature Required.</Typography>
         </div>
 
         <div className='flex ml-[86%] mt-6'>
