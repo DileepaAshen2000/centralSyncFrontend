@@ -10,46 +10,51 @@ const AvgGauge = ({ category, year }) => {
 
   // Fetch requests data based on category and year
   useEffect(() => {
-    axios
-      .get(
-        `http://localhost:8080/request/getAll?itemGroup=${category}&year=${year}`
-      )
-      .then((response) => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/request/getAll?itemGroup=${category}&year=${year}`
+        );
         setRequests(response.data);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log(error);
-      });
+      }
+    };
+
+    fetchData();
   }, [category, year]);
 
   // Fetch stock out data based on category and year
   useEffect(() => {
-    axios
-      .get(
-        `http://localhost:8080/stock-out/getAll?itemGroup=${category}&year=${year}`
-      )
-      .then((response) => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/stock-out/getAll?itemGroup=${category}&year=${year}`
+        );
         setStockOut(response.data);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log(error);
-      });
+      }
+    };
+
+    fetchData();
   }, [category, year]);
 
   // Fetch stock in data based on category and year
   useEffect(() => {
-    axios
-      .get(
-        `http://localhost:8080/stock-in/getAll?itemGroup=${category}&year=${year}`
-      )
-      .then((response) => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/stock-in/getAll?itemGroup=${category}&year=${year}`
+        );
         setStockIn(response.data);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log(error);
-      });
-  }, [category, year]);
+      }
+    };
 
+    fetchData();
+  }, [category, year]);
 
   //Calculate total accepted requests for the year
   const totReq = (data) => {
@@ -78,28 +83,26 @@ const AvgGauge = ({ category, year }) => {
       }, 0);
   };
 
- 
   const [valueIndex, setValueIndex] = useState(0);
   const [values, setValues] = useState([]);
 
-    // Initialize the values state when requests, stockIn, and stockOut are updated
+  // Initialize the values state when requests, stockIn, and stockOut are updated
   useEffect(() => {
     setValues([
       {
         title: "Average usage per month",
-        value: (totReq(requests)/12).toFixed(2),
+        value: (totReq(requests) / 12).toFixed(2),
       },
       {
         title: "Average stock in per month",
-        value: (totStockIn(stockIn)/12).toFixed(2),
+        value: (totStockIn(stockIn) / 12).toFixed(2),
       },
       {
         title: "Average stock out per month",
-        value: (totStockOut(stockOut)/12).toFixed(2),
+        value: (totStockOut(stockOut) / 12).toFixed(2),
       },
     ]);
   }, [requests, stockIn, stockOut]);
-
 
   useEffect(() => {
     // Function to update the value index every 5 seconds
@@ -111,42 +114,41 @@ const AvgGauge = ({ category, year }) => {
     return () => clearInterval(intervalId);
   }, [values.length]);
 
-
-  
   return (
     <div className=" w-full h-full bg-white p-4 ">
-    {/* Check if values array is not empty */}
-    {values.length > 0 && (
-    <>
-      <h1 className=" text-xl text-center  ">{values[valueIndex].title}</h1>
-      <hr className="border-t border-gray-200" />
-      <div className="flex items-center mt-10">
-        <Gauge
-          value={values[valueIndex].value}
-          width={250}
-          height={250}
-          text={({ value }) => `${value}`}
-          cornerRadius="50%"
-          sx={(theme) => ({
-            [`& .${gaugeClasses.valueText}`]: {
-              fontSize: 30,
-            },
-            [`& .${gaugeClasses.valueArc}`]: {
-                // Determine the fill color based on valueIndex
-              fill:
-                valueIndex === 0
-                  ? "#52b202"
-                  : valueIndex === 1
-                  ? "#4169e1"
-                  : "#ff4500",
-            },
-            [`& .${gaugeClasses.referenceArc}`]: {
-              fill: theme.palette.text.disabled,
-            },
-          })}
-        />
-      </div>
-      </>)}
+      {/* Check if values array is not empty */}
+      {values.length > 0 && (
+        <>
+          <h1 className=" text-xl text-center  ">{values[valueIndex].title}</h1>
+          <hr className="border-t border-gray-200" />
+          <div className="flex items-center mt-10">
+            <Gauge
+              value={values[valueIndex].value}
+              width={250}
+              height={250}
+              text={({ value }) => `${value}`}
+              cornerRadius="50%"
+              sx={(theme) => ({
+                [`& .${gaugeClasses.valueText}`]: {
+                  fontSize: 30,
+                },
+                [`& .${gaugeClasses.valueArc}`]: {
+                  // Determine the fill color based on valueIndex
+                  fill:
+                    valueIndex === 0
+                      ? "#52b202"
+                      : valueIndex === 1
+                      ? "#4169e1"
+                      : "#ff4500",
+                },
+                [`& .${gaugeClasses.referenceArc}`]: {
+                  fill: theme.palette.text.disabled,
+                },
+              })}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

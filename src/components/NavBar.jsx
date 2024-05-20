@@ -14,13 +14,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from './SideBar';
 import  { useState } from 'react';
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import { TextField, Button, Stack, Select } from "@mui/material";
+import { Button } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { useNavigate } from "react-router-dom";
-
-
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -132,10 +130,10 @@ export default function NavBar() {
       {/* Sidebar Content */}
       <div
         
-        className={` w-80 absolute right-0 h-screen z-50 bg-[#F1ECEC] text-black ${SidebarOpen ? 'block' : 'hidden'}`}
+        className={` w-80 absolute right-0 h-screen z-50 bg-[#9eaab2] text-black ${SidebarOpen ? 'block' : 'hidden'}`}
       >
         
-        <div className="flex flex-col gap-10 p-10">
+        <div className="flex flex-col gap-10 p-6">
           <div className='flex gap-4'>
             <div>Profile Picture</div>
             <div>
@@ -147,7 +145,7 @@ export default function NavBar() {
               <div className="pb-4">
                 <Button
                   variant="outlined"
-                  className="bg-[#D9D9D9] w-[287px] h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5 "
+                  className="bg-[#D9D9D9] w-[100%] h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5 "
                 >
                   <AccountCircleOutlinedIcon />
                   <span>Edit Profile</span>
@@ -157,7 +155,7 @@ export default function NavBar() {
                
                 <Button
                   variant="outlined"
-                  className="bg-[#D9D9D9] w-[287px] h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
+                  className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
                   
                 >
                 
@@ -169,7 +167,7 @@ export default function NavBar() {
               <div className="pb-4">
                 <Button
                   variant="outlined"
-                  className="bg-[#D9D9D9] w-[287px] h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
+                  className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
                    
                 >
 
@@ -180,7 +178,7 @@ export default function NavBar() {
               <div className="pb-4">
                 <Button
                   variant="outlined"
-                  className="bg-[#D9D9D9] w-[287px] h-[45px]  text-red-600  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
+                  className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-red-600  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
                 >
                   <LogoutOutlinedIcon className="text-red-600" />
                   <span>Log out</span>
@@ -194,7 +192,7 @@ export default function NavBar() {
        
       
       {/* side bar mobile menu */}
-      <div className={`${Open ? 'block' : 'hidden'} md:hidden bg-slate-300 ` }>
+      <div className={`${Open ? 'block' : 'hidden'} md:hidden bg-slate-300 `}>
         <SideBar></SideBar>
       </div>
 

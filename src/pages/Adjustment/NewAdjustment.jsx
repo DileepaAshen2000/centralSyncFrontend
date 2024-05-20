@@ -17,10 +17,11 @@ const NewAdjustment = () => {
   let navigate = useNavigate();
   const [adj,setAdj] = useState({  // create state for adjustment, initial state is empty with object.
     reason:"",
-    date: "",
+    date:new Date().toISOString().split("T")[0], // Set to today's date
     description:"",
     newQuantity:"",
-    itemId:""
+    itemId:"",
+    file: null
   })
   const [item,setItem] = useState({ // create state for item, initial state is empty with object.
     itemName:"",
@@ -30,7 +31,7 @@ const NewAdjustment = () => {
   const [options, setOptions] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState(null);
   
-  const{reason,date,description,newQuantity,itemId} = adj; // Destructure the adj state
+  const{reason,date,description,newQuantity,itemId,file} = adj; // Destructure the adj state
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,7 +62,7 @@ const NewAdjustment = () => {
   const fetchItemDetails = async (itemId) => {
     try {
       const response = await axios.get(`http://localhost:8080/inventory-item/getById/${itemId}`);
-      setItem({ ...item, quantity: response.data.quantity }); // Update the newQuantity in the adj state
+      setItem({ ...item, quantity: response.data.quantity }); 
     } catch (error) {
       console.error('Error fetching item details:', error);
     }
@@ -82,12 +83,23 @@ const NewAdjustment = () => {
     }
 
     try {
-      const result = await axios.post("http://localhost:8080/adjustment/add", adj);
-      console.log(result.data);
+      const formData = new FormData();
+      formData.append('reason', reason);
+      formData.append('date', date);
+      formData.append('description', description);
+      formData.append('newQuantity', newQuantity);
+      formData.append('itemId', itemId);
+      formData.append('file', file); // Append the file to the formData
+
+      const result = await axios.post("http://localhost:8080/adjustment/add", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       navigate('/adjustment');// To navigate to the adjustment page
       Swal.fire({
         title: "Done!",
-        text: "You submitted the Adjustment!",
+        text: "Adjustment Successfully Submitted!",
         icon: "success"
       });
     } catch (error) {
@@ -116,12 +128,19 @@ const NewAdjustment = () => {
     if (!itemId) {
       errors.itemId = 'Item ID is required';
     }
+    if (newQuantity<0){
+      errors.newQuantity = 'Quantity should be positive value'
+    }
     
     return errors;
   };
 
+  const handleFileChange = (e) => {
+    setAdj({ ...adj, file: e.target.files[0] });
+  };
+
   return (
-    <form className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14" onSubmit={(e)=> onSubmit(e)}>
+    <form className="grid grid-cols-12 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14" onSubmit={(e)=> onSubmit(e)}>
       <h1 className="col-span-4 pt-2 text-3xl font-bold ">New Adjustment</h1>
 
       <div className="flex items-center col-span-4 col-start-1">
@@ -151,7 +170,7 @@ const NewAdjustment = () => {
             disabled
             options={[{ itemId: selectedItemId }]} // Provide the selected itemId as an option
             getOptionLabel={(option) => option.itemId} // Display itemId in the Autocomplete
-            name='itemId' // Add name to the Autocomplete
+            name='itemId' 
             value={{ itemId: selectedItemId }} // Set the value to the selected itemId
             sx={{ width: 300 }}
             renderInput={(params) => <TextField {...params} label="Item ID" 
@@ -170,9 +189,7 @@ const NewAdjustment = () => {
             style={{ width: '300px' }}
             label="Date"
             name='date'
-            type="date"
             value={date}
-            onChange={(e)=>onInputChange(e)}
             size='small'
             error={!!errors.date}
             helperText={errors.date}
@@ -266,20 +283,19 @@ const NewAdjustment = () => {
 
       <div className="flex-row col-span-10 col-start-1 ">
         <Typography display='block' gutterBottom>Attach File(s) to inventory adjustment </Typography>
-        <input type='file' className="mt-4 mb-2"></input>
+        <input type='file' className="mt-4 mb-2" onChange={handleFileChange}></input>
         <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
       </div>
 
-      <div className='flex col-start-7 gap-6'>
-        <Button className="text-white bg-blue-600 rounded "
+      
+        <Button className="col-start-10 text-white bg-blue-600 rounded"
           variant='contained'
           type='submit'
         >submit</Button>
-        <Button className="rounded "
+        <Button className="col-start-12 rounded"
           variant='outlined'
           onClick={() => navigate("/adjustment")}
         >cancel</Button>
-      </div>
     </form>
   );
 };

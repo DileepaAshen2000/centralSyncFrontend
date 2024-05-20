@@ -9,13 +9,14 @@ const NewStockIn = () => {
   let navigate = useNavigate();
   const [stockIn,setStockIn] = useState({  // create state for adjustment, initial state is empty with object.
     location:"",
-    date:"",
+    date:new Date().toISOString().split("T")[0], // Set to today's date
     description:"",
     inQty:"",
-    itemId:""
+    itemId:"",
+    file:null
   })
 
-  const{location,date,description,inQty,itemId} = stockIn; // Destructure the state
+  const{location,date,description,inQty,itemId,file} = stockIn; // Destructure the state
 
   // item fetching
   const [options, setOptions] = useState([]);
@@ -69,7 +70,7 @@ const NewStockIn = () => {
       navigate('/stockIn') // To navigate to the stockin page
       Swal.fire({
         title: "Done !",
-        text: "You submitted a stock-in!",
+        text: "Stock-In Successfully Submitted!",
         icon: "success"
       });
     } catch (error) {
@@ -93,7 +94,15 @@ const NewStockIn = () => {
     if (!inQty) {
       errors.inQty = 'Quantity In is required';
     }
+    if (inQty<0){
+      errors.inQty = 'Quantity should be positive value'
+    }
     return errors;
+  };
+
+  // Function to handle file selection
+  const handleFileChange = (e) => {
+    setStockIn({ ...stockIn, file: e.target.files[0] }); // Update file state with the selected file
   };
 
   return (
@@ -147,9 +156,8 @@ const NewStockIn = () => {
                 style={{ width: '300px' }}
                 label="Date"
                 name='date'
-                type="date"
                 value={date}
-                onChange={(e)=>onInputChange(e)}
+                // onChange={(e)=>onInputChange(e)}
                 size='small'
                 error={!!errors.date}
                 helperText={errors.date}
@@ -169,9 +177,9 @@ const NewStockIn = () => {
                 <Select  value={location} onChange={(e)=>onInputChange(e)} size='small' name='location' 
                 error={!!errors.location}
                 helperText={errors.location}>
-                  <MenuItem value="Store 01">Store 01</MenuItem>
-                  <MenuItem value="Store 02">Store 02</MenuItem>
-                  <MenuItem value="Store 03">Store 03</MenuItem>
+                  <MenuItem value="Store A">Store A</MenuItem>
+                  <MenuItem value="Store B">Store B</MenuItem>
+                  <MenuItem value="Store C">Store C</MenuItem>
                 </Select>
                 <Typography variant='caption' className='text-red-600'>{errors.location}</Typography>
               </FormControl>
@@ -216,7 +224,7 @@ const NewStockIn = () => {
         
         <div className="flex-row col-span-10 col-start-1 ">
           <Typography display='block' gutterBottom>Attach File(s) to inventory stock-in </Typography>
-          <input type='file' className="mt-4 mb-2"></input>
+          <input type='file' onChange={handleFileChange} className="mt-4 mb-2"></input>
           <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
         </div>
         
@@ -224,7 +232,7 @@ const NewStockIn = () => {
           <Button className="text-white bg-blue-600 rounded "
             variant='contained'
             type='submit'
-              >Stock In</Button>
+              >Submit</Button>
           <Button className="rounded"
             variant='outlined'
             onClick={() => navigate("/stockIn")}

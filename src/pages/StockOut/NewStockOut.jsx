@@ -9,7 +9,7 @@ const NewStockOut = () => {
   let navigate = useNavigate();
   const [stockOut,setStockOut] = useState({  // create state for adjustment, initial state is empty with object.
     department:"",
-    date:"",
+    date:new Date().toISOString().split("T")[0], // Set to today's date
     description:"",
     outQty:"",
     itemId:""
@@ -54,11 +54,7 @@ const NewStockOut = () => {
   };
 
   const onSubmit=async(e)=>{
-    // e.preventDefault(); // To remove unwanted url tail part
-    // const result = await axios.post("http://localhost:8080/stock-out/add",stockOut) // To send data to the server
-    // console.log(result.data)
-    // navigate('/stockOut') // To navigate to the stockin page
-
+    
     e.preventDefault(); // To remove unwanted url tail part
     const validationErrors = validateInputs();
     console.log(Object.keys(validationErrors).length)
@@ -75,7 +71,7 @@ const NewStockOut = () => {
       navigate('/stockOut');
       Swal.fire({
         title: "Done !",
-        text: "You submitted a Stock-Out!",
+        text: "Stock-Out Successfully Submitted !",
         icon: "success"
       });
     } catch (error) {
@@ -101,6 +97,9 @@ const NewStockOut = () => {
     }
     if (!itemId) {
       errors.itemId = 'Item ID is required';
+    }
+    if (outQty<0) {
+      errors.outQty = 'Quantity should be positive value';
     }
     return errors;
   };
@@ -155,9 +154,14 @@ const NewStockOut = () => {
                 <Select  value={department} onChange={(e)=>onInputChange(e)} size='small' name='department'
                 error={!!errors.department}
                 helperText={errors.department}>
-                  <MenuItem value="Department 01">Department 01</MenuItem>
-                  <MenuItem value="Department 02">Department 02</MenuItem>
-                  <MenuItem value="Department 03">Department 03</MenuItem>
+                  <MenuItem value="Software Engineering">Software Engineering</MenuItem>
+                  <MenuItem value="Product Management">Product Management</MenuItem>
+                  <MenuItem value="UI/UX Department">UI/UX Department</MenuItem>
+                  <MenuItem value="Quality Assurance">Quality Assurance</MenuItem>
+                  <MenuItem value="Customer Service">Customer Service</MenuItem>
+                  <MenuItem value="Human Resource">Human Resource</MenuItem>
+                  <MenuItem value="Finance & Administration">Finance & Administration</MenuItem>
+                  <MenuItem value="Research & Development">Research & Development</MenuItem>
                 </Select>
                 <Typography variant='caption' className='text-red-600'>{errors.department}</Typography>
               </FormControl>
@@ -173,9 +177,8 @@ const NewStockOut = () => {
                 style={{ width: '300px' }}
                 label="Date"
                 name='date'
-                type="date"
                 value={date}
-                onChange={(e)=>onInputChange(e)}
+                // onChange={(e)=>onInputChange(e)}
                 size='small'
                 error={!!errors.date}
                 helperText={errors.date}
@@ -228,11 +231,11 @@ const NewStockOut = () => {
         </div>
         
         <div className='flex col-start-7 gap-6'>
-          <Button className="col-start-6 text-white bg-blue-600 rounded row-start-10"
+          <Button className="text-white bg-blue-600 rounded "
             variant='contained'
             type='submit'
-              >Stock Out</Button>
-          <Button className="col-start-8 rounded row-start-10"
+              >Submit</Button>
+          <Button className="rounded"
             variant='outlined'
             onClick={() => navigate("/stockOut")}
               >cancel</Button>

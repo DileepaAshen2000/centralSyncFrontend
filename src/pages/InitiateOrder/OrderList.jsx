@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 //Define columns of the datagrid
@@ -47,24 +47,27 @@ const OrderDataGrid = () => {
   // State for storing the rows of the data grid
   const [rows, setRows] = useState([]);
 
-  // Fetching data from the API
-  useEffect(() => {
-    axios
-      .get("http://localhost:8080/orders/getAll")
-      .then((response) => {
-        const data = response.data.map((order, index) => ({
-          id: order.orderId,
-          email_address: order.vendorEmail,
-          vendor_name: order.vendorName,
-          date: order.date,
-          status: order.status,
-        }));
-        setRows(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+// Fetching data from the API
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/orders/getAll");
+      const data = response.data.map((order) => ({
+        id: order.orderId,
+        email_address: order.vendorEmail,
+        vendor_name: order.vendorName,
+        date: order.date,
+        status: order.status,
+      }));
+      setRows(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  fetchData();
+}, []);
+
 
   // State for storing the selected rows of the data grid
   const [rowSelectionModel, setRowSelectionModel] = useState([]);

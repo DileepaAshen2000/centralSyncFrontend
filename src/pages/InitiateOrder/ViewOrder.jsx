@@ -41,29 +41,30 @@ const ViewOrderDetails = () => {
     description,
   } = order;
 
-  // Fetching the order details by ID
-  useEffect(() => {
-    axios
-      .get(`http://localhost:8080/orders/getById/${orderID}`)
-      .then((response) => {
-        const order = {
-          vendorName: response.data.vendorName,
-          companyName: response.data.companyName,
-          mobile: response.data.mobile,
-          vendorEmail: response.data.vendorEmail,
-          date: response.data.date,
-          itemName: response.data.itemName,
-          brandName: response.data.brandName,
-          quantity: response.data.quantity,
-          description: response.data.description,
-        };
+// Fetching the order details by ID
+useEffect(() => {
+  const fetchOrderDetails = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/orders/getById/${orderID}`);
+      const order = {
+        vendorName: response.data.vendorName,
+        companyName: response.data.companyName,
+        mobile: response.data.mobile,
+        vendorEmail: response.data.vendorEmail,
+        date: response.data.date,
+        itemName: response.data.itemName,
+        brandName: response.data.brandName,
+        quantity: response.data.quantity,
+        description: response.data.description,
+      };
+      setOrder(order);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-        setOrder(order);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [orderID]);
+  fetchOrderDetails();
+}, [orderID]);
 
   // State variable to keep track of the anchor element for the popover
   const [anchorEl, setAnchorEl] = useState(null);

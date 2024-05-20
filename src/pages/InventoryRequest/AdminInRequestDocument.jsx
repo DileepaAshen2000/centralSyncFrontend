@@ -93,11 +93,14 @@ const AdminInRequestDocument = () => {
   });
 };*/
 
-  const handlePrint = () => { };
+//print function creation
+const handlePrint = () => { };
 
   return (
+    
     <div>
       <main>
+ {/* Print button */}
         <div className="flex items-end justify-end p-6 mr-10">
           <Button className="px-6 py-2 text-white bg-blue-600 rounded"
             variant='contained'
@@ -105,18 +108,19 @@ const AdminInRequestDocument = () => {
             onClick={handlePrint}
           >print</Button>
         </div>
-
+ {/* Inventory request seal */}
         <div className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section>
-
               {InRequestStatusColor(inventoryRequest.reqStatus)}
             </section>
           </div>
           <div>
+      
             <section className="flex flex-row items-end justify-end mb-6">
               <header className="text-3xl">INVENTORY REQUEST</header>
             </section>
+
             <section className="flex flex-row items-end justify-end gap-10">
               <ul className='flex flex-col gap-2'>
                 <li className="font-bold">Ref. No</li>
@@ -136,6 +140,8 @@ const AdminInRequestDocument = () => {
                 {console.log(inventoryRequest)}
               </ul>
             </section>
+
+
           </div>
           <TableContainer component={Paper} className="p-8 mt-8">
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -156,12 +162,10 @@ const AdminInRequestDocument = () => {
                   <TableCell align="right">{inventoryRequest.quantity}</TableCell>
                   <TableCell align="right">{inventoryRequest.itemGroup}</TableCell>
                 </TableRow>
-
-
-
               </TableBody>
             </Table>
           </TableContainer>
+
 
           <div className="mt-16 mb-32">
             <Typography variant="body1" gutterBottom>Description : </Typography>
@@ -170,6 +174,7 @@ const AdminInRequestDocument = () => {
             </div>
           </div>
         </div>
+
 
         <div className='flex gap-6 mt-6 ml-6'>
           <h4>Note :</h4>
@@ -181,6 +186,7 @@ const AdminInRequestDocument = () => {
           </textarea>
         </div>
 
+ {/* Accept button */}
         <div className='flex justify-end gap-4 ml-[60%] mt-6'>
         {inventoryRequest && inventoryRequest.reqStatus === 'pending' &&(<>
           <Button className="px-6 py-2 hover:bg-white text-green-800 bg-green-300 rounded"
@@ -191,6 +197,8 @@ const AdminInRequestDocument = () => {
               //sendNoteEmail("maleeshavidurath@gmail.com", "Note for Inventory Request", note);
             }}
           >Accept</Button>
+
+          {/* Reject button */}
           <Button className="px-6 py-2 hover:bg-white text-red-800 bg-red-300 rounded"
             variant='contained'
             type='submit'
@@ -200,6 +208,8 @@ const AdminInRequestDocument = () => {
             }}
           >Reject</Button>
           </>)}
+          
+          {/* Cancel button */}
           <Button className="px-6 py-2  hover:bg-white rounded"
             variant='outlined'
             type='submit'
