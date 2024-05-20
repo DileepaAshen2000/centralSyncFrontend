@@ -12,10 +12,11 @@ const NewStockOut = () => {
     date:new Date().toISOString().split("T")[0], // Set to today's date
     description:"",
     outQty:"",
-    itemId:""
+    itemId:"",
+    file:null
   })
 
-  const{department,date,description,outQty,itemId} = stockOut; // Destructure the state
+  const{department,date,description,outQty,itemId,file} = stockOut; // Destructure the state
 
   // item fetching
   const [options, setOptions] = useState([]);
@@ -66,8 +67,21 @@ const NewStockOut = () => {
 
     try {
       // Your axios post request here
-      const result = await axios.post("http://localhost:8080/stock-out/add",stockOut);
-      console.log(result.data);
+      // const result = await axios.post("http://localhost:8080/stock-out/add",stockOut);
+      // console.log(result.data);
+      const formData = new FormData();
+      formData.append('department', department);
+      formData.append('date', date);
+      formData.append('description', description);
+      formData.append('outQty', outQty);
+      formData.append('itemId', itemId);
+      formData.append('file', file); // Append the file to the formData
+
+      const result = await axios.post("http://localhost:8080/stock-out/add", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       navigate('/stockOut');
       Swal.fire({
         title: "Done !",
@@ -102,6 +116,10 @@ const NewStockOut = () => {
       errors.outQty = 'Quantity should be positive value';
     }
     return errors;
+  };
+
+  const handleFileChange = (e) => {
+    setStockOut({ ...stockOut, file: e.target.files[0] }); // Update file state with the selected file
   };
   
   return (
@@ -226,7 +244,7 @@ const NewStockOut = () => {
         
         <div className="flex-row col-span-10 col-start-1 ">
           <Typography display='block' gutterBottom>Attach File(s) to inventory stock-in </Typography>
-          <input type='file' className="mt-4 mb-2"></input>
+          <input type='file' onChange={handleFileChange} className="mt-4 mb-2"></input>
           <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
         </div>
         
