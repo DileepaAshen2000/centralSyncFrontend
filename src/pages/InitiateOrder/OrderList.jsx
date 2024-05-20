@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-//Define columns of the datagrid
 const columns = [
   { field: "id", headerName: "Order ID", width: 150 },
   {
@@ -44,10 +43,8 @@ const columns = [
 const OrderDataGrid = () => {
   const navigate = useNavigate();
 
-  // State for storing the rows of the data grid
   const [rows, setRows] = useState([]);
 
-// Fetching data from the API
 useEffect(() => {
   const fetchData = async () => {
     try {
@@ -69,21 +66,17 @@ useEffect(() => {
 }, []);
 
 
-  // State for storing the selected rows of the data grid
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
 
-  // Handler for changing the selected rows
   const handleRowSelectionModelChange = (newSelectedRow) => {
     setRowSelectionModel(newSelectedRow);
   };
 
-  // Handler for viewing the selected order
   const handleView = () => {
     const selectedItemId = rowSelectionModel[0];
     navigate("/order/view-order/" + selectedItemId);
   };
 
-  // Handler for editing the selected order
   const handleEdit = () => {
     const selectedItemId = rowSelectionModel[0];
     navigate("/order/edit-order/" + selectedItemId);

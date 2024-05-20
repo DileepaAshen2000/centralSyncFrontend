@@ -45,14 +45,14 @@ const ItemPieChart = () => {
   const aciveTotal = itemData
     .map((inventoryItem) => inventoryItem.status)
     .reduce((count, status) => {
-      return status === "ACTIVE" ? count + 1 : count;
+      return status === "active" ? count + 1 : count;
     }, 0);
 
   // calculate the total number of inactive items
   const inactiveTotal = itemData
     .map((inventoryItem) => inventoryItem.status)
     .reduce((count, status) => {
-      return status === "INACTIVE" ? count + 1 : count;
+      return status === "inactive" ? count + 1 : count;
     }, 0);
 
   // define the series data for the pie chart

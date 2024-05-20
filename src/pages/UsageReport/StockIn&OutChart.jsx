@@ -4,19 +4,15 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 
-// color palette for the chart
 const palette = ["#357a38", "#ff1744"];
 
 
-// StockLineChart component takes 'category' and 'year' as props
 const StockLineChart = ({category, year} ) => {
  
 
-// State variables to store stock in and stock out data
   const [stockIn, setStockIn] = useState([]);
   const [stockOut, setStockOut] = useState([]);
 
- // Fetch stock in data based on category and year
 useEffect(() => {
   const fetchData = async () => {
     try {
@@ -31,7 +27,6 @@ useEffect(() => {
 }, [category, year]);
 
 
-// Fetch stock out data based on category and year
 useEffect(() => {
   const fetchData = async () => {
     try {
@@ -46,17 +41,15 @@ useEffect(() => {
 }, [category, year]);
 
 
-   // Check if either stock in or stock out data is empty
   if (stockIn.length === 0 && stockOut.length === 0) {
     return (
       <div className="text-center m-10">
-        No data to display
+        No records found
         
       </div>
     );
   }
 
-  // Process stock in data by month
   const stockInByMonth = stockIn
     .map((stock) => ({
       date: stock.date,
@@ -71,7 +64,6 @@ useEffect(() => {
     }, {});
 
 
-  // Process stock out data by month
   const stockOutByMonth = stockOut
     .map((stock) => ({
       date: stock.date,
@@ -113,7 +105,6 @@ useEffect(() => {
   }
 
 
-  // Create labels for the x-axis (months)
   const xLabels = [
     "January",
     "February",

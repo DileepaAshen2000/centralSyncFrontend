@@ -9,10 +9,8 @@ import Swal from "sweetalert2";
 const NewOrderForm = () => {
   const navigate = useNavigate();
 
-  //state variable to catch error messages sent from API
   const [errors, setErrors] = useState({});
 
-  //State for order object with properties -->initial state of properties=null
   const [order, setOrder] = useState({
     vendorName: "",
     companyName: "",
@@ -25,7 +23,6 @@ const NewOrderForm = () => {
     description: "",
   });
 
-  //Destructure the state
   const {
     vendorName,
     companyName,
@@ -38,7 +35,6 @@ const NewOrderForm = () => {
     description,
   } = order;
 
-  //function to be called on input changing
   const onInputChange = (e) => {
     setOrder({ ...order, [e.target.id]: e.target.value });
   };
@@ -87,7 +83,6 @@ const NewOrderForm = () => {
   };
   
 
-  //Form for initiate a new order
   return (
     <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
       <h1 className=" col-span-4 text-3xl pt-2 font-bold ">New Order</h1>

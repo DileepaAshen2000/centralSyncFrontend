@@ -3,13 +3,11 @@ import { BarChart } from "@mui/x-charts/BarChart";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-//colour palatte for the chart
 const colour = ["#5C998E"];
 
 const UsageBarChart = ({ category, year }) => {
   const [requests, setRequests] = useState([]);
 
-  // Fetch requests data based on category and year
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -25,7 +23,8 @@ const UsageBarChart = ({ category, year }) => {
     fetchData();
   }, [category, year]);
 
-  // Process requests data by month
+
+
   const requestsByMonth = requests
     .map((req) => ({
       date: req.date,
@@ -41,9 +40,16 @@ const UsageBarChart = ({ category, year }) => {
       return acc;
     }, {}); 
 
-  console.log(requestsByMonth);
-  // Create labels for the x-axis (months)
-  const xLabels = [
+  
+    if ( Object.keys(requestsByMonth).length === 0 ) {
+      return (
+        <div className="text-center m-10">
+          No records found 
+        </div>
+      );
+    }
+   
+  console.log(requestsByMonth);  const xLabels = [
     "Jan",
     "Feb",
     "Mar",
@@ -58,7 +64,6 @@ const UsageBarChart = ({ category, year }) => {
     "Dec",
   ];
 
-  //map requestsByMonth object key values with the xlabels using  optional chaining operator
   const noOfItemsUsed = xLabels.map(
     (label) => requestsByMonth[label]?.length ?? 0
   );

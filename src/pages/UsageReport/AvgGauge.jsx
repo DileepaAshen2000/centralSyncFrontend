@@ -8,7 +8,6 @@ const AvgGauge = ({ category, year }) => {
   const [stockIn, setStockIn] = useState([]);
   const [stockOut, setStockOut] = useState([]);
 
-  // Fetch requests data based on category and year
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -24,7 +23,6 @@ const AvgGauge = ({ category, year }) => {
     fetchData();
   }, [category, year]);
 
-  // Fetch stock out data based on category and year
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -40,7 +38,6 @@ const AvgGauge = ({ category, year }) => {
     fetchData();
   }, [category, year]);
 
-  // Fetch stock in data based on category and year
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -56,7 +53,6 @@ const AvgGauge = ({ category, year }) => {
     fetchData();
   }, [category, year]);
 
-  //Calculate total accepted requests for the year
   const totReq = (data) => {
     return data
       .map((req) => req.reqStatus)
@@ -65,7 +61,6 @@ const AvgGauge = ({ category, year }) => {
       }, 0);
   };
 
-  //Calculate total stock in amount for the year
   const totStockIn = (data) => {
     return data
       .map((stock) => stock.inQty)
@@ -74,7 +69,6 @@ const AvgGauge = ({ category, year }) => {
       }, 0);
   };
 
-  //Calculate total stock out amount for the year
   const totStockOut = (data) => {
     return data
       .map((stock) => stock.outQty)
@@ -86,7 +80,6 @@ const AvgGauge = ({ category, year }) => {
   const [valueIndex, setValueIndex] = useState(0);
   const [values, setValues] = useState([]);
 
-  // Initialize the values state when requests, stockIn, and stockOut are updated
   useEffect(() => {
     setValues([
       {
@@ -116,7 +109,6 @@ const AvgGauge = ({ category, year }) => {
 
   return (
     <div className=" w-full h-full bg-white p-4 ">
-      {/* Check if values array is not empty */}
       {values.length > 0 && (
         <>
           <h1 className=" text-xl text-center  ">{values[valueIndex].title}</h1>

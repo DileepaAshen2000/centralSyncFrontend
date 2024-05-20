@@ -14,7 +14,7 @@ const StyledText = styled("text")(({ theme }) => ({
 }));
 
 const PieCenterLabel = () => {
-  // State to store data fetched from the API
+
   const [data, setData] = useState([]);
 
    // Fetch data
@@ -33,14 +33,13 @@ const PieCenterLabel = () => {
     fetchData();
   }, []);
 
-  // Calculate the total number of inventory items with status "ACTIVE"
+ 
   const aciveTotal = data
     .map((inventoryItem) => inventoryItem.status)
     .reduce((count, status) => {
-      return status === "ACTIVE" ? count + 1 : count;
+      return status === "active" ? count + 1 : count;
     }, 0);
 
-  // Calculate the percentage of "ACTIVE" inventory items
   const getArcLabel = () => {
     const percent = aciveTotal / parseFloat(data.length);
     return `${(percent * 100).toFixed(0)}%`;
