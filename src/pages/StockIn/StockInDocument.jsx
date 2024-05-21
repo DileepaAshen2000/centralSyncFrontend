@@ -68,7 +68,7 @@ const handleFileDownload = async () => {
     // Set the href attribute to the URL of the blob
     link.href = url;
     // Set the download attribute to specify the file name with .pdf extension
-    link.download = 'downloaded_file.pdf'; // Specify .pdf extension for the downloaded file
+    link.download = 'CentralSync_Document.pdf'; // Specify .pdf extension for the downloaded file
     // Simulate a click on the anchor tag to trigger the download
     document.body.appendChild(link);
     link.click();
@@ -167,6 +167,7 @@ const handleFileDownload = async () => {
             <Typography variant="caption" gutterBottom>Generated Date/Time : </Typography>
             <Typography variant="caption" gutterBottom>{formattedDateTime}</Typography>
           </div>
+          <Typography variant="caption" gutterBottom>Computer Generated Report By CENTRAL SYNC &#174; | No Signature Required.</Typography>
         </div>
 
         <div className='flex ml-[86%] mt-6'>

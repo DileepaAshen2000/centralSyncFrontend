@@ -13,16 +13,13 @@ export default function AdminDashboard() {
         <div>
           <h1 className="pt-2 pb-3 text-3xl font-bold">Dashboard</h1>
         </div>
-
-        {/*<div>
+        
+        <div className="flex gap-4 space-x-5">
           <TotalEmpCard />
-        </div>
-        <div>
           <ItemCard />
-        </div>
-        <div>
           <LowStockCard />
-        </div>*/}
+        </div>
+        
       </div>
       <div className=" w-[30%] bg-white p-4 mt-10">
         <h1 className="text-xl text-center ">All Items</h1>
