@@ -23,12 +23,12 @@ const AdjustmentDocument = () => {
     reason:"",
     date:"",
     description:"",
-    newQuantity:"",
+    adjustedQuantity:"",
     status:"",
     itemId:""
   })
 
-const{reason,date,description,newQuantity,status,itemId} = adj;
+const{reason,date,description,adjustedQuantity,status,itemId} = adj;
 const [item,setItem] = useState({  // create state for adjustment, initial state is empty with object.
   itemName:"",
   quantity:""
@@ -187,8 +187,8 @@ const loadAdjustment = async () => {
                     <TableCell align="right">{itemId}</TableCell>
                     <TableCell align="right">{itemName}</TableCell>
                     <TableCell align="right">{quantity}</TableCell>
-                    <TableCell align="right">{newQuantity}</TableCell>
-                    <TableCell align="right">{newQuantity - quantity}</TableCell>
+                    <TableCell align="right">{quantity}</TableCell>
+                    <TableCell align="right">{adjustedQuantity}</TableCell>
                   </TableRow>
               </TableBody>
             </Table>
