@@ -67,12 +67,7 @@ const NewAdjustment = () => {
     } catch (error) {
       console.error('Error fetching item details:', error);
     }
-  }
-  //Add onChange event to the input fields
-  // const onInputChange= async (e)=>{
-  //   setAdj({...adj,[e.target.name]:e.target.value});
-  //   setErrors({ ...errors, [e.target.name]: '' }); // Clear error when input changes
-  // };
+  };
 
   const onInputChange = async (e) => {
     const { name, value } = e.target;

@@ -35,11 +35,6 @@ const EditAdjustment = () => {
   const [errors, setErrors] = useState({}); // State to manage errors for input fields
   const [flag,setFlag] = useState(0); // To check whether the input fields are changed or not
   
-  // const onInputChange=(e)=>{
-  //   setAdj({...adj,[e.target.name]:e.target.value});
-  //   setErrors({ ...errors, [e.target.name]: '' });
-  //   setFlag(1);
-  // };
   const onInputChange = async (e) => {  //new new
     const { name, value } = e.target;
     let updatedAdj = { ...adj, [name]: value };
