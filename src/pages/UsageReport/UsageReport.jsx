@@ -10,7 +10,7 @@ import {
 import AvgGauge from "./AvgGauge";
 import UsageBarChart from "./ItemUsageBarGraph";
 import StockLineChart from "./StockIn&OutChart";
-//import InfoTable from "./InfoTable";
+import InfoTable from "./InfoTable";
 import { YearCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -100,6 +100,11 @@ const Usage = () => {
         <h2 className=" text-xl  p-4 ">Monitor Inventory Statistics</h2>
         <hr className="col-span-4 border-t border-gray-200" />
         <StockLineChart category={category} year={year} />
+      </div>
+      <div className="row-start-5 col-span-10 h-[400px] mt-5 bg-white ">
+        <h2 className=" text-xl  p-4 ">Item frequently undergone maintenance</h2>
+        <hr className="col-span-4 border-t border-gray-200 p-5" />
+        <InfoTable category={category} year={year} />
       </div>
     </div>
   );
