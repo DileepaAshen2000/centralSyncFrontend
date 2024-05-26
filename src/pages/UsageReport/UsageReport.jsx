@@ -10,6 +10,7 @@ import {
 import AvgGauge from "./AvgGauge";
 import UsageBarChart from "./ItemUsageBarGraph";
 import StockLineChart from "./StockIn&OutChart";
+//import InfoTable from "./InfoTable";
 import { YearCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -17,7 +18,7 @@ import PrintIcon from "@mui/icons-material/Print";
 import { useState } from "react";
 
 const Usage = () => {
-  const [category, setCategory] = useState("computerAccessories");
+  const [category, setCategory] = useState("COMPUTER_ACCESSORIES");
   const [year, setYear] = useState(dayjs().endOf("year").format("YYYY"));
   const [open, setOpen] = useState(false);
 
@@ -33,31 +34,33 @@ const Usage = () => {
     setOpen(false);
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
 
-  
   return (
     <div className="grid grid-cols-10">
       <Select
         label="Group"
         id="selectItemGroup"
-        className="col-start-1 bg-blue-600  w-[200px] h-10   text-white"
+        className="col-start-1 bg-blue-600  w-[250px] h-10   text-white"
         value={category}
         onChange={(e) => setCategory(e.target.value)}
       >
-        <MenuItem value="computerAccessories">Computer accessories</MenuItem>
-        <MenuItem value="printer">Printer</MenuItem>
-        <MenuItem value="computerHardware">Computer hardware</MenuItem>
-        <MenuItem value="other">Other</MenuItem>
+        <MenuItem value="COMPUTER_ACCESSORIES">Computer Accessories</MenuItem>
+        <MenuItem value="PRINTER">Printer</MenuItem>
+        <MenuItem value="COMPUTER_HARDWARE">Computer Hardware</MenuItem>
+        <MenuItem value="OTHER">Other</MenuItem>
       </Select>
 
       <Button
         variant="contained"
-        className="bg-blue-600 col-start-3 col-span-2 ml-10"
+        className="bg-blue-600 col-start-4 "
         onClick={handleOpen}
       >
         {year ? year : "year"}
       </Button>
-      <Dialog open={open} onClose={handleClose} >
+      <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Select a year</DialogTitle>
         <DialogContent>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -65,7 +68,6 @@ const Usage = () => {
               minDate={dayjs([2020, 1, 1])}
               maxDate={dayjs().endOf("year")}
               onChange={handleYearChange}
-              className="col-start-4"
             />
           </LocalizationProvider>
         </DialogContent>
@@ -74,21 +76,21 @@ const Usage = () => {
       <Button
         variant="contained"
         className="row-start-1 col-start-9 col-span-2 rounded-sm bg-blue-600 ml-10  "
+        onClick={handlePrint}
       >
         <PrintIcon />
         Print
       </Button>
       <h1 className="row start-2 col-span-10 text-3xl text-center p-10 ">
-        USAGE ANALYSIS REPORT OF ITEM CATEGORY {category.toUpperCase()} 
+        USAGE ANALYSIS OF ITEM CATEGORY {category}
         <br /> (JAN-DEC)
-        <br/> {year}
+        <br /> {year}
       </h1>
-     
-        <div className="row-start-3 col-span-3" >
-          <AvgGauge category={category} year={year}/>
-          
-        </div>
-     
+
+      <div className="row-start-3 col-span-3">
+        <AvgGauge category={category} year={year} />
+      </div>
+
       <div className="row-start-3 col-start-4 col-span-7 ml-10  h-[400px] bg-white ">
         <h2 className=" text-xl  p-4 ">Monitor Usage</h2>
         <hr className="col-span-4 border-t border-gray-200" />

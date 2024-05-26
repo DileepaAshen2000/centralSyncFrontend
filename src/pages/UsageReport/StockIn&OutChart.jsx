@@ -79,8 +79,6 @@ useEffect(() => {
 
 
  
-
- // Calculate the sum of quantities for each month in stock in data
  const sumByMonthSI = {};
   for (const month in stockInByMonth) {
     if (stockInByMonth.hasOwnProperty(month)) {
@@ -92,7 +90,7 @@ useEffect(() => {
     }
   }
 
-// Calculate the sum of quantities for each month in stock in data
+
   const sumByMonthSO = {};
   for (const month in stockOutByMonth) {
     if (stockOutByMonth.hasOwnProperty(month)) {
@@ -128,8 +126,6 @@ useEffect(() => {
   });
 
 
-  
-  // Create  data array for the chart y axis from the object sumByMonth which has properties as name of month
   const stockInData = xLabels.map((label) => sumByMonthSI[label]);
   const stockOutData = xLabels.map((label) => sumByMonthSO[label]);
 

@@ -3,29 +3,28 @@ import { PieChart } from "@mui/x-charts";
 import PieCenterLabel from "./PieCenterLabel";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import CircularProgress from "@mui/material/CircularProgress";
 
-//define the size of the pie chart
 const size = {
   width: 300,
   height: 400,
 };
 
-//define a colour palatte
 const palette = ["#4583DE", "#FFB946"];
 
 const ItemPieChart = () => {
-  //adjust the viewbox of the chart
+  const [itemData, setItemData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const svg = document.querySelector(".css-13aj3tc-MuiChartsSurface-root");
     if (svg) {
-      svg.setAttribute("viewBox", "-50 50 300 400");
+      svg.setAttribute("viewBox", "-40 50 300 400");
     }
-  }, []);
+  }, [loading]);
 
-  //state variables
-  const [itemData, setItemData] = useState([]);
+ 
 
-  // Fetch data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,6 +32,7 @@ const ItemPieChart = () => {
           "http://localhost:8080/inventory-item/getAll"
         );
         setItemData(response.data);
+        setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -66,9 +66,13 @@ const ItemPieChart = () => {
     },
   ];
 
-  return (
+  return loading ? (
+    <div className="flex justify-center items-center h-[400px] w-[300px]">
+      <CircularProgress />
+    </div>
+  ) : (
     <PieChart
-      margin={{ top: 75, bottom: 100 }}
+      margin={{ top: 50, bottom: 100 }}
       colors={palette}
       series={series}
       slotProps={{

@@ -121,12 +121,12 @@ const AddItemForm = () => {
             onChange={onItemGroupChange}
             className="w-[300px] h-10 ml-5 bg-white  "
           >
-            <MenuItem value="computerAccessories">
+            <MenuItem value="COMPUTER_ACCESSORIES">
               Computer accessories
             </MenuItem>
-            <MenuItem value="printer">Printer</MenuItem>
-            <MenuItem value="computerHardware">Computer hardware</MenuItem>
-            <MenuItem value="other">Other</MenuItem>
+            <MenuItem value="PRINTER">Printer</MenuItem>
+            <MenuItem value="COMPUTER_HARDWARE">Computer hardware</MenuItem>
+            <MenuItem value="OTHER">Other</MenuItem>
           </Select>
         </div>
       </div>

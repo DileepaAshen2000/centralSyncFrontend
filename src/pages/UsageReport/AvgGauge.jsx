@@ -7,7 +7,7 @@ const AvgGauge = ({ category, year }) => {
   const [requests, setRequests] = useState([]);
   const [stockIn, setStockIn] = useState([]);
   const [stockOut, setStockOut] = useState([]);
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -52,6 +52,7 @@ const AvgGauge = ({ category, year }) => {
 
     fetchData();
   }, [category, year]);
+ 
 
   const totReq = (data) => {
     return data

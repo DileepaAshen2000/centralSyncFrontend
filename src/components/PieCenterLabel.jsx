@@ -3,6 +3,7 @@ import { useDrawingArea } from "@mui/x-charts/hooks";
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import CircularProgress from "@mui/material/CircularProgress";
 
 // StyledText component with custom styles for the text element in the center
 const StyledText = styled("text")(({ theme }) => ({
@@ -14,17 +15,17 @@ const StyledText = styled("text")(({ theme }) => ({
 }));
 
 const PieCenterLabel = () => {
-
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-   // Fetch data
-   useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
           "http://localhost:8080/inventory-item/getAll"
         );
         setData(response.data);
+        setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -33,7 +34,6 @@ const PieCenterLabel = () => {
     fetchData();
   }, []);
 
- 
   const aciveTotal = data
     .map((inventoryItem) => inventoryItem.status)
     .reduce((count, status) => {
@@ -48,7 +48,11 @@ const PieCenterLabel = () => {
   // Get the dimensions of the drawing area for positioning the text element
   const { width, height, left, top } = useDrawingArea();
 
-  return (
+  return loading ? (
+    <div>
+      <CircularProgress />
+    </div>
+  ) : (
     <StyledText x={left + width / 2} y={top + height / 1.85}>
       {getArcLabel()}
     </StyledText>
