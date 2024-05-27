@@ -24,6 +24,7 @@ export default function User() {
     axios
       .get("http://localhost:8080/user/getAll")
       .then((response) => {
+        console.log(response.data)
         const data = response.data.map((user) => ({
           id: user.userId,
           employeesName: `${user.firstName} ${user.lastName}`,

@@ -27,7 +27,7 @@ const CreateUser= () => {
   //set default password
   useEffect(() => {
  
-    setPassword("centralSync123");
+    setPassword("centralSync");
   }, []);
 
   const handleClick = (e) => {

@@ -44,7 +44,7 @@ const UserActivityHistory = () => {
     let path = "";
     if (action.includes("User")) {
       path = `/user/users/${entityId}`;
-    } else if (action.includes("Ticket")) {
+    } else if (action.includes("ticket")) {
       path = `/ticket/ticketdoc/${entityId}`;
     } else if (action.includes("Stock In")) {
       path = `/stockIn/${entityId}`;
@@ -55,10 +55,14 @@ const UserActivityHistory = () => {
     } else if (action.includes("Reservation")) {
       path = `/stockOut/${entityId}`;
     } else if (action.includes("Item")) {
-      path = `/stockOut/${entityId}`;
+      path = `/item/view-item/${entityId}`;
     } else if (action.includes("Order")) {
       path = `/order/view-order/${entityId}`;
-    } else {
+    } 
+    else if (action.includes("Adjustment")) {
+      path = `/adjustment/${entityId}`;
+    }
+    else {
     }
 
     // Navigate to the appropriate path
