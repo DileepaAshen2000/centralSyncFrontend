@@ -6,6 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Snackbar from '@mui/material/Snackbar';
 import { Typography,Button, Alert,AlertTitle} from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
@@ -17,6 +18,8 @@ const handlePrint=()=>{
 }
 const AdjustmentDocument = () => {
   const [fetchData, setFetchData] = useState(false);
+  const [note, setNote] = useState("");
+  const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
   const {adjId} = useParams(); // get the adjustment id from the url
   const [adj,setAdj] = useState({  // create state for adjustment, initial state is empty with object.
@@ -67,7 +70,7 @@ const loadAdjustment = async () => {
 
   const handleAccept = () => {
     axios
-      .patch("http://localhost:8080/adjustment/updateStatus/accept/" + adjId)
+      .patch("http://localhost:8080/adjustment/updateStatus/accept/" + adjId , { note })
       .then(() => {
         setFetchData(!fetchData); 
         navigate("/adjustment", { fetchData });
@@ -108,26 +111,27 @@ const loadAdjustment = async () => {
   
       // Create a blob object from the response data
       const blob = new Blob([response.data], { type: 'application/pdf' }); // Ensure the blob is treated as a PDF
-      // Create a temporary URL for the blob object
-      const url = window.URL.createObjectURL(blob);
-      // Create an anchor tag
-      const link = document.createElement('a');
-      // Set the href attribute to the URL of the blob
-      link.href = url;
-      // Set the download attribute to specify the file name with .pdf extension
+      const url = window.URL.createObjectURL(blob); // Create a temporary URL for the blob object
+      const link = document.createElement('a');  // Create an anchor tag
+      link.href = url; // Set the href attribute to the URL of the blob
       link.download = 'CentralSync_Document.pdf'; // Specify .pdf extension for the downloaded file
-      // Simulate a click on the anchor tag to trigger the download
-      document.body.appendChild(link);
+      document.body.appendChild(link); // Simulate a click on the anchor tag to trigger the download
       link.click();
-      // Remove the anchor tag from the document
-      document.body.removeChild(link);
-      // Release the temporary URL
-      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link); // Remove the anchor tag from the document
+      window.URL.revokeObjectURL(url); // Release the temporary URL
       
-      alert('PDF file download successful !!');
+      // alert('PDF file download successful !!');
+      setOpen(true);
     } catch (error) {
       console.error('Error downloading PDF file:', error);
     }
+  };
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
   };
   
   return (
@@ -203,6 +207,16 @@ const loadAdjustment = async () => {
               <h1>Download File :</h1>
               <button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download</span></u></button>
             </div>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+              <Alert
+                onClose={handleClose}
+                severity="success"
+                variant="filled"
+                sx={{ width: '100%' }}
+              >
+                Inventory Document download successful !!
+              </Alert>
+            </Snackbar>
           </div>
           <div>
             <Typography variant="caption" gutterBottom>Generated Date/Time : </Typography>
@@ -217,7 +231,9 @@ const loadAdjustment = async () => {
             <div>
               <div className='flex gap-6 mt-6 ml-6'>
                 <h4>Note :</h4>
-                <textarea className="w-2/3 h-20 p-2 mt-2 border-2 border-gray-300 rounded-md" placeholder='Write something here..'></textarea>
+                <textarea className="w-2/3 h-20 p-2 mt-2 border-2 border-gray-300 rounded-md" placeholder='Write something here..' 
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}></textarea>
               </div>
 
               <div className='flex gap-4 ml-[60%] mt-6'>
