@@ -8,20 +8,22 @@ import {
   DialogTitle,
 } from "@mui/material";
 import AvgCards from "./AvgCards";
-
 import UsageBarChart from "./ItemUsageBarGraph";
 import StockLineChart from "./StockIn&OutChart";
-import InfoTable from "./InsightTable";
+import InsightTable from "./InsightTable1";
 import { YearCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import PrintIcon from "@mui/icons-material/Print";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import PrintView from "./PrintView";
+import ReactToPrint from "react-to-print";
 
 const Usage = () => {
   const [category, setCategory] = useState("COMPUTER_ACCESSORIES");
   const [year, setYear] = useState(dayjs().endOf("year").format("YYYY"));
   const [open, setOpen] = useState(false);
+  const printRef = useRef();
 
   const handleOpen = () => {
     setOpen(true);
@@ -74,14 +76,23 @@ const Usage = () => {
         </DialogContent>
       </Dialog>
 
-      <Button
-        variant="contained"
-        className="row-start-1 col-start-9 col-span-2 rounded-sm bg-blue-600 ml-10  "
-        onClick={handlePrint}
-      >
-        <PrintIcon />
-        Print
-      </Button>
+      <ReactToPrint
+        trigger={() => (
+          <Button
+            variant="contained"
+            className="row-start-1 col-start-9 col-span-2 rounded-sm bg-blue-600 ml-10 no-print"
+          >
+            <PrintIcon />
+            Print
+          </Button>
+        )}
+        content={() => printRef.current}
+      />
+
+      <div style={{ display: "none" }}>
+        <PrintView ref={printRef} category={category} year={year} />
+      </div>
+
       <h1 className="row start-2 col-span-10 text-3xl text-center p-10 ">
         USAGE ANALYSIS OF ITEM CATEGORY {category}
         <br /> (JAN-DEC)
@@ -102,10 +113,10 @@ const Usage = () => {
         <hr className="col-span-4 border-t border-gray-200" />
         <StockLineChart category={category} year={year} />
       </div>
-      <div className="row-start-5 col-span-10 h-max mt-5 bg-white h-[300px]">
+      <div className="row-start-5 col-span-10 h-max mt-5 bg-white">
         <h3 className=" text-xl  p-4  ">Inventory Insights</h3>
         <hr className="col-span-4 border-t border-gray-200" />
-        <InfoTable category={category} year={year} />
+        <InsightTable category={category} year={year} isOpen={false} />
       </div>
     </div>
   );

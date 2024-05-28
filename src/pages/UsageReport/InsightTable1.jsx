@@ -15,9 +15,9 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 
-const InsightTable = ({ category, year }) => {
+const InsightTable = ({ category, year,isOpen }) => {
   const [tickets, setTickets] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(isOpen);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -111,17 +111,25 @@ const InsightTable = ({ category, year }) => {
                         </TableRow>
                       </TableHead>
                       {rows.map((row) => (
-                        <Row
-                          key={row.id}
-                          row={row}
-                          open={open}
-                          setOpen={setOpen}
-                        />
+                        <Row key={row.id} row={row} />
                       ))}
                     </Table>
                   </Box>
                 </Collapse>
               </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell colSpan={4}>
+                <p className=" text-l  p-2 font-bold ">Most Requested Item</p>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell />
+              <TableCell component="th" scope="row">
+                {rows[0].itemName}
+              </TableCell>
+              <TableCell align="left">{rows[0].brand}</TableCell>
+              <TableCell align="right">{tickets.length}</TableCell>
             </TableRow>
           </TableBody>
         </Table>
