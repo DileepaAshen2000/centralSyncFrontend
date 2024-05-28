@@ -7,10 +7,11 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
-import AvgGauge from "./AvgGauge";
+import AvgCards from "./AvgCards";
+
 import UsageBarChart from "./ItemUsageBarGraph";
 import StockLineChart from "./StockIn&OutChart";
-import InfoTable from "./InfoTable";
+import InfoTable from "./InsightTable";
 import { YearCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -88,7 +89,7 @@ const Usage = () => {
       </h1>
 
       <div className="row-start-3 col-span-3">
-        <AvgGauge category={category} year={year} />
+        <AvgCards category={category} year={year} />
       </div>
 
       <div className="row-start-3 col-start-4 col-span-7 ml-10  h-[400px] bg-white ">
@@ -101,9 +102,9 @@ const Usage = () => {
         <hr className="col-span-4 border-t border-gray-200" />
         <StockLineChart category={category} year={year} />
       </div>
-      <div className="row-start-5 col-span-10 h-[400px] mt-5 bg-white ">
-        <h2 className=" text-xl  p-4 ">Item frequently undergone maintenance</h2>
-        <hr className="col-span-4 border-t border-gray-200 p-5" />
+      <div className="row-start-5 col-span-10 h-max mt-5 bg-white h-[300px]">
+        <h3 className=" text-xl  p-4  ">Inventory Insights</h3>
+        <hr className="col-span-4 border-t border-gray-200" />
         <InfoTable category={category} year={year} />
       </div>
     </div>
