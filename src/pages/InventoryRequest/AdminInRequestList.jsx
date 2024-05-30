@@ -50,7 +50,7 @@ function OnsiteInventoryRequestTable() {
         rows={rows}
         columns={columns}
         onRowClick={(row) => {
-          navigate(`/in-request-handler/in-request-document/${row.id}`)
+          navigate(`/admin/in-request-document/${row.id}`)
         }}
         initialState={{
           pagination: {
@@ -95,7 +95,7 @@ function WorkFromHomeInventroyRequestTable() {
         rows={rows}
         columns={columns}
         onRowClick={(row) => {
-          navigate(`/inventory-request/request-document/${row.id}`)
+          navigate(`/admin/in-request-document/${row.id}`)
         }}
         initialState={{
           pagination: {

@@ -20,6 +20,7 @@ import InRequestHandlerRequestList from './InventoryRequest/InRequestHandlerInRe
 import InRequestHandlerInRequestDocument from './InventoryRequest/InRequestHandlerInRequestDocument'
 import EmployeeInRequestList from './InventoryRequest/EmployeeInRequestList'
 import EmployeeInRequestDocument from './InventoryRequest/EmployeeInRequestDocument'
+import WorkFromHomeRequestDocument from './InventoryRequest/WorkFromHomeRequestDocument'
 import CreateNewRequest from './InventoryRequest/CreateNewInRequest'
 import EditRequest from './InventoryRequest/EditInRequest'
 
@@ -104,10 +105,11 @@ const Home = () => {
               <Route path='/admin/in-request-document/:reqId' element={<AdminInRequestDocument/>}></Route>
                {/*InRequest Handler view routing */}
               <Route path='/in-requestHandler-in-request-list' element={<InRequestHandlerRequestList/>}></Route>
-              <Route path='/in-request-handler/in-request-document/:reqId' element={<InRequestHandlerInRequestDocument/>}></Route>
+              <Route path='/in-request-handlerlist/in-request-document/:reqId' element={<InRequestHandlerInRequestDocument/>}></Route>
                {/*Employee view routing */}
                <Route path='/employee-in-request-list' element={<EmployeeInRequestList/>}></Route>
                <Route path='/employee/in-request-document/:reqId' element={<EmployeeInRequestDocument/>}></Route>
+               <Route path='/employee/workfromhome-in-request-document/:reqId' element={<WorkFromHomeRequestDocument/>}></Route>
               {/*Common views for three actors rounting*/ }
               <Route path='/in-request/create-new-in-request' element={<CreateNewRequest/>}></Route>
               <Route path='/in-request/edit-request/:reqId' element={<EditRequest/>}></Route>
