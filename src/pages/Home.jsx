@@ -33,6 +33,7 @@ import NewOrderForm from "./InitiateOrder/NewOrder";
 import ViewOrderDetails from "./InitiateOrder/ViewOrder";
 import EditOrderDetails from "./InitiateOrder/EditOrder";
 import Usage from "./UsageReport/UsageReport";
+import LowStockReport from "./UsageReport/LowStockReport";
 import StockInDocument from "./StockIn/StockInDocument";
 import NewStockIn from "./StockIn/NewStockIn";
 import Userupdate from "./User/Edit_user";
@@ -43,6 +44,8 @@ import StockOutDocument from "./StockOut/StockOutDocument";
 import R_admin from "./Reservation/R_admin";
 import NewReservation from "./Reservation/NewReservation";
 import TicketDocument from "./Ticket/Ticketdoc";
+import InventorySummary from "./UsageReport/InventorySummary";
+
 
 const Home = () => {
   return (
@@ -63,7 +66,7 @@ const Home = () => {
           item
           sm={9.5}
           style={{ backgroundColor: "#eeeeee" }}
-          className="w-screen h-max p-10"
+          className="w-screen p-10 h-max"
         >
           <BrowserRouter>
             <Routes>
@@ -182,10 +185,9 @@ const Home = () => {
                 element={<EditOrderDetails />}
               ></Route>
               {/*Reports routing*/}
-              <Route
-                path="/report/item-usage-analysis"
-                element={<Usage />}
-              ></Route>
+              <Route path="/report/item-usage-analysis" element={<Usage />}></Route>
+              <Route path="/report/low-stock-report" element={<LowStockReport/>}></Route>
+              <Route path="/report/inventory-summary" element={<InventorySummary/>}></Route>
 
               {/* Reservations routing */}
               <Route path="/reservation" element={<R_admin />}></Route>
