@@ -12,10 +12,8 @@ import axios from "axios";
 
 const ViewOrderDetails = () => {
   const navigate = useNavigate();
-  // Getting the order ID from the URL params
   const { orderID } = useParams();
 
-  //State for order object with properties -->initial state of properties=null
   const [order, setOrder] = useState({
     vendorName: "",
     companyName: "",
@@ -28,7 +26,6 @@ const ViewOrderDetails = () => {
     description: "",
   });
 
-  //Destructure the state
   const {
     vendorName,
     companyName,
@@ -41,7 +38,6 @@ const ViewOrderDetails = () => {
     description,
   } = order;
 
-// Fetching the order details by ID
 useEffect(() => {
   const fetchOrderDetails = async () => {
     try {
@@ -66,24 +62,19 @@ useEffect(() => {
   fetchOrderDetails();
 }, [orderID]);
 
-  // State variable to keep track of the anchor element for the popover
   const [anchorEl, setAnchorEl] = useState(null);
 
-  // State variable to manage the open/close state of the popover
   const [isOpen, setIsOpen] = useState(false);
 
-  // Handle click of "More" button
   const handleMoreButton = (event) => {
     setAnchorEl(event.currentTarget);
     setIsOpen(true);
   };
-  // Handle closing of the popover
   const handleClose = () => {
     setAnchorEl(null);
     setIsOpen(false);
   };
 
-  // Handle deletion of the order
   const handleDelete = () => {
     try {
       axios
@@ -96,7 +87,6 @@ useEffect(() => {
     }
   };
 
-  // Handle marking the order as reviewed
   const handleMarkAsReviewed = () => {
     axios
       .patch("http://localhost:8080/orders/updateStatus/" + orderID)
@@ -108,7 +98,6 @@ useEffect(() => {
       });
   };
 
-  //form that contains order details
   return (
     <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
       <h1 className=" col-span-4 text-3xl pt-2 font-bold ">Order Details</h1>

@@ -9,10 +9,10 @@ import axios from "axios";
 const AddItemForm = () => {
   const navigate = useNavigate();
 
-  //state variable to catch error messages sent from API
+
   const [errors, setErrors] = useState({});
 
-  // State variable to trigger data fetchin
+
   const [fetchData, setFetchData] = useState(false);
 
   //State for item object with properties -->initial state of properties=null
@@ -39,22 +39,21 @@ const AddItemForm = () => {
     quantity,
   } = inventoryItem;
 
-  //function to be called on input changing
   const onInputChange = (e) => {
     setInventoryItem({ ...inventoryItem, [e.target.id]: e.target.value });
   };
 
-  //function to be called on item group selection
+ 
   const onItemGroupChange = (e) => {
     setInventoryItem({ ...inventoryItem, itemGroup: e.target.value });
   };
 
-  // Handle form submission
+
   const handleSave = async (e) => {
     e.preventDefault();
   
     try {
-      // Send a POST request to add the item
+   
       const response = await axios.post("http://localhost:8080/inventory-item/add", inventoryItem);
       if (response.status === 200) {
         Swal.fire({
@@ -67,21 +66,21 @@ const AddItemForm = () => {
         navigate("/item");
       }
     } catch (error) {
-      // Show error message and set errors if any
+   
       Swal.fire({
         icon: "error",
         title: "Error!",
         text: "Failed to add new item. Please check your inputs.",
 
       });
-      if (error.response) {
+      if (error.response && error.response.status === 400) {
         setErrors(error.response.data);
       }
     }
   };
   
 
-  //Form for adding a new item
+ 
   return (
     <form className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14">
       <h1 className="col-span-4 pt-2 text-3xl font-bold ">New item</h1>
@@ -122,12 +121,12 @@ const AddItemForm = () => {
             onChange={onItemGroupChange}
             className="w-[300px] h-10 ml-5 bg-white  "
           >
-            <MenuItem value="computerAccessories">
+            <MenuItem value="COMPUTER_ACCESSORIES">
               Computer accessories
             </MenuItem>
-            <MenuItem value="printer">Printer</MenuItem>
-            <MenuItem value="computerHardware">Computer hardware</MenuItem>
-            <MenuItem value="other">Other</MenuItem>
+            <MenuItem value="PRINTER">Printer</MenuItem>
+            <MenuItem value="COMPUTER_HARDWARE">Computer hardware</MenuItem>
+            <MenuItem value="OTHER">Other</MenuItem>
           </Select>
         </div>
       </div>

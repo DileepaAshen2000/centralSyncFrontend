@@ -7,14 +7,11 @@ import axios from "axios";
 const EditItem = () => {
   const navigate = useNavigate();
 
-  //state variable to catch error messages sent from API
   const [errors, setErrors] = useState({});
 
-  // Get item itemID from route parameters
   const { itemID } = useParams();
 
 
-  //State for item object with properties -->initial state of properties=null
   const [inventoryItem, setInventoryItem] = useState({
     itemName: "",
     itemGroup: "",
@@ -26,7 +23,6 @@ const EditItem = () => {
     quantity: ""
   });
 
-  //Destructure the state
   const {
     itemName,
     itemGroup,
@@ -38,17 +34,14 @@ const EditItem = () => {
     quantity
   } = inventoryItem;
 
-  //function to be called on input changing
   const onInputChange = (e) => {
     setInventoryItem({ ...inventoryItem, [e.target.id]: e.target.value });
   };
 
-  //function to be called on item group selection
   const onItemGroupChange = (e) => {
     setInventoryItem({ ...inventoryItem, itemGroup: e.target.value });
   };
 
-  // Fetch item details from the API on component mount
 useEffect(() => {
   const fetchItemDetails = async () => {
     try {
@@ -73,7 +66,6 @@ useEffect(() => {
   fetchItemDetails();
 }, [itemID]);
 
-// Handle saving edited item details
 const handleSave = async () => {
   try {
     const response = await axios.put(`http://localhost:8080/inventory-item/updateById/${itemID}`, inventoryItem);
@@ -97,7 +89,6 @@ const handleSave = async () => {
   }
 };
 
-  // Form for editing item details
   return (
     <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
       <h1 className=" col-span-4 text-3xl pt-2  font-bold">Item Details</h1>
@@ -152,13 +143,14 @@ const handleSave = async () => {
             onChange={onItemGroupChange}
             className="w-[300px] h-10 ml-5 bg-white  "
           >
-            <MenuItem value="computerAccessories">
+           <MenuItem value="COMPUTER_ACCESSORIES">
               Computer accessories
             </MenuItem>
-            <MenuItem value="printer">Printers</MenuItem>
-            <MenuItem value="computerHardware">Computer hardware</MenuItem>
-            <MenuItem value="other">other</MenuItem>
+            <MenuItem value="PRINTER">Printer</MenuItem>
+            <MenuItem value="COMPUTER_HARDWARE">Computer hardware</MenuItem>
+            <MenuItem value="OTHER">Other</MenuItem>
           </Select>
+          
         </div>
       </div>
 
@@ -178,6 +170,7 @@ const handleSave = async () => {
             InputProps={{
               className: "w-[300px] h-10 ml-5 bg-white  ",
             }}
+            helperText="The quantity measurement unit(e.g., pcs, kg, boxes,)."
           />
         </div>
       </div>

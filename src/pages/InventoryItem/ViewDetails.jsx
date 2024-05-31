@@ -14,12 +14,10 @@ import axios from "axios";
 
 const ViewItemDetails = () => {
   const navigate = useNavigate();
-  // Get item itemID from route parameters
   const { itemID } = useParams();
 
 
 
-  //State for item object with properties -->initial state of properties=null
   const [inventoryItem, setInventoryItem] = useState({
     itemName: "",
     itemGroup: "",
@@ -32,7 +30,6 @@ const ViewItemDetails = () => {
     status: "",
   });
 
-  //Destructure the state
   const {
     itemName,
     itemGroup,
@@ -68,26 +65,21 @@ const ViewItemDetails = () => {
   }, [itemID]);
   
 
-  // State variable to keep track of the anchor element for the popover
   const [anchorEl, setAnchorEl] = useState(null);
 
-    // State variable to manage the open/close state of the popover
   const [isOpen, setIsOpen] = useState(false);
 
   
-  // Handle click of "More" button
   const handleMoreButton = (event) => {
     setAnchorEl(event.currentTarget);
     setIsOpen(true);
   };
 
-    // Handle closing of the popover
   const handleClose = () => {
     setAnchorEl(null);
     setIsOpen(false);
   };
 
-    // Handle deletion of the item
   const handleDelete = () => {
     try {
       axios
@@ -101,7 +93,6 @@ const ViewItemDetails = () => {
     }
   };
 
-    // Handle marking the item as inactive
   const handleMarkAsInactiveButton = () => {
     axios
       .patch(`http://localhost:8080/inventory-item/updateStatus/${itemID}`)
@@ -115,7 +106,6 @@ const ViewItemDetails = () => {
   };
 
 
-  //form that contains item details
   return (
     <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
       <h1 className=" col-span-4 text-3xl pt-2 font-bold ">Item Details</h1>
@@ -138,7 +128,6 @@ const ViewItemDetails = () => {
         <InputLabel
           htmlFor="name"
           className="flex-none text-black w-32 "
-          required
         >
           Item Name
         </InputLabel>
@@ -163,12 +152,12 @@ const ViewItemDetails = () => {
            
             className="w-[300px] h-10 ml-5 bg-white  "
           >
-            <MenuItem value="computerAccessories">
+            <MenuItem value="COMPUTER_ACCESSORIES">
               Computer accessories
             </MenuItem>
-            <MenuItem value="printer">Printer</MenuItem>
-            <MenuItem value="computerHardware">Computer hardware</MenuItem>
-            <MenuItem value="other">other</MenuItem>
+            <MenuItem value="PRINTER">Printer</MenuItem>
+            <MenuItem value="COMPUTER_HARDWARE">Computer hardware</MenuItem>
+            <MenuItem value="OTHER">Other</MenuItem>
           </Select>
         </div>
       </div>

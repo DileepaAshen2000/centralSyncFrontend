@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { InputLabel, TextField } from "@mui/material";
+import { InputLabel, TextField, Typography } from "@mui/material";
 import { Button } from "@mui/material";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -9,10 +9,8 @@ import Swal from "sweetalert2";
 const NewOrderForm = () => {
   const navigate = useNavigate();
 
-  //state variable to catch error messages sent from API
   const [errors, setErrors] = useState({});
 
-  //State for order object with properties -->initial state of properties=null
   const [order, setOrder] = useState({
     vendorName: "",
     companyName: "",
@@ -23,9 +21,9 @@ const NewOrderForm = () => {
     bandName: "",
     quantity: "",
     description: "",
+    file: null,
   });
 
-  //Destructure the state
   const {
     vendorName,
     companyName,
@@ -38,12 +36,11 @@ const NewOrderForm = () => {
     description,
   } = order;
 
-  //function to be called on input changing
   const onInputChange = (e) => {
     setOrder({ ...order, [e.target.id]: e.target.value });
   };
 
-  const handleClick = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const order = {
       vendorName,
@@ -55,9 +52,13 @@ const NewOrderForm = () => {
       brandName,
       quantity,
     };
-  
+
+    
     try {
-      const response = await axios.post("http://localhost:8080/orders/add", order);
+      const response = await axios.post(
+        "http://localhost:8080/orders/add",
+        order
+      );
       if (response.status === 200) {
         console.log(response.data);
         Swal.fire({
@@ -85,9 +86,13 @@ const NewOrderForm = () => {
       }
     }
   };
-  
 
-  //Form for initiate a new order
+  // Function to handle file selection
+  const handleFileChange = (e) => {
+    setOrder({ ...order, file: e.target.files[0] }); // Update file state with the selected file
+  };
+
+
   return (
     <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
       <h1 className=" col-span-4 text-3xl pt-2 font-bold ">New Order</h1>
@@ -167,7 +172,9 @@ const NewOrderForm = () => {
         </InputLabel>
         <div>
           {errors.mobile && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.mobile}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
+              {errors.mobile}
+            </div>
           )}
           <TextField
             id="mobile"
@@ -203,7 +210,9 @@ const NewOrderForm = () => {
         </InputLabel>
         <div>
           {errors.itemName && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.itemName}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
+              {errors.itemName}
+            </div>
           )}
           <TextField
             id="itemName"
@@ -246,7 +255,9 @@ const NewOrderForm = () => {
         </InputLabel>
         <div>
           {errors.quantity && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.quantity}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
+              {errors.quantity}
+            </div>
           )}
           <TextField
             id="quantity"
@@ -278,17 +289,30 @@ const NewOrderForm = () => {
           }}
         />
       </div>
+      <div className="flex-row col-span-10 col-start-1 ">
+        <Typography display="block" gutterBottom>
+          Attach File(s) to initiate the order{" "}
+        </Typography>
+        <input
+          type="file"
+          onChange={handleFileChange}
+          className="mt-4 mb-2"
+        ></input>
+        <Typography variant="caption" display="block" gutterBottom>
+          You can upload a maximum of 1 file, 5MB each
+        </Typography>
+      </div>
 
       <Button
         variant="contained"
-        className="row-start-11 col-start-6 col-span-3 w-[60%]  rounded-sm bg-blue-600  m-5"
-        onClick={handleClick}
+        className="row-start-13 col-start-6 col-span-3 w-[60%]  rounded-sm bg-blue-600  m-5"
+        onClick={handleSubmit}
       >
         Initiate the Order
       </Button>
       <Button
         variant="outlined"
-        className="row-start-11 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600 m-5"
+        className="row-start-13 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600 m-5"
         onClick={() => navigate("/order")}
       >
         Cancel
