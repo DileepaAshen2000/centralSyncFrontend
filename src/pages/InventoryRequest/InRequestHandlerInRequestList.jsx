@@ -51,7 +51,7 @@ function MyRequestTable() {
         rows={rows}
         columns={columns}
         onRowClick={(row) => {
-          navigate(`/in-request-handler/in-request-document/${row.id}`)
+          navigate(`/in-request-handlerlist/in-request-document/${row.id}`)
         }}
         initialState={{
           pagination: {
@@ -96,7 +96,7 @@ function EmployeeRequestTable() {
         rows={rows}
         columns={columns}
         onRowClick={(row) => {
-          navigate(`/inventory-request/request-document/${row.id}`)
+          navigate(`/in-request-handlerlist/in-request-document/${row.id}`)
         }}
         initialState={{
           pagination: {
