@@ -45,6 +45,7 @@ import NewReservation from "./Reservation/NewReservation"
 import TicketDocument from "./Ticket/Ticketdoc";
 
 
+
 const Home = () => {
   return (
     <div>
@@ -95,6 +96,7 @@ const Home = () => {
               <Route path="/user/editUser/:ID" element={<Userupdate />} />
               <Route path="/history" element={<UserActivityHistory />}></Route>
               <Route path="/user/users/:ID" element={<ViewUser/>}></Route>
+             
 
 
               {/* Ticket routing */}

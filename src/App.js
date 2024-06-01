@@ -1,18 +1,19 @@
 import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import FileTest from "./components/fileTest"
+import CreatePassword from "./pages/User/CreatePassword";
+//import FileTest from "./components/fileTest";
 
-
-
-function App() {
+const App = () => {
   return (
-    <div>
-      <Home/>
-      {/* <FileTest/> */}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/user/set-password" element={<CreatePassword />} />
+        {/*<Route path="/file-test" element={<FileTest />} />*/}
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
-
-
