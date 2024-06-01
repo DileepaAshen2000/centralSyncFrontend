@@ -23,12 +23,12 @@ const AdjustmentDocument = () => {
     reason:"",
     date:"",
     description:"",
-    newQuantity:"",
+    adjustedQuantity:"",
     status:"",
     itemId:""
   })
 
-const{reason,date,description,newQuantity,status,itemId} = adj;
+const{reason,date,description,adjustedQuantity,status,itemId} = adj;
 const [item,setItem] = useState({  // create state for adjustment, initial state is empty with object.
   itemName:"",
   quantity:""
@@ -115,7 +115,7 @@ const loadAdjustment = async () => {
       // Set the href attribute to the URL of the blob
       link.href = url;
       // Set the download attribute to specify the file name with .pdf extension
-      link.download = 'downloaded_file.pdf'; // Specify .pdf extension for the downloaded file
+      link.download = 'CentralSync_Document.pdf'; // Specify .pdf extension for the downloaded file
       // Simulate a click on the anchor tag to trigger the download
       document.body.appendChild(link);
       link.click();
@@ -187,8 +187,8 @@ const loadAdjustment = async () => {
                     <TableCell align="right">{itemId}</TableCell>
                     <TableCell align="right">{itemName}</TableCell>
                     <TableCell align="right">{quantity}</TableCell>
-                    <TableCell align="right">{newQuantity}</TableCell>
-                    <TableCell align="right">{newQuantity - quantity}</TableCell>
+                    <TableCell align="right">{quantity}</TableCell>
+                    <TableCell align="right">{adjustedQuantity}</TableCell>
                   </TableRow>
               </TableBody>
             </Table>
@@ -208,6 +208,7 @@ const loadAdjustment = async () => {
             <Typography variant="caption" gutterBottom>Generated Date/Time : </Typography>
             <Typography variant="caption" gutterBottom>{formattedDateTime}</Typography>
           </div>
+          <Typography variant="caption" gutterBottom>Computer Generated Report By CENTRAL SYNC &#174; | No Signature Required.</Typography>
         </div>
        
        {/* Footer part */}

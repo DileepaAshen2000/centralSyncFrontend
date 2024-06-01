@@ -6,13 +6,10 @@ import axios from "axios";
 
 const EditOrderDetails = () => {
   const navigate = useNavigate();
-  // Getting the order ID from the URL params
   const { orderID } = useParams();
 
-  //state variable to catch error messages sent from API
   const [errors, setErrors] = useState({});
 
-  //State for order object with properties -->initial state of properties=null
   const [order, setOrder] = useState({
     vendorName: "",
     companyName: "",
@@ -25,7 +22,6 @@ const EditOrderDetails = () => {
     description: "",
   });
 
-  //Destructure the state
   const {
     vendorName,
     companyName,
@@ -38,12 +34,10 @@ const EditOrderDetails = () => {
     description,
   } = order;
 
-  //function to be called on input changing
   const onInputChange = (e) => {
     setOrder({ ...order, [e.target.id]: e.target.value });
   };
 
-  // Fetching the order details by ID
 useEffect(() => {
   const fetchOrderDetails = async () => {
     try {
@@ -68,7 +62,6 @@ useEffect(() => {
   fetchOrderDetails();
 }, [orderID]);
 
-// Function to handle saving the edited order details
 const handleSave = async () => {
   try {
     const response = await axios.put(`http://localhost:8080/orders/updateById/${orderID}`, order);

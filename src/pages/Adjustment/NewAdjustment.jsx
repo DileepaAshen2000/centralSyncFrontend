@@ -20,6 +20,7 @@ const NewAdjustment = () => {
     date:new Date().toISOString().split("T")[0], // Set to today's date
     description:"",
     newQuantity:"",
+    adjustedQuantity:"",
     itemId:"",
     file: null
   })
@@ -29,9 +30,9 @@ const NewAdjustment = () => {
   })
   const [errors, setErrors] = useState({}); // State to manage errors for input fields
   const [options, setOptions] = useState([]);
-  const [selectedItemId, setSelectedItemId] = useState(null);
+  const [selectedItemId, setSelectedItemId] = useState("Select an Item");
   
-  const{reason,date,description,newQuantity,itemId,file} = adj; // Destructure the adj state
+  const{reason,date,description,newQuantity,adjustedQuantity,itemId,file} = adj; // Destructure the adj state
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,11 +67,16 @@ const NewAdjustment = () => {
     } catch (error) {
       console.error('Error fetching item details:', error);
     }
-  }
-  //Add onChange event to the input fields
-  const onInputChange= async (e)=>{
-    setAdj({...adj,[e.target.name]:e.target.value});
-    setErrors({ ...errors, [e.target.name]: '' }); // Clear error when input changes
+  };
+
+  const onInputChange = async (e) => {
+    const { name, value } = e.target;
+    let updatedAdj = { ...adj, [name]: value };
+    if (name === "newQuantity") {
+      updatedAdj.adjustedQuantity = value - item.quantity;
+    }
+    setAdj(updatedAdj);
+    setErrors({ ...errors, [name]: '' });
   };
 
   const onSubmit=async(e)=>{
@@ -87,7 +93,7 @@ const NewAdjustment = () => {
       formData.append('reason', reason);
       formData.append('date', date);
       formData.append('description', description);
-      formData.append('newQuantity', newQuantity);
+      formData.append('adjustedQuantity', adjustedQuantity);
       formData.append('itemId', itemId);
       formData.append('file', file); // Append the file to the formData
 
@@ -284,7 +290,7 @@ const NewAdjustment = () => {
       <div className="flex-row col-span-10 col-start-1 ">
         <Typography display='block' gutterBottom>Attach File(s) to inventory adjustment </Typography>
         <input type='file' className="mt-4 mb-2" onChange={handleFileChange}></input>
-        <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
+        <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 1 file, 5MB each</Typography>
       </div>
 
       

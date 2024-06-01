@@ -141,12 +141,16 @@ const SideBar = () => {
               <ListItemText primary="View History" />
             </ListItem>
           </a>
-          <ListItem button className="pl-8 rounded-lg">
-            <ListItemText primary="Inventory Summary" />
-          </ListItem>
-          <ListItem button className="pl-8 rounded-lg">
-            <ListItemText primary="Stock Alert" />
-          </ListItem>
+          <a href="/report/inventory-summary">
+            <ListItem button className="pl-8 rounded-lg">
+              <ListItemText primary="Inventory Summary" />
+            </ListItem>
+          </a>
+          <a href="/report/low-stock-report">
+            <ListItem button className="pl-8 rounded-lg">
+              <ListItemText primary="Stock Alert" />
+            </ListItem>
+          </a>
           <a href="/report/item-usage-analysis">
           <ListItem button className="pl-8 rounded-lg">
             <ListItemText primary="Item Usage Analysis" />

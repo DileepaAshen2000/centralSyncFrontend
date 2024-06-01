@@ -19,11 +19,12 @@ const EditAdjustment = () => {
     reason:"",
     date:new Date().toISOString().split("T")[0], // Set to today's date
     description:"",
+    adjustedQuantity:0,
     newQuantity:"",
     itemId:"",
     file:null
   })
-  const{reason,date,description,newQuantity,itemId,file} = adj;
+  const{reason,date,description,newQuantity,adjustedQuantity,itemId,file} = adj;
   
   const [item,setItem] = useState({  // create state for item, initial state is empty with object.
     itemName:"",
@@ -34,9 +35,14 @@ const EditAdjustment = () => {
   const [errors, setErrors] = useState({}); // State to manage errors for input fields
   const [flag,setFlag] = useState(0); // To check whether the input fields are changed or not
   
-  const onInputChange=(e)=>{
-    setAdj({...adj,[e.target.name]:e.target.value});
-    setErrors({ ...errors, [e.target.name]: '' });
+  const onInputChange = async (e) => {  //new new
+    const { name, value } = e.target;
+    let updatedAdj = { ...adj, [name]: value };
+    if (name === "newQuantity") {
+      updatedAdj.adjustedQuantity = value - item.quantity;
+    }
+    setAdj(updatedAdj);
+    setErrors({ ...errors, [name]: '' });
     setFlag(1);
   };
 
@@ -59,7 +65,7 @@ const EditAdjustment = () => {
         formData.append('reason', reason);
         formData.append('date', date);
         formData.append('description', description);
-        formData.append('newQuantity', newQuantity);
+        formData.append('adjustedQuantity', adjustedQuantity);
         formData.append('itemId', itemId);
         formData.append('file', file); // Append the file to the formData
 
@@ -282,7 +288,7 @@ const EditAdjustment = () => {
                     <TableCell align="right"><TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}
                       error={!!errors.newQuantity}
                       helperText={errors.newQuantity}></TextField></TableCell>
-                    <TableCell align="right">{newQuantity - quantity}</TableCell>
+                    <TableCell align="right">{newQuantity-quantity}</TableCell>
                   </TableRow>
               </TableBody>  
             </Table>

@@ -27,7 +27,7 @@ const AdjustmentList = () => {
             id: adj.adjId,
             reason: adj.reason,
             description: adj.description,
-            adjusted_Qty: adj.newQuantity,
+            adjusted_Qty: adj.adjustedQuantity,
             date: adj.date,
             status:adj.status
         }));
