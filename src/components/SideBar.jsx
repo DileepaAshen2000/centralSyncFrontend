@@ -11,12 +11,14 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import React, { useState } from "react";
+import LoginService from "../pages/Login/LoginService";
 
 // React component for the SideBar
 const SideBar = () => {
   const [openInventory, setOpenInventory] = useState(false);
   const [openRequestReservation, setOpenRequestReservation] = useState(false);
   const [openReport, setOpenReport] = useState(false);
+  const isEmployee = LoginService.isWebDev();
 
   const handleInventoryClick = () => {
     setOpenInventory(!openInventory);
@@ -33,7 +35,7 @@ const SideBar = () => {
   return (
     <List className="mx-2 mt-2">
       {/* Dashboard sections */}
-      <a href="/">
+      <a href="/admin-dashboard">
         <ListItem
           button
           className="rounded-lg hover:bg-blue-100 focus:bg-blue-400"
@@ -79,15 +81,18 @@ const SideBar = () => {
       </Collapse>
 
       {/* User */}
-      <a href="/user">
-      <ListItem
-        button
-        className="rounded-lg hover:bg-blue-100 focus:bg-blue-400"
-      >
-        <PersonIcon></PersonIcon>
-        <ListItemText primary="User" className="pl-4 pr-4" />
-      </ListItem>
-      </a>
+      {!isEmployee && (
+        <a href="/user">
+          <ListItem
+            button
+            className="rounded-lg hover:bg-blue-100 focus:bg-blue-400"
+          >
+            <PersonIcon></PersonIcon>
+            <ListItemText primary="User" className="pl-4 pr-4" />
+          </ListItem>
+        </a>
+      )}
+      
 
       {/* Request & Reservation with dropdown and sub-parts */}
       <ListItem

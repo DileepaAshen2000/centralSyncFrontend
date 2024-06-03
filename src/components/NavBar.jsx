@@ -20,6 +20,7 @@ import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { Link, useNavigate } from "react-router-dom";
 import LoginService from '../pages/Login/LoginService';
+import { useEffect } from 'react';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -66,6 +67,7 @@ export default function NavBar() {
 
   const navigate = useNavigate();
   const isAuthenticated = LoginService.isAuthenticated();
+  const [profileInfo, setProfileInfo] = useState({});
   
   // sidebar open and close for profile section
   const [SidebarOpen, setSidebarOpen] = useState(false);
@@ -85,7 +87,22 @@ export default function NavBar() {
         LoginService.logout();
         navigate('/');
     }
-};
+  };
+
+  useEffect(() => {
+    fetchProfileInfo();
+  }, []);
+
+  const fetchProfileInfo = async () => {
+    try {
+
+        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+        const response = await LoginService.getYourProfile(token);
+        setProfileInfo(response.users);
+    } catch (error) {
+        console.error('Error fetching profile information:', error);
+    }
+  };
 
   return (
     <Box sx={{ flexGrow: 1}}>
@@ -117,7 +134,7 @@ export default function NavBar() {
               </Badge>
             </IconButton>
             <div className='flex items-center'>
-              <h4 className='text-black '>Dileepa Ashen</h4>
+              <h4 className='text-black '>{profileInfo.firstName}</h4>
             </div>
             <IconButton
               size="large"
@@ -149,8 +166,9 @@ export default function NavBar() {
           <div className='flex gap-4'>
             <div>Profile Picture</div>
             <div>
-              <h2>User Name</h2>
-              <h4>User Role</h4>
+              <h2>{profileInfo.userId}</h2>
+              <h2>{profileInfo.username}</h2>
+              <h4>{profileInfo.role}</h4>
             </div>
           </div>
           <div>
