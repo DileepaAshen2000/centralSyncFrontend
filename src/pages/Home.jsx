@@ -77,7 +77,7 @@ const Home = () => {
               item
               sm={9.5}
               style={{ backgroundColor: "#eeeeee" }}
-              className="w-screen p-10 h-max"
+              className="w-screen p-10"
             >
                 <Routes>
                   {/* Enter components here, that you want to insert. */}
