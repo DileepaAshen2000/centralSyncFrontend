@@ -18,7 +18,8 @@ import { Button } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import LoginService from '../pages/Login/LoginService';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -62,6 +63,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 
 export default function NavBar() {
+
+  const navigate = useNavigate();
+  const isAuthenticated = LoginService.isAuthenticated();
   
   // sidebar open and close for profile section
   const [SidebarOpen, setSidebarOpen] = useState(false);
@@ -74,6 +78,14 @@ export default function NavBar() {
   const toggleMenu = () => {
     setOpen(!Open);
   };
+
+  const handleLogout = () => {
+    const confirmDelete = window.confirm('Are you sure you want to logout this user?');
+    if (confirmDelete) {
+        LoginService.logout();
+        navigate('/');
+    }
+};
 
   return (
     <Box sx={{ flexGrow: 1}}>
@@ -176,13 +188,17 @@ export default function NavBar() {
                 </Button>
               </div>
               <div className="pb-4">
-                <Button
-                  variant="outlined"
-                  className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-red-600  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
-                >
-                  <LogoutOutlinedIcon className="text-red-600" />
-                  <span>Log out</span>
-                </Button>
+                {isAuthenticated && 
+                  <Link to="/" onClick={handleLogout}>
+                    <Button
+                      variant="outlined"
+                      className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
+                    >
+                      <LogoutOutlinedIcon />
+                      <span>Logout</span>
+                    </Button>
+                  </Link>
+                }
               </div>
             </div>
                
