@@ -55,7 +55,7 @@ const loadStockOut = async () => {
 
 const handleFileDownload = async () => {
   try {
-    const response = await axios.get("http://localhost:8080/stock-in/getFileById/" + soutId, {
+    const response = await axios.get("http://localhost:8080/stock-out/getFileById/" + soutId, {
       responseType: 'blob'
     });
 

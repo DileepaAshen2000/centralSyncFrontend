@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react';
 import axios from 'axios';
+import Battery20SharpIcon from '@mui/icons-material/Battery20Sharp';
 
 const LowStockCard = () => {
   
@@ -19,7 +20,7 @@ const LowStockCard = () => {
   return (
     <div>
       <div className='flex flex-col h-[100%] gap-2 bg-pink-200 w-auto p-4 rounded-lg shadow-xl'>
-        <span>image</span>
+        <Battery20SharpIcon/>
         <span className='text-2xl text-pink-600'>{lowStockCount}</span>
         <span className='text-sm text-gray-800'>Low Stock</span>
       </div>

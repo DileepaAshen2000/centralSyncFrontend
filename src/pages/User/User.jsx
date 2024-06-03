@@ -5,6 +5,8 @@ import { TextField, Button, Stack, Select } from "@mui/material";
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import LoginService from "../Login/LoginService";
+import { is } from "date-fns/locale";
 
 const columns = [
   { field: "id", headerName: "ID", width: 200 },
@@ -17,7 +19,7 @@ const columns = [
 
 export default function User() {
   const navigate = useNavigate();
-
+  const isReqHandler = LoginService.isReqHandler();
   const [rows, setRows] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   useEffect(() => {
@@ -95,13 +97,16 @@ export default function User() {
         ) : (
           <div className="grid grid-cols-6 grid-rows-1 gap-y-7  gap-x-[0.25rem] mt-12 ">
             <div className="col-start-6">
-              <Button
-                variant="contained"
-                className="bg-blue-600 w-[150px] rounded text-white h-10"
-                onClick={() => navigate("/newUser")}
-              >
-                New User
-              </Button>
+              {!isReqHandler && (
+                <Button
+                  variant="contained"
+                  className="bg-blue-600 w-[150px] rounded text-white h-10"
+                  onClick={() => navigate("/newUser")}
+                >
+                  New User
+                </Button>
+              )}
+              
             </div>
           </div>
         )}

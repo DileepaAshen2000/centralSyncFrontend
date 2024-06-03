@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect } from 'react'
 import { useState } from 'react';
+import PeopleAltSharpIcon from '@mui/icons-material/PeopleAltSharp';
 
 const TotalEmpCard = () => {
 
@@ -19,7 +20,7 @@ const TotalEmpCard = () => {
   return (
     <div>
       <div className='flex flex-col h-[100%] gap-2 bg-green-300 w-auto p-4 rounded-lg shadow-xl'>
-        <span>image</span>
+        <PeopleAltSharpIcon/>
         <span className='text-2xl text-green-800'>{empCount}</span>
         <span className='text-sm text-gray-800'>Total Employees</span>
       </div>
