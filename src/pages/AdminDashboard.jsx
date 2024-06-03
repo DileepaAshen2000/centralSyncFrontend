@@ -72,17 +72,8 @@ export default function AdminDashboard() {
           <TotalEmpCard />
           <TotalEmpCard />
         </div>
-        {/* <div className="py-4 text-5xl text-center text-white bg-blue-500 rounded-lg">2</div>
-        <div className="py-4 text-5xl text-center text-white bg-blue-500 rounded-lg">3</div>
-        <div className="py-4 text-5xl text-center text-white bg-blue-500 rounded-lg">4</div>
-        <div className="py-4 text-5xl text-center text-white bg-blue-500 rounded-lg">5</div>
-        <div className="py-4 text-5xl text-center text-white bg-blue-500 rounded-lg">6</div> */}
         <div className="col-span-4 py-4 text-5xl text-center text-white bg-blue-500 rounded-lg row-span-9">pie chart</div>
         <div className="col-span-8 row-span-6 py-4 text-5xl text-center text-white bg-blue-500 rounded-lg">stat</div>
-        {/* <div className="col-span-4 row-span-5 py-4 text-5xl text-center text-white bg-blue-500 rounded-lg">pie chart</div> */}
-        {/* <div className="col-span-4 row-span-3 py-4 text-5xl text-center text-white bg-blue-500 rounded-lg">9</div>
-        <div className="col-span-4 row-span-3 py-4 text-5xl text-center text-white bg-blue-500 rounded-lg">10</div> */}
-
       </div>
       
       <div className="grid grid-cols-12 gap-4 h-[700px] grid-rows-10 mt-4">
