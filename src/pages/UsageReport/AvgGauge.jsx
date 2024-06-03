@@ -7,8 +7,7 @@ const AvgGauge = ({ category, year }) => {
   const [requests, setRequests] = useState([]);
   const [stockIn, setStockIn] = useState([]);
   const [stockOut, setStockOut] = useState([]);
-
-  // Fetch requests data based on category and year
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -24,7 +23,6 @@ const AvgGauge = ({ category, year }) => {
     fetchData();
   }, [category, year]);
 
-  // Fetch stock out data based on category and year
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -40,7 +38,6 @@ const AvgGauge = ({ category, year }) => {
     fetchData();
   }, [category, year]);
 
-  // Fetch stock in data based on category and year
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -55,8 +52,8 @@ const AvgGauge = ({ category, year }) => {
 
     fetchData();
   }, [category, year]);
+ 
 
-  //Calculate total accepted requests for the year
   const totReq = (data) => {
     return data
       .map((req) => req.reqStatus)
@@ -65,7 +62,6 @@ const AvgGauge = ({ category, year }) => {
       }, 0);
   };
 
-  //Calculate total stock in amount for the year
   const totStockIn = (data) => {
     return data
       .map((stock) => stock.inQty)
@@ -74,7 +70,6 @@ const AvgGauge = ({ category, year }) => {
       }, 0);
   };
 
-  //Calculate total stock out amount for the year
   const totStockOut = (data) => {
     return data
       .map((stock) => stock.outQty)
@@ -86,20 +81,19 @@ const AvgGauge = ({ category, year }) => {
   const [valueIndex, setValueIndex] = useState(0);
   const [values, setValues] = useState([]);
 
-  // Initialize the values state when requests, stockIn, and stockOut are updated
   useEffect(() => {
     setValues([
       {
         title: "Average usage per month",
-        value: (totReq(requests) / 12).toFixed(2),
+        value: Math.ceil(totReq(requests) / 12),
       },
       {
         title: "Average stock in per month",
-        value: (totStockIn(stockIn) / 12).toFixed(2),
+        value: Math.ceil(totStockIn(stockIn) / 12),
       },
       {
         title: "Average stock out per month",
-        value: (totStockOut(stockOut) / 12).toFixed(2),
+        value: Math.ceil(totStockOut(stockOut) / 12),
       },
     ]);
   }, [requests, stockIn, stockOut]);
@@ -112,11 +106,10 @@ const AvgGauge = ({ category, year }) => {
 
     // Clear the interval when the component unmounts
     return () => clearInterval(intervalId);
-  }, [values.length]);
+  }, [values.length]); 
 
   return (
     <div className=" w-full h-full bg-white p-4 ">
-      {/* Check if values array is not empty */}
       {values.length > 0 && (
         <>
           <h1 className=" text-xl text-center  ">{values[valueIndex].title}</h1>
@@ -136,13 +129,13 @@ const AvgGauge = ({ category, year }) => {
                   // Determine the fill color based on valueIndex
                   fill:
                     valueIndex === 0
-                      ? "#52b202"
-                      : valueIndex === 1
                       ? "#4169e1"
-                      : "#ff4500",
+                      : valueIndex === 1
+                      ? "#357a38"
+                      : "#ff1744",
                 },
                 [`& .${gaugeClasses.referenceArc}`]: {
-                  fill: theme.palette.text.disabled,
+                  fill: "#D3D3D3",
                 },
               })}
             />

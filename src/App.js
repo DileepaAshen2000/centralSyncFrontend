@@ -1,15 +1,13 @@
 import React from "react";
 import Home from "./pages/Home";
-import FileTest from "./components/fileTest"
-import LowStockTable from "./components/LowStockTable";
-
+import LoginPage from "./pages/Login/LoginPage";
 
 
 function App() {
   return (
     <div>
-      <Home/>
-      {/* <LowStockTable/> */}
+       <Home/>
+       {/* <LoginPage/> */}
     </div>
   );
 }
