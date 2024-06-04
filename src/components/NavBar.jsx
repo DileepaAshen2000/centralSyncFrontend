@@ -18,7 +18,9 @@ import { Button } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import LoginService from '../pages/Login/LoginService';
+import { useEffect } from 'react';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -62,6 +64,10 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 
 export default function NavBar() {
+
+  const navigate = useNavigate();
+  const isAuthenticated = LoginService.isAuthenticated();
+  const [profileInfo, setProfileInfo] = useState({});
   
   // sidebar open and close for profile section
   const [SidebarOpen, setSidebarOpen] = useState(false);
@@ -73,6 +79,29 @@ export default function NavBar() {
   const [Open, setOpen] = useState(false);
   const toggleMenu = () => {
     setOpen(!Open);
+  };
+
+  const handleLogout = () => {
+    const confirmDelete = window.confirm('Are you sure you want to logout this user?');
+    if (confirmDelete) {
+        LoginService.logout();
+        navigate('/');
+    }
+  };
+
+  useEffect(() => {
+    fetchProfileInfo();
+  }, []);
+
+  const fetchProfileInfo = async () => {
+    try {
+
+        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+        const response = await LoginService.getYourProfile(token);
+        setProfileInfo(response.users);
+    } catch (error) {
+        console.error('Error fetching profile information:', error);
+    }
   };
 
   return (
@@ -105,7 +134,7 @@ export default function NavBar() {
               </Badge>
             </IconButton>
             <div className='flex items-center'>
-              <h4 className='text-black '>Dileepa Ashen</h4>
+              <h4 className='text-black '>{profileInfo.firstName}</h4>
             </div>
             <IconButton
               size="large"
@@ -137,8 +166,9 @@ export default function NavBar() {
           <div className='flex gap-4'>
             <div>Profile Picture</div>
             <div>
-              <h2>User Name</h2>
-              <h4>User Role</h4>
+              <h2>{profileInfo.userId}</h2>
+              <h2>{profileInfo.username}</h2>
+              <h4>{profileInfo.role}</h4>
             </div>
           </div>
           <div>
@@ -176,13 +206,17 @@ export default function NavBar() {
                 </Button>
               </div>
               <div className="pb-4">
-                <Button
-                  variant="outlined"
-                  className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-red-600  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
-                >
-                  <LogoutOutlinedIcon className="text-red-600" />
-                  <span>Log out</span>
-                </Button>
+                {isAuthenticated && 
+                  <Link to="/" onClick={handleLogout}>
+                    <Button
+                      variant="outlined"
+                      className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
+                    >
+                      <LogoutOutlinedIcon />
+                      <span>Logout</span>
+                    </Button>
+                  </Link>
+                }
               </div>
             </div>
                

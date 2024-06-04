@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, BrowserRouter } from "react-rou
 import Home from "./pages/Home";
 import CreatePassword from "./pages/User/CreatePassword";
 //import FileTest from "./components/fileTest";
+import LoginPage from "./pages/Login/LoginPage";
+
 
 const App = () => {
   return (
@@ -11,9 +13,12 @@ const App = () => {
         <Route path="/*" element={<Home />} />
         <Route path="/user/:id/password" element={<CreatePassword />} />
         {/*<Route path="/file-test" element={<FileTest />} />*/}
+         {/* <LoginPage/> */}
       </Routes>
     </BrowserRouter>
  
+      
+     
   );
 };
 
