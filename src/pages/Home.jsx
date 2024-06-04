@@ -71,7 +71,7 @@ const Home = () => {
           style={{ backgroundColor: "#eeeeee" }}
           className="w-screen p-10 h-max"
         >
-          <BrowserRouter>
+          
             <Routes>
               {/* Enter components here, that you want to insert. */}
 
@@ -180,7 +180,6 @@ const Home = () => {
                 element={<NewReservation />}
               ></Route>
             </Routes>
-          </BrowserRouter>
         </Grid>
       </Grid>
     </div>
