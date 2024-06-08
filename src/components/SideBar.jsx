@@ -106,7 +106,7 @@ const SideBar = () => {
       </ListItem>
       <Collapse in={openRequestReservation} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <a href="/inventoryRequest">
+          <a href="/admin-in-request-list">
             <ListItem button className="pl-8 rounded-lg">
               <ListItemText primary="Request" />
             </ListItem>

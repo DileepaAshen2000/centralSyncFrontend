@@ -166,9 +166,9 @@ const CreateUser= () => {
               label="Role"
             >
               <MenuItem disabled value={role}></MenuItem>
-              <MenuItem value="Web Developer">Web Developer</MenuItem>
-              <MenuItem value="Software Architect">Software Architect</MenuItem>
-              <MenuItem value="Request Handler">Request Handler</MenuItem>
+              <MenuItem value="ADMIN">Admin</MenuItem>
+              <MenuItem value="REQUEST_HANDLER">Request Handler</MenuItem>
+              <MenuItem value="EMPLOYEE">Employee</MenuItem>
               
             </Select>{" "}
           </div>
