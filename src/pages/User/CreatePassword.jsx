@@ -6,6 +6,7 @@ import axios from "axios";
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import Swal from "sweetalert2";
+import { useNavigate} from "react-router-dom";
 
  
 
@@ -15,6 +16,7 @@ const CreatePassword = () => {
     const [errors, setErrors] = useState({});
     const [matchError, setMatchError] = useState('');
     const { id } = useParams();
+    const navigate = useNavigate();
 
     const passwordCriteria = {
         minLength: {
@@ -68,6 +70,7 @@ const CreatePassword = () => {
               title:'Password sucesfully created!',
               text:'You can now Login to centralsync'
             });
+            navigate("/");
         } catch (error) {
             if (error.response && error.response.data) {
                 const responseData = error.response.data;

@@ -48,6 +48,7 @@ import TicketDocument from "./Ticket/Ticketdoc";
 import InventorySummary from "./UsageReport/InventorySummary";
 import LoginPage from "./Login/LoginPage";
 import LoginService from "./Login/LoginService";
+import CreatePassword from "./User/CreatePassword";
 
 const Home = () => {
   const isAuthenticated = LoginService.isAuthenticated();
@@ -55,6 +56,7 @@ const Home = () => {
   return (
     <BrowserRouter>
       <Routes>
+      <Route path="/user/:id/password" element={<CreatePassword/>}></Route>
         <Route path="/" element={<LoginPage />}></Route>
       </Routes>
       {isAuthenticated && (
@@ -114,7 +116,7 @@ const Home = () => {
                 <Route path="/newUser" element={<CreateUser />} />
                 <Route path="/user/editUser/:ID" element={<Userupdate />} />
                 <Route
-                  path="/history"
+                  path="/history/:userId"
                   element={<UserActivityHistory />}
                 ></Route>
                 <Route path="/user/users/:ID" element={<ViewUser />}></Route>

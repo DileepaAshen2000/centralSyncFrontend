@@ -8,14 +8,17 @@ import LoginPage from "./pages/Login/LoginPage";
 
 const App = () => {
   return (
-    <BrowserRouter>
+     <div>
+        <Home/>
+        
+         {/* <LoginPage/> */}
+           {/*<Router>
       <Routes>
         <Route path="/*" element={<Home />} />
-        <Route path="/user/:id/password" element={<CreatePassword />} />
-        {/*<Route path="/file-test" element={<FileTest />} />*/}
-         {/* <LoginPage/> */}
-      </Routes>
-    </BrowserRouter>
+        <Route path="/user/set-password" element={<CreatePassword />} />
+    </Router>*/}
+      </div>
+       
  
       
      
