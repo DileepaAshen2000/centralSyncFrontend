@@ -21,6 +21,7 @@ const ViewUser = () => {
     email: "",
     department: "",
     role: "",
+    workSite: "",
   });
   const [fetchData, setFetchData] = useState(false);
   const { ID } = useParams();
@@ -145,7 +146,7 @@ const ViewUser = () => {
               <label htmlFor="2">Department</label>
             </div>
             <div className="col-span-2">
-              <Select
+              <TextField
                 value={user.department}
                 name="department"
                 id="department"
@@ -154,11 +155,8 @@ const ViewUser = () => {
                 InputProps={{
                   readOnly: true,
                 }}
-              >
-                <MenuItem disabled value={user.department}></MenuItem>
-                <MenuItem value="Programming">Programming</MenuItem>
-                <MenuItem value="Cybersecurity">Cybersecurity</MenuItem>
-              </Select>
+              />
+               
             </div>
             <div></div>
             <div></div>
@@ -167,21 +165,36 @@ const ViewUser = () => {
               <label htmlFor="3">Role</label>
             </div>
             <div className="col-span-2">
-              <Select
+              <TextField
                 value={user.role}
                 InputProps={{
                   readOnly: true,
                 }}
                 name="role"
+                id="role"
                 className="w-[300px]"
                 size="small"
-              >
-                <MenuItem disabled value={user.role}></MenuItem>
-                <MenuItem value="Web Developer">Web Developer</MenuItem>
-                <MenuItem value="Software Architect">
-                  Software Architect
-                </MenuItem>
-              </Select>
+              />
+                 
+            </div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div className="col-span-1 row-span-1">
+              <label htmlFor="3">Work Site</label>
+            </div>
+            <div className="col-span-2">
+              <TextField
+                value={user.workSite}
+                InputProps={{
+                  readOnly: true,
+                }}
+                name="workSite"
+                id="workSite"
+                className="w-[300px]"
+                size="small"
+              />
+                 
             </div>
             <div></div>
             <div></div>
