@@ -141,7 +141,7 @@ const SideBar = () => {
       </ListItem>
       <Collapse in={openReport} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <a href="/history">
+          <a href="/history/:userId">
             <ListItem button className="pl-8 rounded-lg">
               <ListItemText primary="View History" />
             </ListItem>

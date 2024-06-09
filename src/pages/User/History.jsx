@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Timeline from "@mui/lab/Timeline";
 import TimelineItem from "@mui/lab/TimelineItem";
@@ -10,14 +10,14 @@ import TimelineOppositeContent from "@mui/lab/TimelineOppositeContent";
 import Chip from "@mui/material/Chip";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import Typography from "@mui/material/Typography";
-import { useNavigate,useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import TextField from "@mui/material/TextField";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import notfound from '../../assests/notfound.jpg';
+import notfound from "../../assests/notfound.jpg";
 import LoginService from "../Login/LoginService";
 import UserIcon from "@mui/icons-material/Person"; // Example icon for user activities
 import TicketIcon from "@mui/icons-material/ConfirmationNumber"; // Example icon for tickets
@@ -42,6 +42,13 @@ const UserActivityHistory = () => {
   const navigate = useNavigate();
   const isAuthenticated = LoginService.isAuthenticated();
   const [profileInfo, setProfileInfo] = useState({});
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   useEffect(() => {
     fetchProfileInfo();
@@ -55,31 +62,27 @@ const UserActivityHistory = () => {
 
   const fetchProfileInfo = async () => {
     try {
-
-        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-        const response = await LoginService.getYourProfile(token);
-        setProfileInfo(response.users);
+      const token = localStorage.getItem("token"); // Retrieve the token from localStorage
+      const response = await LoginService.getYourProfile(token);
+      setProfileInfo(response.users);
     } catch (error) {
-        console.error('Error fetching profile information:', error);
+      console.error("Error fetching profile information:", error);
     }
   };
-  
-  
-    // Fetch user activity logs from the backend API
-    const fetchActivityLogs = async (userId) => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/user-activity-log/${userId}`
-        );
-        setActivityLogs(response.data);
-        setFilteredLogs(response.data.reverse());
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching user activity logs:", error);
-      }
-    };
 
-  
+  // Fetch user activity logs from the backend API
+  const fetchActivityLogs = async (userId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/user-activity-log/${userId}`
+      );
+      setActivityLogs(response.data);
+      setFilteredLogs(response.data.reverse());
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching user activity logs:", error);
+    }
+  };
 
   useEffect(() => {
     Aos.init({ duration: 2000 });
@@ -124,7 +127,6 @@ const UserActivityHistory = () => {
     }
 
     setFilteredLogs(filtered);
-    
   };
 
   // Function to handle action click
@@ -161,83 +163,80 @@ const UserActivityHistory = () => {
     switch (true) {
       case action.includes("inactive"):
         return <BlockIcon className="bg-red-500 rounded-full h-7 w-7" />;
-        case action.includes("Delete"):
-          return <DeleteIcon/>;
-          case action.includes("approved"):
-            return <CheckCircleIcon />;
-            case action.includes("rejected"):
-              return <CancelIcon/>;
-              case action.includes("reviewed"):
-                return <ReviewIcon />;
+      case action.includes("Delete"):
+        return <DeleteIcon className="bg-red-500 rounded-full h-7 w-7" />;
+      case action.includes("approved"):
+        return<CheckCircleIcon className="bg-green-800 rounded-full h-7 w-7" />
+      case action.includes("rejected"):
+        return <CancelIcon className="bg-red-500 rounded-full h-7 w-7" />;
+      case action.includes("reviewed"):
+        return <ReviewIcon className="bg-blue-500 rounded-full h-7 w-7" />;
       case action.includes("User"):
-        return <UserIcon className="bg-green-500 rounded-full h-7 w-7"/>;
+        return <UserIcon className="bg-green-500 rounded-full h-7 w-7" />;
       case action.includes("ticket"):
-        return <TicketIcon />;
+        return <TicketIcon className="bg-yellow-500 rounded-full h-7 w-7" />;
       case action.includes("Stock In"):
       case action.includes("Stock Out"):
-        return <StockIcon />;
+        return <StockIcon className="bg-purple-500 rounded-full h-7 w-7" />;
       case action.includes("Request"):
-        return <RequestIcon />;
+        return <RequestIcon className="bg-orange-500 rounded-full h-7 w-7" />;
       case action.includes("Reservation"):
-        return <ReservationIcon />;
+        return <ReservationIcon className="bg-yellow-500 rounded-full h-7 w-7" />
       case action.includes("Item"):
-        return <ItemIcon className="bg-blue-500 rounded-full h-7 w-7"/>;
+        return <ItemIcon className="bg-blue-700 rounded-full h-7 w-7" />;
       case action.includes("Order"):
-        return <OrderIcon />;
+        return <OrderIcon className="bg-green-700 rounded-full h-7 w-7" />;
       case action.includes("Adjustment"):
-        return <AdjustmentIcon />;
+        return <AdjustmentIcon className="bg-blue-800 rounded-full h-7 w-7" />;
       default:
-        return <TimelineDot />;
+        return <TimelineDot className="bg-red-500 rounded-full h-7 w-7" />;
     }
   };
-
-
-  
 
   return (
     <React.Fragment>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <div className="pt-5 pb-10">
-          <div className="bg-white  flex flex-col  shadow-md min-h-screen rounded-xl">
-            <div>
-              <h1 className="p-4 text-3xl font-bold">Recent Activities</h1>
-              <div className="grid grid-cols-6 grid-rows-1  gap-x-[0.25rem] pt-5 ">
+          <div className="bg-white  flex flex-col rounded-xl shadow-md min-h-screen ">
+            <div className="bg-blue-300">
+              <h1 className="p-4 text-4xl font-bold">Recent Activities</h1>
+              <div className="grid grid-cols-8 grid-rows-1  gap-x-[0.25rem] pt-5 ">
                 <div className="col-span-1 px-11">
                   <AccountCircleOutlinedIcon className="text-[70px]" />
                 </div>
-                <div className="col-span-1">
+                <div className="col-span-2">
                   <Typography variant="subtitle1" className="font-semibold">
-                    {profileInfo.firstName}{" "}{profileInfo.lastName}
+                    {profileInfo.firstName} {profileInfo.lastName}
                   </Typography>
                   <Typography variant="subtitle1" className="font-semibold">
-                  {profileInfo.userId}
+                    {profileInfo.userId}
                   </Typography>
                   <Typography variant="subtitle1" className="font-semibold">
-                  {profileInfo.role}
+                    {profileInfo.role}
                   </Typography>
                 </div>
-                <div className="col-span-2">
+                <div className="col-start-5 col-span-1">
                   <DatePicker
-                    label="Filter by Date"
+                    label="Search by Date"
                     value={selectedDate}
                     onChange={handleDateChange}
+                    className="w-[250px] bg-slate-200 border"
                     renderInput={(params) => <TextField {...params} />}
                   />
                 </div>
-                <div className="col-span-2">
+                <div className="col-start-7 col-span-1 gap-2">
                   <TextField
-                    label="Filter by Keyword"
+                    label="Search by Activity"
                     value={selectedWord}
                     onChange={(e) => handleWordChange(e.target.value)}
-                    
+                    className="w-[250px] bg-slate-200"
                   />
                 </div>
               </div>
               <div>
-                <hr className="border-[#796F6F]" />
+                <hr className="border-black border-2" />
               </div>
             </div>
-
             <Timeline className="pt-12">
               {filteredLogs.map((log) => (
                 <TimelineItem key={log.userId}>
@@ -247,20 +246,23 @@ const UserActivityHistory = () => {
                         <>
                           {log.date}
                           {"  "}
+
                           {log.time}
                         </>
                       }
                       component="a"
                       variant="outlined"
                       data-aos="zoom-in"
-                      className="w-[500px] h-[50px] font-semibold text-black  space-x-5 border-none "
+                      className="w-[500px] h-[50px]   text-black  space-x-5 border-none text-sm "
                     />
                   </TimelineOppositeContent>
                   <TimelineSeparator>
                     <TimelineDot
                       className="bg-transparent shadow-none  h-6"
                       data-aos="zoom-in"
-                    >{getIcon(log.action)}</TimelineDot>
+                    >
+                      {getIcon(log.action)}
+                    </TimelineDot>
                     <TimelineConnector
                       className="bg-black"
                       data-aos="zoom-in"
@@ -273,23 +275,26 @@ const UserActivityHistory = () => {
                       href="#basic-chip"
                       variant="outlined"
                       data-aos="zoom-in"
-                      className="bg-slate-300 w-[310px] h-[50px] font-semibold text-black  border-2  space-x-5 shadow-xl"
+                      className="w-[310px] h-[50px] rounded-lg border-black font-semibold text-black  space-x-5 shadow-xl  "
                       clickable
-                      onClick={() => handleActionClick(log.entityId, log.action)}
+                      onClick={() =>
+                        handleActionClick(log.entityId, log.action)
+                      }
                     />
                   </TimelineContent>
                 </TimelineItem>
               ))}
             </Timeline>
             <div className="flex justify-center items-center h-full pb-[30%] ">
-            {noActivitiesFound && (
-              <div>
-  <img src={notfound} className="w-[80px] h-auto pr-[50px]"/><Typography variant="h4" className="p-4 font-semibold">
-    No activities found.
-  </Typography>
-  </div>
-)}
-</div>
+              {noActivitiesFound && (
+                <div>
+                  <img src={notfound} className="w-[80px] h-auto pr-[50px]" />
+                  <Typography variant="h4" className="p-4 font-semibold">
+                    No activities found.
+                  </Typography>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </LocalizationProvider>
