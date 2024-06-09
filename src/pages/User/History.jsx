@@ -10,28 +10,28 @@ import TimelineOppositeContent from "@mui/lab/TimelineOppositeContent";
 import Chip from "@mui/material/Chip";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import Typography from "@mui/material/Typography";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import TextField from "@mui/material/TextField";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import notfound from "../../assests/notfound.jpg";
 import LoginService from "../Login/LoginService";
-import UserIcon from "@mui/icons-material/Person"; // Example icon for user activities
-import TicketIcon from "@mui/icons-material/ConfirmationNumber"; // Example icon for tickets
-import StockIcon from "@mui/icons-material/Inventory"; // Example icon for stock
-import RequestIcon from "@mui/icons-material/RequestPage"; // Example icon for requests
-import ReservationIcon from "@mui/icons-material/Book"; // Example icon for reservations
-import ItemIcon from "@mui/icons-material/Category"; // Example icon for items
-import OrderIcon from "@mui/icons-material/ShoppingCart"; // Example icon for orders
-import AdjustmentIcon from "@mui/icons-material/Tune"; // Example icon for adjustments
+import UserIcon from "@mui/icons-material/Person";
+import TicketIcon from "@mui/icons-material/ConfirmationNumber";
+import StockIcon from "@mui/icons-material/Inventory";
+import ReservationIcon from "@mui/icons-material/Book";
+import ItemIcon from "@mui/icons-material/Category";
+import OrderIcon from "@mui/icons-material/ShoppingCart";
+import AdjustmentIcon from "@mui/icons-material/Tune";
 import DeleteIcon from "@mui/icons-material/Delete";
 import BlockIcon from "@mui/icons-material/Block";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ReviewIcon from "@mui/icons-material/RateReview";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import image from "../../assests/cursor.png";
 
 const UserActivityHistory = () => {
   const [activityLogs, setActivityLogs] = useState([]);
@@ -40,15 +40,7 @@ const UserActivityHistory = () => {
   const [selectedWord, setSelectedWord] = useState([]);
   const [noActivitiesFound, setNoActivitiesFound] = useState(false);
   const navigate = useNavigate();
-  const isAuthenticated = LoginService.isAuthenticated();
   const [profileInfo, setProfileInfo] = useState({});
-  const [showPassword, setShowPassword] = React.useState(false);
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
 
   useEffect(() => {
     fetchProfileInfo();
@@ -166,7 +158,9 @@ const UserActivityHistory = () => {
       case action.includes("Delete"):
         return <DeleteIcon className="bg-red-500 rounded-full h-7 w-7" />;
       case action.includes("approved"):
-        return<CheckCircleIcon className="bg-green-800 rounded-full h-7 w-7" />
+        return (
+          <CheckCircleIcon className="bg-green-800 rounded-full h-7 w-7" />
+        );
       case action.includes("rejected"):
         return <CancelIcon className="bg-red-500 rounded-full h-7 w-7" />;
       case action.includes("reviewed"):
@@ -178,10 +172,12 @@ const UserActivityHistory = () => {
       case action.includes("Stock In"):
       case action.includes("Stock Out"):
         return <StockIcon className="bg-purple-500 rounded-full h-7 w-7" />;
-      case action.includes("Request"):
-        return <RequestIcon className="bg-orange-500 rounded-full h-7 w-7" />;
+      case action.includes("request"):
+        return <InventoryIcon className="bg-orange-500 rounded-full h-7 w-7" />;
       case action.includes("Reservation"):
-        return <ReservationIcon className="bg-yellow-500 rounded-full h-7 w-7" />
+        return (
+          <ReservationIcon className="bg-yellow-500 rounded-full h-7 w-7" />
+        );
       case action.includes("Item"):
         return <ItemIcon className="bg-blue-700 rounded-full h-7 w-7" />;
       case action.includes("Order"):
@@ -205,10 +201,10 @@ const UserActivityHistory = () => {
                   <AccountCircleOutlinedIcon className="text-[70px]" />
                 </div>
                 <div className="col-span-2">
-                  <Typography variant="subtitle1" className="font-semibold">
+                  <Typography variant="h6" className="font-semibold">
                     {profileInfo.firstName} {profileInfo.lastName}
                   </Typography>
-                  <Typography variant="subtitle1" className="font-semibold">
+                  <Typography variant="h6" className="font-semibold">
                     {profileInfo.userId}
                   </Typography>
                   <Typography variant="subtitle1" className="font-semibold">
@@ -235,6 +231,20 @@ const UserActivityHistory = () => {
               </div>
               <div>
                 <hr className="border-black border-2" />
+              </div>
+            </div>
+            <div className="grid grid-cols-12 grid-rows-1  gap-x-1 pt-5 ">
+              <div className="col-span-1">
+                <img
+                  src={image}
+                  className="w-[90px] h-[50px] pl-10  pt-2"
+                  alt="image"
+                />
+              </div>
+              <div className="col-span-5">
+                <Typography variant="h6" className="pt-4 text-blue-800">
+                  To find out more details, click on Activity
+                </Typography>
               </div>
             </div>
             <Timeline className="pt-12">
@@ -275,7 +285,7 @@ const UserActivityHistory = () => {
                       href="#basic-chip"
                       variant="outlined"
                       data-aos="zoom-in"
-                      className="w-[310px] h-[50px] rounded-lg border-black font-semibold text-black  space-x-5 shadow-xl  "
+                      className="w-[310px] h-[50px] rounded-lg border-black font-semibold text-black  space-x-5 shadow-xl hover:bg-blue-500"
                       clickable
                       onClick={() =>
                         handleActionClick(log.entityId, log.action)
@@ -288,8 +298,10 @@ const UserActivityHistory = () => {
             <div className="flex justify-center items-center h-full pb-[30%] ">
               {noActivitiesFound && (
                 <div>
-                  <img src={notfound} className="w-[80px] h-auto pr-[50px]" />
-                  <Typography variant="h4" className="p-4 font-semibold">
+                  <Typography
+                    variant="h5"
+                    className="p-4 text-red-500 tracking-wider"
+                  >
                     No activities found.
                   </Typography>
                 </div>

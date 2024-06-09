@@ -7,18 +7,22 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const CreatePassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [matchError, setMatchError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
 
   const passwordCriteria = {
     minLength: {
-      description: "8 characters ",
+      description: "8 characters",
       test: (password) => password.length >= 8,
     },
     hasNumber: {
@@ -53,6 +57,18 @@ const CreatePassword = () => {
     validatePassword();
   }, [password]);
 
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleClickShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -68,8 +84,8 @@ const CreatePassword = () => {
       console.log("Password updated", response.data);
       Swal.fire({
         icon: "success",
-        title: "Password sucesfully created!",
-        text: "You can now Login to centralsync",
+        title: "Password successfully created!",
+        text: "You can now log in to CentralSync",
       });
       navigate("/");
     } catch (error) {
@@ -98,18 +114,31 @@ const CreatePassword = () => {
               <h1 className="text-4xl font-bold text-center mb-6">
                 Create Password
               </h1>
-
               <h4 className="mb-4 font-bold text-sm">
                 Your email has been successfully verified! Please create your
                 password. Ensure it meets the security criteria listed below.
               </h4>
               <div className="flex flex-col gap-3">
-                <input
-                  className="p-2 border"
-                  type="password"
+                <TextField
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                    className: "p-2 border bg-white h-[50px]",
+                  }}
                 />
                 {Object.keys(passwordCriteria).map((key, index) => (
                   <div
@@ -136,12 +165,31 @@ const CreatePassword = () => {
                     </span>
                   </div>
                 ))}
-                <input
+                <TextField
                   className="p-2 border"
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm Password"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle confirm password visibility"
+                          onClick={handleClickShowConfirmPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showConfirmPassword ? (
+                            <VisibilityOff />
+                          ) : (
+                            <Visibility />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                    className: "p-2 border bg-white h-[50px]",
+                  }}
                 />
                 {matchError && (
                   <div className="flex items-center text-red-500 text-xs font-bold">
@@ -149,7 +197,6 @@ const CreatePassword = () => {
                   </div>
                 )}
               </div>
-
               <button
                 className="w-full py-2 my-4 text-white font-bold bg-blue-600 hover:bg-blue-500"
                 type="submit"
