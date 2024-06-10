@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Typography, Button } from '@mui/material';
+import { Typography, Button,Alert,AlertTitle } from '@mui/material';
 
 
 const TicketDocument = () => {
@@ -11,6 +11,7 @@ const TicketDocument = () => {
     date: "",
     description: "",
     topic: "",
+    ticketStatus:"",
     itemId: "",
   });
 
@@ -65,6 +66,16 @@ const TicketDocument = () => {
       });
   };
 
+  const getticketStatus = (ticketStatus) => {
+    if (ticketStatus === "REVIEWED") {
+      return <Alert severity="success" sx={{ width: '300px' }}><AlertTitle>Reviewed</AlertTitle></Alert>;
+    } else if (ticketStatus === "SEND_TO_ADMIN") {
+      return <Alert severity="info" sx={{ width: '300px' }}><AlertTitle>Sent to Admin</AlertTitle></Alert>;
+    } else {
+      return <Alert severity="info" sx={{ width: '300px' }}><AlertTitle>Pending</AlertTitle></Alert>;
+    }
+  }
+
   
 
   // Get the current date and time
@@ -89,6 +100,11 @@ const TicketDocument = () => {
       
       <main>
         <div className="p-10 ml-6 mr-6 bg-white">
+        <div>
+            <section>
+              {getticketStatus(ticket.ticketStatus)}
+            </section>
+          </div>
           <div>
             <section className="flex flex-row items-end justify-end mt-4 mb-10">
               <header className="text-3xl">Maintenance Ticket</header>
