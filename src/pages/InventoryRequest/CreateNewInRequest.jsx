@@ -6,15 +6,14 @@ import { FormControl, Select, MenuItem, TextField, Grid, Box, Typography, Button
 
 const NewRequest = () => { // Declaring NewRequest component
   // State variables to manage form inputs
-  const [itemId, setItemID] = useState("");
+  //const [itemId, setItemID] = useState("");
   const [itemName, setItemName] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [date, setDate] = useState("");
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
-  const [employeeName, setEmpName] = useState("");
-  const [employeeID, setEmpID] = useState("");
-  const [department, setDepartment] = useState("");
+  //const [employeeName, setEmpName] = useState("");
+  //const [employeeID, setEmpID] = useState("");
+  //const [department, setDepartment] = useState("");
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
 
@@ -22,15 +21,14 @@ const NewRequest = () => { // Declaring NewRequest component
   const handleClick = (e) => {
     e.preventDefault();
     const inventoryRequest = {
-      itemId,
+     // itemId,
       itemName,
       quantity,
-      date,
       reason,
       description,
-      employeeName,
-      employeeID,
-      department,
+      //employeeName,
+     // employeeID,
+      //department,
     };
     console.log(inventoryRequest);
 
@@ -50,7 +48,9 @@ const NewRequest = () => { // Declaring NewRequest component
     });
   };
 
-
+  // const handleFileChange = (e) => {
+  //   set({ ...adj, file: e.target.files[0] });
+  // };
   return (
     <Box className='p-10 bg-white rounded-2xl ml-14 mr-14'>
       <Box className="pb-4">
@@ -62,39 +62,7 @@ const NewRequest = () => { // Declaring NewRequest component
         <form>
           <Grid container spacing={2} padding={4} >
 
-            {/* Input fields for Item ID and Employee Name */}
-            <Grid container display='flex' mt={4}>
-              <Grid item sm={1.5}>
-                <Typography>Item ID</Typography>
-              </Grid>
-              <Grid item sm={4.5}>
-                {errors.itemId && <div className="text-[#FC0000] text-sm">{errors.itemId}</div>}
-                <TextField
-                  id='iid'
-                  value={itemId}
-                  style={{ width: '300px' }}
-                  onChange={(e) => setItemID(e.target.value)}
-                  name='itemId'
-                  size='small'
-                />
-              </Grid>
-
-              <Grid item sm={1.5}>
-                <Typography>Emp. Name</Typography>
-              </Grid>
-              <Grid item sm={4.5}>
-                {errors.employeeName && <div className="text-[#FC0000] text-sm">{errors.employeeName}</div>}
-                <TextField
-                  id='empN'
-                  value={employeeName}
-                  style={{ width: '300px' }}
-                  onChange={(e) => setEmpName(e.target.value)}
-                  name='empName'
-                  size='small'
-                />
-              </Grid>
-
-            </Grid>
+           
 
             {/* Input fields for Item Name and Emp.ID */}
             <Grid container display='flex' mt={4}>
@@ -114,20 +82,7 @@ const NewRequest = () => { // Declaring NewRequest component
                 />
               </Grid>
 
-              <Grid item sm={1.5}>
-                <Typography>Emp.ID</Typography>
-              </Grid>
-              <Grid item sm={4.5}>
-                {errors.employeeID && <div className="text-[#FC0000] text-sm">{errors.employeeID}</div>}
-                <TextField
-                  id='eid'
-                  value={employeeID}
-                  style={{ width: '300px' }}
-                  name='empID'
-                  size='small'
-                  onChange={(e) => setEmpID(e.target.value)}
-                />
-              </Grid>
+             
 
             </Grid>
 
@@ -148,45 +103,9 @@ const NewRequest = () => { // Declaring NewRequest component
                   size='small'
                 />
               </Grid>
-
-              <Grid item sm={1.5}>
-                <Typography>Department</Typography>
-              </Grid>
-              <Grid item sm={4.5}>
-                {errors.department && <div className="text-[#FC0000] text-sm">{errors.department}</div>}
-                <FormControl style={{ width: '300px' }}>
-                  <Select value={department} onChange={(e) => setDepartment(e.target.value)} size='small' name='department'>
-                    <MenuItem value="finance">Finance Department</MenuItem>
-                    <MenuItem value="logistic">Logistic Department</MenuItem>
-                    <MenuItem value="software">Software Department</MenuItem>
-                    <MenuItem value="ai">AI Department</MenuItem>
-                    <MenuItem value="health">Health Care Department</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-
             </Grid>
 
-            {/* Input fields for Date*/}
-            <Grid container display='flex' mt={4}>
-
-              <Grid item sm={1.5}>
-                <Typography>Date</Typography>
-              </Grid>
-              <Grid item sm={4.5}>
-                {errors.date && <div className="text-[#FC0000] text-sm">{errors.date}</div>}
-                <TextField
-                  id='dt'
-                  style={{ width: '300px' }}
-                  name='date'
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  size='small'
-                />
-              </Grid>
-            </Grid>
-
+           
             {/* Input fields Reason */}
             <Grid container display='flex' mt={4}>
               <Grid item sm={1.5}>
@@ -228,7 +147,7 @@ const NewRequest = () => { // Declaring NewRequest component
 
           {/* Attach file section */}
           <Box>
-            <Typography display='block' gutterBottom>Attach File(s) to inventory adjustment </Typography>
+            <Typography display='block' gutterBottom>Attach File(s) to inventory request  </Typography>
             <input type='file' className="mt-4 mb-2" ></input>
             <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
           </Box>
