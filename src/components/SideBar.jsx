@@ -18,7 +18,8 @@ const SideBar = () => {
   const [openInventory, setOpenInventory] = useState(false);
   const [openRequestReservation, setOpenRequestReservation] = useState(false);
   const [openReport, setOpenReport] = useState(false);
-  const isEmployee = LoginService.isWebDev();
+  const isEmployee = LoginService.isEmployee();
+  const isAdmin = LoginService.isAdmin();
 
   const handleInventoryClick = () => {
     setOpenInventory(!openInventory);
@@ -67,16 +68,20 @@ const SideBar = () => {
               <ListItemText primary="Adjustment" />
             </ListItem>
           </a>
-          <a href="/stockIn">
-            <ListItem button className="pl-8 rounded-lg">
-              <ListItemText primary="Stock In" />
-            </ListItem>
-          </a>
-          <a href="/stockOut">
-            <ListItem button className="pl-8 rounded-lg">
-              <ListItemText primary="Stock Out" />
-            </ListItem>
-          </a>
+          {isAdmin && (
+            <a href="/stockIn">
+              <ListItem button className="pl-8 rounded-lg">
+                <ListItemText primary="Stock In" />
+              </ListItem>
+            </a>
+          )}
+          {isAdmin && (
+            <a href="/stockOut">
+              <ListItem button className="pl-8 rounded-lg">
+                <ListItemText primary="Stock Out" />
+              </ListItem>
+            </a>
+          )}
         </List>
       </Collapse>
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import Inventory2SharpIcon from '@mui/icons-material/Inventory2Sharp';
+import itemImage from "../assests/inventory.png"
 
 const ItemCard = () => {
 
@@ -21,10 +21,13 @@ const ItemCard = () => {
   }, []);
   return (
     <div>
-      <div className='flex flex-col h-[100%] gap-2 bg-orange-200 w-auto p-4 rounded-lg shadow-xl'>
-        <Inventory2SharpIcon/>
-        <span className='text-2xl text-orange-800'>{itemCount}</span>
-        <span className='text-sm text-gray-800'>All Items</span>
+      <div className='flex flex-row justify-center items-center h-[100%] gap-2 bg-orange-200 w-[200px] p-4 rounded-lg shadow-xl'>
+        <img src={itemImage} alt="employee" className='object-cover w-12 h-12' />
+        <div className='flex flex-col gap-2'>
+          <span className='text-sm text-gray-800'>All Items</span>
+          <span className='text-2xl text-orange-800'>{itemCount}</span>
+        </div>
+        
       </div>
     </div>
   )
