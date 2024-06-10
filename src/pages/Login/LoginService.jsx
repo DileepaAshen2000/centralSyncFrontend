@@ -110,33 +110,24 @@ class LoginService{
         return !!token
     }
 
-//     static isAdmin(){
-//         const role = localStorage.getItem('role')
-//         return role === 'ADMIN'
-//     }
 
-//     static isUser(){
-//         const role = localStorage.getItem('role')
-//         return role === 'USER'
-//     }
+    static isRequestHandler(){
+        const role = localStorage.getItem('role')
+        return role === 'REQUEST_HANDLER'
+    }
 
-        static isReqHandler(){
-            const role = localStorage.getItem('role')
-            return role === 'Request Handler'
-        }
+    static isAdmin(){
+        const role = localStorage.getItem('role')
+        return role === 'ADMIN'
+    }
 
-        static isSWArchitect(){
-            const role = localStorage.getItem('role')
-            return role === 'Software Architect'
-        }
-
-        static isWebDev(){
-            const role = localStorage.getItem('role')
-            return role === 'Web Developer'
-        }
+    static isEmployee(){
+        const role = localStorage.getItem('role')
+        return role === 'EMPLOYEE'
+    }
 
     static reqHandlerOnly(){
-        return this.isAuthenticated() && this.isReqHandler();
+        return this.isAuthenticated() && this.isRequestHandler();
     }
  }
 
