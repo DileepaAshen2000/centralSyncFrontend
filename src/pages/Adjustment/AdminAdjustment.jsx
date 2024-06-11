@@ -5,11 +5,12 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import LoginService from "../Login/LoginService";
 
 const columns = [
     { field: 'id', headerName: 'Adjustment ID', width: 150 },
     { field: 'reason', headerName: 'Reason', width: 180 },
-    { field: 'description', headerName: 'Description', width: 300 },
+    { field: 'description', headerName: 'Description', width: 280 },
     { field: 'adjusted_Qty', headerName: 'Adjusted_Qty', width: 150 },
     { field: 'date', headerName: 'Date', width: 150 },
     { field: 'status', headerName: 'Status', width: 100 },
@@ -17,25 +18,30 @@ const columns = [
 
 const AdminAdjustment = () => {
   const navigate = useNavigate();
-
   const [rows, setRows] = useState([]);
+
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/adjustment/getAll")
-      .then((response) => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+        const profile = await LoginService.getYourProfile(token);
+        const userId = profile.users.userId;
+
+        const response = await axios.get(`http://localhost:8080/adjustment/getAllById/${userId}`);
         const data = response.data.map((adj) => ({
-            id: adj.adjId,
-            reason: adj.reason,
-            description: adj.description,
-            adjusted_Qty: adj.adjustedQuantity,
-            date: adj.date,
-            status:adj.status
+          id: adj.adjId,
+          reason: adj.reason,
+          description: adj.description,
+          adjusted_Qty: adj.adjustedQuantity,
+          date: adj.date,
+          status: adj.status
         }));
         setRows(data);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log(error);
-      });
+      }
+    };
+    fetchData();
   }, []);
 
   const [rowSelectionModel, setRowSelectionModel] = useState([]);

@@ -9,7 +9,7 @@ import axios from "axios";
 const columns = [
     { field: 'id', headerName: 'Adjustment ID', width: 150 },
     { field: 'reason', headerName: 'Reason', width: 180 },
-    { field: 'description', headerName: 'Description', width: 300 },
+    { field: 'description', headerName: 'Description', width: 280 },
     { field: 'adjusted_Qty', headerName: 'Adjusted_Qty', width: 150 },
     { field: 'date', headerName: 'Date', width: 150 },
     { field: 'status', headerName: 'Status', width: 100 },
@@ -86,20 +86,11 @@ const UserAdjustment = () => {
               >
                 View
               </Button>
-            </div>
-            
-            
+            </div>  
           </div>
         ) : (
           
           <div className="flex items-center">
-            {/* <Button
-              variant="contained"
-              className="bg-blue-600 py-2 text-white rounded w-[auto]"
-              onClick={() => navigate("/newadjustment")}
-            >
-            New Adjustment
-            </Button> */}
             <h1>Created By Employee or Request Handler</h1>
           </div>
           
