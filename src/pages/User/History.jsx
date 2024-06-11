@@ -10,41 +10,123 @@ import TimelineOppositeContent from "@mui/lab/TimelineOppositeContent";
 import Chip from "@mui/material/Chip";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import Typography from "@mui/material/Typography";
-import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Aos from "aos";
 import "aos/dist/aos.css";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import TextField from "@mui/material/TextField";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import LoginService from "../Login/LoginService";
+import UserIcon from "@mui/icons-material/Person";
+import TicketIcon from "@mui/icons-material/ConfirmationNumber";
+import StockIcon from "@mui/icons-material/Inventory";
+import ReservationIcon from "@mui/icons-material/Book";
+import ItemIcon from "@mui/icons-material/Category";
+import OrderIcon from "@mui/icons-material/ShoppingCart";
+import AdjustmentIcon from "@mui/icons-material/Tune";
+import DeleteIcon from "@mui/icons-material/Delete";
+import BlockIcon from "@mui/icons-material/Block";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import ReviewIcon from "@mui/icons-material/RateReview";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import image from "../../assests/cursor.png";
 
 const UserActivityHistory = () => {
   const [activityLogs, setActivityLogs] = useState([]);
+  const [filteredLogs, setFilteredLogs] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedWord, setSelectedWord] = useState([]);
+  const [noActivitiesFound, setNoActivitiesFound] = useState(false);
   const navigate = useNavigate();
+  const [profileInfo, setProfileInfo] = useState({});
 
   useEffect(() => {
-    // Fetch user activity logs from the backend API
-    const fetchActivityLogs = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8080/user-activity-log/getAll"
-        );
-        setActivityLogs(response.data.reverse());
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching user activity logs:", error);
-      }
-    };
-
-    fetchActivityLogs();
+    fetchProfileInfo();
   }, []);
+
+  useEffect(() => {
+    if (profileInfo.userId) {
+      fetchActivityLogs(profileInfo.userId);
+    }
+  }, [profileInfo.userId]);
+
+  const fetchProfileInfo = async () => {
+    try {
+      const token = localStorage.getItem("token"); // Retrieve the token from localStorage
+      const response = await LoginService.getYourProfile(token);
+      setProfileInfo(response.users);
+    } catch (error) {
+      console.error("Error fetching profile information:", error);
+    }
+  };
+
+  // Fetch user activity logs from the backend API
+  const fetchActivityLogs = async (userId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/user-activity-log/${userId}`
+      );
+      setActivityLogs(response.data);
+      setFilteredLogs(response.data.reverse());
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching user activity logs:", error);
+    }
+  };
+
   useEffect(() => {
     Aos.init({ duration: 2000 });
   }, []);
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    filterLogs(date, selectedWord);
+  };
+
+  const handleWordChange = (word) => {
+    setSelectedWord(word);
+    filterLogs(selectedDate, word);
+  };
+
+  const filterLogs = (date, word) => {
+    let filtered = activityLogs;
+
+    // Filter by date if date is selected
+    if (date) {
+      filtered = filtered.filter((log) => {
+        const logDate = new Date(log.date);
+        return (
+          logDate.getDate() === date.getDate() &&
+          logDate.getMonth() === date.getMonth() &&
+          logDate.getFullYear() === date.getFullYear()
+        );
+      });
+    }
+
+    // Filter by keyword
+    if (word) {
+      filtered = filtered.filter((log) =>
+        log.action.toLowerCase().includes(String(word).toLowerCase())
+      );
+    }
+
+    if (filtered.length === 0) {
+      setNoActivitiesFound(true);
+    } else {
+      setNoActivitiesFound(false);
+    }
+
+    setFilteredLogs(filtered);
+  };
 
   // Function to handle action click
   const handleActionClick = (entityId, action) => {
     let path = "";
     if (action.includes("User")) {
       path = `/user/users/${entityId}`;
-    } else if (action.includes("Ticket")) {
+    } else if (action.includes("ticket")) {
       path = `/ticket/ticketdoc/${entityId}`;
     } else if (action.includes("Stock In")) {
       path = `/stockIn/${entityId}`;
@@ -55,9 +137,11 @@ const UserActivityHistory = () => {
     } else if (action.includes("Reservation")) {
       path = `/stockOut/${entityId}`;
     } else if (action.includes("Item")) {
-      path = `/stockOut/${entityId}`;
+      path = `/item/view-item/${entityId}`;
     } else if (action.includes("Order")) {
       path = `/order/view-order/${entityId}`;
+    } else if (action.includes("Adjustment")) {
+      path = `/adjustment/${entityId}`;
     } else {
     }
 
@@ -67,76 +151,165 @@ const UserActivityHistory = () => {
     }
   };
 
+  const getIcon = (action) => {
+    switch (true) {
+      case action.includes("inactive"):
+        return <BlockIcon className="bg-red-500 rounded-full h-7 w-7" />;
+      case action.includes("Delete"):
+        return <DeleteIcon className="bg-red-500 rounded-full h-7 w-7" />;
+      case action.includes("approved"):
+        return (
+          <CheckCircleIcon className="bg-green-800 rounded-full h-7 w-7" />
+        );
+      case action.includes("rejected"):
+        return <CancelIcon className="bg-red-500 rounded-full h-7 w-7" />;
+      case action.includes("reviewed"):
+        return <ReviewIcon className="bg-blue-500 rounded-full h-7 w-7" />;
+      case action.includes("User"):
+        return <UserIcon className="bg-green-500 rounded-full h-7 w-7" />;
+      case action.includes("ticket"):
+        return <TicketIcon className="bg-yellow-500 rounded-full h-7 w-7" />;
+      case action.includes("Stock In"):
+      case action.includes("Stock Out"):
+        return <StockIcon className="bg-purple-500 rounded-full h-7 w-7" />;
+      case action.includes("request"):
+        return <InventoryIcon className="bg-orange-500 rounded-full h-7 w-7" />;
+      case action.includes("Reservation"):
+        return (
+          <ReservationIcon className="bg-yellow-500 rounded-full h-7 w-7" />
+        );
+      case action.includes("Item"):
+        return <ItemIcon className="bg-blue-700 rounded-full h-7 w-7" />;
+      case action.includes("Order"):
+        return <OrderIcon className="bg-green-700 rounded-full h-7 w-7" />;
+      case action.includes("Adjustment"):
+        return <AdjustmentIcon className="bg-blue-800 rounded-full h-7 w-7" />;
+      default:
+        return <TimelineDot className="bg-red-500 rounded-full h-7 w-7" />;
+    }
+  };
+
   return (
     <React.Fragment>
-      <div className="pt-5 pb-10">
-        <div className="bg-white  flex flex-col  shadow-md min-h-screen rounded-xl">
-          <div>
-            <h1 className="p-4 text-3xl font-bold">Recent Activities</h1>
-            <div className="grid grid-cols-6 grid-rows-1  gap-x-[0.25rem] pt-5 ">
-              <div className="col-span-1 px-11">
-                <AccountCircleOutlinedIcon className="text-[70px]" />
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <div className="pt-5 pb-10">
+          <div className="bg-white  flex flex-col rounded-xl shadow-md min-h-screen ">
+            <div className="bg-blue-300">
+              <h1 className="p-4 text-4xl font-bold">Recent Activities</h1>
+              <div className="grid grid-cols-8 grid-rows-1  gap-x-[0.25rem] pt-5 ">
+                <div className="col-span-1 px-11">
+                  <AccountCircleOutlinedIcon className="text-[70px]" />
+                </div>
+                <div className="col-span-2">
+                  <Typography variant="h6" className="font-semibold">
+                    {profileInfo.firstName} {profileInfo.lastName}
+                  </Typography>
+                  <Typography variant="h6" className="font-semibold">
+                    {profileInfo.userId}
+                  </Typography>
+                  <Typography variant="subtitle1" className="font-semibold">
+                    {profileInfo.role}
+                  </Typography>
+                </div>
+                <div className="col-start-5 col-span-1">
+                  <DatePicker
+                    label="Search by Date"
+                    value={selectedDate}
+                    onChange={handleDateChange}
+                    className="w-[250px] bg-slate-200 border"
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </div>
+                <div className="col-start-7 col-span-1 gap-2">
+                  <TextField
+                    label="Search by Activity"
+                    value={selectedWord}
+                    onChange={(e) => handleWordChange(e.target.value)}
+                    className="w-[250px] bg-slate-200"
+                  />
+                </div>
               </div>
+              <div>
+                <hr className="border-black border-2" />
+              </div>
+            </div>
+            <div className="grid grid-cols-12 grid-rows-1  gap-x-1 pt-5 ">
               <div className="col-span-1">
-                <Typography variant="subtitle1" className="font-semibold">
-                  Dileepa Ashen
-                </Typography>
-                <Typography variant="subtitle1" className="font-semibold">
-                  EM2023001
-                </Typography>
-                <Typography variant="subtitle1" className="font-semibold">
-                  Role : Admin
+                <img
+                  src={image}
+                  className="w-[90px] h-[50px] pl-10  pt-2"
+                  alt="image"
+                />
+              </div>
+              <div className="col-span-5">
+                <Typography variant="h6" className="pt-4 text-blue-800">
+                  To find out more details, click on Activity
                 </Typography>
               </div>
             </div>
-            <div>
-              <hr className="border-[#796F6F]" />
+            <Timeline className="pt-12">
+              {filteredLogs.map((log) => (
+                <TimelineItem key={log.userId}>
+                  <TimelineOppositeContent className="flex-none w-1/5">
+                    <Chip
+                      label={
+                        <>
+                          {log.date}
+                          {"  "}
+
+                          {log.time}
+                        </>
+                      }
+                      component="a"
+                      variant="outlined"
+                      data-aos="zoom-in"
+                      className="w-[500px] h-[50px]   text-black  space-x-5 border-none text-sm "
+                    />
+                  </TimelineOppositeContent>
+                  <TimelineSeparator>
+                    <TimelineDot
+                      className="bg-transparent shadow-none  h-6"
+                      data-aos="zoom-in"
+                    >
+                      {getIcon(log.action)}
+                    </TimelineDot>
+                    <TimelineConnector
+                      className="bg-black"
+                      data-aos="zoom-in"
+                    />
+                  </TimelineSeparator>
+                  <TimelineContent>
+                    <Chip
+                      label={log.action}
+                      component="a"
+                      href="#basic-chip"
+                      variant="outlined"
+                      data-aos="zoom-in"
+                      className="w-[310px] h-[50px] rounded-lg border-black font-semibold text-black  space-x-5 shadow-xl hover:bg-blue-500"
+                      clickable
+                      onClick={() =>
+                        handleActionClick(log.entityId, log.action)
+                      }
+                    />
+                  </TimelineContent>
+                </TimelineItem>
+              ))}
+            </Timeline>
+            <div className="flex justify-center items-center h-full pb-[30%] ">
+              {noActivitiesFound && (
+                <div>
+                  <Typography
+                    variant="h5"
+                    className="p-4 text-red-500 tracking-wider"
+                  >
+                    No activities found.
+                  </Typography>
+                </div>
+              )}
             </div>
           </div>
-
-          <Timeline className="pt-12">
-            {activityLogs.map((log) => (
-              <TimelineItem key={log.id}>
-                <TimelineOppositeContent className="flex-none w-1/5">
-                  <Chip
-                    label={
-                      <>
-                        {log.date}
-                        {"  "}
-                        {log.time}
-                      </>
-                    }
-                    component="a"
-                    //href="#basic-chip"
-                    variant="outlined"
-                    data-aos="zoom-in"
-                    className="bg-[#50ABE7] w-[500px] h-[50px] font-semibold text-black border-2 border-[#00008B]  space-x-5 shadow-lg rounded-xl "
-                  />
-                </TimelineOppositeContent>
-                <TimelineSeparator>
-                  <TimelineDot
-                    className="bg-black border-[3px] shadow-[0_1px_15px_rgba(0,0,139,1)]  border-opacity-0"
-                    data-aos="zoom-in"
-                  />
-                  <TimelineConnector className="bg-black" data-aos="zoom-in" />
-                </TimelineSeparator>
-                <TimelineContent>
-                  <Chip
-                    label={log.action}
-                    component="a"
-                    href="#basic-chip"
-                    variant="outlined"
-                    data-aos="zoom-in"
-                    className="bg-[#50ABE7] w-[310px] h-[50px] font-semibold text-black  border-2 border-[#00008B] rounded-xl   space-x-5 shadow-xl"
-                    clickable
-                    onClick={() => handleActionClick(log.userId, log.action)}
-                  />
-                </TimelineContent>
-              </TimelineItem>
-            ))}
-          </Timeline>
         </div>
-      </div>
+      </LocalizationProvider>
     </React.Fragment>
   );
 };
