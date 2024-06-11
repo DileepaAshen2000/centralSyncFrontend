@@ -193,7 +193,7 @@ const loadAdjustment = async () => {
                     <TableCell align="right">{itemId}</TableCell>
                     <TableCell align="right">{itemName}</TableCell>
                     <TableCell align="right">{quantity}</TableCell>
-                    <TableCell align="right">{quantity}</TableCell>
+                    <TableCell align="right">{quantity + adjustedQuantity}</TableCell>
                     <TableCell align="right">{adjustedQuantity}</TableCell>
                   </TableRow>
               </TableBody>
