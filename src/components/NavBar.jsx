@@ -22,6 +22,8 @@ import { Link, useNavigate } from "react-router-dom";
 import LoginService from '../pages/Login/LoginService';
 import { useEffect } from 'react';
 
+import SearchBar from './SearchBar';
+
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -110,7 +112,7 @@ export default function NavBar() {
         <Toolbar>
           <img src={myLogo} alt="Inventory Logo" className='w-32 h-auto ' />
           <h4 className='hidden text-xl font-bold text-blue-800 md:block'>CENTRAL SYNC</h4>
-          <Search className='box-border bg-white border-2 rounded-2xl'>
+          {/* <Search className='box-border bg-white border-2 rounded-2xl'>
             <SearchIconWrapper>
               <SearchIcon className='text-gray-500 '/>
             </SearchIconWrapper>
@@ -119,7 +121,8 @@ export default function NavBar() {
               inputProps={{ 'aria-label': 'search' }}
               className='text-gray-500 '
             />
-          </Search>
+          </Search> */}
+        <SearchBar/>
           <Box sx={{ flexGrow: 2 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } ,gap:'20px'}}>
             

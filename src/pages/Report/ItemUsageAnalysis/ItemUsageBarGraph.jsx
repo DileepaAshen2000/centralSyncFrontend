@@ -7,7 +7,7 @@ import axios from "axios";
 const colour = ["#5C998E"];
 
 const UsageBarChart = ({ category, year }) => {
-  const [requests, setRequests] = useState();
+  const [requests, setRequests] = useState([]);
   const [loading,setLoading]=useState(true);
 
   useEffect(() => {

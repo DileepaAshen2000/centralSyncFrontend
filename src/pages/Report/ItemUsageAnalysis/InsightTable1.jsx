@@ -16,7 +16,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 
 const InsightTable = ({ category, year,isOpen }) => {
-  const [ticket, setTicket] = useState();
+  const [ticket, setTicket] = useState([]);
   const [open, setOpen] = useState(isOpen);
   const [loading,setLoading]=useState(true);
   useEffect(() => {

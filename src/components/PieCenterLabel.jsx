@@ -37,7 +37,7 @@ const PieCenterLabel = () => {
   const aciveTotal = data
     .map((inventoryItem) => inventoryItem.status)
     .reduce((count, status) => {
-      return status === "active" ? count + 1 : count;
+      return status === "ACTIVE" ? count + 1 : count;
     }, 0);
 
   const getArcLabel = () => {
