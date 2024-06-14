@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import axios from 'axios';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -15,6 +15,7 @@ import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import PrintIcon from '@mui/icons-material/Print';
+import { useReactToPrint } from 'react-to-print';
 
 const options = ['COMPUTER_ACCESSORIES', 'COMPUTER_HARDWARE', 'PRINTER', 'OTHER'];
 
@@ -23,6 +24,7 @@ const LowStockReport = () => {
   const [open, setOpen] = useState(false);
   const anchorRef = React.useRef(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const printRef = useRef();
 
   useEffect(() => {
     fetchLowStockItems();
@@ -57,9 +59,9 @@ const LowStockReport = () => {
     setOpen(false);
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current,
+  });
 
   const currentDate = new Date();
 
@@ -117,7 +119,7 @@ const LowStockReport = () => {
           )}
         </Popper>
       </div>
-      <div className="p-10 ml-6 mr-6 bg-white">
+      <div ref={printRef} className="p-10 ml-6 mr-6 bg-white">
         <div>
           <section className="flex flex-col items-center justify-center mt-4 mb-10">
             <header className="text-3xl">LOW-STOCK ITEMS REPORT</header>
