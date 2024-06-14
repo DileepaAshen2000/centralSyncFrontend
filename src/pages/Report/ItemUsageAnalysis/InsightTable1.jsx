@@ -71,7 +71,7 @@ const InsightTable = ({ category, year,isOpen }) => {
 
 
   return (
-    <div className="w-4/5 mx-auto my-10">
+    <div className="w-full md:w-4/5 mx-auto my-10">
       <TableContainer component={Paper} className="bg-gray-100">
         <Table aria-label="collapsible table" size="small">
           <TableHead>

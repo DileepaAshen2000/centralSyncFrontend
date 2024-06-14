@@ -13,9 +13,10 @@ const SearchResult = () => {
   const location = useLocation();
   const { searchResult } = location.state;
   const navigate = useNavigate();
+  console.log(searchResult);
 
   const handleItemClick = (item) => {
-    // navigate("/item-detail", { state: { item } });
+    navigate("/item-detail", { state: { item } });
   };
 
   return (
@@ -26,7 +27,7 @@ const SearchResult = () => {
           <ListItem
             alignItems="flex-start"
             className="flex-col md:flex-row items-start md:items-center"
-            onClick={handleItemClick}
+            onClick={()=>handleItemClick(item)}
           >
             <ListItemAvatar className="mb-2 md:mb-0 md:mr-4">
               <Avatar
@@ -51,9 +52,7 @@ const SearchResult = () => {
                   >
                     {item.brand}
                   </Typography>
-                  <span className="text-gray-700 md:ml-2">
-                    Quantity: {item.quantity}
-                  </span>
+                  
                   <Chip
                     label={item.itemGroup}
                     className="mt-2 md:mt-0 md:ml-4"

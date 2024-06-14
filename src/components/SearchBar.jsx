@@ -20,7 +20,6 @@ const SearchBar = () => {
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [itemsOptions, setItemsOptions] = useState([]);
-  const [searchResult, setSearchResult] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,21 +47,14 @@ const SearchBar = () => {
         `http://localhost:8080/inventory-item/search?itemName=${searchTerm}&itemGroup=${selectedCategories}`
       );
       if (response.status === 200) {
-        const data = response.data.map((item) => ({
-          id:item.itemId,
-          itemName: item.itemName,
-          itemGroup: item.itemGroup,
-          brand: item.brand,
-          quantity: item.quantity,
-        }));
-        setSearchResult(data);
-       navigate("/search-result", { state: { searchResult: data } });
+       
+       navigate("/search-result", { state: { searchResult: response.data } });
       }
     } catch (error) {
       console.log(error);
     }
   };
-  console.log(searchResult);
+
 
   const handleFilterClick = (event) => {
     setFilterAnchorEl(event.currentTarget);
