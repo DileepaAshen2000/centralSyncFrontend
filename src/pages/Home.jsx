@@ -49,6 +49,7 @@ import InventorySummary from "./Report/InventorySummary";
 import LoginPage from "./Login/LoginPage";
 import LoginService from "./Login/LoginService";
 import CreatePassword from "./User/CreatePassword";
+import SearchResult from "../components/SearchResult";
 
 const Home = () => {
   const isAuthenticated = LoginService.isAuthenticated();
@@ -234,6 +235,8 @@ const Home = () => {
                   path="/newreservation"
                   element={<NewReservation />}
                 ></Route>
+
+                <Route path="/search-result" element={<SearchResult/>}></Route>
               </Routes>
             </Grid>
           </Grid>

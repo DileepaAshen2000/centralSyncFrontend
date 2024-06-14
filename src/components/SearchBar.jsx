@@ -13,12 +13,15 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const SearchBar = ({ onSearch }) => {
+const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [items, setItems] = useState([]);
+  const [itemsOptions, setItemsOptions] = useState([]);
+  const [searchResult, setSearchResult] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,7 +33,7 @@ const SearchBar = ({ onSearch }) => {
           itemName: item.itemName,
           itemGroup: item.itemGroup,
         }));
-        setItems(data);
+        setItemsOptions(data);
       } catch (error) {
         console.log(error);
       }
@@ -39,9 +42,27 @@ const SearchBar = ({ onSearch }) => {
     fetchData();
   }, []);
 
-  const handleSearch = () => {
-    onSearch({ term: searchTerm, categories: selectedCategories });
+  const handleSearch = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/inventory-item/search?itemName=${searchTerm}&itemGroup=${selectedCategories}`
+      );
+      if (response.status === 200) {
+        const data = response.data.map((item) => ({
+          id:item.itemId,
+          itemName: item.itemName,
+          itemGroup: item.itemGroup,
+          brand: item.brand,
+          quantity: item.quantity,
+        }));
+        setSearchResult(data);
+       navigate("/search-result", { state: { searchResult: data } });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
+  console.log(searchResult);
 
   const handleFilterClick = (event) => {
     setFilterAnchorEl(event.currentTarget);
@@ -77,10 +98,9 @@ const SearchBar = ({ onSearch }) => {
   };
   return (
     <div className="relative  bg-opacity-15  ml-5 md:w-[400px] sm:mr-3 sm:w-auto">
-      {/* hover:bg-opacity-25 */}
       <Autocomplete
         value={searchTerm}
-        options={items.map((item) => item.itemName)}
+        options={itemsOptions.map((item) => item.itemName)}
         onInputChange={(event, newSearchTerm) => setSearchTerm(newSearchTerm)}
         renderInput={(params) => (
           <TextField
@@ -90,6 +110,13 @@ const SearchBar = ({ onSearch }) => {
             InputProps={{
               ...params.InputProps,
               startAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleFilterClick}>
+                    <FilterListIcon className="mr-0" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+              endAdornment: (
                 <InputAdornment position="start">
                   <SearchIcon
                     onClick={handleSearch}
@@ -97,14 +124,8 @@ const SearchBar = ({ onSearch }) => {
                   />
                 </InputAdornment>
               ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={handleFilterClick}>
-                    <FilterListIcon className="mr-0" />
-                  </IconButton>
-                </InputAdornment>
-              ),
-              className: "text-gray-500 m-2 h-[30px] border-rounded-2xl bg-red-50",
+              className:
+                "text-gray-500 m-2 h-[30px] border-rounded-2xl bg-red-50",
             }}
           />
         )}
@@ -133,7 +154,11 @@ const SearchBar = ({ onSearch }) => {
                 label={categoryMapping[category]}
               />
             ))}
-            <Button className="rounded-sm text-black" variant="outlined" onClick={handleSearch}>
+            <Button
+              className="rounded-sm text-black"
+              variant="outlined"
+              onClick={handleSearch}
+            >
               Apply Filters
             </Button>
           </FormGroup>
