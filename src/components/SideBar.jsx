@@ -11,6 +11,7 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import LoginService from "../pages/Login/LoginService";
 
 // React component for the SideBar
@@ -18,7 +19,12 @@ const SideBar = () => {
   const [openInventory, setOpenInventory] = useState(false);
   const [openRequestReservation, setOpenRequestReservation] = useState(false);
   const [openReport, setOpenReport] = useState(false);
+
+  const navigate = useNavigate();
+
   const isEmployee = LoginService.isEmployee();
+  const isAdmin = LoginService.isAdmin();
+  const isReqHandler = LoginService.isReqHandler();
 
   const handleInventoryClick = () => {
     setOpenInventory(!openInventory);
@@ -30,6 +36,13 @@ const SideBar = () => {
 
   const handleReportClick = () => {
     setOpenReport(!openReport);
+  };
+ {/* Inventroy request section routing according to login role */}
+  const getInventoryRequestListLink = () => {
+    if (isAdmin) return "/admin-in-request-list";
+    if (isReqHandler) return "/req-handler-in-request-list";
+    if (isEmployee) return "/employee-in-request-list";
+    return "/default-request-list";
   };
 
   return (
@@ -106,7 +119,7 @@ const SideBar = () => {
       </ListItem>
       <Collapse in={openRequestReservation} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <a href="/admin-in-request-list">
+          <a href={getInventoryRequestListLink()}>
             <ListItem button className="pl-8 rounded-lg">
               <ListItemText primary="Request" />
             </ListItem>

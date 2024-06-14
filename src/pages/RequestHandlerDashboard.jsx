@@ -9,7 +9,7 @@ import LowStockTable from "../components/LowStockTable";
 import InventoryStatistic from "../components/InventoryStatistic";
 
 
-export default function AdminDashboard() {
+export default function RequestHandlerDashboard() {
   // return (
   //   <div>
   //     <div className="flex">
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
 
   return(
     <div>
-      <div className="flex items-center justify-start p-4 text-3xl">Admin Dashboard</div>
+      <div className="flex items-center justify-start p-4 text-3xl">Request Handler Dashboard</div>
       <div className="grid grid-cols-12 gap-4 h-[500px] grid-rows-9">
         <div className="flex col-span-8 row-span-3 gap-4 p-4 text-5xl text-center text-white bg-blue-500 rounded-lg ">
           <TotalEmpCard />

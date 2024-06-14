@@ -3,6 +3,8 @@ import NavBar from "../components/NavBar";
 import SideBar from "../components/SideBar";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AdminDashboard from "./AdminDashboard";
+import RequestHandlerDashboard from "./RequestHandlerDashboard";
+import EmployeeDashboard from "./EmployeeDashboard";
 import NewAdjustment from "./Adjustment/NewAdjustment";
 import User from "./User/User";
 import CreateUser from "./User/CreateUser";
@@ -84,6 +86,8 @@ const Home = () => {
 
                   {/* Dashboard routing */}
                   <Route path="/admin-dashboard" element={<AdminDashboard />}></Route>
+                  <Route path="/request-handler-dashboard" element={<RequestHandlerDashboard/>}></Route>
+                  <Route path="/employee-dashboard" element={<EmployeeDashboard/>}></Route>
 
                   {/* Adjustment routing */}
                   <Route path="/adjustment" element={<AdjustmentList />}></Route>
