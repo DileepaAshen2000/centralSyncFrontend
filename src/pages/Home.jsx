@@ -141,7 +141,7 @@ const Home = () => {
                   <Route path='/employee-in-request-list' element={<EmployeeInRequestList/>}></Route>
                   <Route path='/employee/in-request-document/:reqId' element={<EmployeeInRequestDocument/>}></Route>
                   <Route path='/employee/workfromhome-in-request-document/:reqId' element={<WorkFromHomeRequestDocument/>}></Route>
-                  {/*Common views for three actors rounting*/ }
+                  {/*Common views for three actors routing*/ }
                   <Route path='/in-request/create-new-in-request' element={<CreateNewRequest/>}></Route>
                   <Route path='/in-request/edit-request/:reqId' element={<EditRequest/>}></Route>
 

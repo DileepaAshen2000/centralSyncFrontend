@@ -122,17 +122,22 @@ class LoginService{
 
         static isReqHandler(){
             const role = localStorage.getItem('role')
-            return role === 'Request Handler'
+            return role === 'REQ_HANDLER'
         }
 
-        static isSWArchitect(){
+        static isAdmin(){
             const role = localStorage.getItem('role')
-            return role === 'Software Architect'
+            return role === 'ADMIN'
         }
 
-        static isWebDev(){
+        static isEmployee(){
             const role = localStorage.getItem('role')
-            return role === 'Web Developer'
+            return role === 'EMPLOYEE'
+        }
+
+        static returnUserID(){
+            const userId = localStorage.getItem('userId')
+            return userId
         }
 
     static reqHandlerOnly(){

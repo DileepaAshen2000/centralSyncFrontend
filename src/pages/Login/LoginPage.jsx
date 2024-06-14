@@ -17,6 +17,7 @@ export default function LoginPage() {
       if (userData.token) {
         localStorage.setItem('token', userData.token);
         localStorage.setItem('role', userData.role);
+        localStorage.setItem('userId', userData.userId);
         navigate('/admin-dashboard'); // Navigate to desired location after successful login
         console.log("login success")
       } else {

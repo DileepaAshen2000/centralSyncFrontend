@@ -18,7 +18,7 @@ const SideBar = () => {
   const [openInventory, setOpenInventory] = useState(false);
   const [openRequestReservation, setOpenRequestReservation] = useState(false);
   const [openReport, setOpenReport] = useState(false);
-  const isEmployee = LoginService.isWebDev();
+  const isEmployee = LoginService.isEmployee();
 
   const handleInventoryClick = () => {
     setOpenInventory(!openInventory);
