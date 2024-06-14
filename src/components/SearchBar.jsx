@@ -97,7 +97,7 @@ const SearchBar = () => {
         renderInput={(params) => (
           <TextField
             {...params}
-            placeholder="Search"
+            placeholder="Search an item"
             variant="outlined"
             InputProps={{
               ...params.InputProps,
