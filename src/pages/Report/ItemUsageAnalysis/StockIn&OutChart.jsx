@@ -11,7 +11,7 @@ const palette = ["#357a38", "#ff1744"];
 const StockLineChart = ({category, year} ) => {
  
 
-  const [stockIn, setStockIn] = useState();
+  const [stockIn, setStockIn] = useState([]);
   const [stockOut, setStockOut] = useState();
   const [loadingStockIn,setLoadingStockIn]=useState(true);
   const [loadingStockOut,setLoadingStockOut]=useState(true);

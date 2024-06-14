@@ -49,6 +49,8 @@ import InventorySummary from "./Report/InventorySummary";
 import LoginPage from "./Login/LoginPage";
 import LoginService from "./Login/LoginService";
 import CreatePassword from "./User/CreatePassword";
+import SearchResult from "../components/SearchResult";
+import ItemDetail from "../components/ItemDetail";
 
 const Home = () => {
   const isAuthenticated = LoginService.isAuthenticated();
@@ -234,6 +236,10 @@ const Home = () => {
                   path="/newreservation"
                   element={<NewReservation />}
                 ></Route>
+{/* SearchBar routing */}
+                <Route path="/search-result" element={<SearchResult/>}></Route>
+                <Route path="/item-detail" element={<ItemDetail />} />
+
               </Routes>
             </Grid>
           </Grid>
