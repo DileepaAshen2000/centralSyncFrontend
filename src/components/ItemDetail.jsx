@@ -14,38 +14,53 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Divider from "@mui/material/Divider";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import IconButton from "@mui/material/IconButton";
 import axios from "axios";
 
 const ItemDetail = () => {
   const location = useLocation();
   const { item } = location.state;
   const navigate = useNavigate();
-  const [tickets, setTickets] = useState([]);
+  //const [tickets, setTickets] = useState([]);
 
-  const itemId = item.itemId;
-  useEffect(() => {
-    const fetchTicketData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/ticket/getByItemId/${itemId}`
-        );
-        setTickets(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  // const itemId = item.itemId;
+  // useEffect(() => {
+  //   const fetchTicketData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `http://localhost:8080/ticket/getByItemId/${itemId}`
+  //       );
+  //       setTickets(response.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
 
-    fetchTicketData();
-  }, [itemId]);
+  //   fetchTicketData();
+  // }, [itemId]);
+
+
+  const getStatusChipColor = (status) => {
+    return status === "INACTIVE" ? "bg-red-500" : "bg-green-400";
+  };
 
   return (
-    <div className="p-4 flex justify-center w-full items-center">
+    <div className="p-4 flex justify-center w-full items-center relative">
+    <IconButton
+        onClick={() => navigate(-1)}
+        className="absolute top-4 left-11  "
+      >
+        <ArrowBackIcon fontSize="medium" />
+      </IconButton>
+     
       <Card className="max-w-4xl w-full shadow-lg">
         <CardMedia
           component="img"
           height="200"
           image={item.image || "default-image-url.jpg"}
           alt={item.itemName}
+          className="mt-10"
         />
         <CardContent>
           <Typography
@@ -79,9 +94,12 @@ const ItemDetail = () => {
           </Typography>
           <div className="mb-4">
             <Chip label={`Item group: ${item.itemGroup}`} className="mr-2" />
-            <Chip label={`Status: ${item.status}`} />
+            <Chip
+              label={`Status: ${item.status}`}
+              className={`${getStatusChipColor(item.status)} text-white`}
+            />
           </div>
-          <Divider variant="middle" className="mb-4" />
+          {/* <Divider variant="middle" className="mb-4" />
           <Typography variant="h6" className="mb-2">
             Maintenance History
           </Typography>
@@ -105,16 +123,14 @@ const ItemDetail = () => {
                 ))}
               </TableBody>
             </Table>
-          </TableContainer>
+          </TableContainer> */}
 
           <Divider variant="middle" className="mb-4" />
-          <Typography variant="h6" className="mb-2">
-            Actions
-          </Typography>
+
           <div className="flex justify-around mb-4">
             <Button
-              variant="contained"
-              className="bg-blue-800 text-white"
+              variant="outlined"
+             
               onClick={() =>
                 navigate("/in-request/create-new-in-request", {
                   state: { item: item },
@@ -124,29 +140,20 @@ const ItemDetail = () => {
               Request Item
             </Button>
             <Button
-              variant="contained"
-              className="bg-blue-600 text-white hover:bg-violet-800"
+              variant="outlined"
+              
               onClick={() => navigate("/newTicket", { state: { item: item } })} //set correct navigation
             >
               Reserve Item
             </Button>
             <Button
-              variant="contained"
-              className="bg-violet-600 text-white hover:bg-violet-800"
+              variant="outlined"
+            
               onClick={() => navigate("/newTicket", { state: { item: item } })}
             >
               Submit Ticket
             </Button>
           </div>
-
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => navigate(-1)}
-            className="mt-2"
-          >
-            Back
-          </Button>
         </CardContent>
       </Card>
     </div>

@@ -47,14 +47,12 @@ const SearchBar = () => {
         `http://localhost:8080/inventory-item/search?itemName=${searchTerm}&itemGroup=${selectedCategories}`
       );
       if (response.status === 200) {
-       
-       navigate("/search-result", { state: { searchResult: response.data } });
+        navigate("/search-result", { state: { searchResult: response.data } });
       }
     } catch (error) {
       console.log(error);
     }
   };
-
 
   const handleFilterClick = (event) => {
     setFilterAnchorEl(event.currentTarget);
@@ -92,8 +90,14 @@ const SearchBar = () => {
     <div className="relative  bg-opacity-15  ml-5 md:w-[400px] sm:mr-3 sm:w-auto">
       <Autocomplete
         value={searchTerm}
-        options={itemsOptions.map((item) => item.itemName)}
+        options={itemsOptions
+          .filter(
+            (item, index, self) =>
+              self.findIndex((t) => t.itemName === item.itemName) === index
+          )
+          .map((item) => item.itemName)}
         onInputChange={(event, newSearchTerm) => setSearchTerm(newSearchTerm)}
+        // onClick={handleSearch}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -116,8 +120,15 @@ const SearchBar = () => {
                   />
                 </InputAdornment>
               ),
-              className:
-                "text-gray-500 m-2 h-[30px] border-rounded-2xl bg-red-50",
+              className: "text-gray-500 m-2 h-[30px] border-rounded-2xl ",
+              sx: {
+                "&:focus-within .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "transparent",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "transparent",
+                },
+              },
             }}
           />
         )}
