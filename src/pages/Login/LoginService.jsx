@@ -110,15 +110,8 @@ class LoginService{
         return !!token
     }
 
-//     static isAdmin(){
-//         const role = localStorage.getItem('role')
-//         return role === 'ADMIN'
-//     }
 
-//     static isUser(){
-//         const role = localStorage.getItem('role')
-//         return role === 'USER'
-//     }
+
 
         static isReqHandler(){
             const role = localStorage.getItem('role')
@@ -140,8 +133,9 @@ class LoginService{
             return userId
         }
 
+
     static reqHandlerOnly(){
-        return this.isAuthenticated() && this.isReqHandler();
+        return this.isAuthenticated() && this.isRequestHandler();
     }
  }
 

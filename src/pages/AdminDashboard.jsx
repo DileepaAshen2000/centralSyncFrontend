@@ -65,19 +65,27 @@ export default function AdminDashboard() {
     <div>
       <div className="flex items-center justify-start p-4 text-3xl">Admin Dashboard</div>
       <div className="grid grid-cols-12 gap-4 h-[500px] grid-rows-9">
-        <div className="flex col-span-8 row-span-3 gap-4 p-4 text-5xl text-center text-white bg-blue-500 rounded-lg ">
+        <div className="flex justify-around col-span-8 row-span-3 p-4 text-5xl text-center rounded-lg ">
           <TotalEmpCard />
-          <TotalEmpCard />
-          <TotalEmpCard />
+          <ItemCard />
+          <LowStockCard />
         </div>
-        <div className="col-span-4 py-4 text-5xl text-center text-white bg-blue-500 rounded-lg row-span-9">pie chart</div>
-        <div className="col-span-8 row-span-6 py-4 text-5xl text-center text-white bg-blue-500 rounded-lg">stat</div>
+        <div className="flex flex-col items-center justify-center col-span-4 py-4 text-2xl text-center text-black bg-white rounded-lg row-span-9">
+          <h1>Inventory-Item</h1>
+          <ItemPieChart />
+        </div>
+        <div className="flex items-center justify-center col-span-8 row-span-6 p-4 text-5xl text-center text-white bg-white rounded-lg">
+          <InventoryStatistic />
+        </div>
       </div>
       
       <div className="grid grid-cols-12 gap-4 h-[700px] grid-rows-10 mt-4">
-        <div className="col-span-6 row-span-5 py-4 text-5xl text-center text-white bg-blue-500 rounded-lg">Recent stock</div>
-        <div className="col-span-6 row-span-5 py-4 text-5xl text-center text-white bg-blue-500 rounded-lg">Low stock</div>
-        <div className="col-span-12 row-span-5 py-4 text-5xl text-center text-white bg-blue-500 rounded-lg">Delivary</div>
+        <div className="flex flex-col items-center justify-center col-span-6 row-span-5 p-4 text-2xl text-center text-black bg-blue-500 rounded-lg">
+          <h1>Low-Stock</h1>
+          <LowStockTable/>
+        </div>
+        <div className="col-span-6 row-span-5 p-4 text-5xl text-center text-white bg-blue-500 rounded-lg">recently used</div>
+        <div className="col-span-12 row-span-5 p-4 text-5xl text-center text-white bg-blue-500 rounded-lg">Delivary</div>
       </div>
     </div>
   );

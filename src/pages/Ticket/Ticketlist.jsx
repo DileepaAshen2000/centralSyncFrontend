@@ -38,53 +38,45 @@ const Ticket = () => {
       });
   }, []);
 
-  const handleDelete = () => {
-    if (selectedRows.length === 0) {
-      Swal.fire({
-        icon: "error",
-        title: "No tickets selected",
-        text: "Please select one or more tickets to delete.",
-      });
-      return;
-    }
-
-    // Assuming 'ticketId' is the unique identifier for a ticket
-    const ticketIdsToDelete = selectedRows.map((row) => row.id);
-
-    axios
-      .post("http://localhost:8080/ticket/delete", { ids: ticketIdsToDelete })
-      .then((response) => {
-        // Reload tickets after deletion
-        axios.get("http://localhost:8080/ticket/getAll").then((response) => {
-          const data = response.data.map((ticket) => ({
-            id: ticket.ticketId,
-            topic: ticket.topic,
-            date: ticket.date,
-          }));
-          setRows(data);
-        });
-        setSelectedRows([]);
-        Swal.fire({
-          icon: "success",
-          title: "Tickets deleted successfully",
-          text: "Selected tickets have been deleted.",
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        Swal.fire({
-          icon: "error",
-          title: "Delete failed",
-          text: "Failed to delete selected tickets.",
-        });
-      });
-  };
-
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const handleRowSelectionModelChange = (newSelectedRow) => {
     setRowSelectionModel(newSelectedRow);
   };
 
+    const handleDelete = () => {
+      const ticketId= rowSelectionModel[0];
+      console.log(ticketId)
+  
+      axios
+      .delete('http://localhost:8080/ticket/delete/'+ticketId)
+        .then((response) => {
+          // Reload tickets after deletion
+          axios.get("http://localhost:8080/ticket/getAll").then((response) => {
+            const data = response.data.map((ticket) => ({
+              id: ticket.ticketId,
+              topic: ticket.topic,
+              date: ticket.date,
+            }));
+            setRows(data);
+          });
+          setRowSelectionModel([]);
+          Swal.fire({
+            icon: "success",
+            title: "Tickets deleted successfully",
+            text: "Selected tickets have been deleted.",
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          Swal.fire({
+            icon: "error",
+            title: "Delete failed",
+            text: "Failed to delete selected tickets.",
+          });
+        });
+    };
+
+  
   return (
     <Box
       sx={{

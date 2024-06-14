@@ -20,11 +20,14 @@ const SideBar = () => {
   const [openRequestReservation, setOpenRequestReservation] = useState(false);
   const [openReport, setOpenReport] = useState(false);
 
+
   const navigate = useNavigate();
 
   const isEmployee = LoginService.isEmployee();
   const isAdmin = LoginService.isAdmin();
   const isReqHandler = LoginService.isReqHandler();
+
+
 
   const handleInventoryClick = () => {
     setOpenInventory(!openInventory);
@@ -80,16 +83,20 @@ const SideBar = () => {
               <ListItemText primary="Adjustment" />
             </ListItem>
           </a>
-          <a href="/stockIn">
-            <ListItem button className="pl-8 rounded-lg">
-              <ListItemText primary="Stock In" />
-            </ListItem>
-          </a>
-          <a href="/stockOut">
-            <ListItem button className="pl-8 rounded-lg">
-              <ListItemText primary="Stock Out" />
-            </ListItem>
-          </a>
+          {isAdmin && (
+            <a href="/stockIn">
+              <ListItem button className="pl-8 rounded-lg">
+                <ListItemText primary="Stock In" />
+              </ListItem>
+            </a>
+          )}
+          {isAdmin && (
+            <a href="/stockOut">
+              <ListItem button className="pl-8 rounded-lg">
+                <ListItemText primary="Stock Out" />
+              </ListItem>
+            </a>
+          )}
         </List>
       </Collapse>
 
@@ -154,7 +161,7 @@ const SideBar = () => {
       </ListItem>
       <Collapse in={openReport} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <a href="/history">
+          <a href="/history/:userId">
             <ListItem button className="pl-8 rounded-lg">
               <ListItemText primary="View History" />
             </ListItem>

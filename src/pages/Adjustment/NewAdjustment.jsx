@@ -11,10 +11,12 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useEffect } from 'react';
+import LoginService from '../Login/LoginService';
 
 const NewAdjustment = () => {
 
   let navigate = useNavigate();
+  const [profileInfo, setProfileInfo] = useState({});
   const [adj,setAdj] = useState({  // create state for adjustment, initial state is empty with object.
     reason:"",
     date:new Date().toISOString().split("T")[0], // Set to today's date
@@ -22,6 +24,7 @@ const NewAdjustment = () => {
     newQuantity:"",
     adjustedQuantity:"",
     itemId:"",
+    userId:"",
     file: null
   })
   const [item,setItem] = useState({ // create state for item, initial state is empty with object.
@@ -32,18 +35,23 @@ const NewAdjustment = () => {
   const [options, setOptions] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState("Select an Item");
   
-  const{reason,date,description,newQuantity,adjustedQuantity,itemId,file} = adj; // Destructure the adj state
+  const{reason,date,description,newQuantity,adjustedQuantity,itemId,userId,file} = adj; // Destructure the adj state
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get('http://localhost:8080/inventory-item/getAll');
         setOptions(response.data);
+
+        const token = localStorage.getItem('token');
+        const profile = await LoginService.getYourProfile(token);
+        setProfileInfo(profile.users);
+        setAdj(prevAdj => ({ ...prevAdj, userId: profile.users.userId }));
+        
       } catch (error) {
         console.error('Error fetching item details:', error);
       }
     };
-
     fetchData();
   }, []);
 
@@ -95,7 +103,11 @@ const NewAdjustment = () => {
       formData.append('description', description);
       formData.append('adjustedQuantity', adjustedQuantity);
       formData.append('itemId', itemId);
+      formData.append('userId', userId);
       formData.append('file', file); // Append the file to the formData
+
+      console.log(formData);
+      console.log(userId);
 
       const result = await axios.post("http://localhost:8080/adjustment/add", formData, {
         headers: {

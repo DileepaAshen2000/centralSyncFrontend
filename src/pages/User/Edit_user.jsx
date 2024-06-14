@@ -21,6 +21,7 @@ const Userupdate = () => {
     email: "",
     department: "",
     role: "",
+    workSite: "",
   });
   const { ID } = useParams();
   const [errors, setErrors] = useState({});
@@ -97,7 +98,9 @@ const Userupdate = () => {
               <label htmlFor="name">Name</label>
             </div>
             <div className="col-span-2">
-            {errors.firstName && <div className="text-[#FC0000] text-sm">{errors.firstName}</div>}
+              {errors.firstName && (
+                <div className="text-[#FC0000] text-sm">{errors.firstName}</div>
+              )}
               <TextField
                 id="firstName"
                 variant="outlined"
@@ -113,15 +116,16 @@ const Userupdate = () => {
             </div>
             <div className="col-span-3"> </div>
             <div className="col-span-2">
-            
-            {errors.lastName && <div className="text-[#FC0000] text-sm">{errors.lastName}</div>}
+              {errors.lastName && (
+                <div className="text-[#FC0000] text-sm">{errors.lastName}</div>
+              )}
               <TextField
                 variant="outlined"
                 placeholder="Last Name"
                 id="lastName"
                 value={user.lastName}
                 onChange={handleInputChange}
-                name="firstName"
+                name="lastName"
                 InputProps={{
                   className: "w-[300px] ",
                 }}
@@ -135,7 +139,11 @@ const Userupdate = () => {
               <label htmlFor="2">Department</label>
             </div>
             <div className="col-span-2">
-            {errors.department && <div className="text-[#FC0000] text-sm">{errors.department}</div>}
+              {errors.department && (
+                <div className="text-[#FC0000] text-sm">
+                  {errors.department}
+                </div>
+              )}
               <Select
                 value={user.department}
                 onChange={handleInputChange}
@@ -156,20 +164,47 @@ const Userupdate = () => {
               <label htmlFor="3">Role</label>
             </div>
             <div className="col-span-2">
-            {errors.role && <div className="text-[#FC0000] text-sm">{errors.role}</div>}
+              {errors.role && (
+                <div className="text-[#FC0000] text-sm">{errors.role}</div>
+              )}
               <Select
                 value={user.role}
                 onChange={handleInputChange}
                 name="role"
+                id="role"
                 className="w-[300px]"
                 size="small"
               >
                 <MenuItem disabled value={user.role}></MenuItem>
-                <MenuItem value="Web Developer">Web Developer</MenuItem>
-                <MenuItem value="Software Architect">
-                  Software Architect
-                </MenuItem>
+
+                <MenuItem value="ADMIN">Admin</MenuItem>
+                <MenuItem value="REQUEST_HANDLER">Request Handler</MenuItem>
+                <MenuItem value="EMPLOYEE">Employee</MenuItem>
               </Select>
+            </div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div className="col-span-1 row-span-1">
+              <label htmlFor="3">Work Site</label>
+            </div>
+            <div className="col-span-2">
+              {errors.workSite && (
+                <div className="text-[#FC0000] text-sm">{errors.workSite}</div>
+              )}{" "}
+              <Select
+                value={user.workSite}
+                onChange={handleInputChange}
+                name="workSite"
+                id="workSite"
+                className="w-[300px]"
+                size="small"
+              >
+                <MenuItem disabled value={user.workSite}></MenuItem>
+                <MenuItem value="ONSITE">Onsite</MenuItem>
+                <MenuItem value="ONLINE">Online</MenuItem>
+                <MenuItem value="NOT_ASSIGNED">Not assigned</MenuItem>
+              </Select>{" "}
             </div>
             <div></div>
             <div></div>
@@ -178,7 +213,11 @@ const Userupdate = () => {
               <label htmlFor="4">Date Of Birth</label>
             </div>
             <div className="col-span-2">
-            {errors.dateOfBirth && <div className="text-[#FC0000] text-sm">{errors.dateOfBirth}</div>}
+              {errors.dateOfBirth && (
+                <div className="text-[#FC0000] text-sm">
+                  {errors.dateOfBirth}
+                </div>
+              )}
               <TextField
                 id="date"
                 placeholder="dd/mm/yy"
@@ -199,7 +238,9 @@ const Userupdate = () => {
               <label htmlFor="5">Adress</label>
             </div>
             <div className="col-span-2">
-            {errors.address && <div className="text-[#FC0000] text-sm">{errors.address}</div>}
+              {errors.address && (
+                <div className="text-[#FC0000] text-sm">{errors.address}</div>
+              )}
               <TextField
                 type="text"
                 id="adress"

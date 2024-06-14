@@ -12,6 +12,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
+import LoginService from '../Login/LoginService';
 
 const handlePrint=()=>{
   window.print();
@@ -37,6 +38,7 @@ const [item,setItem] = useState({  // create state for adjustment, initial state
   quantity:""
 })
 const{itemName,quantity} = item;
+const isAdmin = LoginService.isAdmin();
 
 useEffect(() => {
   loadAdjustment();
@@ -191,7 +193,7 @@ const loadAdjustment = async () => {
                     <TableCell align="right">{itemId}</TableCell>
                     <TableCell align="right">{itemName}</TableCell>
                     <TableCell align="right">{quantity}</TableCell>
-                    <TableCell align="right">{quantity}</TableCell>
+                    <TableCell align="right">{quantity + adjustedQuantity}</TableCell>
                     <TableCell align="right">{adjustedQuantity}</TableCell>
                   </TableRow>
               </TableBody>
@@ -226,6 +228,7 @@ const loadAdjustment = async () => {
         </div>
        
        {/* Footer part */}
+       {isAdmin && (
         <div>
           {status === 'PENDING' && (
             <div>
@@ -265,6 +268,8 @@ const loadAdjustment = async () => {
             </div>
           )}
         </div>
+       )}
+        
       </main>
     </div>
   )
