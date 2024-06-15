@@ -141,7 +141,7 @@ class LoginService{
 
 
     static reqHandlerOnly(){
-        return this.isAuthenticated() && this.isRequestHandler();
+        return this.isAuthenticated() && this.isReqHandler();
     }
  }
 
