@@ -1,4 +1,4 @@
-import React,{ useRef } from 'react'
+import React from 'react'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -11,7 +11,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
-import { useReactToPrint } from 'react-to-print';
+
 
 const handlePrint=()=>{
   window.print();
@@ -28,7 +28,7 @@ const StockOutDocument = () => {
   })
 
 const{date,description,outQty,department,itemId} = stockOut;
-const printRef = useRef();
+
 const [item,setItem] = useState({  // create state for stockOut, initial state is empty with object.
   itemName:"",
   quantity:"",
@@ -82,12 +82,9 @@ const handleFileDownload = async () => {
     console.error('Error downloading PDF file:', error);
   }
 };
-
-const handlePrint = useReactToPrint({
-  content: () => printRef.current,
-});
-
+  // Get the current date and time
   const currentDate = new Date();
+
   // Extract components of the date and time
   const year = currentDate.getFullYear();
   const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based, so add 1
@@ -96,6 +93,7 @@ const handlePrint = useReactToPrint({
   const minutes = currentDate.getMinutes().toString().padStart(2, '0');
   const seconds = currentDate.getSeconds().toString().padStart(2, '0');
 
+  // Format the date and time as needed
   const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   
   return (
@@ -112,7 +110,7 @@ const handlePrint = useReactToPrint({
               onClick={handlePrint}
           >print</Button>
         </div>
-        <div ref={printRef} className="p-10 ml-6 mr-6 bg-white">
+        <div className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section className="flex flex-row items-end justify-end mt-4 mb-10">
               <header className="text-3xl">Stock-Out Report</header>
