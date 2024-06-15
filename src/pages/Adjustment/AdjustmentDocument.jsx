@@ -84,7 +84,7 @@ const loadAdjustment = async () => {
   
   const handleReject = () => {
     axios
-      .patch("http://localhost:8080/adjustment/updateStatus/reject/" + adjId)
+      .patch("http://localhost:8080/adjustment/updateStatus/reject/" + adjId, { note })
       .then(() => {
         setFetchData(!fetchData); 
         navigate("/adjustment", { fetchData }); 
