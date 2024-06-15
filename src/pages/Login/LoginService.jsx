@@ -140,6 +140,11 @@ class LoginService{
             return userId
         }
 
+        static isOnlineEmloyee(){
+            const workSite = localStorage.getItem('workSite')
+            return workSite === 'ONLINE'
+        }
+
     static reqHandlerOnly(){
         return this.isAuthenticated() && this.isReqHandler();
     }

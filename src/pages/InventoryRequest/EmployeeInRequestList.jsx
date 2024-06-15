@@ -7,12 +7,14 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
 
 
+
 // Define columns for the DataGrid component
 const columns = [
-  { field: 'id', headerName: 'Inventory Request No:', width: 250 },
-  { field: 'date', headerName: 'Date', width: 250 },
-  { field: 'reason', headerName: 'Reason', width: 250 },
-  { field: 'status', headerName: 'Status', width: 250 },
+  { field: 'id', headerName: 'Inventory Request No:', width: 200 },
+  { field: 'date', headerName: 'Date', width: 200 },
+  { field: 'time', headerName: 'Time', width: 200 },
+  { field: 'reason', headerName: 'Reason', width: 200 },
+  { field: 'status', headerName: 'Status', width: 200 },
 ];
 
 // Define a functional component named Table
@@ -28,14 +30,21 @@ function Table() {
       .then((response) => {
         // Map the response data to match the table columns
       const data = response.data.map((inventoryRequest,index) => ({
-        id: index+1,
-        date: inventoryRequest.date,
+        id: index + 1, 
+        date: new Date(inventoryRequest.dateTime).toLocaleDateString('en-US'),
+        time: new Date(inventoryRequest.dateTime).toLocaleTimeString('en-US'),
         reason: inventoryRequest.reason,
         status: inventoryRequest.reqStatus,
       }));
+   // Sort data by dateTime in descending order (most recent first)
+      data.sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
+       // Reassign sequential IDs after sorting
+      const sortedData = data.map((item, index) => ({
+        ...item,
+        id: index + 1,
+      }));
       // Set the mapped data to the state variable
-      setData(data);
-      console.log(data);
+      setData(sortedData);
       })
       // Handle any errors from the API call
       .catch((error) => {

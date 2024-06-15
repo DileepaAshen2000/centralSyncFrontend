@@ -176,7 +176,7 @@ const NewRequest = () => {
           <Button
             className="px-6 py-2 rounded"
             variant="outlined"
-            onClick={() => navigate("/inventory-request")}
+            onClick={() => navigate("/employee-in-request-list")}
           >
             Cancel
           </Button>
