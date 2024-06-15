@@ -54,7 +54,7 @@ const UserActivityHistory = () => {
 
   const fetchProfileInfo = async () => {
     try {
-      const token = localStorage.getItem("token"); // Retrieve the token from localStorage
+      const token = localStorage.getItem("token");  
       const response = await LoginService.getYourProfile(token);
       setProfileInfo(response.users);
     } catch (error) {

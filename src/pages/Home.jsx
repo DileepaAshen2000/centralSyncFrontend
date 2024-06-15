@@ -49,6 +49,7 @@ import InventorySummary from "./Report/InventorySummary";
 import LoginPage from "./Login/LoginPage";
 import LoginService from "./Login/LoginService";
 import CreatePassword from "./User/CreatePassword";
+import MyTicketList from "./Ticket/Myticketlist";
 
 const Home = () => {
   const isAuthenticated = LoginService.isAuthenticated();
@@ -128,6 +129,7 @@ const Home = () => {
                   path="ticket/ticketdoc/:id"
                   element={<TicketDocument />}
                 ></Route>
+                <Route path="/ticket/myticketlist/:userId" element={<MyTicketList/>}></Route>
 
                 {/* Inventory Item routing */}
 

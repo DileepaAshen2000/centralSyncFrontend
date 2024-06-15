@@ -15,90 +15,85 @@ const columns = [
   { field: "itemName", headerName: "Item Name", width: 200 },
   { field: "itemBrand", headerName: "Item Brand", width: 200 },
 
-  
-
   //{ field: 'status', headerName: 'Status', width: 130 },
 ];
 
-const Ticket = () => {
+const MyTicketList = () => {
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [fetchData, setFetchData] = useState(false);
+  const [profileInfo, setProfileInfo] = useState({});
   const navigate = useNavigate();
   const { ID } = useParams();
   const [rows, setRows] = useState([]);
-  const [loggedInUserId, setLoggedInUserId] = useState({});
 
   useEffect(() => {
-    const fetchProfileInfo = async () => {
-      try {
-        const token = localStorage.getItem("token");  
-        const response = await LoginService.getYourProfile(token);
-        setLoggedInUserId(response.users.userId);
-      } catch (error) {
-        console.error("Error fetching profile information:", error);
-      }
-    };
-    
     fetchProfileInfo();
   }, []);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/ticket/getAll")
-      .then((response) => {
-        const data = response.data
-        .filter(ticket => ticket.userId !== loggedInUserId)  
-        .map((ticket) => ({
+    if (profileInfo.userId) {
+      fetchTickets(profileInfo.userId);
+    }
+  }, [profileInfo.userId]);
+
+  const fetchProfileInfo = async () => {
+    try {
+      const token = localStorage.getItem("token");  
+      const response = await LoginService.getYourProfile(token);
+      setProfileInfo(response.users);
+    } catch (error) {
+      console.error("Error fetching profile information:", error);
+    }
+  };
+
+
+ 
+
+  const fetchTickets = async (userId) => {
+    try{
+    const response=await axios.get(`http://localhost:8080/ticket/${userId}`)
+        const data = response.data.map((ticket) => ({
           id: ticket.ticketId,
           topic: ticket.topic,
           date: ticket.date,
+          itemName:ticket.itemId.itemName,
+          itemBrand:ticket.itemId.brand
+
         }));
         setRows(data);
-      })
-      .catch((error) => {
+      }
+      catch(error){
         console.log(error);
-      });
-  }, []);
+      };
+  }
 
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const handleRowSelectionModelChange = (newSelectedRow) => {
     setRowSelectionModel(newSelectedRow);
   };
 
-    const handleDelete = () => {
-      const ticketId= rowSelectionModel[0];
-      console.log(ticketId)
-  
-      axios
-      .delete('http://localhost:8080/ticket/delete/'+ticketId)
-        .then((response) => {
-          // Reload tickets after deletion
-          axios.get("http://localhost:8080/ticket/getAll").then((response) => {
-            const data = response.data
-            .filter(ticket => ticket.userId !== loggedInUserId) 
-            .map((ticket) => ({
-              id: ticket.ticketId,
-              topic: ticket.topic,
-              date: ticket.date,
-              itemName:ticket.itemId.itemName,
-          itemBrand:ticket.itemId.brand
-            }));
-            setRows(data);
-          });
-          setRowSelectionModel([]);
-          Swal.fire({
-            icon: "success",
-            title: "Tickets deleted successfully",
-            text: "Selected tickets have been deleted.",
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-          Swal.fire({
-            icon: "error",
-            title: "Delete failed",
-            text: "Failed to delete selected tickets.",
-          });
-        });
-    };
+  const handleDelete = async () => {
+    const ticketId = rowSelectionModel[0];
+    console.log(ticketId);
+
+    try {
+      await axios.delete(`http://localhost:8080/ticket/delete/${ticketId}`);
+      await fetchTickets(profileInfo.userId);
+
+      Swal.fire({
+        icon: "success",
+        title: "Tickets deleted successfully",
+        text: "Selected tickets have been deleted.",
+      });
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Delete failed",
+        text: "Failed to delete selected tickets.",
+      });
+    }
+  };
 
   
   return (
@@ -155,4 +150,4 @@ const Ticket = () => {
   );
 };
 
-export default Ticket;
+export default MyTicketList;
