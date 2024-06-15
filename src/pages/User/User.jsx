@@ -19,13 +19,14 @@ const columns = [
 
 export default function User() {
   const navigate = useNavigate();
-  const isReqHandler = LoginService.isReqHandler();
+  const isRequestHandler = LoginService.isRequestHandler();
   const [rows, setRows] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   useEffect(() => {
     axios
       .get("http://localhost:8080/user/getAll")
       .then((response) => {
+        console.log(response.data)
         const data = response.data.map((user) => ({
           id: user.userId,
           employeesName: `${user.firstName} ${user.lastName}`,
@@ -97,7 +98,7 @@ export default function User() {
         ) : (
           <div className="grid grid-cols-6 grid-rows-1 gap-y-7  gap-x-[0.25rem] mt-12 ">
             <div className="col-start-6">
-              {!isReqHandler && (
+              {!isRequestHandler && (
                 <Button
                   variant="contained"
                   className="bg-blue-600 w-[150px] rounded text-white h-10"

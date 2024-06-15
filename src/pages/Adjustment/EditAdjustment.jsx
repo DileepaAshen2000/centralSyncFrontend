@@ -285,10 +285,10 @@ const EditAdjustment = () => {
                       {itemName}
                     </TableCell>
                     <TableCell align="right">{quantity}</TableCell>
-                    <TableCell align="right"><TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)}
+                    <TableCell align="right"><TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={quantity + adjustedQuantity} onChange={(e)=>onInputChange(e)}
                       error={!!errors.newQuantity}
                       helperText={errors.newQuantity}></TextField></TableCell>
-                    <TableCell align="right">{newQuantity-quantity}</TableCell>
+                    <TableCell align="right">{adjustedQuantity}</TableCell>
                   </TableRow>
               </TableBody>  
             </Table>
