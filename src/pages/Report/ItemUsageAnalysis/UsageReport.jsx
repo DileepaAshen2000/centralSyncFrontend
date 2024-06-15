@@ -42,7 +42,7 @@ const Usage = () => {
   };
 
   return (
-    <div className="grid grid-cols-10">
+    <div className="grid grid-cols-1 md:grid-cols-10">
       <Select
         label="Group"
         id="selectItemGroup"
