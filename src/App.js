@@ -1,10 +1,10 @@
 import React from "react";
-// import {
-//   BrowserRouter as Router,
-//   Routes,
-//   Route,
-//   BrowserRouter,
-// } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  BrowserRouter,
+} from "react-router-dom";
 import Home from "./pages/Home";
 import CreatePassword from "./pages/User/CreatePassword";
 //import FileTest from "./components/fileTest";

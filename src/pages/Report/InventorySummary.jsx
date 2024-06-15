@@ -1,4 +1,4 @@
-import React,{useRef} from 'react'
+import React from 'react'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -19,7 +19,6 @@ import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import PrintIcon from "@mui/icons-material/Print";
-import { useReactToPrint } from 'react-to-print';
 
 
 const handlePrint=()=>{
@@ -33,7 +32,6 @@ const InventorySummary = () => {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
-  const printRef = useRef();
 
   const handleClick = () => {
     console.info(`You clicked ${options[selectedIndex]}`);
@@ -55,9 +53,6 @@ const InventorySummary = () => {
 
     setOpen(false);
   };
-  const handlePrint = useReactToPrint({
-    content: () => printRef.current,
-  });
   //
 //   const {sinId} = useParams(); // get the StockIn id from the url
 //   const [stockIn,setStockIn] = useState({  // create state for StockIn, initial state is empty with object.
@@ -177,7 +172,7 @@ const InventorySummary = () => {
         </Popper>
       </div>
         {/* report body */}
-        <div ref={printRef} className="p-10 ml-6 mr-6 bg-white">
+        <div className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section className="flex flex-col items-center justify-center mt-4 mb-10">
               <header className="text-3xl">INVENTORY-SUMMARY REPORT</header>

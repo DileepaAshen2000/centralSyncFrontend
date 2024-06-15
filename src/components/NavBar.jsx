@@ -137,7 +137,7 @@ export default function NavBar() {
               </Badge>
             </IconButton>
             <div className='flex items-center'>
-              <h4 className='text-black '>{profileInfo.firstName} {profileInfo.lastName}</h4>
+              <h4 className='text-black '>{profileInfo.firstName}</h4>
             </div>
             <IconButton
               size="large"
