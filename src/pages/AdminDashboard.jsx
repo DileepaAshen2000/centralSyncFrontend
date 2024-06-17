@@ -7,6 +7,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import LowStockTable from "../components/LowStockTable";
 import InventoryStatistic from "../components/InventoryStatistic";
+import RecentlyUsedItem from "../components/RecentlyUsedItem";
 
 
 export default function AdminDashboard() {
@@ -30,11 +31,12 @@ export default function AdminDashboard() {
       </div>
       
       <div className="grid grid-cols-12 gap-4 h-[700px] grid-rows-10 mt-4">
-        <div className="flex flex-col items-center justify-center col-span-6 row-span-5 p-4 text-2xl text-center text-black bg-blue-500 rounded-lg">
-          <h1>Low-Stock</h1>
+        <div className="flex flex-col items-center justify-center col-span-6 row-span-5 p-4 text-2xl text-center text-black bg-white rounded-lg">
           <LowStockTable/>
         </div>
-        <div className="col-span-6 row-span-5 p-4 text-5xl text-center text-white bg-blue-500 rounded-lg">recently used</div>
+        <div className="flex flex-col items-center justify-center col-span-6 row-span-5 p-4 text-2xl text-center text-black bg-white rounded-lg">
+          <RecentlyUsedItem/>
+        </div>
         <div className="col-span-12 row-span-5 p-4 text-5xl text-center text-white bg-blue-500 rounded-lg">Delivary</div>
       </div>
     </div>

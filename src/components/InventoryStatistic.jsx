@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart } from '@mui/x-charts/LineChart';
 import axios from 'axios';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function InventoryStatistic() {
   const [stockInData, setStockInData] = useState([]);
@@ -41,7 +42,9 @@ export default function InventoryStatistic() {
   return (
     <div>
       {loading ? (
-        <p>Loading...</p>
+        <div className="flex justify-center items-center h-[400px] w-[300px]">
+          <CircularProgress />
+      </div>
       ) : (
         <LineChart
           width={700}
