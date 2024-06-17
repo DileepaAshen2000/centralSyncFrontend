@@ -9,11 +9,10 @@ import { Button } from '@mui/material';
 
 // Define columns for the DataGrid component
 const columns = [
-  { field: 'id', headerName: 'Request ID', width: 150 },
-  { field: 'reason', headerName: 'Reason', width: 180 },
-  { field: 'department', headerName: 'Department', width: 300 },
-  { field: 'employeeName', headerName: 'Role', width: 150 },
-  { field: 'status', headerName: 'Status', width: 100 },
+  { field: 'id', headerName: 'Inventory Request No:', width: 250 },
+  { field: 'date', headerName: 'Date', width: 250 },
+  { field: 'reason', headerName: 'Reason', width: 250 },
+  { field: 'status', headerName: 'Status', width: 250 },
 ];
 
 // Define a functional component named Table
@@ -25,14 +24,13 @@ function Table() {
 
    // Fetch data from the backend API when the component mounts
   useEffect(() => {
-    axios.get('http://localhost:8080/request/getAll')
+    axios.get('http://localhost:8080/request/user/3')
       .then((response) => {
         // Map the response data to match the table columns
       const data = response.data.map((inventoryRequest,index) => ({
         id: index+1,
+        date: inventoryRequest.date,
         reason: inventoryRequest.reason,
-        department: inventoryRequest.department,
-        employeeName: inventoryRequest.employeeName,
         status: inventoryRequest.reqStatus,
       }));
       // Set the mapped data to the state variable

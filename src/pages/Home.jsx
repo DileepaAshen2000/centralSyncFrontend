@@ -3,6 +3,8 @@ import NavBar from "../components/NavBar";
 import SideBar from "../components/SideBar";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AdminDashboard from "./AdminDashboard";
+import RequestHandlerDashboard from "./RequestHandlerDashboard";
+import EmployeeDashboard from "./EmployeeDashboard";
 import NewAdjustment from "./Adjustment/NewAdjustment";
 import User from "./User/User";
 import CreateUser from "./User/CreateUser";
@@ -51,6 +53,8 @@ import LoginService from "./Login/LoginService";
 import CreatePassword from "./User/CreatePassword";
 import SearchResult from "../components/SearchResult";
 import ItemDetail from "../components/ItemDetail";
+import ForgotPassword from "./Login/ForgotPassword";
+import ResetPassword from "./Login/ResetPassword";
 
 const Home = () => {
   const isAuthenticated = LoginService.isAuthenticated();
@@ -60,6 +64,8 @@ const Home = () => {
       <Routes>
         <Route path="/user/:id/password" element={<CreatePassword />}></Route>
         <Route path="/" element={<LoginPage />}></Route>
+        <Route path="/forgot-password" element={<ForgotPassword/>}></Route>
+        <Route path="/resetPassword" element={<ResetPassword/>}></Route>
       </Routes>
       {isAuthenticated && (
         <div>
@@ -81,6 +87,8 @@ const Home = () => {
               style={{ backgroundColor: "#eeeeee" }}
               className="w-screen p-10"
             >
+                
+
               <Routes>
                 {/* Enter components here, that you want to insert. */}
 
@@ -240,6 +248,7 @@ const Home = () => {
                 <Route path="/search-result" element={<SearchResult />}></Route>
                 <Route path="/item-detail" element={<ItemDetail />} />
               </Routes>
+
             </Grid>
           </Grid>
         </div>

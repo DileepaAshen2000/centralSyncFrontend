@@ -15,10 +15,25 @@ export default function LoginPage() {
       const userData = await LoginService.login(email, password);
       console.log(userData);
       if (userData.token) {
-        localStorage.setItem("token", userData.token);
-        localStorage.setItem("role", userData.role);
-        navigate("/admin-dashboard"); // Navigate to desired location after successful login
-        console.log("login success");
+
+        localStorage.setItem('token', userData.token);
+        localStorage.setItem('role', userData.role);
+        localStorage.setItem('userId', userData.userId);
+               // Navigate based on role
+               switch (userData.role) {
+                case 'ADMIN':
+                  navigate('/admin-dashboard');
+                  break;
+                case 'REQ_HANDLER':
+                  navigate('/request-handler-dashboard');
+                  break;
+                case 'EMPLOYEE':
+                  navigate('/employee-dashboard');
+                  break;
+                default:
+                  navigate('/default-dashboard'); // Fallback case if role is not recognized
+              } // Navigate to desired location after successful login
+        console.log("login success")
       } else {
         setError(userData.error);
       }
@@ -68,7 +83,7 @@ export default function LoginPage() {
             >
               Login
             </button>
-            <p className="text-center">Forgot Username or Password ?</p>
+            <a href="/forgot-password" className="text-center ">Forgot Password ?</a>
           </form>
         </div>
       </div>

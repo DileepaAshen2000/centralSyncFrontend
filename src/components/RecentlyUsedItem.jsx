@@ -3,22 +3,14 @@ import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Typography from "@mui/material/Typography";
 
 const columns = [
   { field: 'itemId', headerName: 'Item ID', width: 150 },
   { field: 'itemName', headerName: 'Item Name', width: 200 },
-  {
-    field: 'quantity',
-    headerName: 'Quantity',
-    width: 120,
-    renderCell: (params) => (
-      <Typography color="red">{params.value}</Typography>
-    ),
-  },
+  { field: 'stockOut', headerName: 'Stock Out', width: 120 },
 ];
 
-const LowStockTable = () => {
+const RecentlyUsedItem = () => {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
@@ -29,7 +21,7 @@ const LowStockTable = () => {
           id: item.itemId,
           itemId: item.itemId,
           itemName: item.itemName,
-          quantity: item.availableQuantity,
+          quantity: item.stockOutQuantity,
         }));
         setRows(data);
       })
@@ -40,7 +32,7 @@ const LowStockTable = () => {
 
   return (
     <Box className="flex-row w-full space-y-4 bg-white rounded-lg shadow-lg">
-      <h1 className="p-2 pl-4 text-sm text-left bg-red-300">Low Stock Items</h1>
+      <h1 className="p-2 pl-4 text-sm text-left bg-green-300">Recently Used Items</h1>
       <DataGrid
         className='shadow-lg'
         rows={rows}
@@ -61,4 +53,4 @@ const LowStockTable = () => {
   );
 };
 
-export default LowStockTable;
+export default RecentlyUsedItem;
