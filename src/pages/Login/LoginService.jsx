@@ -115,7 +115,7 @@ class LoginService{
 
         static isReqHandler(){
             const role = localStorage.getItem('role')
-            return role === 'REQ_HANDLER'
+            return role === 'REQUEST_HANDLER'
         }
 
         static isAdmin(){
