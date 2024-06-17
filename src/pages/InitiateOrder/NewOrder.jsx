@@ -43,19 +43,28 @@ const NewOrderForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("vendorName", vendorName);
-    formData.append("companyName", companyName);
-    formData.append("vendorEmail", vendorEmail);
-    formData.append("mobile", mobile);
-    formData.append("date", date);
-    formData.append("itemName", itemName);
-    formData.append("brandName", brandName);
-    formData.append("quantity", quantity);
-    formData.append("description", description);
+    formData.append(
+      "order",
+      new Blob(
+        [
+          JSON.stringify({
+            vendorName,
+            companyName,
+            vendorEmail,
+            mobile,
+            date,
+            itemName,
+            brandName,
+            quantity,
+            description,
+          }),
+        ],
+        { type: "application/json" }
+      )
+    );
     if (file) {
       formData.append("file", file);
     }
-
     try {
       const response = await axios.post(
         "http://localhost:8080/orders/add",
@@ -67,7 +76,7 @@ const NewOrderForm = () => {
         }
       );
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         console.log(response.data);
         Swal.fire({
           icon: "success",
