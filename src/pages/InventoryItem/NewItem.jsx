@@ -9,9 +9,7 @@ import axios from "axios";
 const AddItemForm = () => {
   const navigate = useNavigate();
 
-
   const [errors, setErrors] = useState({});
-
 
   const [fetchData, setFetchData] = useState(false);
 
@@ -43,21 +41,20 @@ const AddItemForm = () => {
     setInventoryItem({ ...inventoryItem, [e.target.id]: e.target.value });
   };
 
- 
   const onItemGroupChange = (e) => {
     setInventoryItem({ ...inventoryItem, itemGroup: e.target.value });
   };
 
-
   const handleSave = async (e) => {
     e.preventDefault();
-  
+
     try {
-   
-      const response = await axios.post("http://localhost:8080/inventory-item/add", inventoryItem);
+      const response = await axios.post(
+        "http://localhost:8080/inventory-item/add",
+        inventoryItem
+      );
       if (response.status === 200) {
         Swal.fire({
-
           icon: "success",
           title: "Success!",
           text: "Item successfully added!",
@@ -66,21 +63,17 @@ const AddItemForm = () => {
         navigate("/item");
       }
     } catch (error) {
-   
       Swal.fire({
         icon: "error",
         title: "Error!",
         text: "Failed to add new item. Please check your inputs.",
-
       });
       if (error.response && error.response.status === 400) {
         setErrors(error.response.data);
       }
     }
   };
-  
 
- 
   return (
     <form className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14">
       <h1 className="col-span-4 pt-2 text-3xl font-bold ">New item</h1>
@@ -91,7 +84,9 @@ const AddItemForm = () => {
         </InputLabel>
         <div>
           {errors.itemName && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.itemName}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
+              {errors.itemName}
+            </div>
           )}
           <TextField
             id="itemName"
@@ -121,11 +116,19 @@ const AddItemForm = () => {
             onChange={onItemGroupChange}
             className="w-[300px] h-10 ml-5 bg-white  "
           >
-            <MenuItem value="COMPUTER_ACCESSORIES">
-              Computer accessories
+            {" "}
+            <MenuItem value="COMPUTERS_AND_LAPTOPS">
+              Computers & Laptops
             </MenuItem>
-            <MenuItem value="PRINTER">Printer</MenuItem>
-            <MenuItem value="COMPUTER_HARDWARE">Computer hardware</MenuItem>
+            <MenuItem value="COMPUTER_ACCESSORIES">
+              Computer Accessories
+            </MenuItem>
+            <MenuItem value="COMPUTER_HARDWARE">Computer Hardware</MenuItem>
+            <MenuItem value="PRINTERS_AND_SCANNERS">
+              Printers & Scanners
+            </MenuItem>
+            <MenuItem value="FURNITURE">Furniture</MenuItem>
+            <MenuItem value="OFFICE_SUPPLIES">Office Supplies</MenuItem>
             <MenuItem value="OTHER">Other</MenuItem>
           </Select>
         </div>
@@ -137,7 +140,9 @@ const AddItemForm = () => {
         </InputLabel>
         <div>
           {errors.unit && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.unit}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
+              {errors.unit}
+            </div>
           )}
           <TextField
             id="unit"
@@ -157,7 +162,9 @@ const AddItemForm = () => {
         </InputLabel>
         <div>
           {errors.brand && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.brand}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
+              {errors.brand}
+            </div>
           )}
           <TextField
             id="brand"
@@ -175,18 +182,20 @@ const AddItemForm = () => {
           Dimension
         </InputLabel>
         <div>
-        {errors.dimension && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.dimension}</div>
+          {errors.dimension && (
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
+              {errors.dimension}
+            </div>
           )}
-        <TextField
-          id="dimension"
-          value={dimension}
-          onChange={onInputChange}
-          variant="outlined"
-          InputProps={{
-            className: "w-[300px] h-10 ml-5 bg-white  ",
-          }}
-        />
+          <TextField
+            id="dimension"
+            value={dimension}
+            onChange={onInputChange}
+            variant="outlined"
+            InputProps={{
+              className: "w-[300px] h-10 ml-5 bg-white  ",
+            }}
+          />
         </div>
       </div>
       <div className="col-start-1 col-span-4 flex items-center">
@@ -194,18 +203,20 @@ const AddItemForm = () => {
           Weight
         </InputLabel>
         <div>
-        {errors.weight && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.weight}</div>
+          {errors.weight && (
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
+              {errors.weight}
+            </div>
           )}
-        <TextField
-          id="weight"
-          value={weight}
-          onChange={onInputChange}
-          variant="outlined"
-          InputProps={{
-            className: "w-[300px] h-10 ml-5 bg-white  ",
-          }}
-        />
+          <TextField
+            id="weight"
+            value={weight}
+            onChange={onInputChange}
+            variant="outlined"
+            InputProps={{
+              className: "w-[300px] h-10 ml-5 bg-white  ",
+            }}
+          />
         </div>
       </div>
       <div className="col-start-1 col-span-4 flex ">
@@ -233,7 +244,9 @@ const AddItemForm = () => {
         </InputLabel>
         <div>
           {errors.quantity && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.quantity}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
+              {errors.quantity}
+            </div>
           )}
           <TextField
             id="quantity"

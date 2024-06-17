@@ -62,7 +62,7 @@ const Home = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/user/:id/password" element={<CreatePassword/>}></Route>
+        <Route path="/user/:id/password" element={<CreatePassword />}></Route>
         <Route path="/" element={<LoginPage />}></Route>
         <Route path="/forgot-password" element={<ForgotPassword/>}></Route>
         <Route path="/resetPassword" element={<ResetPassword/>}></Route>
@@ -244,10 +244,9 @@ const Home = () => {
                   path="/newreservation"
                   element={<NewReservation />}
                 ></Route>
-{/* SearchBar routing */}
-                <Route path="/search-result" element={<SearchResult/>}></Route>
+                {/* SearchBar routing */}
+                <Route path="/search-result" element={<SearchResult />}></Route>
                 <Route path="/item-detail" element={<ItemDetail />} />
-
               </Routes>
 
             </Grid>

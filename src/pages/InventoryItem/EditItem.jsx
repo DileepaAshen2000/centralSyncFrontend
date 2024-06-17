@@ -11,7 +11,6 @@ const EditItem = () => {
 
   const { itemID } = useParams();
 
-
   const [inventoryItem, setInventoryItem] = useState({
     itemName: "",
     itemGroup: "",
@@ -20,7 +19,7 @@ const EditItem = () => {
     dimension: "",
     weight: "",
     description: "",
-    quantity: ""
+    quantity: "",
   });
 
   const {
@@ -31,7 +30,7 @@ const EditItem = () => {
     dimension,
     weight,
     description,
-    quantity
+    quantity,
   } = inventoryItem;
 
   const onInputChange = (e) => {
@@ -42,52 +41,57 @@ const EditItem = () => {
     setInventoryItem({ ...inventoryItem, itemGroup: e.target.value });
   };
 
-useEffect(() => {
-  const fetchItemDetails = async () => {
+  useEffect(() => {
+    const fetchItemDetails = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/inventory-item/getById/${itemID}`
+        );
+        const item = {
+          itemName: response.data.itemName,
+          itemGroup: response.data.itemGroup,
+          unit: response.data.unit,
+          brand: response.data.brand,
+          dimension: response.data.dimension,
+          weight: response.data.weight,
+          description: response.data.description,
+          quantity: response.data.quantity,
+          status: response.data.status,
+        };
+        setInventoryItem(item); // Make sure the fetched data structure matches the structure of your state
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchItemDetails();
+  }, [itemID]);
+
+  const handleSave = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/inventory-item/getById/${itemID}`);
-      const item = {
-        itemName: response.data.itemName,
-        itemGroup: response.data.itemGroup,
-        unit: response.data.unit,
-        brand: response.data.brand,
-        dimension: response.data.dimension,
-        weight: response.data.weight,
-        description: response.data.description,
-        quantity: response.data.quantity,
-        status: response.data.status,
-      };
-      setInventoryItem(item); // Make sure the fetched data structure matches the structure of your state
+      const response = await axios.put(
+        `http://localhost:8080/inventory-item/updateById/${itemID}`,
+        inventoryItem
+      );
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Item details successfully edited!",
+        });
+        navigate("/item");
+      }
     } catch (error) {
-      console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Failed to edit item details. Please check your inputs.",
+      });
+      if (error.response) {
+        setErrors(error.response.data);
+      }
     }
   };
-
-  fetchItemDetails();
-}, [itemID]);
-
-const handleSave = async () => {
-  try {
-    const response = await axios.put(`http://localhost:8080/inventory-item/updateById/${itemID}`, inventoryItem);
-    if (response.status === 200) {
-      Swal.fire({
-        icon: "success",
-        title: "Success!",
-        text: "Item details successfully edited!",
-      });
-      navigate("/item");
-    }
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      title: "Error!",
-      text: "Failed to edit item details. Please check your inputs.",
-    });
-    if (error.response) {
-      setErrors(error.response.data);
-    }
-  }
-};
 
   return (
     <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
@@ -112,7 +116,9 @@ const handleSave = async () => {
         </InputLabel>
         <div>
           {errors.itemName && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.itemName}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
+              {errors.itemName}
+            </div>
           )}
           <TextField
             id="itemName"
@@ -143,14 +149,20 @@ const handleSave = async () => {
             onChange={onItemGroupChange}
             className="w-[300px] h-10 ml-5 bg-white  "
           >
-           <MenuItem value="COMPUTER_ACCESSORIES">
-              Computer accessories
+            <MenuItem value="COMPUTERS_AND_LAPTOPS">
+              Computers & Laptops
             </MenuItem>
-            <MenuItem value="PRINTER">Printer</MenuItem>
-            <MenuItem value="COMPUTER_HARDWARE">Computer hardware</MenuItem>
+            <MenuItem value="COMPUTER_ACCESSORIES">
+              Computer Accessories
+            </MenuItem>
+            <MenuItem value="COMPUTER_HARDWARE">Computer Hardware</MenuItem>
+            <MenuItem value="PRINTERS_AND_SCANNERS">
+              Printers & Scanners
+            </MenuItem>
+            <MenuItem value="FURNITURE">Furniture</MenuItem>
+            <MenuItem value="OFFICE_SUPPLIES">Office Supplies</MenuItem>
             <MenuItem value="OTHER">Other</MenuItem>
           </Select>
-          
         </div>
       </div>
 
@@ -160,7 +172,9 @@ const handleSave = async () => {
         </InputLabel>
         <div>
           {errors.unit && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.unit}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
+              {errors.unit}
+            </div>
           )}
           <TextField
             value={unit}
@@ -180,7 +194,9 @@ const handleSave = async () => {
         </InputLabel>
         <div>
           {errors.brand && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.brand}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
+              {errors.brand}
+            </div>
           )}
           <TextField
             value={brand}
@@ -249,7 +265,9 @@ const handleSave = async () => {
         </InputLabel>
         <div>
           {errors.quantity && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">{errors.quantity}</div>
+            <div className="text-[#FC0000] text-xs ml-6 my-1">
+              {errors.quantity}
+            </div>
           )}
           <TextField
             value={quantity}
