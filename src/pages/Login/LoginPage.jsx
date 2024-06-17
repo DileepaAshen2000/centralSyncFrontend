@@ -83,7 +83,7 @@ export default function LoginPage() {
             >
               Login
             </button>
-            <p className="text-center">Forgot Username or Password ?</p>
+            <a href="/forgot-password">Forgot Username or Password ?</a>
           </form>
         </div>
       </div>
