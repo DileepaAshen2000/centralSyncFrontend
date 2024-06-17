@@ -10,7 +10,6 @@ const NewOrderForm = () => {
   const navigate = useNavigate();
 
   const [errors, setErrors] = useState({});
-
   const [order, setOrder] = useState({
     vendorName: "",
     companyName: "",
@@ -34,6 +33,7 @@ const NewOrderForm = () => {
     brandName,
     quantity,
     description,
+    file,
   } = order;
 
   const onInputChange = (e) => {
@@ -42,23 +42,31 @@ const NewOrderForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const order = {
-      vendorName,
-      companyName,
-      vendorEmail,
-      mobile,
-      date,
-      itemName,
-      brandName,
-      quantity,
-    };
+    const formData = new FormData();
+    formData.append("vendorName", vendorName);
+    formData.append("companyName", companyName);
+    formData.append("vendorEmail", vendorEmail);
+    formData.append("mobile", mobile);
+    formData.append("date", date);
+    formData.append("itemName", itemName);
+    formData.append("brandName", brandName);
+    formData.append("quantity", quantity);
+    formData.append("description", description);
+    if (file) {
+      formData.append("file", file);
+    }
 
-    
     try {
       const response = await axios.post(
         "http://localhost:8080/orders/add",
-        order
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
+
       if (response.status === 200) {
         console.log(response.data);
         Swal.fire({
@@ -91,7 +99,6 @@ const NewOrderForm = () => {
   const handleFileChange = (e) => {
     setOrder({ ...order, file: e.target.files[0] }); // Update file state with the selected file
   };
-
 
   return (
     <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
