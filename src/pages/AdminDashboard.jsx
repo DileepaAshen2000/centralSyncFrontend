@@ -13,7 +13,7 @@ import RecentlyUsedItem from "../components/RecentlyUsedItem";
 export default function AdminDashboard() {
   return(
     <div>
-      <div className="flex items-center justify-start p-4 text-3xl">Admin Dashboard</div>
+      <div className="flex items-center justify-start p-2 text-3xl">Admin Dashboard</div>
       <div className="grid grid-cols-12 gap-4 h-[500px] grid-rows-9">
         <div className="flex justify-around col-span-8 row-span-3 p-4 text-5xl text-center rounded-lg ">
           <TotalEmpCard />
