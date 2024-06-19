@@ -12,7 +12,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import myLogo from '../assests/logo1.png';
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from './SideBar';
-import  { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import { Button } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
@@ -20,7 +20,6 @@ import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { Link, useNavigate } from "react-router-dom";
 import LoginService from '../pages/Login/LoginService';
-import { useEffect } from 'react';
 
 import SearchBar from './SearchBar';
 
@@ -64,13 +63,11 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-
 export default function NavBar() {
-
   const navigate = useNavigate();
   const isAuthenticated = LoginService.isAuthenticated();
-  const [profileInfo, setProfileInfo] = useState();
-  
+  const [profileInfo, setProfileInfo] = useState(null);
+
   // sidebar open and close for profile section
   const [SidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => {
@@ -97,7 +94,6 @@ export default function NavBar() {
 
   const fetchProfileInfo = async () => {
     try {
-
         const token = localStorage.getItem('token'); // Retrieve the token from localStorage
         const response = await LoginService.getYourProfile(token);
         setProfileInfo(response.users);
@@ -112,20 +108,9 @@ export default function NavBar() {
         <Toolbar>
           <img src={myLogo} alt="Inventory Logo" className='w-32 h-auto ' />
           <h4 className='hidden text-xl font-bold text-blue-800 md:block'>CENTRAL SYNC</h4>
-          {/* <Search className='box-border bg-white border-2 rounded-2xl'>
-            <SearchIconWrapper>
-              <SearchIcon className='text-gray-500 '/>
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-              className='text-gray-500 '
-            />
-          </Search> */}
-        <SearchBar/>
+          <SearchBar />
           <Box sx={{ flexGrow: 2 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } ,gap:'20px'}}>
-            
             <IconButton
               size="large"
               aria-label="show 17 new notifications"
@@ -137,11 +122,11 @@ export default function NavBar() {
               </Badge>
             </IconButton>
             <div className='flex items-center'>
-
-           
-            
-
-              <h4 className='text-black '>{profileInfo.firstName} {profileInfo.lastName}</h4>
+              {profileInfo ? (
+                <h4 className='text-black '>{profileInfo.firstName} {profileInfo.lastName}</h4>
+              ) : (
+                <h4 className='text-black '>Loading...</h4>
+              )}
             </div>
             <IconButton
               size="large"
@@ -155,88 +140,74 @@ export default function NavBar() {
               <AccountCircle className='text-3xl text-black'/>
             </IconButton>
           </Box>
-          
           <div className='text-black cursor-pointer text- md:hidden' onClick={toggleMenu}>
             <MenuIcon></MenuIcon>
           </div>
-          
         </Toolbar>
       </AppBar>
       
       {/* Sidebar Content */}
       <div
-        
-        className={` w-80 absolute right-0 h-screen z-50 bg-[#9eaab2] text-black ${SidebarOpen ? 'block' : 'hidden'}`}
+        className={`w-80 absolute right-0 h-screen z-50 bg-[#9eaab2] text-black ${SidebarOpen ? 'block' : 'hidden'}`}
       >
-        
         <div className="flex flex-col gap-10 p-6">
           <div className='flex gap-4'>
             <div>Profile Picture</div>
             <div>
-              <h2>{profileInfo?.userId || 'Loading...'}</h2>
-              <h2>{profileInfo?.username || 'Loading...'}</h2>
-              <h4>{profileInfo?.role || 'Loading...'}</h4>
+              <h2>{profileInfo ? profileInfo.userId : 'Loading...'}</h2>
+              <h2>{profileInfo ? profileInfo.username : 'Loading...'}</h2>
+              <h4>{profileInfo ? profileInfo.role : 'Loading...'}</h4>
             </div>
           </div>
           <div>
-              <div className="pb-4">
-                <Button
-                  variant="outlined"
-                  className="bg-[#D9D9D9] w-[100%] h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5 "
-                >
-                  <AccountCircleOutlinedIcon />
-                  <span>Edit Profile</span>
-                </Button>
-              </div>
-              <div className="pb-4">
-               
-                <Button
-                  variant="outlined"
-                  className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
-                  
-                >
-                
-                  <HistoryIcon />
-                  <span>View History</span>
-                </Button>
-               
-              </div>
-              <div className="pb-4">
-                <Button
-                  variant="outlined"
-                  className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
-                   
-                >
-
-                  <KeyOutlinedIcon />
-                  <span>Change Password</span>
-                </Button>
-              </div>
-              <div className="pb-4">
-                {isAuthenticated && 
-                  <Link to="/" onClick={handleLogout}>
-                    <Button
-                      variant="outlined"
-                      className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
-                    >
-                      <LogoutOutlinedIcon />
-                      <span>Logout</span>
-                    </Button>
-                  </Link>
-                }
-              </div>
+            <div className="pb-4">
+              <Button
+                variant="outlined"
+                className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5 "
+              >
+                <AccountCircleOutlinedIcon />
+                <span>Edit Profile</span>
+              </Button>
             </div>
-               
+            <div className="pb-4">
+              <Button
+                variant="outlined"
+                className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
+              >
+                <HistoryIcon />
+                <span>View History</span>
+              </Button>
+            </div>
+            <div className="pb-4">
+              <Button
+                variant="outlined"
+                className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
+              >
+                <KeyOutlinedIcon />
+                <span>Change Password</span>
+              </Button>
+            </div>
+            <div className="pb-4">
+              {isAuthenticated && 
+                <Link to="/" onClick={handleLogout}>
+                  <Button
+                    variant="outlined"
+                    className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
+                  >
+                    <LogoutOutlinedIcon />
+                    <span>Logout</span>
+                  </Button>
+                </Link>
+              }
+            </div>
           </div>
-           
         </div>
-       
-      
-      {/* side bar mobile menu */}
-      <div className={`${Open ? 'block' : 'hidden'} md:hidden bg-slate-300 `}>
-        <SideBar></SideBar>
       </div>
 
+      {/* side bar mobile menu */}
+      <div className={`${Open ? 'block' : 'hidden'} md:hidden bg-slate-300 `}>
+        <SideBar />
+      </div>
     </Box>
   );
 }

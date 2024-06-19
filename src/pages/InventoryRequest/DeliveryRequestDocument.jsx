@@ -64,7 +64,7 @@ const WorkFromHomeRequestDocument = () => {
       .then(() => {
         setInventoryRequest(!inventoryRequest);
         setDialogOpen(false);
-        navigate(`/employee/delivery-request-document/${reqId}`);
+        navigate(`/stockIn`);
       })
       .catch((error) => {
         console.log(error);
@@ -83,17 +83,6 @@ const WorkFromHomeRequestDocument = () => {
       });
   };
 
-  const handleSendToAdmin = () => {
-    axios
-      .patch(`http://localhost:8080/request/updateStatus/sendToAdmin/${reqId}`)
-      .then(() => {
-        setInventoryRequest(!inventoryRequest);
-        navigate("/admin-inventory-request-list");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
 
   const handleOpenDialog = () => {
     setDialogOpen(true);
@@ -216,41 +205,32 @@ const WorkFromHomeRequestDocument = () => {
           )}
         </div>
 
-        <div className='flex gap-6 mt-6 ml-6'>
-          <h4>Note :</h4>
-          <div className="flex w-2/3">
-            <textarea
-              className="w-full h-20 p-2 mt-2 border-2 border-gray-300 rounded-md"
-              placeholder='Write something here..'
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-            />
-            <Button
-              className="ml-2 px-4 py-2 text-white bg-blue-600 rounded"
-              variant='contained'
-              onClick={handleSendNote}
-              style={{ height: 'fit-content', alignSelf: 'center' }}
-            >
-              Send
-            </Button>
+        {inventoryRequest?.reqStatus === 'PENDING' && (
+          <div className='flex gap-6 mt-6 ml-6'>
+            <h4>Note :</h4>
+            <div className="flex w-2/3">
+              <textarea
+                className="w-full h-20 p-2 mt-2 border-2 border-gray-300 rounded-md"
+                placeholder='Write something here..'
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+              />
+              <Button
+                className="ml-2 px-4 py-2 text-white bg-blue-600 rounded"
+                variant='contained'
+                onClick={handleSendNote}
+                style={{ height: 'fit-content', alignSelf: 'center' }}
+              >
+                Send
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className='flex justify-end gap-4 ml-[60%] mt-6'>
           {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' && (
             <>
-              {role !== 'ADMIN' && (
-                <Button
-                  className="px-6 py-2 hover:bg-white text-yellow-800 bg-yellow-300 rounded"
-                  variant='contained'
-                  type='submit'
-                  onClick={() => {
-                    handleSendToAdmin();
-                  }}
-                >
-                  Send To Admin
-                </Button>
-              )}
+
               <Button
                 className="px-6 py-2 bg-orange-500 text-white hover:bg-orange-400"
                 variant='contained'
