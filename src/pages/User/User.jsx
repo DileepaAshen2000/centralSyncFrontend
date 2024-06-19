@@ -19,7 +19,7 @@ const columns = [
 
 export default function User() {
   const navigate = useNavigate();
-  const isRequestHandler = LoginService.isRequestHandler();
+  const isRequestHandler = LoginService.isReqHandler();
   const [rows, setRows] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   useEffect(() => {
