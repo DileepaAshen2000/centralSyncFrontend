@@ -152,11 +152,18 @@ const ViewItemDetails = () => {
            
             className="w-[300px] h-10 ml-5 bg-white  "
           >
-            <MenuItem value="COMPUTER_ACCESSORIES">
-              Computer accessories
+            <MenuItem value="COMPUTERS_AND_LAPTOPS">
+              Computers & Laptops
             </MenuItem>
-            <MenuItem value="PRINTER">Printer</MenuItem>
-            <MenuItem value="COMPUTER_HARDWARE">Computer hardware</MenuItem>
+            <MenuItem value="COMPUTER_ACCESSORIES">
+              Computer Accessories
+            </MenuItem>
+            <MenuItem value="COMPUTER_HARDWARE">Computer Hardware</MenuItem>
+            <MenuItem value="PRINTERS_AND_SCANNERS">
+              Printers & Scanners
+            </MenuItem>
+            <MenuItem value="FURNITURE">Furniture</MenuItem>
+            <MenuItem value="OFFICE_SUPPLIES">Office Supplies</MenuItem>
             <MenuItem value="OTHER">Other</MenuItem>
           </Select>
         </div>

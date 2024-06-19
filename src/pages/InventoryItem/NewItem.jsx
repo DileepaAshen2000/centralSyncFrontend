@@ -23,6 +23,7 @@ const AddItemForm = () => {
     weight: "",
     description: "",
     quantity: "",
+    image: null,
   });
 
   //Destructure the state
@@ -35,6 +36,7 @@ const AddItemForm = () => {
     weight,
     description,
     quantity,
+    image,
   } = inventoryItem;
 
   const onInputChange = (e) => {
@@ -44,16 +46,45 @@ const AddItemForm = () => {
   const onItemGroupChange = (e) => {
     setInventoryItem({ ...inventoryItem, itemGroup: e.target.value });
   };
+  const onImageChange = (e) => {
+    setInventoryItem({ ...inventoryItem, image: e.target.files[0] });
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
-
+    const formData = new FormData();
+    formData.append(
+      "item",
+      new Blob(
+        [
+          JSON.stringify({
+            itemName,
+            itemGroup,
+            unit,
+            brand,
+            dimension,
+            weight,
+            description,
+            quantity,
+          }),
+        ],
+        { type: "application/json" }
+      )
+    );
+    if (image) {
+      formData.append("image", image);
+    }
     try {
       const response = await axios.post(
         "http://localhost:8080/inventory-item/add",
-        inventoryItem
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
-      if (response.status === 200) {
+      if (response.status === 201) {
         Swal.fire({
           icon: "success",
           title: "Success!",
@@ -257,6 +288,20 @@ const AddItemForm = () => {
               className: "w-[300px] h-10 ml-5 bg-white  ",
             }}
           />
+        </div>
+        <div className="flex items-center col-span-4 col-start-1">
+          <InputLabel htmlFor="image" className="flex-none w-32 text-black ">
+            Image
+          </InputLabel>
+          <div>
+            <input
+              type="file"
+              id="image"
+              accept="image/*"
+              onChange={onImageChange}
+              className="ml-5"
+            />
+          </div>
         </div>
       </div>
 
