@@ -134,8 +134,14 @@ class LoginService{
         }
 
 
+        static isOnlineEmployee(){
+            const workSite = localStorage.getItem('workSite')
+            return workSite === 'ONLINE'
+        }
+
+
     static reqHandlerOnly(){
-        return this.isAuthenticated() && this.isRequestHandler();
+        return this.isAuthenticated() && this.isReqHandler();
     }
  }
 

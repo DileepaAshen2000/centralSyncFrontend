@@ -21,7 +21,7 @@ import InRequestHandlerRequestList from "./InventoryRequest/InRequestHandlerInRe
 import InRequestHandlerInRequestDocument from "./InventoryRequest/InRequestHandlerInRequestDocument";
 import EmployeeInRequestList from "./InventoryRequest/EmployeeInRequestList";
 import EmployeeInRequestDocument from "./InventoryRequest/EmployeeInRequestDocument";
-import WorkFromHomeRequestDocument from "./InventoryRequest/WorkFromHomeRequestDocument";
+import DeliveryRequestDocument from "./InventoryRequest/DeliveryRequestDocument";
 import CreateNewRequest from "./InventoryRequest/CreateNewInRequest";
 import EditRequest from "./InventoryRequest/EditInRequest";
 
@@ -87,7 +87,7 @@ const Home = () => {
               style={{ backgroundColor: "#eeeeee" }}
               className="w-screen p-10"
             >
-                
+
 
               <Routes>
                 {/* Enter components here, that you want to insert. */}
@@ -95,6 +95,14 @@ const Home = () => {
                 {/* Dashboard routing */}
                 <Route
                   path="/admin-dashboard"
+                  element={<AdminDashboard />}
+                ></Route>
+                   <Route
+                  path="/request-handler-dashboard"
+                  element={<AdminDashboard />}
+                ></Route>
+                  <Route
+                  path="/employee-dashboard"
                   element={<AdminDashboard />}
                 ></Route>
 
@@ -181,8 +189,8 @@ const Home = () => {
                   element={<EmployeeInRequestDocument />}
                 ></Route>
                 <Route
-                  path="/employee/workfromhome-in-request-document/:reqId"
-                  element={<WorkFromHomeRequestDocument />}
+                  path="/employee/delivery-request-document/:reqId"
+                  element={<DeliveryRequestDocument />}
                 ></Route>
                 {/*Common views for three actors rounting*/}
                 <Route
