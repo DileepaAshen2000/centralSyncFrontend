@@ -134,7 +134,7 @@ class LoginService{
         }
 
 
-        static isOnlineEmloyee(){
+        static isOnlineEmployee(){
             const workSite = localStorage.getItem('workSite')
             return workSite === 'ONLINE'
         }

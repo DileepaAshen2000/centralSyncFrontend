@@ -19,6 +19,7 @@ export default function LoginPage() {
         localStorage.setItem('token', userData.token);
         localStorage.setItem('role', userData.role);
         localStorage.setItem('userId', userData.userId);
+        localStorage.setItem('workSite', userData.workSite);
                // Navigate based on role
                switch (userData.role) {
                 case 'ADMIN':
