@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FormControl, Select, MenuItem, TextField, Grid, Box, Typography, Button } from '@mui/material';
+import { FormControl, TextField, Grid, Box, Typography, Button } from '@mui/material';
 import LoginService from '../Login/LoginService';
 
 const NewRequest = () => {
@@ -11,13 +11,24 @@ const NewRequest = () => {
   const [files, setFiles] = useState([]);
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
+  const [workSite, setWorkSite] = useState("");
 
   const isEmployee = LoginService.isEmployee();
   const isReqHandler = LoginService.isReqHandler();
   const userID = LoginService.returnUserID();
 
+  useEffect(() => {
+    const fetchWorkSite = () => {
+      const workSite = LoginService.isOnlineEmployee() ? "ONLINE" : "ONSITE";
+      setWorkSite(workSite);
+    };
+    
+    fetchWorkSite();
+  }, []);
+
   console.log("userID", userID);
   console.log("isEmployee", isEmployee);
+  console.log("workSite", workSite);
 
   const validateForm = () => {
     const newErrors = {};
@@ -38,6 +49,7 @@ const NewRequest = () => {
     formData.append("reason", reason);
     formData.append("description", description);
     formData.append("userId", userID);
+    formData.append("itemId", 1);
     if (isReqHandler) {
       formData.append("role", "REQ_HANDLER");
     } else if (isEmployee) {
@@ -74,7 +86,9 @@ const NewRequest = () => {
   return (
     <Box className="p-10 bg-white rounded-2xl ml-14 mr-14">
       <Box className="pb-4">
-        <h1 className="pt-2 pb-3 text-3xl font-bold">New Request</h1>
+        <h1 className="pt-2 pb-3 text-3xl font-bold">
+          {workSite === "ONLINE" ? "New Delivery Request":"New Inventory Request" }
+        </h1>
       </Box>
       <form>
         <Grid container spacing={2} padding={4}>
@@ -176,7 +190,7 @@ const NewRequest = () => {
           <Button
             className="px-6 py-2 rounded"
             variant="outlined"
-            onClick={() => navigate("/inventory-request")}
+            onClick={() => navigate("/employee-in-request-list")}
           >
             Cancel
           </Button>
