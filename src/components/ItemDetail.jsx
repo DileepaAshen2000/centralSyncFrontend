@@ -57,7 +57,7 @@ const ItemDetail = () => {
       <Card className="max-w-4xl w-full shadow-lg">
         <CardMedia
           component="img"
-          image={`data:image/jpeg;base64,${item.image}`}
+          image={`data:image/*;base64,${item.image}`}
           alt={item.itemName}
           className="mt-10"
           style={{ height: "150px", width: "auto" }}

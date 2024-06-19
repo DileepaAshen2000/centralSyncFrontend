@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { Button } from "@mui/material";
 import Swal from "sweetalert2";
 import axios from "axios";
@@ -289,32 +289,33 @@ const AddItemForm = () => {
             }}
           />
         </div>
-        <div className="flex items-center col-span-4 col-start-1">
-          <InputLabel htmlFor="image" className="flex-none w-32 text-black ">
-            Image
-          </InputLabel>
+       
+      </div>
+      <div className="col-start-1  col-span-5 flex-row ">
+      <Typography display="block" gutterBottom>
+           Upload an image
+          </Typography>
           <div>
             <input
               type="file"
               id="image"
               accept="image/*"
               onChange={onImageChange}
-              className="ml-5"
+              className="mt-4 mb-2"
             />
           </div>
         </div>
-      </div>
-
+        
       <Button
         variant="contained"
-        className="col-start-6 bg-blue-600 rounded-sm row-start-10 "
+        className="col-start-6 bg-blue-600 rounded-sm row-start-11 "
         onClick={handleSave}
       >
         Save
       </Button>
       <Button
         variant="outlined"
-        className="col-start-8 bg-white rounded-sm row-start-10 text-blue-60-lue-600 "
+        className="col-start-8 bg-white rounded-sm row-start-11 text-blue-60-lue-600 "
         onClick={() => navigate("/item")}
       >
         Cancel
