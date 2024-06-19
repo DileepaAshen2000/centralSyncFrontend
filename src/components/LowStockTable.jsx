@@ -40,7 +40,7 @@ const LowStockTable = () => {
 
   return (
     <Box className="flex-row w-full space-y-4 bg-white rounded-lg shadow-lg">
-      <h1 className="p-2 pl-4 text-sm text-left bg-red-300">Low Stock Items</h1>
+      <h1 className="p-2 pl-4 text-sm text-left bg-red-200">Low Stock Items</h1>
       <DataGrid
         className='shadow-lg'
         rows={rows}
@@ -55,7 +55,7 @@ const LowStockTable = () => {
         autoHeight
         pageSizeOptions={[3]}
         disableRowSelectionOnClick
-        disableMultipleSelection={true} // Prevent multiple row selection
+        disableMultipleSelection={true} 
       />
     </Box>
   );

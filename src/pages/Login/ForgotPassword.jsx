@@ -34,12 +34,17 @@ const ForgotPassword = () => {
             setEmailError('');
             Swal.fire({
                 title: "Successfully Verified!",
-                text: "Please Check Your Email Address!",
+                text: "Please Check Your Email.!!",
                 icon: "success"
             });
         } catch (error) {
             setEmailError(error.response?.data?.message || 'Failed to send email');
             console.log(error);
+            Swal.fire({
+                title: "Couldn't Verified.!",
+                text: "Please Check Your Email Address.!!",
+                icon: "error"
+            });
         }
     };
 
@@ -50,7 +55,7 @@ const ForgotPassword = () => {
                     <img className='w-full' src={emailImage} alt="/" />
                 </div>
                 <div className='flex flex-col gap-6 p-12 bg-blue-300'>
-                    <div className='flex justify-center mb-10 text-xl'>
+                    <div className='flex justify-center mb-10 text-xl font-semibold'>
                         <h1>Verify your email address</h1>
                     </div>
                     <div className='mb-12 text-sm'>
