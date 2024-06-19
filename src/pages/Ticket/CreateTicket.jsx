@@ -13,12 +13,13 @@ import { useForm } from "react-hook-form";
 //import DragDrop from "./Drag&Drop";
 //import { DropzoneArea } from 'material-ui-dropzone';
 //import Dropzone from "./Dropzone";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
 const CreateTicket = () => {
   const form = useForm();
+  const location=useLocation();
   const [topic, settopic] = useState("");
   const [description, setdescription] = useState("");
   const [date, setdate] = useState("");
@@ -45,6 +46,13 @@ const CreateTicket = () => {
   }, []);
 
   console.log("Options:", options);
+  useEffect(() => {
+    if (location.state?.item) {
+      const { itemName, brand } = location.state.item;
+      setItemName(itemName);
+      setBrand(brand);
+    }
+  }, [location.state]);
 
   //function for respond changes in the selected item in item name
   const handleItemChange = (event, value) => {

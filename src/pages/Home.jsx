@@ -51,6 +51,10 @@ import InventorySummary from "./Report/InventorySummary";
 import LoginPage from "./Login/LoginPage";
 import LoginService from "./Login/LoginService";
 import CreatePassword from "./User/CreatePassword";
+import SearchResult from "../components/SearchResult";
+import ItemDetail from "../components/ItemDetail";
+import ForgotPassword from "./Login/ForgotPassword";
+import ResetPassword from "./Login/ResetPassword";
 
 const Home = () => {
   const isAuthenticated = LoginService.isAuthenticated();
@@ -58,8 +62,10 @@ const Home = () => {
   return (
     <BrowserRouter>
       <Routes>
-      <Route path="/user/:id/password" element={<CreatePassword/>}></Route>
+        <Route path="/user/:id/password" element={<CreatePassword />}></Route>
         <Route path="/" element={<LoginPage />}></Route>
+        <Route path="/forgot-password" element={<ForgotPassword/>}></Route>
+        <Route path="/resetPassword" element={<ResetPassword/>}></Route>
       </Routes>
       {isAuthenticated && (
         <div>
@@ -81,7 +87,7 @@ const Home = () => {
               style={{ backgroundColor: "#eeeeee" }}
               className="w-screen p-10"
             >
-              
+
 
               <Routes>
                 {/* Enter components here, that you want to insert. */}
@@ -246,6 +252,9 @@ const Home = () => {
                   path="/newreservation"
                   element={<NewReservation />}
                 ></Route>
+                {/* SearchBar routing */}
+                <Route path="/search-result" element={<SearchResult />}></Route>
+                <Route path="/item-detail" element={<ItemDetail />} />
               </Routes>
 
             </Grid>
