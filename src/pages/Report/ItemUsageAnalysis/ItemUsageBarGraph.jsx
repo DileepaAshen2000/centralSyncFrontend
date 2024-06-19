@@ -28,6 +28,7 @@ const UsageBarChart = ({ category, year }) => {
 
     fetchData();
   }, [category, year]);
+  console.log(requests);
 
   if (loading) {
     return (
@@ -48,14 +49,14 @@ const UsageBarChart = ({ category, year }) => {
 
   const requestsByMonth = requests
     .map((req) => ({
-      date: req.date,
+      date: req.dateTime,
       status: req.reqStatus,
     })) 
     .reduce((acc, rq) => {
       const date = new Date(rq.date);
       const month = date.toLocaleDateString("default", { month: "short" });
       acc[month] = acc[month] || [];
-      if (rq.status === "accepted") {
+      if (rq.status === "ACCEPTED"||"DELIVERED") {
         acc[month].push(rq);
       }
       return acc;
