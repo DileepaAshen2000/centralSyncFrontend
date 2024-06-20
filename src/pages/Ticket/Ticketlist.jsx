@@ -14,8 +14,7 @@ const columns = [
   { field: "date", headerName: "Date", width: 200 },
   { field: "itemName", headerName: "Item Name", width: 200 },
   { field: "itemBrand", headerName: "Item Brand", width: 200 },
-
-  
+  { field: "ticketStatus", headerName: "Status", width: 200 },
 
   //{ field: 'status', headerName: 'Status', width: 130 },
 ];
@@ -25,82 +24,116 @@ const Ticket = () => {
   const { ID } = useParams();
   const [rows, setRows] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState({});
+  const [profileInfo, setProfileInfo] = useState({});
+
+  const isAdmin = LoginService.isAdmin();
+  const isRequestHandler = LoginService.isRequestHandler();
 
   useEffect(() => {
     const fetchProfileInfo = async () => {
       try {
-        const token = localStorage.getItem("token");  
+        const token = localStorage.getItem("token");
         const response = await LoginService.getYourProfile(token);
-        setLoggedInUserId(response.users.userId);
+        console.log("Profile Info Response:", response);
+        setProfileInfo(response.users);
       } catch (error) {
         console.error("Error fetching profile information:", error);
       }
     };
-    
+
     fetchProfileInfo();
   }, []);
 
   useEffect(() => {
+    //console.log("Profile Info:", profileInfo);
+    if (profileInfo.userId) {
+      fetchTickets();
+    }
+  }, [profileInfo]);
+
+  const fetchTickets = () => {
     axios
       .get("http://localhost:8080/ticket/getAll")
       .then((response) => {
         const data = response.data
-        .filter(ticket => ticket.userId !== loggedInUserId)  
-        .map((ticket) => ({
-          id: ticket.ticketId,
-          topic: ticket.topic,
-          date: ticket.date,
-        }));
+          .filter((ticket) => {
+            if (isAdmin) {
+              return (
+                ticket.user.role === "REQUEST_HANDLER" ||
+                ticket.ticketStatus === "SENT_TO_ADMIN"||
+                ticket.ticketStatus === "ACCEPTED"||
+                ticket.ticketStatus === "REJECTED_A"
+
+              );
+            } else {
+              console.log("user" + ticket.user.userId);
+              console.log("profile" + profileInfo.userId);
+              return ticket.user.userId !== profileInfo.userId;
+            }
+          })
+          .map((ticket) => ({
+            id: ticket.ticketId,
+            topic: ticket.topic,
+            date: ticket.date,
+            itemName: ticket.itemId.itemName,
+            itemBrand: ticket.itemId.brand,
+            ticketStatus:
+              isAdmin && ticket.ticketStatus === "SENT_TO_ADMIN"
+                ? "Pending"
+                : ticket.ticketStatus === "REJECTED_A" ||
+                  ticket.ticketStatus === "REJECTED_R"
+                ? "Rejected"
+                : ticket.ticketStatus,
+          }));
         setRows(data);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  };
 
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const handleRowSelectionModelChange = (newSelectedRow) => {
     setRowSelectionModel(newSelectedRow);
   };
 
-    const handleDelete = () => {
-      const ticketId= rowSelectionModel[0];
-      console.log(ticketId)
-  
-      axios
-      .delete('http://localhost:8080/ticket/delete/'+ticketId)
-        .then((response) => {
-          // Reload tickets after deletion
-          axios.get("http://localhost:8080/ticket/getAll").then((response) => {
-            const data = response.data
-            .filter(ticket => ticket.userId !== loggedInUserId) 
+  const handleDelete = () => {
+    const ticketId = rowSelectionModel[0];
+    console.log(ticketId);
+
+    axios
+      .delete("http://localhost:8080/ticket/delete/" + ticketId)
+      .then((response) => {
+        // Reload tickets after deletion
+        axios.get("http://localhost:8080/ticket/getAll").then((response) => {
+          const data = response.data
+            .filter((ticket) => ticket.userId !== loggedInUserId)
             .map((ticket) => ({
               id: ticket.ticketId,
               topic: ticket.topic,
               date: ticket.date,
-              itemName:ticket.itemId.itemName,
-          itemBrand:ticket.itemId.brand
+              itemName: ticket.itemId.itemName,
+              itemBrand: ticket.itemId.brand,
             }));
-            setRows(data);
-          });
-          setRowSelectionModel([]);
-          Swal.fire({
-            icon: "success",
-            title: "Tickets deleted successfully",
-            text: "Selected tickets have been deleted.",
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-          Swal.fire({
-            icon: "error",
-            title: "Delete failed",
-            text: "Failed to delete selected tickets.",
-          });
+          setRows(data);
         });
-    };
+        setRowSelectionModel([]);
+        Swal.fire({
+          icon: "success",
+          title: "Tickets deleted successfully",
+          text: "Selected tickets have been deleted.",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        Swal.fire({
+          icon: "error",
+          title: "Delete failed",
+          text: "Failed to delete selected tickets.",
+        });
+      });
+  };
 
-  
   return (
     <Box
       sx={{
