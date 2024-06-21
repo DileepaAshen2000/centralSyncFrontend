@@ -14,7 +14,7 @@ const UsageBarChart = ({ category, year }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/request/getAll?itemGroup=${category}&year=${year}`
+          `http://localhost:8080/request/filtered?itemGroup=${category}&year=${year}`
         );
         console.log("Requests response:", response.data); 
         setRequests(Array.isArray(response.data) ? response.data : []);
