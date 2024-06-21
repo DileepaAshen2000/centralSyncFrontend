@@ -16,7 +16,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 
 const InsightTable = ({ category, year,isOpen }) => {
-  const [ticket, setTicket] = useState();
+  const [ticket, setTicket] = useState([]);
   const [open, setOpen] = useState(isOpen);
   const [loading,setLoading]=useState(true);
   useEffect(() => {
@@ -71,7 +71,7 @@ const InsightTable = ({ category, year,isOpen }) => {
 
 
   return (
-    <div className="w-4/5 mx-auto my-10">
+    <div className="w-full md:w-4/5 mx-auto my-10">
       <TableContainer component={Paper} className="bg-gray-100">
         <Table aria-label="collapsible table" size="small">
           <TableHead>

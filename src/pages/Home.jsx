@@ -3,6 +3,8 @@ import NavBar from "../components/NavBar";
 import SideBar from "../components/SideBar";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AdminDashboard from "./AdminDashboard";
+import RequestHandlerDashboard from "./RequestHandlerDashboard";
+import EmployeeDashboard from "./EmployeeDashboard";
 import NewAdjustment from "./Adjustment/NewAdjustment";
 import User from "./User/User";
 import CreateUser from "./User/CreateUser";
@@ -18,7 +20,7 @@ import InRequestHandlerRequestList from "./InventoryRequest/InRequestHandlerInRe
 import InRequestHandlerInRequestDocument from "./InventoryRequest/InRequestHandlerInRequestDocument";
 import EmployeeInRequestList from "./InventoryRequest/EmployeeInRequestList";
 import EmployeeInRequestDocument from "./InventoryRequest/EmployeeInRequestDocument";
-import WorkFromHomeRequestDocument from "./InventoryRequest/WorkFromHomeRequestDocument";
+import DeliveryRequestDocument from "./InventoryRequest/DeliveryRequestDocument";
 import CreateNewRequest from "./InventoryRequest/CreateNewInRequest";
 import EditRequest from "./InventoryRequest/EditInRequest";
 import UserActivityHistory from "./User/History";
@@ -48,6 +50,11 @@ import LoginPage from "./Login/LoginPage";
 import LoginService from "./Login/LoginService";
 import CreatePassword from "./User/CreatePassword";
 import MyTicketList from "./Ticket/Myticketlist";
+import SearchResult from "../components/SearchResult";
+import ItemDetail from "../components/ItemDetail";
+import ForgotPassword from "./Login/ForgotPassword";
+import ResetPassword from "./Login/ResetPassword";
+ 
 
 const Home = () => {
   const isAuthenticated = LoginService.isAuthenticated();
@@ -55,8 +62,10 @@ const Home = () => {
   return (
     <BrowserRouter>
       <Routes>
-      <Route path="/user/:id/password" element={<CreatePassword/>}></Route>
+        <Route path="/user/:id/password" element={<CreatePassword />}></Route>
         <Route path="/" element={<LoginPage />}></Route>
+        <Route path="/forgot-password" element={<ForgotPassword/>}></Route>
+        <Route path="/resetPassword" element={<ResetPassword/>}></Route>
       </Routes>
       {isAuthenticated && (
         <div>
@@ -78,12 +87,22 @@ const Home = () => {
               style={{ backgroundColor: "#eeeeee" }}
               className="w-screen p-10"
             >
+
+
               <Routes>
                 {/* Enter components here, that you want to insert. */}
 
                 {/* Dashboard routing */}
                 <Route
                   path="/admin-dashboard"
+                  element={<AdminDashboard />}
+                ></Route>
+                   <Route
+                  path="/request-handler-dashboard"
+                  element={<AdminDashboard />}
+                ></Route>
+                  <Route
+                  path="/employee-dashboard"
                   element={<AdminDashboard />}
                 ></Route>
 
@@ -171,8 +190,8 @@ const Home = () => {
                   element={<EmployeeInRequestDocument />}
                 ></Route>
                 <Route
-                  path="/employee/workfromhome-in-request-document/:reqId"
-                  element={<WorkFromHomeRequestDocument />}
+                  path="/employee/delivery-request-document/:reqId"
+                  element={<DeliveryRequestDocument />}
                 ></Route>
                 {/*Common views for three actors rounting*/}
                 <Route
@@ -234,7 +253,11 @@ const Home = () => {
                   path="/newreservation"
                   element={<NewReservation />}
                 ></Route>
+                {/* SearchBar routing */}
+                <Route path="/search-result" element={<SearchResult />}></Route>
+                <Route path="/item-detail" element={<ItemDetail />} />
               </Routes>
+
             </Grid>
           </Grid>
         </div>

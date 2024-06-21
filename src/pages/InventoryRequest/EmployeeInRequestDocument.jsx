@@ -13,14 +13,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 // Function to determine the color and text of a button based on request status
 const buttonColor = (reqStatus) => {
     const commonStyles = "w-40 h-10 m-5 text-center rounded-full";
-    if (reqStatus === 'pending') {
+    if (reqStatus === 'PENDING') {
       return <div className={`flex justify-center items-center text-blue-800 bg-blue-300 ${commonStyles}`}>Pending</div>;
-    } else if (reqStatus === 'accepted') {
+    } else if (reqStatus === 'ACCEPTED') {
       return <div className={`flex justify-center items-center text-green-800 bg-green-300 ${commonStyles}`}>Accepted</div>;
-    } else if (reqStatus === 'rejected') {
+    } else if (reqStatus === 'REJECTED') {
       return <div className={`flex justify-center items-center text-red-800 bg-red-300 ${commonStyles}`}>Rejected</div>;
     }
-    else if (reqStatus === 'sentToAdmin') {
+    else if (reqStatus === 'SENT_TO_ADMIN') {
       return <div className={`flex justify-center items-center text-yellow-800 bg-yellow-300 ${commonStyles}`}>sentToAdmin</div>;
     }
   }
@@ -73,7 +73,7 @@ const EmployeeInRequestDocument = () => {
       <main>
         {/* Buttons for editing and printing */}
         <div className="flex items-end justify-end p-6 mr-10 space-x-10 ...">
-        {inventoryRequest && inventoryRequest.reqStatus === 'pending' &&(
+        {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' &&(
         <Button className="px-6 py-2 text-white bg-blue-600 rounded"
             variant='contained'
             type='submit'

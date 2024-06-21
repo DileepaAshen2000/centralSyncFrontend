@@ -111,23 +111,37 @@ class LoginService{
     }
 
 
-    static isRequestHandler(){
-        const role = localStorage.getItem('role')
-        return role === 'REQUEST_HANDLER'
-    }
 
-    static isAdmin(){
-        const role = localStorage.getItem('role')
-        return role === 'ADMIN'
-    }
 
-    static isEmployee(){
-        const role = localStorage.getItem('role')
-        return role === 'EMPLOYEE'
-    }
+        static isReqHandler(){
+            const role = localStorage.getItem('role')
+            return role === 'REQUEST_HANDLER'
+        }
+
+        static isAdmin(){
+            const role = localStorage.getItem('role')
+            return role === 'ADMIN'
+        }
+
+        static isEmployee(){
+            const role = localStorage.getItem('role')
+            return role === 'EMPLOYEE'
+        }
+
+        static returnUserID(){
+            const userId = localStorage.getItem('userId')
+            return userId
+        }
+
+
+        static isOnlineEmployee(){
+            const workSite = localStorage.getItem('workSite')
+            return workSite === 'ONLINE'
+        }
+
 
     static reqHandlerOnly(){
-        return this.isAuthenticated() && this.isRequestHandler();
+        return this.isAuthenticated() && this.isReqHandler();
     }
  }
 

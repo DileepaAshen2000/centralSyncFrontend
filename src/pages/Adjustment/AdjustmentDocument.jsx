@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{ useRef } from 'react'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -13,10 +13,8 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import LoginService from '../Login/LoginService';
+import { useReactToPrint } from 'react-to-print';
 
-const handlePrint=()=>{
-  window.print();
-}
 const AdjustmentDocument = () => {
   const [fetchData, setFetchData] = useState(false);
   const [note, setNote] = useState("");
@@ -29,16 +27,18 @@ const AdjustmentDocument = () => {
     description:"",
     adjustedQuantity:"",
     status:"",
-    itemId:""
+    itemId:"",
+    userId:""
   })
 
-const{reason,date,description,adjustedQuantity,status,itemId} = adj;
+const{reason,date,description,adjustedQuantity,status,itemId,userId} = adj;
 const [item,setItem] = useState({  // create state for adjustment, initial state is empty with object.
   itemName:"",
   quantity:""
 })
 const{itemName,quantity} = item;
 const isAdmin = LoginService.isAdmin();
+const printRef = useRef();
 
 useEffect(() => {
   loadAdjustment();
@@ -56,7 +56,7 @@ const loadAdjustment = async () => {
     console.error('Error loading adjustment:', error);
   }
 };
-  // Get the current date and time
+
   const currentDate = new Date();
 
   // Extract components of the date and time
@@ -67,7 +67,6 @@ const loadAdjustment = async () => {
   const minutes = currentDate.getMinutes().toString().padStart(2, '0');
   const seconds = currentDate.getSeconds().toString().padStart(2, '0');
 
-  // Format the date and time
   const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
   const handleAccept = () => {
@@ -85,7 +84,7 @@ const loadAdjustment = async () => {
   
   const handleReject = () => {
     axios
-      .patch("http://localhost:8080/adjustment/updateStatus/reject/" + adjId)
+      .patch("http://localhost:8080/adjustment/updateStatus/reject/" + adjId, { note })
       .then(() => {
         setFetchData(!fetchData); 
         navigate("/adjustment", { fetchData }); 
@@ -135,6 +134,10 @@ const loadAdjustment = async () => {
 
     setOpen(false);
   };
+
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current,
+  });
   
   return (
     <div>
@@ -150,7 +153,7 @@ const loadAdjustment = async () => {
               onClick={handlePrint}
           >print</Button>
         </div>
-        <div className="p-10 ml-6 mr-6 bg-white">
+        <div ref={printRef} className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section>
               {getStatus(status)}
@@ -172,7 +175,7 @@ const loadAdjustment = async () => {
                 <li>{adjId}</li>
                 <li>{reason}</li>
                 <li>Quantity</li>
-                <li>Dileepa Ashen</li>
+                <li>{userId}</li>
                 <li>{date}</li>
               </ul>
             </section>
