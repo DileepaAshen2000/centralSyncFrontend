@@ -14,6 +14,7 @@ const columns = [
   { field: "date", headerName: "Date", width: 200 },
   { field: "itemName", headerName: "Item Name", width: 200 },
   { field: "itemBrand", headerName: "Item Brand", width: 200 },
+  { field: "ticketStatus", headerName: "Status", width: 200 }
 
   //{ field: 'status', headerName: 'Status', width: 130 },
 ];
@@ -25,6 +26,11 @@ const MyTicketList = () => {
   const navigate = useNavigate();
   const { ID } = useParams();
   const [rows, setRows] = useState([]);
+
+  const isAdmin = LoginService.isAdmin();
+  const isRequestHandler = LoginService.isRequestHandler();
+  const isEmployee = LoginService.isEmployee();
+
 
   useEffect(() => {
     fetchProfileInfo();
@@ -57,7 +63,14 @@ const MyTicketList = () => {
           topic: ticket.topic,
           date: ticket.date,
           itemName:ticket.itemId.itemName,
-          itemBrand:ticket.itemId.brand
+          itemBrand:ticket.itemId.brand,
+          ticketStatus:
+          isEmployee && (ticket.ticketStatus === "SENT_TO_ADMIN"||ticket.ticketStatus === "ACCEPTED")
+                ? "Pending"
+                : ticket.ticketStatus === "REJECTED_A" ||
+                  ticket.ticketStatus === "REJECTED_R"
+                ? "Rejected"
+                : ticket.ticketStatus,
 
         }));
         setRows(data);
@@ -103,10 +116,8 @@ const MyTicketList = () => {
         width: "100%",
       }}
     >
-      <Box className="flex pt-2 pb-2">
-        <h1 className="inline-block p-4 text-3xl font-bold">
-          Maintenance Ticket
-        </h1>
+      <Box className="flex pb-2">
+        
         {rowSelectionModel > 0 ? (
           <div className="flex items-center gap-4 ml-[48%]">
             <Button
@@ -118,8 +129,8 @@ const MyTicketList = () => {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-6 mt-12 ">
-            <div className="col-start-6">
+          <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-6 mb-3">
+            <div className="col-start-1">
               <Button
                 variant="contained"
                 className="bg-blue-600 w-[150px] rounded text-white h-10"

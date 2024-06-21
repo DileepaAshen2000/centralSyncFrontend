@@ -11,8 +11,6 @@ import {
 import LoginService from "../Login/LoginService";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
-import InfoIcon from "@mui/icons-material/Info";
-import BlockIcon from "@mui/icons-material/Block";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
@@ -265,16 +263,19 @@ const TicketDocument = () => {
               </Typography>
             </div>
           </div>
+         {isAdmin && <>
           {ticket.note && (
             <div className="mt-4 mb-4">
               <Typography variant="h6" className="font-bold" gutterBottom>
                 Note from Request Handler:
               </Typography>
-              <Typography variant="h6" className="text-red-500">
+              <Typography variant="subtitle1" className="text-red-500">
                 {ticket.note}
               </Typography>
             </div>
           )}
+          </>
+         }
           <div>
             <Typography variant="caption" gutterBottom>
               Generated Date/Time :{" "}
@@ -368,8 +369,8 @@ const TicketDocument = () => {
               </div>
             )}
 
-            {ticket.ticketStatus !== "PENDING" ||
-              (ticket.ticketStatus !== "SENT_TO_ADMIN" && (
+            {(ticket.ticketStatus === "ACCEPT" ||
+              ticket.ticketStatus === "REJECT_A" )&& (
                 <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                   <div className="col-start-6">
                     <Button
@@ -382,7 +383,7 @@ const TicketDocument = () => {
                     </Button>
                   </div>
                 </div>
-              ))}
+              )}
           </>
         )}
 
@@ -511,9 +512,9 @@ const TicketDocument = () => {
                 </div>
                 {!showCompletionDate && (
                   <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
-                    <div className="col-start-4">
+                    <div className="col-start-5">
                       <Button
-                        className="px-6 py-2 rounded w-[150px] bg-blue-600 text-white hover:text-blue-600"
+                        className="px-6 py-2 rounded w-[172px] bg-blue-600 text-white hover:text-blue-600"
                         variant="outlined"
                         type="submit"
                         onClick={handleInprogress}
@@ -521,9 +522,9 @@ const TicketDocument = () => {
                         Start Progress
                       </Button>
                     </div>
-                    <div className="col-start-5">
+                    <div className="col-start-6">
                       <Button
-                        className="px-6 py-2 rounded w-[150px]"
+                        className="px-6 py-2 rounded w-[172px]"
                         variant="outlined"
                         type="submit"
                         onClick={() => navigate("/ticket")}
@@ -613,9 +614,9 @@ const TicketDocument = () => {
               </div>
             )}
             {(ticket.ticketStatus === "COMPLETED" ||
-              ticket.ticketStatus === "REJECTED_A" ||
-              ticket.ticketStatus === "REJECTED_R" ||
-              ticket.ticketStatus === "SENT_TO_ADMIN") && (
+              ticket.ticketStatus === "SENT_TO_ADMIN" ||
+              ticket.ticketStatus === "REJECT_A" ||
+              ticket.ticketStatus === "REJECT_R") && (
               <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                 <div className="col-start-6">
                   <Button
