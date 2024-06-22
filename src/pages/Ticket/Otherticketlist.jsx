@@ -27,7 +27,7 @@ const Ticket = () => {
   const [profileInfo, setProfileInfo] = useState({});
 
   const isAdmin = LoginService.isAdmin();
-  const isRequestHandler = LoginService.isRequestHandler();
+  const isRequestHandler = LoginService.isReqHandler();
 
   useEffect(() => {
     const fetchProfileInfo = async () => {

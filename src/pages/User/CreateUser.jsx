@@ -21,12 +21,21 @@ const CreateUser = () => {
   const [department, setDepartment] = useState("");
   const [role, setRole] = useState("");
   const [workSite, setWorkSite] = useState("");
+  const [image, setImage] = useState(null);
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [fetchData, setFetchData] = useState(false);
 
-  const handleClick = (e) => {
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]); // Handle file change
+  };
+
+  const handleClick = async (e) => {
     e.preventDefault();
+
+    const formData = new FormData();
+
+    // Append form fields as a JSON object
     const user = {
       firstName,
       lastName,
@@ -37,34 +46,43 @@ const CreateUser = () => {
       telNo,
       department,
       role,
-      workSite,
+      workSite
     };
-    console.log(user);
-    axios
-      .post("http://localhost:8080/user/add", user)
-      .then((response) => {
-        if (response.status === 200) {
-          Swal.fire({
-            icon: "success",
-            title: "Success!",
-            text: "User successfully added!",
-          });
-          setFetchData(!fetchData);
-          navigate("/user", { fetchData });
-        }
-      })
-      .catch((error) => {
-        Swal.fire({
-          icon: "error",
-          title: "Error!",
-          text: "Failed to add new user. Please check your inputs.",
-        });
-        if (error.response) {
-          setErrors(error.response.data);
-        }
-      });
-  };
 
+    formData.append("user", new Blob([JSON.stringify(user)], { type: "application/json" }));
+
+    // Append file if it exists
+    if (image) {
+      formData.append("image", image);
+    }
+
+    try {
+      const response = await axios.post("http://localhost:8080/user/add", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "User successfully added!",
+        });
+        setFetchData(!fetchData);
+        navigate("/user", { fetchData });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Failed to add new user. Please check your inputs.",
+      });
+      if (error.response) {
+        setErrors(error.response.data);
+      }
+    }
+  };
   return (
     <>
       <Box className="p-5 bg-white rounded-2xl w-[1122.7px]">
@@ -303,6 +321,9 @@ const CreateUser = () => {
             <div></div>
             <div></div>
           </div>
+          <div className="flex-row col-span-10 col-start-1">
+          <input type="file" onChange={handleImageChange} className="mt-4 mb-2" />
+        </div>
 
           <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] mt-12 ">
             <div className="col-start-5">

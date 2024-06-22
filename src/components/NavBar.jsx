@@ -141,7 +141,7 @@ export default function NavBar() {
            
             
 
-              <h4 className='text-black '>{profileInfo.firstName} {profileInfo.lastName}</h4>
+              {/*<h4 className='text-black '>{profileInfo.firstName} {profileInfo.lastName}</h4>*/}
             </div>
             <IconButton
               size="large"

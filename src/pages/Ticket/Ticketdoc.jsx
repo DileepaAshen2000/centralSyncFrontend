@@ -35,7 +35,7 @@ const TicketDocument = () => {
     brand: "",
   });
   const isAdmin = LoginService.isAdmin();
-  const isRequestHandler = LoginService.isRequestHandler();
+  const isRequestHandler = LoginService.isReqHandler();
 
   useEffect(() => {
     loadTicket();

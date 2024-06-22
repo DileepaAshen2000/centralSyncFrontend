@@ -22,6 +22,7 @@ const ViewUser = () => {
     department: "",
     role: "",
     workSite: "",
+    imagePath: "",
   });
   const [fetchData, setFetchData] = useState(false);
   const { ID } = useParams();
@@ -105,9 +106,18 @@ const ViewUser = () => {
               />
             </div>
             <div></div>
-            <div></div>
-            <div></div>
-            <div className="col-span-1 row-span-2">
+            <div className="row-span-4 col-span-2">
+            {user.imagePath && (
+          
+            <img
+              src={`http://localhost:8080/user/display/${ID}`}
+              alt="Profile"
+              className="max-w-[300px] max-h-[250px] rounded-full"
+            />
+           
+        )}
+            </div>
+            <div className="col-span-1">
               <label htmlFor="name">Name</label>
             </div>
             <div className="col-span-2">
@@ -124,7 +134,10 @@ const ViewUser = () => {
                 size="small"
               />
             </div>
-            <div className="col-span-3"> </div>
+            <div></div>
+
+            
+            <div className="col-span-1"> </div>
             <div className="col-span-2">
               <TextField
                 variant="outlined"
@@ -140,8 +153,9 @@ const ViewUser = () => {
               />
             </div>
             <div></div>
-            <div></div>
-            <div></div>
+
+             
+            
             <div className="col-span-1 row-span-1">
               <label htmlFor="2">Department</label>
             </div>
@@ -159,8 +173,9 @@ const ViewUser = () => {
                
             </div>
             <div></div>
-            <div></div>
-            <div></div>
+
+            
+            
             <div className="col-span-1 row-span-1">
               <label htmlFor="3">Role</label>
             </div>
@@ -180,6 +195,7 @@ const ViewUser = () => {
             <div></div>
             <div></div>
             <div></div>
+ 
             <div className="col-span-1 row-span-1">
               <label htmlFor="3">Work Site</label>
             </div>
@@ -304,6 +320,11 @@ const ViewUser = () => {
             <div></div>
             <div></div>
           </div>
+
+            {/* Display User Image */}
+       
+
+
 
           <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] mt-12 ">
             <div className="col-start-5">
