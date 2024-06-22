@@ -46,7 +46,7 @@ const NewRequest = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!itemName) newErrors.itemName = "Item name is required";
+    if (!itemId) newErrors.itemId = "Item selection is required";
     if (!quantity) newErrors.quantity = "Quantity is required";
     if (quantity > availableQuantity) newErrors.quantity = "Quantity exceeds available stock";
     if (!reason) newErrors.reason = "Reason is required";
@@ -59,7 +59,6 @@ const NewRequest = () => {
     if (!validateForm()) return;
 
     const formData = new FormData();
-    formData.append("itemName", itemName);
     formData.append("quantity", quantity);
     formData.append("reason", reason);
     formData.append("description", description);
@@ -82,7 +81,7 @@ const NewRequest = () => {
       .then((response) => {
         if (response.ok) {
           console.log("New inventory request added");
-          navigate("/inventory-request");
+          navigate("/employee-in-request-list");
         } else {
           response.json().then((backendErrors) => {
             setErrors(backendErrors);
@@ -130,7 +129,7 @@ const NewRequest = () => {
                 getOptionLabel={(option) => option.itemName}
                 onChange={handleItemChange}
                 renderInput={(params) => (
-                  <TextField {...params} label="Item Name" helperText="Please select the item name." error={!!errors.itemName} />
+                  <TextField {...params} label="Item Name" helperText="Please select the item name." error={!!errors.itemId} />
                 )}
                 size="small"
               />

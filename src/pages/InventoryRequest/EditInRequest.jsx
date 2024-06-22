@@ -7,14 +7,12 @@ import axios from "axios";
 
 const EditInventoryRequest = () => {
   // Define state variables to hold form data
-  const [itemId, setItemId] = useState("")
   const [itemName, setItemName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [date, setDate] = useState("");
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
   const [employeeName, setEmpName] = useState("");
-  const [employeeID, setemployeeID] = useState("");
   const [department, setDepartment] = useState("");
 
   // Get the request ID from the URL params
@@ -30,25 +28,20 @@ const EditInventoryRequest = () => {
       .then((response) => {
         //Extract the data from the response and set the state variables
         const data = {
-          id: response.data.id,
-          itemId: response.data.itemId,
+          reqId: response.data.reqId,
           itemName: response.data.itemName,
           quantity: response.data.quantity,
-          date: response.data.date,
+          creationDateTime: response.data.creationDateTime,
+          updateDateTime: response.data.updateDateTime,
           reason: response.data.reason,
           description: response.data.description,
-          employeeName: response.data.employeeName,
-          employeeID: response.data.employeeID,
-          department: response.data.department,
         };
-        setItemId(data.itemId);
         setItemName(data.itemName);
         setQuantity(data.quantity);
         setDate(data.date);
         setReason(data.reason);
         setDescription(data.description);
         setEmpName(data.employeeName);
-        setemployeeID(data.employeeID);
         setDepartment(data.department);
 
       })
@@ -60,14 +53,12 @@ const EditInventoryRequest = () => {
   // Function to handle form submission and update request
   const handleSave = (e) => {
     const inventoryRequest = {
-      itemId,
       itemName,
       quantity,
       date,
       reason,
       description,
       employeeName,
-      employeeID,
       department,
     };
 
@@ -87,9 +78,9 @@ const EditInventoryRequest = () => {
       <form inRequest>
         <Box className='p-10 bg-white rounded-2xl ml-14 mr-14'>
           <Box className="pb-4">
-            <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit Request</h1>
+            <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit Inventory Request</h1>
           </Box>
-          {/* Inputs for InRequest ID and Employee Name */}
+        
           <Grid container spacing={2} padding={4} >
 
             <Grid container display='flex' mt={4}>
@@ -97,7 +88,7 @@ const EditInventoryRequest = () => {
                 <Typography>InRequest ID</Typography>
               </Grid>
               <Grid item sm={4.5}>
-                <TextField
+              <TextField
                   size='small'
                   style={{ width: '300px' }}
                   inputProps={{
@@ -107,8 +98,9 @@ const EditInventoryRequest = () => {
                   value={reqId}
                 />
               </Grid>
-
-              <Grid item sm={1.5}>
+            </Grid>          
+            <Grid container display='flex' mt={4}>
+            <Grid item sm={1.5}>
                 <Typography>Emp. Name</Typography>
               </Grid>
               <Grid item sm={4.5}>
@@ -123,9 +115,54 @@ const EditInventoryRequest = () => {
                   onChange={(e) => setEmpName(e.target.value)}
                 />
               </Grid>
+                <Grid item sm={1.5}>
+                <Typography>Department</Typography>
+              </Grid>
+              <Grid item sm={4.5}>
+                <TextField
+                  id='dep'
+                  value={department}
+                  style={{ width: '300px' }}
+                  name='id'
+                  size='small'
+                  onChange={(e) => setDepartment(e.target.value)}
+                />
+              
+              </Grid>
+          
             </Grid>
 
-            {/* Inputs for Item and Emp.ID*/}
+            <Grid container display='flex' mt={4}>
+              <Grid item sm={1.5}>
+                <Typography>Creation Date</Typography>
+              </Grid>
+              <Grid item sm={4.5}>
+              <TextField
+                  size='small'
+                  style={{ width: '300px' }}
+                  inputProps={{
+                    readOnly: true,
+                    style: { color: 'gray' },
+                  }}
+                  value={reqId}
+                />
+                 </Grid>
+                 <Grid item sm={1.5}>
+                <Typography>Last Updated Date</Typography>
+              </Grid>
+              <Grid item sm={4.5}>
+              <TextField
+                  size='small'
+                  style={{ width: '300px' }}
+                  inputProps={{
+                    readOnly: true,
+                    style: { color: 'gray' },
+                  }}
+                  value={reqId}
+                />
+                 </Grid>
+            </Grid>
+
             <Grid container display='flex' mt={4}>
               <Grid item sm={1.5}>
                 <Typography>Item Name</Typography>
@@ -138,24 +175,6 @@ const EditInventoryRequest = () => {
                   onChange={(e) => setItemName(e.target.value)}
                 />
               </Grid>
-
-              <Grid item sm={1.5}>
-                <Typography>Emp.ID</Typography>
-              </Grid>
-              <Grid item sm={4.5}>
-                <TextField
-                  size='small'
-                  style={{ width: '300px' }}
-                  value={employeeID}
-                  onChange={(e) => setemployeeID(e.target.value)}
-                />
-              </Grid>
-            </Grid>
-
-
-            {/* Inputs for Quantity and Department*/}
-            <Grid container display='flex' mt={4}>
-
               <Grid item sm={1.5}>
                 <Typography>Quantity</Typography>
               </Grid>
@@ -170,39 +189,12 @@ const EditInventoryRequest = () => {
                 />
               </Grid>
 
-              <Grid item sm={1.5}>
-                <Typography>Department</Typography>
-              </Grid>
-              <Grid item sm={4.5}>
-                <TextField
-                  id='dep'
-                  value={department}
-                  style={{ width: '300px' }}
-                  name='id'
-                  size='small'
-                  onChange={(e) => setDepartment(e.target.value)}
-                />
-              </Grid>
-
             </Grid>
 
-            {/* Inputs for Date*/}
             <Grid container display='flex' mt={4}>
-              <Grid item sm={1.5}>
-                <Typography>Date</Typography>
-              </Grid>
-              <Grid item sm={4.5}>
-                <TextField
-                  style={{ width: '300px' }}
-                  type='date'
-                  size='small'
-                  InputLabelProps= // To shrink the label
-                  {{ shrink: true }}
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                />
-              </Grid>
+              
             </Grid>
+            
             {/* Inputs for Reason*/}
             <Grid container display='flex' mt={4}>
               <Grid item sm={1.5}>

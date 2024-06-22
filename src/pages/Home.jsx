@@ -20,7 +20,7 @@ import AdminInRequestDocument from "./InventoryRequest/AdminInRequestDocument";
 import InRequestHandlerRequestList from "./InventoryRequest/InRequestHandlerInRequestList";
 import InRequestHandlerInRequestDocument from "./InventoryRequest/InRequestHandlerInRequestDocument";
 import EmployeeInRequestList from "./InventoryRequest/EmployeeInRequestList";
-import EmployeeInRequestDocument from "./InventoryRequest/EmployeeInRequestDocument";
+import InRequestDocument from "./InventoryRequest/InRequestDocument";
 import DeliveryRequestDocument from "./InventoryRequest/DeliveryRequestDocument";
 import CreateNewIDRequest from "./InventoryRequest/CreateNewIDRequest";
 import EditRequest from "./InventoryRequest/EditInRequest";
@@ -186,7 +186,7 @@ const Home = () => {
                 ></Route>
                 <Route
                   path="/employee/in-request-document/:reqId"
-                  element={<EmployeeInRequestDocument />}
+                  element={<InRequestDocument />}
                 ></Route>
                 <Route
                   path="/employee/delivery-request-document/:reqId"
