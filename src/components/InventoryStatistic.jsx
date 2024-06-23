@@ -50,7 +50,7 @@ export default function InventoryStatistic() {
           <h1 className='p-2 text-xl text-left'>Inventory Statistic</h1>
           <LineChart
             width={700}
-            height={280}
+            height={350}
             series={[
               { data: stockInData, label: 'Stock In' },
               { data: stockOutData, label: 'Stock Out' },
