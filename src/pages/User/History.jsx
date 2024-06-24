@@ -197,8 +197,15 @@ const UserActivityHistory = () => {
             <div className="bg-blue-300">
               <h1 className="p-4 text-4xl font-bold">Recent Activities</h1>
               <div className="grid grid-cols-8 grid-rows-1  gap-x-[0.25rem] pt-5 ">
-                <div className="col-span-1 px-11">
-                  <AccountCircleOutlinedIcon className="text-[70px]" />
+                <div className="pl-5 col-span-1 px-11 pb-2">
+                {profileInfo.imagePath && (
+          
+          <img
+            src={`http://localhost:8080/user/display/${profileInfo.userId}`}
+            alt="Profile"
+            className="max-w-[100px] max-h-[100px] rounded-full"
+          />
+          )}
                 </div>
                 <div className="col-span-2">
                   <Typography variant="h6" className="font-semibold">

@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Stack, Select, Box, MenuItem } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Stack,
+  Select,
+  Box,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
 //import DragDrop from "./Drag&Drop";
@@ -8,6 +16,10 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
+import Avatar from "react-avatar-edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import camera from "../../assests/camera.png";
+import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 
 const CreateUser = () => {
   const form = useForm();
@@ -25,9 +37,24 @@ const CreateUser = () => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [fetchData, setFetchData] = useState(false);
+  const [src, setSrc] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]); // Handle file change
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageDelete = () => {
+    setImageUrl(null);
   };
 
   const handleClick = async (e) => {
@@ -46,10 +73,13 @@ const CreateUser = () => {
       telNo,
       department,
       role,
-      workSite
+      workSite,
     };
 
-    formData.append("user", new Blob([JSON.stringify(user)], { type: "application/json" }));
+    formData.append(
+      "user",
+      new Blob([JSON.stringify(user)], { type: "application/json" })
+    );
 
     // Append file if it exists
     if (image) {
@@ -57,11 +87,15 @@ const CreateUser = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:8080/user/add", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:8080/user/add",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (response.status === 200) {
         Swal.fire({
@@ -82,6 +116,13 @@ const CreateUser = () => {
         setErrors(error.response.data);
       }
     }
+  };
+
+  const onClose = () => {
+    setPreview(null);
+  };
+  const onCrop = (view) => {
+    setPreview(view);
   };
   return (
     <>
@@ -111,7 +152,38 @@ const CreateUser = () => {
                 size="small"
               />
             </div>{" "}
-            <div className="col-span-3"></div>
+            <div></div>
+            <div className="row-span-4 col-span-2">
+              <div className="w-[200px] h-[200px] border-2 border-gray-300 rounded-full flex items-center justify-center">
+                {imageUrl ? (
+                  <>
+                    <img
+                      src={imageUrl}
+                      alt="Uploaded"
+                      className="w-[200px] h-[200px] object-cover rounded-full ml-6"
+                    />
+
+                    <DeleteIcon
+                      onClick={handleImageDelete}
+                      className="mt-[150px] text-red-600"
+                    />
+                  </>
+                ) : (
+                  <label htmlFor="image-upload" className="cursor-pointer">
+                    <AddAPhotoIcon className="w-[60px] h-[60px] ml-5 text-[#007EF2]" />
+                    <Typography className="font-bold">Profile Picture</Typography>
+                  </label>
+                 
+                )}
+                <input
+                  type="file"
+                  id="image-upload"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </div>
+            </div>
             <div className="col-span-2">
               {errors.lastName && (
                 <div className="text-[#FC0000] text-sm">{errors.lastName}</div>
@@ -127,8 +199,6 @@ const CreateUser = () => {
                 size="small"
               />
             </div>
-            <div></div>
-            <div></div>
             <div></div>
             <div className="col-span-1 row-span-1">
               <label htmlFor="2">Department</label>
@@ -154,8 +224,6 @@ const CreateUser = () => {
               </Select>
             </div>
             <div></div>
-            <div></div>
-            <div></div>
             <div className="col-span-1 row-span-1">
               <label htmlFor="3">Role</label>
             </div>
@@ -177,8 +245,6 @@ const CreateUser = () => {
                 <MenuItem value="EMPLOYEE">Employee</MenuItem>
               </Select>{" "}
             </div>
-            <div></div>
-            <div></div>
             <div></div>
             <div className="col-span-1 row-span-1">
               <label htmlFor="3">Work Site</label>
@@ -321,9 +387,7 @@ const CreateUser = () => {
             <div></div>
             <div></div>
           </div>
-          <div className="flex-row col-span-10 col-start-1">
-          <input type="file" onChange={handleImageChange} className="mt-4 mb-2" />
-        </div>
+          <div className="flex-row col-span-10 col-start-1"></div>
 
           <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] mt-12 ">
             <div className="col-start-5">

@@ -5,6 +5,11 @@ import { TextField, Button, Stack, Select, Box } from "@mui/material";
 import axios from "axios";
 import MenuItem from "@mui/material/MenuItem";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import Badge from "@mui/material/Badge";
+import Avatar from "@mui/material/Avatar";
+//import SmallAvatar from "@mui/material/SmallAvatar";
+import AddAPhotoOutlinedIcon from '@mui/icons-material/AddAPhotoOutlined';
+import camera from '../../assests/camera.png'
 //import DragDrop from "./Drag&Drop";
 //import { DropzoneArea } from 'material-ui-dropzone';
 //import Dropzone from "./Dropzone";
@@ -92,9 +97,27 @@ const Userupdate = () => {
               />
             </div>
             <div></div>
-            <div></div>
-            <div></div>
-            <div className="col-span-1 row-span-2">
+            <div className="row-span-4 col-span-2">
+              {user.imagePath && (
+                <Badge
+                  overlap="circular"
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  badgeContent={
+                    <img src={camera} className="h-[40px] w-[40px] rounded-full bg-white border"/>
+
+                  }
+                  
+
+                >
+                  <Avatar
+                    sx={{ width: 250, height: 250 }}
+                    alt="Profile picture"
+                    src={`http://localhost:8080/user/display/${ID}`}
+                  />
+                </Badge>
+              )}
+            </div>
+            <div className="col-span-1">
               <label htmlFor="name">Name</label>
             </div>
             <div className="col-span-2">
@@ -114,7 +137,8 @@ const Userupdate = () => {
                 size="small"
               />
             </div>
-            <div className="col-span-3"> </div>
+            <div></div>
+            <div className="col-span-1"> </div>
             <div className="col-span-2">
               {errors.lastName && (
                 <div className="text-[#FC0000] text-sm">{errors.lastName}</div>
@@ -133,8 +157,7 @@ const Userupdate = () => {
               />
             </div>
             <div></div>
-            <div></div>
-            <div></div>
+
             <div className="col-span-1 row-span-1">
               <label htmlFor="2">Department</label>
             </div>
@@ -157,8 +180,6 @@ const Userupdate = () => {
                 <MenuItem value="Cybersecurity">Cybersecurity</MenuItem>
               </Select>
             </div>
-            <div></div>
-            <div></div>
             <div></div>
             <div className="col-span-1 row-span-1">
               <label htmlFor="3">Role</label>

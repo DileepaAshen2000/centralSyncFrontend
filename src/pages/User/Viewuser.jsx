@@ -112,7 +112,7 @@ const ViewUser = () => {
             <img
               src={`http://localhost:8080/user/display/${ID}`}
               alt="Profile"
-              className="max-w-[300px] max-h-[250px] rounded-full"
+              className="max-w-[400px] max-h-[250px] rounded-full"
             />
            
         )}

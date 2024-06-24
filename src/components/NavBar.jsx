@@ -69,7 +69,7 @@ export default function NavBar() {
 
   const navigate = useNavigate();
   const isAuthenticated = LoginService.isAuthenticated();
-  const [profileInfo, setProfileInfo] = useState();
+  const [profileInfo, setProfileInfo] = useState({});
   
   // sidebar open and close for profile section
   const [SidebarOpen, setSidebarOpen] = useState(false);
@@ -141,7 +141,7 @@ export default function NavBar() {
            
             
 
-              {/*<h4 className='text-black '>{profileInfo.firstName} {profileInfo.lastName}</h4>*/}
+              <h4 className='text-black '>{profileInfo.firstName} {profileInfo.lastName}</h4>
             </div>
             <IconButton
               size="large"
@@ -152,7 +152,15 @@ export default function NavBar() {
               color="inherit"
               className="hidden md:block"
             >
-              <AccountCircle className='text-3xl text-black'/>
+              
+              {profileInfo.imagePath && (
+          
+          <img
+            src={`http://localhost:8080/user/display/${profileInfo.userId}`}
+            alt="Profile"
+            className="max-w-[50px] max-h-[50px] rounded-full"
+          />
+          )}
             </IconButton>
           </Box>
           
