@@ -100,6 +100,7 @@ export default function NavBar() {
 
         const token = localStorage.getItem('token'); // Retrieve the token from localStorage
         const response = await LoginService.getYourProfile(token);
+        console.log(response);
         setProfileInfo(response.users);
     } catch (error) {
         console.error('Error fetching profile information:', error);
@@ -141,7 +142,7 @@ export default function NavBar() {
            
             
 
-              <h4 className='text-black '>{profileInfo.firstName} {profileInfo.lastName}</h4>
+            <h4 className='text-black '>{profileInfo?.firstName} {profileInfo?.lastName}</h4>
             </div>
             <IconButton
               size="large"

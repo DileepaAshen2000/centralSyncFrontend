@@ -14,7 +14,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginService from "../pages/Login/LoginService";
 
-// React component for the SideBar
 const SideBar = () => {
   const [openInventory, setOpenInventory] = useState(false);
   const [openRequestReservation, setOpenRequestReservation] = useState(false);
@@ -83,14 +82,14 @@ const SideBar = () => {
               <ListItemText primary="Adjustment" />
             </ListItem>
           </a>
-          {isAdmin && (
+          {!isEmployee && (
             <a href="/stockIn">
               <ListItem button className="pl-8 rounded-lg">
                 <ListItemText primary="Stock In" />
               </ListItem>
             </a>
           )}
-          {isAdmin && (
+          {!isEmployee && (
             <a href="/stockOut">
               <ListItem button className="pl-8 rounded-lg">
                 <ListItemText primary="Stock Out" />

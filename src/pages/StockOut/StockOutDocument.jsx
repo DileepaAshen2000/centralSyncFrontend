@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
+import LoginService from '../Login/LoginService';
 
 const StockOutDocument = () => {
   const navigate = useNavigate();
@@ -12,18 +13,13 @@ const StockOutDocument = () => {
     description: "",
     outQty: "",
     department: "",
-    itemId: {}  // Initialize itemId as an empty object
+    itemId: {} , // Initialize itemId as an empty object
+    userId:{},
+    generatedBy:""
   });
 
-  const { date, description, outQty, department, itemId } = stockOut;
+  const { date, description, outQty, department, itemId,userId,generatedBy} = stockOut;
   const printRef = useRef();
-  const [item, setItem] = useState({  // Create state for item, initial state is empty object
-    itemName: "",
-    quantity: "",
-    itemGroup: ""
-  });
-
-  const { itemName, quantity, itemGroup } = item;
 
   useEffect(() => {
     loadStockOut();
@@ -33,11 +29,13 @@ const StockOutDocument = () => {
   const loadStockOut = async () => {
     try {
       const result = await axios.get(`http://localhost:8080/stock-out/getById/${soutId}`);
-      setStockOut(result.data);  // Set stockOut state with fetched data
+      setStockOut(result.data); 
+      // console.log(stockOut.data);
+
+      const token = localStorage.getItem('token');
+      const profile = await LoginService.getYourProfile(token);
+      setStockOut(preStockOut => ({ ...preStockOut, generatedBy: profile.users.userId }));
       
-      // Fetch item details using the nested itemId object
-      const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${result.data.itemId.itemId}`);
-      setItem(result1.data);
     } catch (error) {
       console.error('Error loading Stock-Out:', error);
     }
@@ -99,16 +97,18 @@ const StockOutDocument = () => {
             </section>
             <section className="flex flex-row items-end justify-end gap-10">
               <ul className='flex flex-col gap-2'>
-                <li className="font-bold">Ref. No</li>
+                <li className="font-bold">Reference No.</li>
                 <li className="font-bold">Group</li>
                 <li className="font-bold">Created By</li>
                 <li className="font-bold">Date</li>
+                <li className="font-bold">User ID</li>
               </ul>
               <ul className='flex flex-col gap-2'>
                 <li>{soutId}</li>
-                <li>{itemGroup}</li>
-                <li>Dileepa Ashen</li>
+                <li>{itemId.itemGroup}</li>
+                <li>{userId.firstName} {userId.lastName}</li>
                 <li>{date}</li>
+                <li>{generatedBy}</li>
               </ul>
             </section>
           </div>
@@ -126,10 +126,10 @@ const StockOutDocument = () => {
               <TableBody>
                   <TableRow>
                     <TableCell align="right">{itemId.itemId}</TableCell> {/* Access itemId.id */}
-                    <TableCell align="right">{itemName}</TableCell>
+                    <TableCell align="right">{itemId.itemName}</TableCell>
                     <TableCell align="right">{department}</TableCell>
                     <TableCell align="right">{outQty}</TableCell>
-                    <TableCell align="right">{quantity - outQty}</TableCell>
+                    <TableCell align="right">{itemId.quantity}</TableCell>
                   </TableRow>
               </TableBody>
             </Table>
