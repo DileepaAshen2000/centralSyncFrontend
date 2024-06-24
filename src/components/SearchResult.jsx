@@ -32,7 +32,7 @@ const SearchResult = () => {
             <ListItemAvatar className="mb-2 md:mb-0 md:mr-4">
               <Avatar
                 alt={item.itemName}
-                src={item.image || "default-avatar.jpg"}
+                src={`data:image/*;base64,${item.image}`}
                 className="w-16 h-16"
               />
             </ListItemAvatar>
