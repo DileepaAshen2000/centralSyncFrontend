@@ -12,6 +12,7 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useReactToPrint } from 'react-to-print';
+import LoginService from '../Login/LoginService';
 
 
 const StockInDocument = () => {
@@ -22,17 +23,19 @@ const StockInDocument = () => {
     description:"",
     inQty:"",
     location:"",
-    itemId:""
+    itemId:{},
+    userId:{},
+    generatedBy:""
   })
 
-const{date,description,inQty,location,itemId} = stockIn;
+const{date,description,inQty,location,itemId,userId,generatedBy} = stockIn;
 
-const [item,setItem] = useState({  // create state for StockIn, initial state is empty with object.
-  itemName:"",
-  quantity:"",
-  itemGroup:""
-})
-const{itemName,quantity,itemGroup} = item;
+// const [item,setItem] = useState({  // create state for StockIn, initial state is empty with object.
+//   itemName:"",
+//   quantity:"",
+//   itemGroup:""
+// })
+// const{itemName,quantity,itemGroup} = item;
 const printRef = useRef();
 
 useEffect(() => {
@@ -44,9 +47,13 @@ const loadStockIn = async () => {
   try {
     const result = await axios.get(`http://localhost:8080/stock-in/getById/${sinId}`);
     setStockIn(result.data);  // Make sure the fetched data structure matches the structure of your state
+
+    const token = localStorage.getItem('token');
+    const profile = await LoginService.getYourProfile(token);
+    setStockIn(preStockIn => ({ ...preStockIn, generatedBy: profile.users.userId }));
     
-    const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${result.data.itemId}`);
-    setItem(result1.data);
+    // const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${result.data.itemId}`);
+    // setItem(result1.data);
   } catch (error) {
     console.error('Error loading StockIn:', error);
   }
@@ -119,16 +126,18 @@ const handlePrint = useReactToPrint({
             </section>
             <section className="flex flex-row items-end justify-end gap-10">
               <ul className='flex flex-col gap-2'>
-                <li className="font-bold">Ref. No</li>
+                <li className="font-bold">Reference No.</li>
                 <li className="font-bold">Group</li>
                 <li className="font-bold">Created By</li>
                 <li className="font-bold">Date</li>
+                <li className="font-bold">User ID</li>
               </ul>
               <ul className='flex flex-col gap-2'>
                 <li>{sinId}</li>
-                <li>{itemGroup}</li>
-                <li>Dileepa Ashen</li>
+                <li>{itemId.itemGroup}</li>
+                <li>{userId.firstName} {userId.lastName}</li>
                 <li>{date}</li>
+                <li>{generatedBy}</li>
               </ul>
             </section>
           </div>
@@ -145,11 +154,11 @@ const handlePrint = useReactToPrint({
               </TableHead>
               <TableBody>
                   <TableRow>
-                    <TableCell align="right">{itemId}</TableCell>
-                    <TableCell align="right">{itemName}</TableCell>
+                    <TableCell align="right">{itemId.itemId}</TableCell>
+                    <TableCell align="right">{itemId.itemName}</TableCell>
                     <TableCell align="right">{location}</TableCell>
                     <TableCell align="right">{inQty}</TableCell>
-                    <TableCell align="right">{quantity + inQty}</TableCell>
+                    <TableCell align="right">{itemId.quantity}</TableCell>
                   </TableRow>
               </TableBody>
             </Table>

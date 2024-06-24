@@ -18,13 +18,13 @@ import PrintIcon from '@mui/icons-material/Print';
 import { useReactToPrint } from 'react-to-print';
 import LoginService from '../Login/LoginService';
 
-const options = ['COMPUTER_ACCESSORIES', 'COMPUTER_HARDWARE', 'PRINTER', 'OTHER', 'ALL_ITEM'];
+const options = ['COMPUTERS_AND_LAPTOPS', 'COMPUTER_ACCESSORIES', 'COMPUTER_HARDWARE', 'OFFICE_SUPPLIES', 'FURNITURE','PRINTERS_AND_SCANNERS','OTHER','ALL_ITEM'];
 
 const LowStockReport = () => {
   const [lowStockItems, setLowStockItems] = useState([]);
   const [open, setOpen] = useState(false);
   const anchorRef = React.useRef(null);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(4); // Default to ALL_ITEM
   const printRef = useRef();
   const [profileInfo, setProfileInfo] = useState({});
 
@@ -48,7 +48,7 @@ const LowStockReport = () => {
 
   const fetchLowStockItems = async (itemGroup) => {
     try {
-      const response = await axios.get('http://localhost:8080/api/low-stock', {
+      const response = await axios.get('http://localhost:8080/inventory-item/report/low-stock', {
         params: { itemGroup },
       });
       setLowStockItems(response.data);
@@ -164,7 +164,6 @@ const LowStockReport = () => {
                 <TableCell align="right" className="text-white">#</TableCell>
                 <TableCell align="right" className="text-white">Item ID</TableCell>
                 <TableCell align="right" className="text-white">Item Name</TableCell>
-                <TableCell align="right" className="text-white">Reserved Quantity</TableCell>
                 <TableCell align="right" className="text-white">Available Quantity</TableCell>
               </TableRow>
             </TableHead>
@@ -174,8 +173,7 @@ const LowStockReport = () => {
                   <TableCell align="right">{index + 1}</TableCell>
                   <TableCell align="right">{item.itemId}</TableCell>
                   <TableCell align="right">{item.itemName}</TableCell>
-                  <TableCell align="right">{item.reservedQuantity}</TableCell>
-                  <TableCell align="right">{item.availableQuantity}</TableCell>
+                  <TableCell align="right">{item.quantity}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -14,7 +14,7 @@ export default function InventoryStatistic() {
 
   const fetchMonthlyStockData = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/stocks/monthly');
+      const response = await axios.get('http://localhost:8080/stock-in/api/stocks/monthly');
       const stockIn = Array(12).fill(0);
       const stockOut = Array(12).fill(0);
 
@@ -44,18 +44,21 @@ export default function InventoryStatistic() {
       {loading ? (
         <div className="flex justify-center items-center h-[400px] w-[300px]">
           <CircularProgress />
-      </div>
+        </div>
       ) : (
-        <LineChart
-          width={700}
-          height={300}
-          series={[
-            { data: stockInData, label: 'stock-in' },
-            { data: stockOutData, label: 'stock-out' },
-          ]}
-          xAxis={[{ scaleType: 'point', data: xLabels }]}
-          grid={{ vertical: true, horizontal: true }}
-        />
+        <div>
+          <h1 className='p-2 text-xl text-left'>Inventory Statistic</h1>
+          <LineChart
+            width={700}
+            height={350}
+            series={[
+              { data: stockInData, label: 'Stock In' },
+              { data: stockOutData, label: 'Stock Out' },
+            ]}
+            xAxis={[{ scaleType: 'point', data: xLabels }]}
+            grid={{ vertical: true, horizontal: true }}
+          />
+        </div>
       )}
     </div>
   );
