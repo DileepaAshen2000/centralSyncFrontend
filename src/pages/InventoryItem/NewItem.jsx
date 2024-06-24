@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { Button } from "@mui/material";
 import Swal from "sweetalert2";
 import axios from "axios";
@@ -23,6 +23,7 @@ const AddItemForm = () => {
     weight: "",
     description: "",
     quantity: "",
+    image: null,
   });
 
   //Destructure the state
@@ -35,6 +36,7 @@ const AddItemForm = () => {
     weight,
     description,
     quantity,
+    image,
   } = inventoryItem;
 
   const onInputChange = (e) => {
@@ -44,16 +46,45 @@ const AddItemForm = () => {
   const onItemGroupChange = (e) => {
     setInventoryItem({ ...inventoryItem, itemGroup: e.target.value });
   };
+  const onImageChange = (e) => {
+    setInventoryItem({ ...inventoryItem, image: e.target.files[0] });
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
-
+    const formData = new FormData();
+    formData.append(
+      "item",
+      new Blob(
+        [
+          JSON.stringify({
+            itemName,
+            itemGroup,
+            unit,
+            brand,
+            dimension,
+            weight,
+            description,
+            quantity,
+          }),
+        ],
+        { type: "application/json" }
+      )
+    );
+    if (image) {
+      formData.append("image", image);
+    }
     try {
       const response = await axios.post(
         "http://localhost:8080/inventory-item/add",
-        inventoryItem
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
-      if (response.status === 200) {
+      if (response.status === 201) {
         Swal.fire({
           icon: "success",
           title: "Success!",
@@ -258,18 +289,33 @@ const AddItemForm = () => {
             }}
           />
         </div>
+       
       </div>
-
+      <div className="col-start-1  col-span-5 flex-row ">
+      <Typography display="block" gutterBottom>
+           Upload an image
+          </Typography>
+          <div>
+            <input
+              type="file"
+              id="image"
+              accept="image/*"
+              onChange={onImageChange}
+              className="mt-4 mb-2"
+            />
+          </div>
+        </div>
+        
       <Button
         variant="contained"
-        className="col-start-6 bg-blue-600 rounded-sm row-start-10 "
+        className="col-start-6 bg-blue-600 rounded-sm row-start-11 "
         onClick={handleSave}
       >
         Save
       </Button>
       <Button
         variant="outlined"
-        className="col-start-8 bg-white rounded-sm row-start-10 text-blue-60-lue-600 "
+        className="col-start-8 bg-white rounded-sm row-start-11 text-blue-60-lue-600 "
         onClick={() => navigate("/item")}
       >
         Cancel

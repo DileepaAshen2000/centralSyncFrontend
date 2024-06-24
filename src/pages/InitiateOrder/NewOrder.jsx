@@ -74,8 +74,7 @@ const NewOrderForm = () => {
     );
     if (file) {
       formData.append("file", file);
-    } else {
-    }
+    } 
     try {
       const response = await axios.post(
         "http://localhost:8080/orders/add",

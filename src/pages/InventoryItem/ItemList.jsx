@@ -57,6 +57,7 @@ const ItemDataGrid = () => {
         const response = await axios.get(
           "http://localhost:8080/inventory-item/getAll"
         );
+        console.log(response.data);
         const data = response.data.map((item) => ({
           id: item.itemId,
           item_name: item.itemName,
@@ -64,6 +65,7 @@ const ItemDataGrid = () => {
           quantity: item.quantity,
           status: item.status,
         }));
+        
         setRows(data);
       } catch (error) {
         console.log(error);
