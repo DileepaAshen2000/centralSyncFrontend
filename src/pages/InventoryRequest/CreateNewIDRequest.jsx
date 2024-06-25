@@ -1,28 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FormControl, Select, MenuItem, TextField, Grid, Box, Typography, Button } from '@mui/material';
+import { Autocomplete, TextField, Grid, Box, Typography, Button } from '@mui/material';
 import LoginService from '../Login/LoginService';
+import axios from 'axios';
 
 const NewRequest = () => {
   const [itemName, setItemName] = useState("");
+  const [itemId, setItemId] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [availableQuantity, setAvailableQuantity] = useState(0);
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
   const [files, setFiles] = useState([]);
+  const [options, setOptions] = useState([]);
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
+  const [workSite, setWorkSite] = useState("");
 
   const isEmployee = LoginService.isEmployee();
   const isReqHandler = LoginService.isReqHandler();
   const userID = LoginService.returnUserID();
 
+  useEffect(() => {
+    const fetchWorkSite = () => {
+      const workSite = LoginService.isOnlineEmployee() ? "ONLINE" : "ONSITE";
+      setWorkSite(workSite);
+    };
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/inventory-item/getAll');
+        setOptions(response.data);
+      } catch (error) {
+        console.error('Error fetching item details:', error);
+      }
+    };
+
+    fetchWorkSite();
+    fetchData();
+  }, []);
+
   console.log("userID", userID);
   console.log("isEmployee", isEmployee);
+  console.log("workSite", workSite);
 
   const validateForm = () => {
     const newErrors = {};
-    if (!itemName) newErrors.itemName = "Item name is required";
+    if (!itemId) newErrors.itemId = "Item selection is required";
     if (!quantity) newErrors.quantity = "Quantity is required";
+    if (quantity > availableQuantity) newErrors.quantity = "Quantity exceeds available stock";
     if (!reason) newErrors.reason = "Reason is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -33,11 +59,11 @@ const NewRequest = () => {
     if (!validateForm()) return;
 
     const formData = new FormData();
-    formData.append("itemName", itemName);
     formData.append("quantity", quantity);
     formData.append("reason", reason);
     formData.append("description", description);
     formData.append("userId", userID);
+    formData.append("itemId", itemId);
     if (isReqHandler) {
       formData.append("role", "REQ_HANDLER");
     } else if (isEmployee) {
@@ -55,7 +81,7 @@ const NewRequest = () => {
       .then((response) => {
         if (response.ok) {
           console.log("New inventory request added");
-          navigate("/inventory-request");
+          navigate("/employee-in-request-list");
         } else {
           response.json().then((backendErrors) => {
             setErrors(backendErrors);
@@ -71,10 +97,24 @@ const NewRequest = () => {
     setFiles(e.target.files);
   };
 
+  const handleItemChange = (event, value) => {
+    if (value) {
+      setItemName(value.itemName);
+      setItemId(value.itemId);
+      setAvailableQuantity(value.quantity); // Assuming the item object has a quantity field
+    } else {
+      setItemName("");
+      setItemId("");
+      setAvailableQuantity(0);
+    }
+  };
+
   return (
     <Box className="p-10 bg-white rounded-2xl ml-14 mr-14">
       <Box className="pb-4">
-        <h1 className="pt-2 pb-3 text-3xl font-bold">New Request</h1>
+        <h1 className="pt-2 pb-3 text-3xl font-bold">
+          {workSite === "ONLINE" ? "New Delivery Request" : "New Inventory Request"}
+        </h1>
       </Box>
       <form>
         <Grid container spacing={2} padding={4}>
@@ -83,18 +123,20 @@ const NewRequest = () => {
               <Typography>Item Name</Typography>
             </Grid>
             <Grid item sm={4.5}>
-              <TextField
-                id="iName"
-                value={itemName}
-                style={{ width: '300px' }}
-                name="itemName"
+              <Autocomplete
+                disablePortal
+                options={options}
+                getOptionLabel={(option) => option.itemName}
+                onChange={handleItemChange}
+                renderInput={(params) => (
+                  <TextField {...params} label="Item Name" helperText="Please select the item name." error={!!errors.itemId} />
+                )}
                 size="small"
-                onChange={(e) => setItemName(e.target.value)}
-                error={!!errors.itemName}
-                helperText={errors.itemName}
               />
             </Grid>
           </Grid>
+
+          {/* The Item ID field is now removed */}
 
           <Grid container display="flex" mt={4}>
             <Grid item sm={1.5}>
@@ -109,7 +151,7 @@ const NewRequest = () => {
                 name="quantity"
                 size="small"
                 error={!!errors.quantity}
-                helperText={errors.quantity}
+                helperText={errors.quantity || `Available quantity: ${availableQuantity}`}
               />
             </Grid>
           </Grid>
@@ -176,7 +218,7 @@ const NewRequest = () => {
           <Button
             className="px-6 py-2 rounded"
             variant="outlined"
-            onClick={() => navigate("/inventory-request")}
+            onClick={() => navigate("/employee-in-request-list")}
           >
             Cancel
           </Button>

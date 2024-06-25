@@ -1,28 +1,28 @@
-import * as React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import InputBase from '@mui/material/InputBase';
 import Badge from '@mui/material/Badge';
-import SearchIcon from '@mui/icons-material/Search';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import myLogo from '../assests/logo1.png';
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from './SideBar';
-import  { useState } from 'react';
+import { Button, InputBase } from "@mui/material";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import { Button } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
-import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import { Link, useNavigate } from "react-router-dom";
 import LoginService from '../pages/Login/LoginService';
-import { useEffect } from 'react';
-
 import SearchBar from './SearchBar';
+import SockJS from 'sockjs-client';
+import { Client } from '@stomp/stompjs';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -54,7 +54,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: 'inherit',
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
@@ -64,80 +63,116 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-
 export default function NavBar() {
-
   const navigate = useNavigate();
   const isAuthenticated = LoginService.isAuthenticated();
-  const [profileInfo, setProfileInfo] = useState({});
-  
-  // sidebar open and close for profile section
-  const [SidebarOpen, setSidebarOpen] = useState(false);
+  const [profileInfo, setProfileInfo] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+  const [notificationsOpen, setNotificationsOpen] = useState(false); // State to control notifications visibility
+  const stompClientRef = useRef(null);
+
+  useEffect(() => {
+    fetchProfileInfo();
+    connectWebSocket();
+    return () => {
+      disconnectWebSocket();
+    };
+  }, []);
+
   const toggleSidebar = () => {
-    setSidebarOpen(!SidebarOpen);
+    setSidebarOpen(!sidebarOpen);
   };
 
-  // Side bar handling for navigation section
-  const [Open, setOpen] = useState(false);
   const toggleMenu = () => {
-    setOpen(!Open);
+    setMenuOpen(!menuOpen);
   };
 
   const handleLogout = () => {
     const confirmDelete = window.confirm('Are you sure you want to logout this user?');
     if (confirmDelete) {
-        LoginService.logout();
-        navigate('/');
+      LoginService.logout();
+      navigate('/');
     }
   };
-
-  useEffect(() => {
-    fetchProfileInfo();
-  }, []);
 
   const fetchProfileInfo = async () => {
     try {
-
-        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-        const response = await LoginService.getYourProfile(token);
-        setProfileInfo(response.users);
+      const token = localStorage.getItem('token');
+      const response = await LoginService.getYourProfile(token);
+      setProfileInfo(response.users);
     } catch (error) {
-        console.error('Error fetching profile information:', error);
+      console.error('Error fetching profile information:', error);
     }
   };
 
+  const connectWebSocket = () => {
+    const socket = new SockJS('http://localhost:8080/ws');
+    const stompClient = new Client({
+      webSocketFactory: () => socket,
+      debug: str => console.log(str),
+      onStompError: frame => {
+        console.error('Broker reported error: ' + frame.headers['message']);
+        console.error('Additional details: ' + frame.body);
+      },
+      reconnectDelay: 5000,
+    });
+
+    stompClient.onConnect = () => {
+      stompClient.subscribe('/topic/notifications', message => {
+        try {
+          const notification = JSON.parse(message.body);
+          console.log('Received notification:', notification);
+          setNotificationCount(prevCount => prevCount + 1);
+          setNotifications(prevNotifications => [...prevNotifications, notification]);
+        } catch (error) {
+          console.error('Error parsing notification message:', error);
+        }
+      });
+    };
+
+    stompClient.activate();
+    stompClientRef.current = stompClient;
+  };
+
+  const disconnectWebSocket = () => {
+    if (stompClientRef.current) {
+      stompClientRef.current.deactivate();
+    }
+  };
+
+  const toggleNotifications = () => {
+    setNotificationsOpen(!notificationsOpen);
+  };
+
   return (
-    <Box sx={{ flexGrow: 1}}>
+    <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" className='bg-white'>
         <Toolbar>
           <img src={myLogo} alt="Inventory Logo" className='w-32 h-auto ' />
           <h4 className='hidden text-xl font-bold text-blue-800 md:block'>CENTRAL SYNC</h4>
-          {/* <Search className='box-border bg-white border-2 rounded-2xl'>
-            <SearchIconWrapper>
-              <SearchIcon className='text-gray-500 '/>
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-              className='text-gray-500 '
-            />
-          </Search> */}
-        <SearchBar/>
+          <SearchBar />
           <Box sx={{ flexGrow: 2 }} />
-          <Box sx={{ display: { xs: 'none', md: 'flex' } ,gap:'20px'}}>
-            
-            <IconButton
-              size="large"
-              aria-label="show 17 new notifications"
-              color="inherit"
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: '20px' }}>
+            <IconButton 
+              size="large" 
+              aria-label="show new notifications" 
+              color="inherit" 
               className="hidden md:block"
+              onClick={toggleNotifications} // Add onClick handler to toggle notifications
             >
-              <Badge badgeContent={10} color="error">
-                <NotificationsIcon className='text-black '/>
+              <Badge badgeContent={notificationCount} color="error">
+                <NotificationsIcon className='text-black' />
               </Badge>
             </IconButton>
             <div className='flex items-center'>
-              <h4 className='text-black '>{profileInfo.firstName} {profileInfo.lastName}</h4>
+              {profileInfo ? (
+                <h4 className='text-black '>{profileInfo.firstName} {profileInfo.lastName}</h4>
+              ) : (
+                <h4 className='text-black '>Loading...</h4>
+              )}
             </div>
             <IconButton
               size="large"
@@ -148,91 +183,98 @@ export default function NavBar() {
               color="inherit"
               className="hidden md:block"
             >
-              <AccountCircle className='text-3xl text-black'/>
+              <AccountCircle className='text-3xl text-black' />
             </IconButton>
           </Box>
-          
           <div className='text-black cursor-pointer text- md:hidden' onClick={toggleMenu}>
-            <MenuIcon></MenuIcon>
+            <MenuIcon />
           </div>
-          
         </Toolbar>
       </AppBar>
-      
-      {/* Sidebar Content */}
-      <div
-        
-        className={` w-80 absolute right-0 h-screen z-50 bg-[#9eaab2] text-black ${SidebarOpen ? 'block' : 'hidden'}`}
-      >
-        
+
+      {/* Notifications list */}
+      {notificationsOpen && (
+        <Box className="absolute right-0 mt-2 w-80 bg-white border border-gray-300 z-50 rounded-md shadow-lg">
+          <Box className="p-2">
+            {notifications.length > 0 ? (
+              notifications.map((notification, index) => (
+                <Card key={index} sx={{ mb: 2 }}>
+                  <CardContent>
+                    <Typography variant="body2" color="textSecondary">
+                      {notification.message}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <Box className="p-2">
+                <Typography variant="body2" color="textSecondary">
+                  No notifications
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </Box>
+      )}
+
+      <div className={`w-80 absolute right-0 h-screen z-50 bg-[#9eaab2] text-black ${sidebarOpen ? 'block' : 'hidden'}`}>
         <div className="flex flex-col gap-10 p-6">
           <div className='flex gap-4'>
             <div>Profile Picture</div>
             <div>
-              <h2>{profileInfo.userId}</h2>
-              <h2>{profileInfo.username}</h2>
-              <h4>{profileInfo.role}</h4>
+              <h2>{profileInfo ? profileInfo.userId : 'Loading...'}</h2>
+              <h2>{profileInfo ? profileInfo.username : 'Loading...'}</h2>
+              <h4>{profileInfo ? profileInfo.role : 'Loading...'}</h4>
             </div>
           </div>
           <div>
-              <div className="pb-4">
-                <Button
-                  variant="outlined"
-                  className="bg-[#D9D9D9] w-[100%] h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5 "
-                >
-                  <AccountCircleOutlinedIcon />
-                  <span>Edit Profile</span>
-                </Button>
-              </div>
-              <div className="pb-4">
-               
-                <Button
-                  variant="outlined"
-                  className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
-                  
-                >
-                
-                  <HistoryIcon />
-                  <span>View History</span>
-                </Button>
-               
-              </div>
-              <div className="pb-4">
-                <Button
-                  variant="outlined"
-                  className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
-                   
-                >
-
-                  <KeyOutlinedIcon />
-                  <span>Change Password</span>
-                </Button>
-              </div>
-              <div className="pb-4">
-                {isAuthenticated && 
-                  <Link to="/" onClick={handleLogout}>
-                    <Button
-                      variant="outlined"
-                      className="bg-[#D9D9D9] w-[100%]  h-[45px]  text-black  hover:text-[#D9D9D9] hover:bg-black border-none  rounded-none justify-start space-x-5"
-                    >
-                      <LogoutOutlinedIcon />
-                      <span>Logout</span>
-                    </Button>
-                  </Link>
-                }
-              </div>
+            <div className="pb-4">
+              <Button
+                variant="outlined"
+                className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5 "
+              >
+                <AccountCircleOutlinedIcon />
+                <span>Edit Profile</span>
+              </Button>
             </div>
-               
+            <div className="pb-4">
+              <Button
+                variant="outlined"
+                className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
+              >
+                <HistoryIcon />
+                <span>View History</span>
+              </Button>
+            </div>
+            <div className="pb-4">
+              <Button
+                variant="outlined"
+                className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
+              >
+                <KeyOutlinedIcon />
+                <span>Change Password</span>
+              </Button>
+            </div>
+            <div className="pb-4">
+              {isAuthenticated &&
+                <Link to="/" onClick={handleLogout}>
+                  <Button
+                    variant="outlined"
+                    className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
+                  >
+                    <LogoutOutlinedIcon />
+                    <span>Logout</span>
+                  </Button>
+                </Link>
+              }
+            </div>
           </div>
-           
         </div>
-       
-      
-      {/* side bar mobile menu */}
-      <div className={`${Open ? 'block' : 'hidden'} md:hidden bg-slate-300 `}>
-        <SideBar></SideBar>
       </div>
 
+      <div className={`${menuOpen ? 'block' : 'hidden'} md:hidden bg-slate-300 `}>
+        <SideBar />
+      </div>
     </Box>
   );
 }

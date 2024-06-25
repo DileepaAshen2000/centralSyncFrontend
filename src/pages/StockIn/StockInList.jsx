@@ -13,7 +13,7 @@ const columns = [
     { field: 'quantity', headerName: 'Quantity In', width: 150 },
     { field: 'date', headerName: 'Date', width: 160 },
     { field: 'location', headerName: 'Location', width: 180 },
-  ];
+];
 
 const StockInList = () => {
   const navigate = useNavigate();
@@ -25,11 +25,11 @@ const StockInList = () => {
       .then((response) => {
         const data = response.data.map((stockIn) => ({
             id: stockIn.sinId,
-            itemId: stockIn.itemId,
+            itemId: stockIn.itemId.itemId, // Accessing itemId from the inventory (itemId) object
             description: stockIn.description,
             quantity: stockIn.inQty,
             date: stockIn.date,
-            location:stockIn.location
+            location: stockIn.location
         }));
         setRows(data);
       })
@@ -44,7 +44,7 @@ const StockInList = () => {
   };
 
   const handleViewClick = () => {
-    if (rowSelectionModel > 0) {
+    if (rowSelectionModel.length > 0) {
       const selectedStockInId = rowSelectionModel[0];
       navigate("/stockIn/" + selectedStockInId);
     } else {
@@ -59,7 +59,7 @@ const StockInList = () => {
           <h1 className="inline-block text-3xl font-bold">Stock In</h1>
           <p>Here are all Stock-In</p>
         </div>
-        {rowSelectionModel > 0 ? (
+        {rowSelectionModel.length > 0 ? (
             <div className="flex items-center ml-[75%]">
                 <Button
                     variant="contained"
@@ -102,4 +102,5 @@ const StockInList = () => {
     </Box>
   );
 };
+
 export default StockInList;

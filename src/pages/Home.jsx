@@ -20,9 +20,9 @@ import AdminInRequestDocument from "./InventoryRequest/AdminInRequestDocument";
 import InRequestHandlerRequestList from "./InventoryRequest/InRequestHandlerInRequestList";
 import InRequestHandlerInRequestDocument from "./InventoryRequest/InRequestHandlerInRequestDocument";
 import EmployeeInRequestList from "./InventoryRequest/EmployeeInRequestList";
-import EmployeeInRequestDocument from "./InventoryRequest/EmployeeInRequestDocument";
-import WorkFromHomeRequestDocument from "./InventoryRequest/WorkFromHomeRequestDocument";
-import CreateNewRequest from "./InventoryRequest/CreateNewInRequest";
+import InRequestDocument from "./InventoryRequest/InRequestDocument";
+import DeliveryRequestDocument from "./InventoryRequest/DeliveryRequestDocument";
+import CreateNewIDRequest from "./InventoryRequest/CreateNewIDRequest";
 import EditRequest from "./InventoryRequest/EditInRequest";
 
 import UserActivityHistory from "./User/History";
@@ -87,7 +87,7 @@ const Home = () => {
               style={{ backgroundColor: "#eeeeee" }}
               className="w-screen p-10"
             >
-                
+
 
               <Routes>
                 {/* Enter components here, that you want to insert. */}
@@ -95,6 +95,14 @@ const Home = () => {
                 {/* Dashboard routing */}
                 <Route
                   path="/admin-dashboard"
+                  element={<AdminDashboard />}
+                ></Route>
+                   <Route
+                  path="/request-handler-dashboard"
+                  element={<AdminDashboard />}
+                ></Route>
+                  <Route
+                  path="/employee-dashboard"
                   element={<AdminDashboard />}
                 ></Route>
 
@@ -178,16 +186,16 @@ const Home = () => {
                 ></Route>
                 <Route
                   path="/employee/in-request-document/:reqId"
-                  element={<EmployeeInRequestDocument />}
+                  element={<InRequestDocument />}
                 ></Route>
                 <Route
-                  path="/employee/workfromhome-in-request-document/:reqId"
-                  element={<WorkFromHomeRequestDocument />}
+                  path="/employee/delivery-request-document/:reqId"
+                  element={<DeliveryRequestDocument />}
                 ></Route>
                 {/*Common views for three actors rounting*/}
                 <Route
                   path="/in-request/create-new-in-request"
-                  element={<CreateNewRequest />}
+                  element={<CreateNewIDRequest />}
                 ></Route>
                 <Route
                   path="/in-request/edit-request/:reqId"
