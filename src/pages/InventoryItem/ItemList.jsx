@@ -5,6 +5,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import LoginService from "../Login/LoginService";
 
 
 const columns = [
@@ -43,12 +44,9 @@ const columns = [
 
 const ItemDataGrid = () => {
   const navigate = useNavigate();
-
- 
   const [rows, setRows] = useState([]); 
-
- 
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
+  const isAdmin = LoginService.isAdmin();
 
   // Fetch data from the API
   useEffect(() => {
@@ -96,6 +94,7 @@ const ItemDataGrid = () => {
         <p className="inline-block">Here are all inventory items!!</p>
         {rowSelectionModel > 0 ? (
           <>
+          {isAdmin &&(
             <Button
               variant="contained"
               className="bg-blue-600  py-2 text-white rounded left-[40%] w-[145px]"
@@ -103,7 +102,8 @@ const ItemDataGrid = () => {
             >
               Edit
             </Button>
-
+          )}
+            
             <Button
               variant="contained"
               className="bg-blue-600  py-2 text-white rounded left-[48%] w-[145px]"
@@ -113,13 +113,17 @@ const ItemDataGrid = () => {
             </Button>
           </>
         ) : (
-          <Button
-            variant="contained"
-            className="bg-blue-600 px-6 py-2 text-white rounded left-[62%] w-[145px]"
-            onClick={() => navigate("/item/add-item")}
-          >
-            Add items
-          </Button>
+          <div className="pl-20 ml-96">
+            {isAdmin && (
+              <Button
+                variant="contained"
+                className="bg-blue-600 px-6 py-2 text-white rounded left-[62%] w-[145px]"
+                onClick={() => navigate("/item/add-item")}
+              >
+                Add items
+              </Button>
+            )}
+          </div>
         )}
       </Box>
 

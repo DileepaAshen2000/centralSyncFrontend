@@ -36,7 +36,7 @@ const ItemPieChart = () => {
   const series = [
     {
       data: itemData,
-      innerRadius: 60,
+      innerRadius: 80,
     },
   ];
 
@@ -47,14 +47,14 @@ const ItemPieChart = () => {
   ) : (
     <div className="flex items-center justify-center">
       <PieChart
-        margin={{ top: 50, bottom: 100 }}
+        margin={{ top: 10, bottom: 150, left: 10, right: 10}}
         colors={palette}
         series={series}
         slotProps={{
           legend: {
             direction: "column",
-            position: { vertical: "bottom", horizontal: "left" },
-            padding: 10,
+            position: { vertical: "bottom", horizontal: "center" },
+            padding: 20,
           },
         }}
         {...size}

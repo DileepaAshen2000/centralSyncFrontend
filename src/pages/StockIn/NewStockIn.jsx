@@ -8,7 +8,8 @@ import LoginService from '../Login/LoginService';
 const NewStockIn = () => {
 
   let navigate = useNavigate();
-  const [profileInfo,setProfileInfo] = useState(); 
+  const [profileInfo,setProfileInfo] = useState();
+  const [backEndErrors, setBackEndErrors] = useState({}); 
   const [stockIn,setStockIn] = useState({  // create state for adjustment, initial state is empty with object.
     location:"",
     date:new Date().toISOString().split("T")[0], // Set to today's date
@@ -70,7 +71,7 @@ const NewStockIn = () => {
     console.log(Object.keys(validationErrors).length)
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      return;
+      // return;
     }
 
     try {
@@ -97,13 +98,20 @@ const NewStockIn = () => {
         text: "Stock-In Successfully Submitted.!",
         icon: "success"
       });
+      setBackEndErrors({}); // Clear the errors
     } catch (error) {
-      console.error("Error:", error);
-      Swal.fire({
-        title: "Error!",
-        text: "Failed to submit Stock-In. Please try again.",
-        icon: "error"
-      });
+      if (error.response && error.response.status === 400) {
+        console.log(error.response.data);
+        setBackEndErrors(error.response.data);
+      }else{
+        console.error("Error:", error);
+        console.log(error.response.data);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to submit Stock-In. Please try again.",
+          icon: "error"
+        });
+      }
     }
   }
 
@@ -245,6 +253,7 @@ const NewStockIn = () => {
                 value={description}
                 onChange={(e)=>onInputChange(e)}
               />
+              {backEndErrors.description && <span>{backEndErrors.description}</span>}
             </div>
           </div>
         

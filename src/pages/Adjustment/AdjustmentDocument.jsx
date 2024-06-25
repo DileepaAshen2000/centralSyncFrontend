@@ -28,10 +28,11 @@ const AdjustmentDocument = () => {
     adjustedQuantity:"",
     status:"",
     itemId:"",
-    userId:""
+    userId:"",
+    filePath:null
   })
 
-const{reason,date,description,adjustedQuantity,status,itemId,userId} = adj;
+const{reason,date,description,adjustedQuantity,status,itemId,userId,filePath} = adj;
 const [item,setItem] = useState({  // create state for adjustment, initial state is empty with object.
   itemName:"",
   quantity:""
@@ -49,7 +50,6 @@ const loadAdjustment = async () => {
   try {
     const result = await axios.get(`http://localhost:8080/adjustment/getById/${adjId}`);
     setAdj(result.data);  // Make sure the fetched data structure matches the structure of your state
-    console.log(result.data.itemId);
     const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${result.data.itemId}`);
     setItem(result1.data);
   } catch (error) {
@@ -208,10 +208,12 @@ const loadAdjustment = async () => {
             <div className="w-2/3">
               <Typography variant="body2">{description}</Typography>
             </div>
-            <div className='mt-6'>
-              <h1>Download File :</h1>
-              <button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download</span></u></button>
-            </div>
+            {filePath && (
+              <div className='mt-6'>
+                <h1>Download File :</h1>
+                <button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download</span></u></button>
+              </div>
+            )}
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
               <Alert
                 onClose={handleClose}

@@ -24,7 +24,7 @@ const LowStockReport = () => {
   const [lowStockItems, setLowStockItems] = useState([]);
   const [open, setOpen] = useState(false);
   const anchorRef = React.useRef(null);
-  const [selectedIndex, setSelectedIndex] = useState(4); // Default to ALL_ITEM
+  const [selectedIndex, setSelectedIndex] = useState(7); // Default to ALL_ITEM
   const printRef = useRef();
   const [profileInfo, setProfileInfo] = useState({});
 
