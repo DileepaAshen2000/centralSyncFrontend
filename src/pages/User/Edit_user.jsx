@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Stack, Select, Box } from "@mui/material";
+import { TextField, Button, Stack, Select, Box,Typography} from "@mui/material";
 // import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
 import axios from "axios";
@@ -8,8 +8,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Badge from "@mui/material/Badge";
 import Avatar from "@mui/material/Avatar";
 //import SmallAvatar from "@mui/material/SmallAvatar";
-import AddAPhotoOutlinedIcon from '@mui/icons-material/AddAPhotoOutlined';
-import camera from '../../assests/camera.png'
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 //import DragDrop from "./Drag&Drop";
 //import { DropzoneArea } from 'material-ui-dropzone';
 //import Dropzone from "./Dropzone";
@@ -30,6 +30,9 @@ const Userupdate = () => {
   });
   const { ID } = useParams();
   const [errors, setErrors] = useState({});
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
+
 
   const navigate = useNavigate();
 
@@ -40,6 +43,7 @@ const Userupdate = () => {
       .then((response) => {
         // Update user state with fetched data
         setUser(response.data);
+        setImageUrl(response.data.imagePath ? `http://localhost:8080/user/display/${ID}` : null);
       })
       .catch((error) => {
         console.log("Error fetching user:", error);
@@ -55,11 +59,38 @@ const Userupdate = () => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    setSelectedImage(e.target.files[0]); // Handle file change
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageDelete = () => {
+    setSelectedImage(null);
+    setImageUrl(null);
+  };
+
+
   // Function to save updated user data
   const handleSave = () => {
-    // Make PUT request to update the user data
+    const formData = new FormData();
+    formData.append('user', new Blob([JSON.stringify(user)], { type: 'application/json' }));
+    if (selectedImage) {
+      formData.append('image', selectedImage);
+    }
+  
     axios
-      .put(`http://localhost:8080/user/update/${ID}`, user)
+      .put(`http://localhost:8080/user/update/${ID}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       .then(() => {
         console.log("User updated successfully");
         // Redirect to user list page after successful update
@@ -72,6 +103,7 @@ const Userupdate = () => {
         console.log("Error updating user:", error);
       });
   };
+  
 
   return (
     <>
@@ -98,24 +130,33 @@ const Userupdate = () => {
             </div>
             <div></div>
             <div className="row-span-4 col-span-2">
-              {user.imagePath && (
-                <Badge
-                  overlap="circular"
-                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                  badgeContent={
-                    <img src={camera} className="h-[40px] w-[40px] rounded-full bg-white border"/>
-
-                  }
-                  
-
-                >
-                  <Avatar
-                    sx={{ width: 250, height: 250 }}
-                    alt="Profile picture"
-                    src={`http://localhost:8080/user/display/${ID}`}
+            <div className="w-[200px] h-[200px] border-2 border-gray-300 rounded-full flex items-center justify-center">
+            {imageUrl ? (
+                <>
+                  <img
+                    src={imageUrl}
+                    alt="Uploaded"
+                    className="w-[200px] h-[200px] object-cover rounded-full ml-6"
                   />
-                </Badge>
+                  <DeleteIcon
+                    onClick={handleImageDelete}
+                    className="text-red-600 cursor-pointer mt-[150px]"
+                  />
+                </>
+              ) : (
+                <label htmlFor="image-upload" className="cursor-pointer">
+                  <AddAPhotoIcon className="w-[60px] h-[60px] ml-5 text-[#007EF2]" />
+                  <Typography className="font-bold">Profile Picture</Typography>
+                </label>
               )}
+              <input
+                  type="file"
+                  id="image-upload"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </div>
             </div>
             <div className="col-span-1">
               <label htmlFor="name">Name</label>

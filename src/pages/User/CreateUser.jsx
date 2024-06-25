@@ -118,12 +118,7 @@ const CreateUser = () => {
     }
   };
 
-  const onClose = () => {
-    setPreview(null);
-  };
-  const onCrop = (view) => {
-    setPreview(view);
-  };
+  
   return (
     <>
       <Box className="p-5 bg-white rounded-2xl w-[1122.7px]">
