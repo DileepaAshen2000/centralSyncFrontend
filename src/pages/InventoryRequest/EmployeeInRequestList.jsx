@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import LoginService from '../Login/LoginService'; // Ensure the path is correct
 
 // Define columns for the DataGrid component
@@ -12,29 +12,75 @@ const columns = [
   { field: 'date', headerName: 'Date', width: 200 },
   { field: 'time', headerName: 'Time', width: 200 },
   { field: 'reason', headerName: 'Reason', width: 200 },
-  { field: 'status', headerName: 'Status', width: 200 },
+  { 
+    field: 'status', 
+    headerName: 'Status', 
+    width: 200,
+    renderCell: (params) => {
+      const status = params.value;
+      let backgroundColor;
+      switch (status) {
+        case 'PENDING':
+          backgroundColor = 'lightblue';
+          break;
+        case 'ACCEPTED':
+          backgroundColor = 'lightgreen';
+          break;
+        case 'REJECTED':
+          backgroundColor = 'lightcoral';
+          break;
+        case 'SENT_TO_ADMIN':
+          backgroundColor = 'lightyellow';
+          break;
+        default:
+          backgroundColor = 'white';
+      }
+      return (
+        <Box 
+          sx={{ 
+            padding: '4px 8px', 
+            borderRadius: '4px', 
+            textAlign: 'center', 
+            fontWeight: 'bold',
+            backgroundColor 
+          }}
+        >
+          {status}
+        </Box>
+      );
+    }
+  },
 ];
 
 // Define a functional component named Table
 function Table() {
   const navigate = useNavigate();
   const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const userId = LoginService.returnUserID();
         const response = await axios.get(`http://localhost:8080/request/user/${userId}`);
-        const data = response.data.map((inventoryRequest, index) => ({
-          id: index + 1,
-          date: new Date(inventoryRequest.dateTime).toLocaleDateString('en-US'),
-          time: new Date(inventoryRequest.dateTime).toLocaleTimeString('en-US'),
-          reason: inventoryRequest.reason,
-          status: inventoryRequest.reqStatus,
-        }));
+        
+        const data = response.data.map((inventoryRequest, index) => {
+          const createdDate = new Date(
+            ...inventoryRequest.createdDateTime.slice(0, 6)
+          );
+          return {
+            id: index + 1,
+            date: createdDate.toLocaleDateString('en-US'),
+            time: createdDate.toLocaleTimeString('en-US'),
+            reason: inventoryRequest.reason,
+            status: inventoryRequest.reqStatus,
+            createdDateTime: createdDate,
+          };
+        });
+        console.log(data);
 
-        // Sort data by date and time
-        data.sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
+        // Sort data by createdDateTime
+        data.sort((a, b) => b.createdDateTime - a.createdDateTime);
         
         // Update IDs after sorting
         const sortedData = data.map((item, index) => ({
@@ -43,13 +89,23 @@ function Table() {
         }));
 
         setRows(sortedData);
+        setLoading(false); // Set loading to false after data is fetched
       } catch (error) {
         console.error('Failed to fetch inventory requests:', error);
+        setLoading(false); // Set loading to false if there's an error
       }
     };
 
     fetchData();
   }, []);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <div>
@@ -63,6 +119,21 @@ function Table() {
           },
         }}
         pageSizeOptions={[5, 10]}
+        sx={{
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: '#f5f5f5',
+            borderBottom: '2px solid #000',
+          },
+          '& .MuiDataGrid-cell': {
+            borderBottom: '1px solid #ddd',
+          },
+          '& .MuiDataGrid-row': {
+            borderBottom: '2px solid #000',
+          },
+          '& .MuiDataGrid-root': {
+            border: '2px solid #000',
+          }
+        }}
       />
     </div>
   );
@@ -102,12 +173,12 @@ const EmployeeInRequestList = () => {
           </Button>
         )}
       </div>
-      <Box className="flex pb-4">
-        <Box>
-          <h1 className="pt-2 pb-3 text-3xl font-bold">Inventory Request List</h1>
-          <p>Here is a list of all Inventory requests</p>
+      <Box className="flex flex-col items-center pb-4">
+        <Box className="w-full bg-blue-900 text-white text-center py-4 m-4">
+          <header className="text-3xl font-bold">Inventory Request List</header>
         </Box>
       </Box>
+      <p>Here is a list of all Inventory requests</p>
       <Table />
     </Box>
   );

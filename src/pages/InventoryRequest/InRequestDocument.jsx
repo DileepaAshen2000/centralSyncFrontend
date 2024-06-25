@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Typography, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Alert, AlertTitle, CircularProgress, Box } from '@mui/material';
+import { Typography, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Alert, AlertTitle, CircularProgress, Box, Snackbar } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import ReactToPrint from 'react-to-print';
@@ -65,6 +65,7 @@ const InRequestDocument = () => {
   const printRef = useRef();
   const [email, setEmail] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const fetchInventoryRequest = async () => {
@@ -144,6 +145,28 @@ const InRequestDocument = () => {
     } else {
       alert('Please write a note before sending.');
     }
+  };
+
+  const handleFileDownload = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/request/getFileById/${reqId}`, { responseType: 'blob' });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'Inventory_Request_Document.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      setOpen(true);
+    } catch (error) {
+      console.error('Error downloading PDF file:', error);
+    }
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason !== 'clickaway') setOpen(false);
   };
 
   const role = localStorage.getItem('role');
@@ -241,6 +264,10 @@ const InRequestDocument = () => {
               <div className="w-2/3">
                 <Typography variant="body2">{inventoryRequest?.description}</Typography>
               </div>
+              <div className='mt-6'>
+                <h1>Download File:</h1>
+                <button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download</span></u></button>
+              </div>
             </div>
           )}
         </div>
@@ -268,7 +295,7 @@ const InRequestDocument = () => {
         )}
 
         <div className='flex justify-end gap-4 ml-[60%] mt-6'>
-          {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' &&role !== 'EMPLOYEE' &&  (
+          {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' && role !== 'EMPLOYEE' && (
             <>
               <Button
                 className="px-6 py-2 bg-green-500 text-white hover:bg-green-400"
@@ -323,6 +350,17 @@ const InRequestDocument = () => {
             <Button onClick={handleCloseDialog}>Cancel</Button>
           </DialogActions>
         </Dialog>
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          onClose={handleClose}
+          message="File downloaded successfully"
+          action={
+            <Button color="inherit" size="small" onClick={handleClose}>
+              Close
+            </Button>
+          }
+        />
       </main>
     </div>
   );
