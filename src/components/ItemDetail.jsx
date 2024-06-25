@@ -135,14 +135,14 @@ const ItemDetail = () => {
                 navigate("/in-request/create-new-in-request", {
                   state: { item: item },
                 })
-              } //set correct navigation and add the method on repective component to set the item name and details
+              } 
             >
               Request Item
             </Button>
             <Button
               variant="outlined"
               
-              onClick={() => navigate("/newTicket", { state: { item: item } })} //set correct navigation
+              onClick={() => navigate("/newreservation", { state: { item: item } })} 
             >
               Reserve Item
             </Button>

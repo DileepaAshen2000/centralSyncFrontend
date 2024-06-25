@@ -71,26 +71,4 @@ const SearchResult = () => {
 
 export default SearchResult;
 
-// import * as React from "react";
-// import List from "@mui/material/List";
-// import ListItem from "@mui/material/ListItem";
-// import ListItemText from "@mui/material/ListItemText";
-// import Chip from "@mui/material/Chip";
-// import Stack from "@mui/material/Stack";
-// import { Divider } from "@mui/material";
-// import { useLocation } from "react-router-dom";
 
-// const SearchResult = () => {
-//   const { searchResult } = useLocation().state;
-//   return (
-//     <>
-//       {searchResult.map((item,index) => (
-//         <Stack  direction="row" spacing={1}>
-//         <Chip key={index} label={item.name}/>
-//         </Stack>
-//       ))}
-//     </>
-//   );
-// };
-
-// export default SearchResult;

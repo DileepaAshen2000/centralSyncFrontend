@@ -30,7 +30,7 @@ const SearchBar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchItemName = async () => {
+    const fetchItemNames = async () => {
       try {
         const response = await axios.get(
           "http://localhost:8080/inventory-item/getAll"
@@ -45,7 +45,7 @@ const SearchBar = () => {
       }
     };
 
-    fetchItemName();
+    fetchItemNames();
   }, []);
 
   const handleSearch = async () => {
@@ -128,14 +128,14 @@ const SearchBar = () => {
             InputProps={{
               ...params.InputProps,
               startAdornment: (
-                <InputAdornment position="end">
+                <InputAdornment position="start">
                   <IconButton onClick={handleFilterClick}>
                     <FilterListIcon className="mr-0" />
                   </IconButton>
                 </InputAdornment>
               ),
               endAdornment: (
-                <InputAdornment position="start">
+                <InputAdornment position="end">
                   <SearchIcon
                     onClick={handleSearch}
                     style={{ cursor: "pointer" }}
