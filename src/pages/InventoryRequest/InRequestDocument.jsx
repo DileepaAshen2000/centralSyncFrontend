@@ -266,10 +266,16 @@ const InRequestDocument = () => {
               </div>
               <div className='mt-6'>
                 <h1>Download File:</h1>
-                <button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download</span></u></button>
+                <button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download attched file with Inventory Request</span></u></button>
               </div>
+              <div className='mt-20 float-right ...'>
+              <Typography variant="caption" gutterBottom>
+            Computer Generated Report By CENTRAL SYNC &#174; | No Signature Required.
+          </Typography>
+          </div>
             </div>
           )}
+          
         </div>
 
         {inventoryRequest?.reqStatus === 'PENDING' && role !== 'EMPLOYEE' && (

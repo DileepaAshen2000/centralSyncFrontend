@@ -175,7 +175,7 @@ const EmployeeInRequestList = () => {
       </div>
       <Box className="flex flex-col items-center pb-4">
         <Box className="w-full bg-blue-900 text-white text-center py-4 m-4">
-          <header className="text-3xl font-bold">Inventory Request List</header>
+          <header className="text-3xl font-bold">My Inventory Request List</header>
         </Box>
       </Box>
       <p>Here is a list of all Inventory requests</p>
