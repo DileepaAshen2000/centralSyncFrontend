@@ -10,7 +10,7 @@ import LoginService from "../Login/LoginService";
 
 const columns = [
   { field: "id", headerName: "ID", width: 200 },
-  { field: "topic", headerName: "Topic", width: 200 },
+  
   { field: "date", headerName: "Date", width: 200 },
   { field: "itemName", headerName: "Item Name", width: 200 },
   { field: "itemBrand", headerName: "Item Brand", width: 200 },
@@ -25,6 +25,8 @@ const Ticket = () => {
   const [rows, setRows] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState({});
   const [profileInfo, setProfileInfo] = useState({});
+
+
 
   const isAdmin = LoginService.isAdmin();
   const isRequestHandler = LoginService.isReqHandler();
@@ -50,6 +52,8 @@ const Ticket = () => {
       fetchTickets();
     }
   }, [profileInfo]);
+
+
 
   const fetchTickets = () => {
     axios
@@ -95,6 +99,13 @@ const Ticket = () => {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const handleRowSelectionModelChange = (newSelectedRow) => {
     setRowSelectionModel(newSelectedRow);
+  };
+
+  const handleView = () => {
+    if (rowSelectionModel > 0) {
+      const selectedTicketId = rowSelectionModel[0];
+      navigate("/ticket/ticketdoc/" + selectedTicketId);
+    }  
   };
 
   const handleDelete = () => {
@@ -149,18 +160,29 @@ const Ticket = () => {
       }}
     >
       <Box className="flex pt-2 pb-2">
-        {rowSelectionModel > 0 && (
-          <div className="flex items-center gap-4 ml-[48%]">
+      {rowSelectionModel > 0 && (
+          <div className="grid grid-cols-11 grid-rows-1 gap-y-7 gap-x-[5] mb-2 ">
+          <div className="col-start-8">
             <Button
               variant="contained"
-              className="bg-blue-600 px-6 py-2 text-white rounded left-[68%]"
+              className="bg-blue-600 px-6 py-2 text-white rounded left-[68%] w-[120px] ml-10"
+              onClick={handleView}
+            >
+              View
+            </Button>
+          </div> 
+          <div className="col-start-10">
+            <Button
+              variant="contained"
+              className="bg-blue-600 px-6 py-2 text-white rounded left-[68%] w-[120px] "
               onClick={handleDelete}
             >
               Delete
             </Button>
           </div>
-        ) 
-        }
+          </div>
+        )
+      }
       </Box>
       <DataGrid
         rows={rows}

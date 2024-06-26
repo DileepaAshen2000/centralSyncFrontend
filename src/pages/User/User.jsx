@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import axios from "axios";
 import LoginService from "../Login/LoginService";
-import { is } from "date-fns/locale";
 
 const columns = [
   { field: "id", headerName: "ID", width: 200 },

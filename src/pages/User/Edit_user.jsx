@@ -7,6 +7,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Badge from "@mui/material/Badge";
 import Avatar from "@mui/material/Avatar";
+import Swal from "sweetalert2";
 //import SmallAvatar from "@mui/material/SmallAvatar";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
@@ -16,6 +17,12 @@ import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 
 const Userupdate = () => {
   // State for user details
+  const navigate = useNavigate();
+  const { ID } = useParams();
+  const [errors, setErrors] = useState({});
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
+
   const [user, setUser] = useState({
     firstName: "",
     lastName: "",
@@ -28,41 +35,30 @@ const Userupdate = () => {
     role: "",
     workSite: "",
   });
-  const { ID } = useParams();
-  const [errors, setErrors] = useState({});
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [imageUrl, setImageUrl] = useState(null);
-
-
-  const navigate = useNavigate();
+ 
 
   useEffect(() => {
-    // Fetch user details by ID on component mount
-    axios
-      .get(`http://localhost:8080/user/users/${ID}`)
-      .then((response) => {
-        // Update user state with fetched data
+    const fetchUserDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/user/users/${ID}`);
         setUser(response.data);
         setImageUrl(response.data.imagePath ? `http://localhost:8080/user/display/${ID}` : null);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log("Error fetching user:", error);
-      });
+      }
+    };
+
+    fetchUserDetails();
   }, [ID]);
 
-  // Function to handle input change
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setUser((prevUser) => ({
-      ...prevUser,
-      [name]: value,
-    }));
+    setUser({ ...user, [e.target.name]: e.target.value });
   };
 
   const handleImageChange = (e) => {
-    setSelectedImage(e.target.files[0]); // Handle file change
     const file = e.target.files[0];
     if (file) {
+      setSelectedImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImageUrl(reader.result);
@@ -76,34 +72,38 @@ const Userupdate = () => {
     setImageUrl(null);
   };
 
-
-  // Function to save updated user data
-  const handleSave = () => {
+  const handleSave = async () => {
     const formData = new FormData();
     formData.append('user', new Blob([JSON.stringify(user)], { type: 'application/json' }));
     if (selectedImage) {
       formData.append('image', selectedImage);
     }
-  
-    axios
-      .put(`http://localhost:8080/user/update/${ID}`, formData, {
+
+    try {
+      const response = await axios.put(`http://localhost:8080/user/update/${ID}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      })
-      .then(() => {
-        console.log("User updated successfully");
-        // Redirect to user list page after successful update
-        navigate("/user");
-      })
-      .catch((error) => {
-        if (error.response) {
-          setErrors(error.response.data);
-        }
-        console.log("Error updating user:", error);
       });
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "User details successfully edited!",
+        });
+        navigate("/user");
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Failed to edit user details. Please check your inputs.",
+      });
+      if (error.response) {
+        setErrors(error.response.data);
+      }
+    }
   };
-  
 
   return (
     <>

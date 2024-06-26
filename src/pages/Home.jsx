@@ -54,6 +54,7 @@ import SearchResult from "../components/SearchResult";
 import ItemDetail from "../components/ItemDetail";
 import ForgotPassword from "./Login/ForgotPassword";
 import ResetPassword from "./Login/ResetPassword";
+import EditTicket from "./Ticket/EditTicket";
  
 
 const Home = () => {
@@ -147,6 +148,7 @@ const Home = () => {
                   element={<TicketDocument />}
                 ></Route>
                 <Route path="/ticket/myticketlist/:userId" element={<MyTicketList/>}></Route>
+                <Route path="/ticket/editticket/:id" element={<EditTicket/>}></Route>
 
                 {/* Inventory Item routing */}
 

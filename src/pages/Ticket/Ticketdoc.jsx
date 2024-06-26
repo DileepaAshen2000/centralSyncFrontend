@@ -369,8 +369,8 @@ const TicketDocument = () => {
               </div>
             )}
 
-            {(ticket.ticketStatus === "ACCEPT" ||
-              ticket.ticketStatus === "REJECT_A" )&& (
+            {(ticket.ticketStatus === "ACCEPTED" ||
+              ticket.ticketStatus === "REJECTED_A")&& (
                 <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                   <div className="col-start-6">
                     <Button
