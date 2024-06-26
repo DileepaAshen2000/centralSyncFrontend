@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Typography, Button, Alert, AlertTitle, CircularProgress, Box, Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle} from '@mui/material';
+import { Typography, Button, Alert, AlertTitle, CircularProgress, Box, Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,TextField} from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import ReactToPrint from 'react-to-print';
@@ -32,6 +32,60 @@ const buttonColor = (reqStatus, updateDateTime) => {
         <div style={{ marginLeft: '67px' }}>Time {time}</div>
       </Alert>
     );
+  }
+  else if (reqStatus === 'DISPATCHED') {
+    return (
+      <Alert 
+      severity="info" 
+      sx={{ 
+        width: '300px', 
+        margin: 5, 
+        backgroundColor: '#FFA07A', 
+        color: 'black' 
+      }}
+    >
+      <AlertTitle>Dispatched</AlertTitle>
+      <div>Updated: Date {date}</div>
+      <div style={{ marginLeft: '67px' }}>Time {time}</div>
+    </Alert>
+    
+);
+  }
+    else if (reqStatus === 'DELIVERED') {
+      return (
+        <Alert 
+        severity="info" 
+        sx={{ 
+          width: '300px', 
+          margin: 5, 
+          backgroundColor: '#90EE90', 
+          color: 'black' 
+        }}
+      >
+        <AlertTitle>Delivered</AlertTitle>
+        <div>Updated: Date {date}</div>
+        <div style={{ marginLeft: '67px' }}>Time {time}</div>
+      </Alert>
+      
+  );
+  }
+  else if (reqStatus === 'RECEIVED') {
+    return (
+      <Alert 
+      severity="success" 
+      sx={{ 
+        width: '300px', 
+        margin: 5, 
+        backgroundColor: '#D8BFD8', 
+        color: 'black' 
+      }}
+    >
+      <AlertTitle>Received</AlertTitle>
+      <div>Updated: Date {date}</div>
+      <div style={{ marginLeft: '67px' }}>Time {time}</div>
+    </Alert>
+    
+);
   } else if (reqStatus === 'REJECTED') {
     return (
       <Alert severity="error" sx={{ width: '300px', margin: 5 }}>
@@ -65,8 +119,16 @@ const InRequestDocument = () => {
   const navigate = useNavigate();
   const [note, setNote] = useState('');
   const printRef = useRef();
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const handleClickOpen = () => {setOpen(true);};
+  const [email, setEmail] = useState('');
+  
+  const handleClickOpenRecieved = () => {setOpen(true);};
+  const handleClickOpenDispatched = () => {setOpen(true);};
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+  const handleSubmitEmail = () => {
+    handleDispatch(email);
+  };
   const handleClose = () => {setOpen(false);};
   const [open, setOpen] = useState(false);
   const [workSite, setWorkSite] = useState('');
@@ -119,6 +181,18 @@ const InRequestDocument = () => {
       .then(() => {
         setInventoryRequest(!inventoryRequest);
         navigate("/employee-in-request-list");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const handleDispatch = (email) => {
+    axios
+      .patch(`http://localhost:8080/request/updateStatus/dispatch/${reqId}?email=${email}`)
+      .then(() => {
+        setInventoryRequest(!inventoryRequest);
+        setOpen(false);
+        navigate(`/stockOut`);
       })
       .catch((error) => {
         console.log(error);
@@ -210,11 +284,11 @@ const InRequestDocument = () => {
           <div>
             <section>
             {workSite === "ONLINE" ? (
-                <div className="w-full bg-green-900 text-white text-center py-4">
+                <div className="w-full  bg-green-900 text-white text-center py-4">
                   <header className="text-3xl font-bold">Delivery Request</header>
                 </div>
               ) : (
-                <div className="w-full bg-blue-900 text-white text-center py-4">
+                <div className="w-full  bg-blue-900 text-white text-center py-4">
                   <header className="text-3xl font-bold">INVENTORY REQUEST</header>
                 </div>
               )}
@@ -324,14 +398,18 @@ const InRequestDocument = () => {
               </Button>
             </>
           )}
+          {inventoryRequest && inventoryRequest.reqStatus === 'DELIVERED' && role === 'EMPLOYEE'&&(
+            <>
            <Button
                 className="px-6 py-2 bg-purple-500 text-white hover:bg-purple-400"
                 variant='contained'
                 type='submit'
-                onClick={handleClickOpen}
+                onClick={handleClickOpenRecieved}
               >
                 Recieved
               </Button>
+              </>
+          )}
               <Dialog 
               open={open} 
               onClose={handleClose}
@@ -355,13 +433,51 @@ const InRequestDocument = () => {
                     </Button>
                   </DialogActions>
                 </Dialog>
-      
+                <Button
+                className="px-6 py-2 bg-orange-500 text-white hover:bg-orange-400"
+                variant='contained'
+                type='submit'
+                onClick={handleClickOpenDispatched}
+              >
+                Dispatched
+              </Button>
+              <Dialog open={open}
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle>
+                    {"Are you sure you want to mark this Item Delivery as succefully Dispatched?"}
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                    By entering the courier service's email address and submitting the form, you will confirm that the item has been successfully dispatched and send a delivery confirmation email to the courier service.
+                    </DialogContentText>
+                
+            <TextField
+              autoFocus
+              margin="dense"
+              id="email"
+              label="Email Address"
+              type="email"
+              fullWidth
+              variant="standard"
+              value={email}
+              onChange={handleEmailChange}
+            />
+          </DialogContent>
+                  <DialogActions>
+                  <Button onClick={handleSubmitEmail}>Submit</Button>
+                  <Button onClick={handleClose}>Cancel</Button>
+                  </DialogActions>
+                </Dialog>
           <Button
             className="px-6 py-2 hover:bg-white-400"
             variant='outlined'
             type='submit'
             onClick={() => navigate("/employee-in-request-list")}
           >
+            
             Cancel
           </Button>
         </div>
