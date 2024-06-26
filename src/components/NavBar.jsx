@@ -257,6 +257,7 @@ export default function NavBar() {
               </Button>
             </div>
             <div className="pb-4">
+            <Link to="/userprofile/changepassword">
               <Button
                 variant="outlined"
                 className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
@@ -264,6 +265,7 @@ export default function NavBar() {
                 <KeyOutlinedIcon />
                 <span>Change Password</span>
               </Button>
+            </Link>
             </div>
             <div className="pb-4">
               {isAuthenticated &&

@@ -55,6 +55,7 @@ import ItemDetail from "../components/ItemDetail";
 import ForgotPassword from "./Login/ForgotPassword";
 import ResetPassword from "./Login/ResetPassword";
 import EditTicket from "./Ticket/EditTicket";
+import ChangePassword from "./UserProfile/ChangePasword";
  
 
 const Home = () => {
@@ -139,7 +140,8 @@ const Home = () => {
                   element={<UserActivityHistory />}
                 ></Route>
                 <Route path="/user/users/:ID" element={<ViewUser />}></Route>
-
+                  {/* User Profile routing */}
+                  <Route path="/userprofile/changepassword" element={<ChangePassword/>}></Route>
                 {/* Ticket routing */}
                 <Route path="/newTicket" element={<CreateTicket />}></Route>
                 <Route path="/ticket" element={<Ticket />}></Route>
