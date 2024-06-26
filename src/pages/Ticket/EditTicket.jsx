@@ -14,7 +14,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const EditTicket = () => {
-  const { id } = useParams(); // Assuming your route has a parameter for ticket ID
+  const { id } = useParams();
   const form = useForm();
   const location = useLocation();
   const navigate = useNavigate();

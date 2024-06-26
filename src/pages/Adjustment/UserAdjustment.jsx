@@ -68,7 +68,7 @@ const UserAdjustment = () => {
         
         {rowSelectionModel > 0 ? (
           <div className="flex items-center">
-            {rows.find(row => row.id === rowSelectionModel[0]).status === "PENDING" && (
+            {/* {rows.find(row => row.id === rowSelectionModel[0]).status === "PENDING" && (
               <Button
                 variant="contained"
                 className="bg-blue-600 py-2 text-white rounded w-[auto]"
@@ -76,7 +76,7 @@ const UserAdjustment = () => {
               >
                 Edit
               </Button>
-            )}
+            )} */}
             
             <div className="pl-10">
               <Button
