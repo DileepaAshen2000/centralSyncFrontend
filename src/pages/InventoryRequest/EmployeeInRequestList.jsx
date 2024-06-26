@@ -6,54 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button, CircularProgress } from '@mui/material';
 import LoginService from '../Login/LoginService'; // Ensure the path is correct
 
-// Define columns for the DataGrid component
-const columns = [
-  { field: 'id', headerName: 'Inventory Request No:', width: 200 },
-  { field: 'date', headerName: 'Date', width: 200 },
-  { field: 'time', headerName: 'Time', width: 200 },
-  { field: 'reason', headerName: 'Reason', width: 200 },
-  { 
-    field: 'status', 
-    headerName: 'Status', 
-    width: 200,
-    renderCell: (params) => {
-      const status = params.value;
-      let backgroundColor;
-      switch (status) {
-        case 'PENDING':
-          backgroundColor = 'lightblue';
-          break;
-        case 'ACCEPTED':
-          backgroundColor = 'lightgreen';
-          break;
-        case 'REJECTED':
-          backgroundColor = 'lightcoral';
-          break;
-        case 'SENT_TO_ADMIN':
-          backgroundColor = 'lightyellow';
-          break;
-        default:
-          backgroundColor = 'white';
-      }
-      return (
-        <Box 
-          sx={{ 
-            padding: '4px 8px', 
-            borderRadius: '4px', 
-            textAlign: 'center', 
-            fontWeight: 'bold',
-            backgroundColor 
-          }}
-        >
-          {status}
-        </Box>
-      );
-    }
-  },
-];
-
 // Define a functional component named Table
-function Table() {
+function Table({ isEmployee, isOnlineEmployee }) {
   const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true); // Add loading state
@@ -107,6 +61,52 @@ function Table() {
     );
   }
 
+  // Define columns for the DataGrid component
+  const columns = [
+    { field: 'id', headerName: isEmployee && isOnlineEmployee ? 'Delivery Request No:' : 'Inventory Request No:', width: 200 },
+    { field: 'date', headerName: 'Date', width: 200 },
+    { field: 'time', headerName: 'Time', width: 200 },
+    { field: 'reason', headerName: 'Reason', width: 200 },
+    { 
+      field: 'status', 
+      headerName: 'Status', 
+      width: 200,
+      renderCell: (params) => {
+        const status = params.value;
+        let backgroundColor;
+        switch (status) {
+          case 'PENDING':
+            backgroundColor = 'lightblue';
+            break;
+          case 'ACCEPTED':
+            backgroundColor = 'lightgreen';
+            break;
+          case 'REJECTED':
+            backgroundColor = 'lightcoral';
+            break;
+          case 'SENT_TO_ADMIN':
+            backgroundColor = 'lightyellow';
+            break;
+          default:
+            backgroundColor = 'white';
+        }
+        return (
+          <Box 
+            sx={{ 
+              padding: '4px 8px', 
+              borderRadius: '4px', 
+              textAlign: 'center', 
+              fontWeight: 'bold',
+              backgroundColor 
+            }}
+          >
+            {status}
+          </Box>
+        );
+      }
+    },
+  ];
+
   return (
     <div>
       <DataGrid
@@ -159,27 +159,40 @@ const EmployeeInRequestList = () => {
       <div className="flex justify-end">
         {isEmployee && isOnlineEmployee ? (
           <Button
-            className="text-white bg-blue-600 rounded hover:bg-blue-300"
+            className="text-white bg-blue-600 rounded hover:bg-blue-400"
             onClick={() => navigate('/in-request/create-new-in-request')}
           >
             Create New Delivery Request
           </Button>
         ) : (
           <Button
-            className="text-white bg-blue-600 rounded hover:bg-blue-300"
+            className="text-white bg-blue-600 rounded hover:bg-blue-400"
             onClick={() => navigate('/in-request/create-new-in-request')}
           >
             Create New Inventory Request
           </Button>
         )}
       </div>
-      <Box className="flex flex-col items-center pb-4">
-        <Box className="w-full bg-blue-900 text-white text-center py-4 m-4">
-          <header className="text-3xl font-bold">My Inventory Request List</header>
-        </Box>
-      </Box>
-      <p>Here is a list of all Inventory requests</p>
-      <Table />
+      {isEmployee && isOnlineEmployee ?(
+        <>
+          <Box className="flex flex-col items-center pb-4">
+            <Box className="w-full bg-green-900 text-white text-center py-4 m-4">
+              <header className="text-3xl font-bold">My Delivery Request List</header>
+            </Box>
+          </Box>
+          <p>Here is a list of all Delivery requests</p>
+        </>
+      ) : (
+        <>
+          <Box className="flex flex-col items-center pb-4">
+            <Box className="w-full bg-blue-900 text-white text-center py-4 m-4">
+              <header className="text-3xl font-bold">My Inventory Request List</header>
+            </Box>
+          </Box>
+          <p>Here is a list of all Inventory requests</p>
+        </>
+      )}
+      <Table isEmployee={isEmployee} isOnlineEmployee={isOnlineEmployee} />
     </Box>
   );
 };

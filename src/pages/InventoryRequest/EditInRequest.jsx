@@ -326,9 +326,15 @@ const EditInventoryRequest = () => {
             </Grid>
 
             <Box className="mt-4 mb-2">
-              <Typography display="block" gutterBottom>
-                Attach File(s) to inventory request
-              </Typography>
+            {workSite === "ONLINE" ? (
+                <Typography display="block" gutterBottom>
+                  Attach File(s) to Delivery Request
+                </Typography>
+              ) : (
+                <Typography display="block" gutterBottom>
+                  Attach File(s) to Inventory Request
+                </Typography>
+              )}
               <input type="file" className="mt-4 mb-2" onChange={handleFileChange} multiple />
               <Typography variant="caption" display="block" gutterBottom>
                 You can upload a maximum of 5 files, 5MB each
@@ -353,7 +359,7 @@ const EditInventoryRequest = () => {
               <Button
                 className="px-6 py-2 rounded"
                 variant='outlined'
-                onClick={() => navigate("/inventory-request")}
+                onClick={() => navigate(`/employee/in-request-document/${reqId}`)}
               >
                 Cancel
               </Button>

@@ -6,10 +6,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Typography, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Alert, AlertTitle, CircularProgress, Box, Snackbar } from '@mui/material';
+import { Typography, Button, Alert, AlertTitle, CircularProgress, Box, Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle} from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import ReactToPrint from 'react-to-print';
+import LoginService from '../Login/LoginService';
+
 
 const formatDateTime = (dateTimeArray) => {
   if (!dateTimeArray) return '';
@@ -63,11 +65,18 @@ const InRequestDocument = () => {
   const navigate = useNavigate();
   const [note, setNote] = useState('');
   const printRef = useRef();
-  const [email, setEmail] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
+  const handleClickOpen = () => {setOpen(true);};
+  const handleClose = () => {setOpen(false);};
   const [open, setOpen] = useState(false);
+  const [workSite, setWorkSite] = useState('');
 
+  const fetchWorkSite = () => {
+    const workSite = LoginService.isOnlineEmployee() ? "ONLINE" : "ONSITE";
+    setWorkSite(workSite);
+  };
   useEffect(() => {
+    fetchWorkSite();
     const fetchInventoryRequest = async () => {
       setLoading(true); // Start loading
       try {
@@ -91,18 +100,7 @@ const InRequestDocument = () => {
     fetchInventoryRequest();
   }, [reqId]);
 
-  const handleDispatch = (email) => {
-    axios
-      .patch(`http://localhost:8080/request/updateStatus/dispatch/${reqId}?email=${email}`)
-      .then(() => {
-        setInventoryRequest(!inventoryRequest);
-        setDialogOpen(false);
-        navigate(`/new-stockout`);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+
 
   const handleReject = () => {
     axios
@@ -115,22 +113,19 @@ const InRequestDocument = () => {
         console.log(error);
       });
   };
-
-  const handleOpenDialog = () => {
-    setDialogOpen(true);
+  const handleRecieve = () => {
+    axios
+      .patch(`http://localhost:8080/request/updateStatus/received/${reqId}`)
+      .then(() => {
+        setInventoryRequest(!inventoryRequest);
+        navigate("/employee-in-request-list");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  const handleCloseDialog = () => {
-    setDialogOpen(false);
-  };
 
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
-  };
-
-  const handleSubmitEmail = () => {
-    handleDispatch(email);
-  };
 
   const handleSendNote = () => {
     if (note.trim() !== '') {
@@ -165,9 +160,7 @@ const InRequestDocument = () => {
     }
   };
 
-  const handleClose = (event, reason) => {
-    if (reason !== 'clickaway') setOpen(false);
-  };
+  
 
   const role = localStorage.getItem('role');
 
@@ -181,6 +174,15 @@ const InRequestDocument = () => {
 
   return (
     <div>
+      
+      {role === 'EMPLOYEE' && (
+        <div>
+          <p className='text-gray-500'>Any Inquiry,</p>
+          <Button className="px-6 py-2 hover:bg-white-400" variant='outlined' onClick={() => navigate("/newTicket")}>
+            Create A Ticket
+          </Button>
+        </div>
+      )}
       <main>
         <div className="flex items-end justify-end p-6 mr-10 space-x-10">
           {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' && role !== ('ADMIN' || 'REQUEST_HANDLER') && (
@@ -207,9 +209,15 @@ const InRequestDocument = () => {
           style={{ width: '1000px', height: '1000px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
           <div>
             <section>
-              <div className="w-full bg-blue-900 text-white text-center py-4">
-                <header className="text-3xl font-bold">INVENTORY REQUEST</header>
-              </div>
+            {workSite === "ONLINE" ? (
+                <div className="w-full bg-green-900 text-white text-center py-4">
+                  <header className="text-3xl font-bold">Delivery Request</header>
+                </div>
+              ) : (
+                <div className="w-full bg-blue-900 text-white text-center py-4">
+                  <header className="text-3xl font-bold">INVENTORY REQUEST</header>
+                </div>
+              )}
               {inventoryRequest && buttonColor(inventoryRequest.reqStatus, inventoryRequest.updateDateTime)}
             </section>
           </div>
@@ -266,7 +274,8 @@ const InRequestDocument = () => {
               </div>
               <div className='mt-6'>
                 <h1>Download File:</h1>
-                <button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download attched file with Inventory Request</span></u></button>
+                <button onClick={handleFileDownload}> {workSite === "ONLINE" ? (<u><span className="text-blue-800">Click to download attched file with Delivery Request</span></u>):
+                (<u><span className="text-blue-800">Click to download attched file with Inventory Request</span></u>)}</button>
               </div>
               <div className='mt-20 float-right ...'>
               <Typography variant="caption" gutterBottom>
@@ -303,14 +312,7 @@ const InRequestDocument = () => {
         <div className='flex justify-end gap-4 ml-[60%] mt-6'>
           {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' && role !== 'EMPLOYEE' && (
             <>
-              <Button
-                className="px-6 py-2 bg-green-500 text-white hover:bg-green-400"
-                variant='contained'
-                type='submit'
-                onClick={handleOpenDialog}
-              >
-                Accept
-              </Button>
+            
 
               <Button
                 className="px-6 py-2 bg-red-500 text-white hover:bg-red-400"
@@ -322,6 +324,38 @@ const InRequestDocument = () => {
               </Button>
             </>
           )}
+           <Button
+                className="px-6 py-2 bg-purple-500 text-white hover:bg-purple-400"
+                variant='contained'
+                type='submit'
+                onClick={handleClickOpen}
+              >
+                Recieved
+              </Button>
+              <Dialog 
+              open={open} 
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle>
+                    {"Are you sure you want to mark this Item Delivery as succefully received?"}
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      By clicking on "Yes" you will mark this Item Delivery as successfully received.
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                      No
+                    </Button>
+                    <Button onClick={handleRecieve} color="primary" autoFocus>
+                      Yes
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+      
           <Button
             className="px-6 py-2 hover:bg-white-400"
             variant='outlined'
@@ -332,41 +366,7 @@ const InRequestDocument = () => {
           </Button>
         </div>
 
-        {/* Dialog for email input */}
-        <Dialog open={dialogOpen} onClose={handleCloseDialog}>
-          <DialogTitle>Enter Email Address</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Please enter the delivery service's email address to send a confirmation link.
-            </DialogContentText>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="email"
-              label="Email Address"
-              type="email"
-              fullWidth
-              variant="standard"
-              value={email}
-              onChange={handleEmailChange}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleSubmitEmail}>Submit</Button>
-            <Button onClick={handleCloseDialog}>Cancel</Button>
-          </DialogActions>
-        </Dialog>
-        <Snackbar
-          open={open}
-          autoHideDuration={6000}
-          onClose={handleClose}
-          message="File downloaded successfully"
-          action={
-            <Button color="inherit" size="small" onClick={handleClose}>
-              Close
-            </Button>
-          }
-        />
+
       </main>
     </div>
   );

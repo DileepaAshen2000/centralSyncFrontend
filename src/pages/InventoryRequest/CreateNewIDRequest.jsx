@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Autocomplete, TextField, Grid, Box, Typography, Button, CircularProgress, IconButton } from '@mui/material';
-import { Close } from '@mui/icons-material';
+import { Autocomplete, TextField, Grid, Box, Typography, Button, CircularProgress } from '@mui/material';
 import LoginService from '../Login/LoginService';
 import axios from 'axios';
 
@@ -27,6 +26,7 @@ const NewRequest = () => {
     const fetchWorkSite = () => {
       const workSite = LoginService.isOnlineEmployee() ? "ONLINE" : "ONSITE";
       setWorkSite(workSite);
+      console.log("Work site set to:", workSite); // Debug log
     };
 
     const fetchData = async () => {
@@ -210,14 +210,19 @@ const NewRequest = () => {
             </Grid>
 
             <Box mt={4}>
-              <Typography display="block" gutterBottom>
-                Attach File(s) to inventory request
-              </Typography>
+              {workSite === "ONLINE" ? (
+                <Typography display="block" gutterBottom>
+                  Attach File(s) to Delivery request
+                </Typography>
+              ) : (
+                <Typography display="block" gutterBottom>
+                  Attach File(s) to Inventory request
+                </Typography>
+              )}
               <input type="file" className="mt-4 mb-2" onChange={handleFileChange} multiple />
               <Typography variant="caption" display="block" gutterBottom>
                 You can upload a maximum of 5 files, 5MB each
               </Typography>
-      
             </Box>
 
             <div className="flex gap-6 mt-6 ml-[70%]">
