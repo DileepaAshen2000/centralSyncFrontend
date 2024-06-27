@@ -305,9 +305,7 @@ const AddItemForm = () => {
         </div>
         <div className="col-start-1  col-span-5 flex-row ">
           {errors.image && (
-            <div className="text-[#FC0000] text-xs  my-1">
-              {errors.image}
-            </div>
+            <div className="text-[#FC0000] text-xs  my-1">{errors.image}</div>
           )}
           <Typography display="block" gutterBottom>
             Upload an image

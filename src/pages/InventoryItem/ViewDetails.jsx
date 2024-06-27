@@ -13,12 +13,13 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
+import LoginService from "../Login/LoginService";
 
 const ViewItemDetails = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { itemID } = useParams();
-
+  const isAdmin = LoginService.isAdmin();
   const [inventoryItem, setInventoryItem] = useState({
     itemName: "",
     itemGroup: "",
@@ -29,7 +30,7 @@ const ViewItemDetails = () => {
     description: "",
     quantity: "",
     status: "",
-    image:null
+    image: null,
   });
 
   const {
@@ -41,6 +42,7 @@ const ViewItemDetails = () => {
     weight,
     description,
     quantity,
+    status
   } = inventoryItem;
 
   useEffect(() => {
@@ -59,7 +61,8 @@ const ViewItemDetails = () => {
           weight: response.data.weight,
           description: response.data.description,
           quantity: response.data.quantity,
-          image:response.data.image
+          status:response.data.status,
+          image: response.data.image,
         };
         setInventoryItem(item);
       } catch (error) {
@@ -121,8 +124,22 @@ const ViewItemDetails = () => {
 
   const handleMarkAsInactiveButton = () => {
     setIsOpen(false);
+    setLoading(true);
     axios
-      .patch(`http://localhost:8080/inventory-item/updateStatus/${itemID}`)
+      .patch(`http://localhost:8080/inventory-item/markAsInactive/${itemID}`)
+      .then(() => {
+        navigate(-1);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleMarkAsActiveButton = () => {
+    setIsOpen(false);
+    setLoading(true);
+    axios
+      .patch(`http://localhost:8080/inventory-item/markAsActive/${itemID}`)
       .then(() => {
         navigate(-1);
       })
@@ -136,7 +153,6 @@ const ViewItemDetails = () => {
       <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
         <h1 className=" col-span-4 text-3xl pt-2 font-bold ">Item Details</h1>
         <div className="col-start-1 col-span-4 flex items-center">
-          
           {inventoryItem.image && (
             <img
               src={`data:image/*;base64,${inventoryItem.image}`}
@@ -298,45 +314,60 @@ const ViewItemDetails = () => {
         </div>
 
         {/*Buttons*/}
-        <>
-          <Button
-            variant="contained"
-            className="row-start-1 col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
-            onClick={handleMoreButton}
-          >
-            More
-          </Button>
-          <Popover
-            open={isOpen}
-            anchorEl={anchorEl}
-            onClose={handleClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
-          >
-            <MenuList>
-              <MenuItem>
-                <Button
-                  variant="contained"
-                  className="col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
-              </MenuItem>
-              <MenuItem>
-                <Button
-                  variant="contained"
-                  className=" col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
-                  onClick={handleMarkAsInactiveButton}
-                >
-                  Mark as inactive
-                </Button>
-              </MenuItem>
-            </MenuList>
-          </Popover>
-        </>
+        {isAdmin && (
+          <>
+            <Button
+              variant="contained"
+              className="row-start-1 col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
+              onClick={handleMoreButton}
+            >
+              More
+            </Button>
+            <Popover
+              open={isOpen}
+              anchorEl={anchorEl}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+            >
+              <MenuList>
+                {console.log("inventoryItem.status:", inventoryItem.status)}
+                {inventoryItem.status === "ACTIVE" ? (
+                  <MenuItem>
+                    <Button
+                      variant="contained"
+                      className="col-start-6 rounded-sm  bg-blue-500 ml-10 w-[180px]"
+                      onClick={handleMarkAsInactiveButton}
+                    >
+                      Mark as Inactive
+                    </Button>
+                  </MenuItem>
+                ) : (
+                  <MenuItem>
+                    <Button
+                      variant="contained"
+                      className="col-start-6 rounded-sm  bg-blue-500 ml-10 w-[180px]"
+                      onClick={handleMarkAsActiveButton}
+                    >
+                      Mark as Active
+                    </Button>
+                  </MenuItem>
+                )}
+                <MenuItem>
+                  <Button
+                    variant="contained"
+                    className="col-start-6 rounded-sm bg-red-500 ml-10 w-[180px]"
+                    onClick={handleDelete}
+                  >
+                    Delete
+                  </Button>
+                </MenuItem>
+              </MenuList>
+            </Popover>
+          </>
+        )}
 
         <Button
           variant="outlined"

@@ -10,7 +10,7 @@ import {
 import AvgCards from "./AvgCards";
 import UsageBarChart from "./ItemUsageBarGraph";
 import StockLineChart from "./StockIn&OutChart";
-import InsightTable from "./InsightTable1";
+import InsightTable from "./InsightTable";
 import { YearCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -37,9 +37,7 @@ const Usage = () => {
     setOpen(false);
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+ 
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-10">
@@ -50,7 +48,7 @@ const Usage = () => {
         value={category}
         onChange={(e) => setCategory(e.target.value)}
       >
-       <MenuItem value="COMPUTERS_AND_LAPTOPS">Computers & Laptops</MenuItem>
+        <MenuItem value="COMPUTERS_AND_LAPTOPS">Computers & Laptops</MenuItem>
         <MenuItem value="COMPUTER_ACCESSORIES">Computer Accessories</MenuItem>
         <MenuItem value="COMPUTER_HARDWARE">Computer Hardware</MenuItem>
         <MenuItem value="PRINTERS_AND_SCANNERS">Printers & Scanners</MenuItem>

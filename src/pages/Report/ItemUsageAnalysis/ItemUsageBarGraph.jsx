@@ -8,10 +8,11 @@ const colour = ["#5C998E"];
 
 const UsageBarChart = ({ category, year }) => {
   const [requests, setRequests] = useState([]);
-  const [loading,setLoading]=useState(true);
+  const [loading,setLoading]=useState();
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           `http://localhost:8080/request/filtered?itemGroup=${category}&year=${year}`

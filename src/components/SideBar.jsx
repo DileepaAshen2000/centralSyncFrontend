@@ -19,14 +19,11 @@ const SideBar = () => {
   const [openRequestReservation, setOpenRequestReservation] = useState(false);
   const [openReport, setOpenReport] = useState(false);
 
-
   const navigate = useNavigate();
 
   const isEmployee = LoginService.isEmployee();
   const isAdmin = LoginService.isAdmin();
   const isReqHandler = LoginService.isReqHandler();
-
-
 
   const handleInventoryClick = () => {
     setOpenInventory(!openInventory);
@@ -39,7 +36,9 @@ const SideBar = () => {
   const handleReportClick = () => {
     setOpenReport(!openReport);
   };
- {/* Inventroy request section routing according to login role */}
+  {
+    /* Inventroy request section routing according to login role */
+  }
   const getInventoryRequestListLink = () => {
     if (isAdmin) return "/admin-in-request-list";
     if (isReqHandler) return "/req-handler-in-request-list";
@@ -111,7 +110,6 @@ const SideBar = () => {
           </ListItem>
         </a>
       )}
-      
 
       {/* Request & Reservation with dropdown and sub-parts */}
       <ListItem
@@ -132,18 +130,15 @@ const SideBar = () => {
           </a>
 
           <a href="/reservation">
-          <ListItem button className="pl-8 rounded-lg">
-            <ListItemText primary="Reservation" />
-          </ListItem>
+            <ListItem button className="pl-8 rounded-lg">
+              <ListItemText primary="Reservation" />
+            </ListItem>
           </a>
 
-          
-
-          
           <a href="/ticket">
-          <ListItem button className="pl-8 rounded-lg">
-            <ListItemText primary="Maintain Ticket" />
-          </ListItem>
+            <ListItem button className="pl-8 rounded-lg">
+              <ListItemText primary="Maintain Ticket" />
+            </ListItem>
           </a>
         </List>
       </Collapse>
@@ -175,24 +170,28 @@ const SideBar = () => {
               <ListItemText primary="Stock Alert" />
             </ListItem>
           </a>
-          <a href="/report/item-usage-analysis">
-          <ListItem button className="pl-8 rounded-lg">
-            <ListItemText primary="Item Usage Analysis" />
-          </ListItem>
-          </a>
+          {!isEmployee && (
+            <a href="/report/item-usage-analysis">
+              <ListItem button className="pl-8 rounded-lg">
+                <ListItemText primary="Item Usage Analysis" />
+              </ListItem>
+            </a>
+          )}
         </List>
       </Collapse>
 
       {/* Initiate Order */}
-      <a href="/order">
-      <ListItem
-        button
-        className="rounded-lg hover:bg-blue-100 focus:bg-blue-400"
-      >
-        <ShoppingCartIcon></ShoppingCartIcon>
-        <ListItemText primary="Initiate Order" className="pl-4 pr-4" />
-      </ListItem>
-      </a>
+      {isAdmin && (
+        <a href="/order">
+          <ListItem
+            button
+            className="rounded-lg hover:bg-blue-100 focus:bg-blue-400"
+          >
+            <ShoppingCartIcon></ShoppingCartIcon>
+            <ListItemText primary="Initiate Order" className="pl-4 pr-4" />
+          </ListItem>
+        </a>
+      )}
 
       <ListItem
         button
