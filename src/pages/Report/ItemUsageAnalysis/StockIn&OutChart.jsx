@@ -3,6 +3,7 @@ import { LineChart } from "@mui/x-charts/LineChart";
 import { CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useResizeDetector } from "react-resize-detector";
 
 const palette = ["#357a38", "#ff1744"];
 
@@ -10,6 +11,7 @@ const StockLineChart = ({ category, year }) => {
   const [stockIn, setStockIn] = useState([]);
   const [stockOut, setStockOut] = useState([]);
   const [loading, setLoading] = useState();
+  const { width, height = 0, ref } = useResizeDetector();
 
   useEffect(() => {
     const fetchStockData = async () => {
@@ -127,22 +129,26 @@ const StockLineChart = ({ category, year }) => {
   const stockOutData = xLabels.map((label) => sumByMonthSO[label] || 0);
 
   return (
-    <LineChart
-      colors={palette}
-      width={1000}
-      height={300}
-      series={[
-        { data: stockInData, label: "Stock In" },
-        { data: stockOutData, label: "Stock Out" },
-      ]}
-      xAxis={[
-        {
-          scaleType: "point",
-          data: xLabels,
-        },
-      ]}
-      grid={{ vertical: true, horizontal: true }}
-    />
+    <div ref={ref} className="w-full h-full">
+      {width && height && (
+        <LineChart
+          colors={palette}
+          width={width}
+          height={height-50}
+          series={[
+            { data: stockInData, label: "Stock In" },
+            { data: stockOutData, label: "Stock Out" },
+          ]}
+          xAxis={[
+            {
+              scaleType: "point",
+              data: xLabels,
+            },
+          ]}
+          grid={{ vertical: true, horizontal: true }}
+        />
+      )}
+    </div>
   );
 };
 
