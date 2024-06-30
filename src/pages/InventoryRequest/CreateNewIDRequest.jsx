@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 import { Autocomplete, TextField, Grid, Box, Typography, Button } from '@mui/material';
 import LoginService from '../Login/LoginService';
 import axios from 'axios';
@@ -16,6 +16,7 @@ const NewRequest = () => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [workSite, setWorkSite] = useState("");
+const location=useLocation();
 
   const isEmployee = LoginService.isEmployee();
   const isReqHandler = LoginService.isReqHandler();
@@ -40,6 +41,15 @@ const NewRequest = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (location.state?.item) {
+      const {itemId, itemName } = location.state.item;
+      setItemId(itemId);
+      setItemName(itemName);
+      
+    }
+  }, [location.state]);
+  
   console.log("userID", userID);
   console.log("isEmployee", isEmployee);
   console.log("workSite", workSite);

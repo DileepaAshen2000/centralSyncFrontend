@@ -90,7 +90,7 @@ const Usage = () => {
         content={() => printRef.current}
       />
 
-      <div style={{ display: "none" }}>
+      <div className="hidden">
         <PrintView ref={printRef} category={category} year={year} />
       </div>
 

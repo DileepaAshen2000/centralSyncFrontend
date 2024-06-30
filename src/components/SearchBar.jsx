@@ -12,13 +12,13 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
+  DialogContentText, 
   DialogTitle,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,6 +28,7 @@ const SearchBar = () => {
   const [noResult, setNoResult] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchItemNames = async () => {
@@ -58,7 +59,11 @@ const SearchBar = () => {
           setNoResult(true);
         } else {
           navigate("/search-result", {
-            state: { searchResult: response.data },
+            state: {
+              searchResult: response.data,
+              currentRoute: location.pathname,
+              searchTerm: searchTerm,
+            },
           });
         }
       }
@@ -111,6 +116,9 @@ const SearchBar = () => {
   return (
     <div className="relative  bg-opacity-15  ml-5 md:w-[400px] sm:mr-3 sm:w-auto">
       <Autocomplete
+        InputProps={{
+          className: "border-rounded-2xl ",
+        }}
         value={searchTerm}
         options={itemsOptions
           .filter(
@@ -119,7 +127,10 @@ const SearchBar = () => {
           )
           .map((item) => item.itemName)}
         onInputChange={(event, newSearchTerm) => setSearchTerm(newSearchTerm)}
-        // onClick={handleSearch}
+        onClick={(event, clickedName) => {
+          setSearchTerm(clickedName);
+          handleSearch();
+        }}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -127,6 +138,7 @@ const SearchBar = () => {
             variant="outlined"
             InputProps={{
               ...params.InputProps,
+              className: "text-gray-500 m-2 h-[30px] ",
               startAdornment: (
                 <InputAdornment position="start">
                   <IconButton onClick={handleFilterClick}>
@@ -142,15 +154,15 @@ const SearchBar = () => {
                   />
                 </InputAdornment>
               ),
-              className: "text-gray-500 m-2 h-[30px] border-rounded-2xl ",
-              sx: {
-                "&:focus-within .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "transparent",
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "transparent",
-                },
-              },
+
+              // sx: {
+              //   "&:focus-within .MuiOutlinedInput-notchedOutline": {
+              //     borderColor: "transparent",
+              //   },
+              //   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              //     borderColor: "transparent",
+              //   },
+              // },
             }}
           />
         )}
@@ -189,7 +201,7 @@ const SearchBar = () => {
         </div>
       </Popover>
       <Dialog open={noResult} onClose={handleClose}>
-        <DialogTitle>Sorry</DialogTitle>
+        <DialogTitle>Sorry!</DialogTitle>
         <DialogContent>
           <DialogContentText>
             No results were found for "{searchTerm}"
