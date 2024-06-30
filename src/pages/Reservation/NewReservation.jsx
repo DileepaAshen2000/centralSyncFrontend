@@ -244,7 +244,7 @@ const NewReservation = () => {
           <Button
             className="px-6 py-2 rounded"
             variant="outlined"
-            onClick={() => navigate("/reservation")}
+            onClick={() => navigate(-1)}
           >
             cancel
           </Button>
