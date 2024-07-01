@@ -19,8 +19,8 @@ import AdminInRequestList from "./InventoryRequest/AdminInRequestList";
 import AdminInRequestDocument from "./InventoryRequest/AdminInRequestDocument";
 import InRequestHandlerRequestList from "./InventoryRequest/InRequestHandlerInRequestList";
 import InRequestHandlerInRequestDocument from "./InventoryRequest/InRequestHandlerInRequestDocument";
-import EmployeeInRequestList from "./InventoryRequest/EmployeeInRequestList";
-import InRequestDocument from "./InventoryRequest/InRequestDocument";
+import EmployeeInRequestList from "./InventoryRequest/EmployeeRequestList";
+import RequestDocument from "./InventoryRequest/RequestDocument";
 import DeliveryRequestDocument from "./InventoryRequest/DeliveryRequestDocument";
 import CreateNewIDRequest from "./InventoryRequest/CreateNewIDRequest";
 import EditRequest from "./InventoryRequest/EditInRequest";
@@ -186,13 +186,13 @@ const Home = () => {
                 ></Route>
                 <Route
                   path="/employee/in-request-document/:reqId"
-                  element={<InRequestDocument />}
+                  element={<RequestDocument />}
                 ></Route>
                 <Route
                   path="/employee/delivery-request-document/:reqId"
                   element={<DeliveryRequestDocument />}
                 ></Route>
-                {/*Common views for three actors rounting*/}
+                {/*Common views for three actors routing*/}
                 <Route
                   path="/in-request/create-new-in-request"
                   element={<CreateNewIDRequest />}

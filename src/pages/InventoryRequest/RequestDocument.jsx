@@ -11,6 +11,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import ReactToPrint from 'react-to-print';
 import LoginService from '../Login/LoginService';
+import { set } from 'date-fns';
 
 
 const formatDateTime = (dateTimeArray) => {
@@ -102,7 +103,30 @@ const buttonColor = (reqStatus, updateDateTime) => {
     );
   } else if (reqStatus === 'SENT_TO_ADMIN') {
     return (
-      <Alert severity="warning" sx={{ width: '300px', margin: 5 }}>
+      <Alert severity="warning"
+      sx={{ 
+        width: '300px',
+         margin: 5,
+         backgroundColor:'#FFFFE0',
+          color: 'black'
+         }}>
+        <div>Updated: Date {date}</div>
+        <div style={{ marginLeft: '67px' }}>Time {time}</div>
+      </Alert>
+    );
+  }
+  else if (reqStatus === 'ITEM_RETURNED') {
+    return (
+      <Alert 
+      severity="info" 
+      sx={{ 
+        width: '300px', 
+        margin: 5, 
+        backgroundColor: '#D3D3D3', 
+        color: 'black' 
+      }}
+    >
+        <AlertTitle>Item Returned</AlertTitle>
         <div>Updated: Date {date}</div>
         <div style={{ marginLeft: '67px' }}>Time {time}</div>
       </Alert>
@@ -110,27 +134,35 @@ const buttonColor = (reqStatus, updateDateTime) => {
   }
 };
 
-const InRequestDocument = () => {
+const RequestDocument = () => {
   const { reqId } = useParams();
   const [inventoryRequest, setInventoryRequest] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
   const [itemDetails, setItemDetails] = useState(null);
-  const [loading, setLoading] = useState(true); // New state for loading
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [note, setNote] = useState('');
   const printRef = useRef();
   const [email, setEmail] = useState('');
   
-  const handleClickOpenRecieved = () => {setOpen(true);};
-  const handleClickOpenDispatched = () => {setOpen(true);};
+  const handleClickOpenRecieved = () => {setOpenRD(true);};
+  const handleClickOpenDispatched = () => {setOpenDD(true);};
+  const handleClickItemReturn = () => {setOpenID(true);};
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
   const handleSubmitEmail = () => {
     handleDispatch(email);
   };
-  const handleClose = () => {setOpen(false);};
+  const handleClose = () => {
+    setOpenID(false);
+    setOpenDD(false);
+    setOpenRD(false);
+  };
   const [open, setOpen] = useState(false);
+  const [openID, setOpenID] = useState(false);
+  const [openDD, setOpenDD] = useState(false);
+  const [openRD, setOpenRD] = useState(false);
   const [workSite, setWorkSite] = useState('');
 
   const fetchWorkSite = () => {
@@ -191,7 +223,7 @@ const InRequestDocument = () => {
       .patch(`http://localhost:8080/request/updateStatus/dispatch/${reqId}?email=${email}`)
       .then(() => {
         setInventoryRequest(!inventoryRequest);
-        setOpen(false);
+        setOpenDD(false);
         navigate(`/stockOut`);
       })
       .catch((error) => {
@@ -199,7 +231,17 @@ const InRequestDocument = () => {
       });
   };
 
-
+  const handleItemReturn = () => {
+    axios
+      .patch(`http://localhost:8080/request/updateStatus/ItemReturned/${reqId}`)
+      .then(() => {
+        setInventoryRequest(!inventoryRequest);
+        navigate(`/employee-in-request-list/employee/in-request-document/${reqId}`);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleSendNote = () => {
     if (note.trim() !== '') {
@@ -259,7 +301,7 @@ const InRequestDocument = () => {
       )}
       <main>
         <div className="flex items-end justify-end p-6 mr-10 space-x-10">
-          {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' && role !== ('ADMIN' || 'REQUEST_HANDLER') && (
+          {inventoryRequest.reqStatus === 'PENDING' &&  role === 'EMPLOYEE'&&(
             <Button
               className="px-6 py-2 text-white bg-blue-600 rounded"
               variant='contained'
@@ -411,7 +453,7 @@ const InRequestDocument = () => {
               </>
           )}
               <Dialog 
-              open={open} 
+              open={openRD} 
               onClose={handleClose}
               aria-labelledby="alert-dialog-title"
               aria-describedby="alert-dialog-description"
@@ -433,6 +475,7 @@ const InRequestDocument = () => {
                     </Button>
                   </DialogActions>
                 </Dialog>
+                {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' && role !== 'EMPLOYEE'&&(
                 <Button
                 className="px-6 py-2 bg-orange-500 text-white hover:bg-orange-400"
                 variant='contained'
@@ -440,7 +483,7 @@ const InRequestDocument = () => {
                 onClick={handleClickOpenDispatched}
               >
                 Dispatched
-              </Button>
+              </Button>)}
               <Dialog open={open}
               onClose={handleClose}
               aria-labelledby="alert-dialog-title"
@@ -471,6 +514,42 @@ const InRequestDocument = () => {
                   <Button onClick={handleClose}>Cancel</Button>
                   </DialogActions>
                 </Dialog>
+                {inventoryRequest && inventoryRequest.reqStatus === 'RECIEVED' && role === 'EMPLOYEE'&&(
+              <>
+                <Button
+            className="px-6 py-2 bg-purple-500 text-white hover:bg-purple-400"
+            variant='variant'
+            type='submit'
+            onClick={handleClickItemReturn}
+          >
+            
+            Return Item
+            </Button>
+            </>)}
+            <Dialog 
+              open={openID} 
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle>
+                    {"Are you sure you want to return this Item to Company?"}
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      By clicking on "Yes" you will mark your confirming return the item.<br/>
+                      (After one or two days you will be contacted by the company admin section)
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                      No
+                    </Button>
+                    <Button onClick={handleItemReturn} color="primary" autoFocus>
+                      Yes
+                    </Button>
+                  </DialogActions>
+                </Dialog>
           <Button
             className="px-6 py-2 hover:bg-white-400"
             variant='outlined'
@@ -488,4 +567,4 @@ const InRequestDocument = () => {
   );
 }
 
-export default InRequestDocument;
+export default RequestDocument;
