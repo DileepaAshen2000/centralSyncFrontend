@@ -23,12 +23,13 @@ const StockInDocument = () => {
     description:"",
     inQty:"",
     location:"",
+    filePath:null,
     itemId:{},
     userId:{},
     generatedBy:""
   })
 
-const{date,description,inQty,location,itemId,userId,generatedBy} = stockIn;
+const{date,description,inQty,location,itemId,userId,generatedBy,filePath} = stockIn;
 
 // const [item,setItem] = useState({  // create state for StockIn, initial state is empty with object.
 //   itemName:"",
@@ -170,10 +171,12 @@ const handlePrint = useReactToPrint({
               <Typography variant="body2">{description}</Typography>
             </div>
           </div>
-          <div className='mt-6'>
+          {filePath &&(
+            <div className='mt-6'>
               <h1>Download File :</h1>
-              <button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download</span></u></button>
-            </div>
+            < button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download</span></u></button>
+          </div>
+          )}
           <div className='mt-16'>
             <Typography variant="caption" gutterBottom>Generated Date/Time : </Typography>
             <Typography variant="caption" gutterBottom>{formattedDateTime}</Typography>

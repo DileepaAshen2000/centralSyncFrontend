@@ -47,7 +47,9 @@ const ItemDataGrid = () => {
   const [loading, setLoading] = useState();
   const [rows, setRows] = useState([]);
 
+
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
+
 
   const categoryMapping = {
     COMPUTERS_AND_LAPTOPS: "Computers & Laptops",
