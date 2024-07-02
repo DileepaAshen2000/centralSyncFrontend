@@ -287,7 +287,7 @@ const ViewItemDetails = () => {
             <MenuItem>
               <Button
                 variant="contained"
-                className="col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
+                className="col-start-6 rounded-sm bg-red-600 ml-10 w-[180px]"
                 onClick={handleDelete}
               >
                 Delete

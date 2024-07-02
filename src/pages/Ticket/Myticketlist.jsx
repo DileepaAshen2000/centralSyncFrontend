@@ -8,12 +8,41 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import LoginService from "../Login/LoginService";
 
+
+const getStatusClass = (status) => {
+  switch (status) {
+    case "PENDING":
+      return "bg-yellow-500 text-white w-[90px]";
+    case "COMPLETED":
+      return "bg-green-500 text-white w-[90px]";
+    case "INPROGRESS":
+      return "bg-blue-500 text-white w-[90px]";
+    case "REJECTED":
+    
+      return "bg-red-500 text-white w-[90px]";
+      case "ACCEPTED":
+    
+      return "bg-green-500 text-white w-[90px]";
+    default:
+      return "";
+  }
+};
+
 const columns = [
   { field: "id", headerName: "ID", width: 200 },
   { field: "date", headerName: "Date", width: 200 },
   { field: "itemName", headerName: "Item Name", width: 200 },
   { field: "itemBrand", headerName: "Item Brand", width: 200 },
-  { field: "ticketStatus", headerName: "Status", width: 200 }
+  { field: "ticketStatus", headerName: "Status", width: 200,
+    renderCell: (params) => (
+      <div
+        className={`p-2 rounded text-center ${getStatusClass(params.value)}`}
+      >
+        { 
+          params.value}
+      </div>
+    ),
+  }
 ];
 
 const MyTicketList = () => {
@@ -59,12 +88,17 @@ const MyTicketList = () => {
         itemBrand: ticket.itemId.brand,
         ticketStatus:
           isEmployee && (ticket.ticketStatus === "SENT_TO_ADMIN" || ticket.ticketStatus === "ACCEPTED")
-            ? "Pending"
+            ? "PENDING"
             : ticket.ticketStatus === "REJECTED_A" || ticket.ticketStatus === "REJECTED_R"
-            ? "Rejected"
+            ? "REJECTED"
+            : ticket.ticketStatus === "IN_PROGRESS"
+            ? "IN PROGRESS"
             : ticket.ticketStatus,
+        statusUpdateTime: ticket.statusUpdateTime,
       }));
-      setRows(data);
+      const sortedData=data.sort((a, b) => new Date(b.statusUpdateTime) - new Date(a.statusUpdateTime));
+      setRows(sortedData);
+      
     } catch (error) {
       console.log(error);
     }

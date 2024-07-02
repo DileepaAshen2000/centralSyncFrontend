@@ -1,36 +1,32 @@
 import React, { useEffect, useState } from "react";
-import {
-  TextField,
-  Button,
-  Stack,
-  Select,
-  Box,
-  Typography,
-} from "@mui/material";
+import { TextField, Button, Stack, Select, Box,Typography} from "@mui/material";
+import LoginService from "../Login/LoginService";
 // import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
 import axios from "axios";
 import MenuItem from "@mui/material/MenuItem";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Badge from "@mui/material/Badge";
+import Avatar from "@mui/material/Avatar";
 import Swal from "sweetalert2";
 //import SmallAvatar from "@mui/material/SmallAvatar";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import Avatar from "@mui/material/Avatar";
+
 //import DragDrop from "./Drag&Drop";
 //import { DropzoneArea } from 'material-ui-dropzone';
 //import Dropzone from "./Dropzone";
 
-const Userupdate = () => {
-  // State for user details
+const EditProfile= () => {
   const navigate = useNavigate();
   const { ID } = useParams();
   const [errors, setErrors] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+  const [profileInfo, setProfileInfo] = useState({});
 
   const [user, setUser] = useState({
+     
     firstName: "",
     lastName: "",
     dateOfBirth: "",
@@ -42,27 +38,44 @@ const Userupdate = () => {
     role: "",
     workSite: "",
   });
+ 
+  
+  useEffect(() => {
+    console.log("Component mounted, fetching profile info");
+    fetchProfileInfo();
+  }, []);
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/user/users/${ID}`
-        );
-        setUser(response.data);
-        setImageUrl(
-          response.data.imagePath
-            ? `http://localhost:8080/user/display/${ID}`
-            : null
-        );
-      } catch (error) {
-        console.log("Error fetching user:", error);
-      }
-    };
+    console.log("Profile info updated:", profileInfo);
+    if (profileInfo.userId) {
+      fetchUserDetails(profileInfo.userId);
+    }
+  }, [profileInfo]);
 
-    fetchUserDetails();
-  }, [ID]);
+  const fetchProfileInfo = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await LoginService.getYourProfile(token);
+      setProfileInfo(response.users);
+    } catch (error) {
+      console.error("Error fetching profile information:", error);
+    }
+  };
 
+  const fetchUserDetails = async (userId) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/user/users/${userId}`);
+      setUser(response.data);
+      setImageUrl(response.data.imagePath ? `http://localhost:8080/user/display/${userId}` : null);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  };
+
+
+ 
+
+  
   const handleInputChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
@@ -86,24 +99,17 @@ const Userupdate = () => {
 
   const handleSave = async () => {
     const formData = new FormData();
-    formData.append(
-      "user",
-      new Blob([JSON.stringify(user)], { type: "application/json" })
-    );
+    formData.append('user', new Blob([JSON.stringify(user)], { type: 'application/json' }));
     if (selectedImage) {
-      formData.append("image", selectedImage);
+      formData.append('image', selectedImage);
     }
 
     try {
-      const response = await axios.put(
-        `http://localhost:8080/user/update/${ID}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.put(`http://localhost:8080/user/update/${profileInfo.userId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       if (response.status === 200) {
         Swal.fire({
           icon: "success",
@@ -128,12 +134,12 @@ const Userupdate = () => {
     <>
       <Box className="p-5 bg-white rounded-2xl w-[1122.7px]">
         <Box className="pb-4">
-          <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit User</h1>
+          <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit Profile</h1>
         </Box>
         <form noValidate>
           <div className="grid grid-cols-6 grid-rows-7  gap-x-[0.25rem] gap-y-7 ">
             <div className="col-span-1 row-span-1">
-              <label htmlFor="5">Employee Id</label>
+              <label htmlFor="5">Id</label>
             </div>
             <div className="col-span-2">
               <TextField
@@ -143,33 +149,32 @@ const Userupdate = () => {
                   className: "w-[300px] ",
                   readOnly: true,
                 }}
-                value={ID}
+                value={profileInfo.userId}
                 size="small"
               />
             </div>
             <div></div>
             <div className="row-span-4 col-span-2">
-              <div className="w-[200px] h-[200px] border-2 border-gray-300 rounded-full flex items-center justify-center">
-                {imageUrl ? (
-                  <> <Avatar
+            <div className="w-[200px] h-[200px] border-2 border-gray-300 rounded-full flex items-center justify-center">
+            {imageUrl ? (
+                <>
+                <Avatar
                   alt="Profile pic"
                   src={imageUrl}
                   sx={{ width: 220, height: 220 }}
                 />
-                    <DeleteIcon
-                      onClick={handleImageDelete}
-                      className="text-red-600 cursor-pointer mt-[150px]"
-                    />
-                  </>
-                ) : (
-                  <label htmlFor="image-upload" className="cursor-pointer">
-                    <AddAPhotoIcon className="w-[60px] h-[60px] ml-5 text-[#007EF2]" />
-                    <Typography className="font-bold">
-                      Profile Picture
-                    </Typography>
-                  </label>
-                )}
-                <input
+                  <DeleteIcon
+                    onClick={handleImageDelete}
+                    className="text-red-600 cursor-pointer mt-[150px]"
+                  />
+                </>
+              ) : (
+                <label htmlFor="image-upload" className="cursor-pointer">
+                  <AddAPhotoIcon className="w-[60px] h-[60px] ml-5 text-[#007EF2]" />
+                  <Typography className="font-bold">Profile Picture</Typography>
+                </label>
+              )}
+              <input
                   type="file"
                   id="image-upload"
                   accept="image/*"
@@ -264,7 +269,6 @@ const Userupdate = () => {
                 <MenuItem value="EMPLOYEE">Employee</MenuItem>
               </Select>
             </div>
-
             <div></div>
             <div></div>
             <div></div>
@@ -431,4 +435,5 @@ const Userupdate = () => {
     </>
   );
 };
-export default Userupdate;
+export default EditProfile;
+

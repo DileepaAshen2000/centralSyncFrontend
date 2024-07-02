@@ -296,8 +296,8 @@ const TicketDocument = () => {
                   <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                     <div className="col-start-4">
                       <Button
-                        className="px-6 py-2 rounded w-[150px] bg-blue-600 text-white hover:text-blue-600"
-                        variant="outlined"
+                        className="px-6 py-2 rounded w-[150px] bg-green-300 text-green-800 hover:text-white hover:bg-green-600 font-bold"
+                        variant="contained"
                         type="submit"
                         onClick={handleAccept}
                       >
@@ -306,8 +306,8 @@ const TicketDocument = () => {
                     </div>
                     <div className="col-start-5">
                       <Button
-                        className="px-6 py-2 rounded w-[150px]"
-                        variant="outlined"
+                        className="px-6 py-2 rounded w-[150px] bg-red-300 text-red-800 hover:text-white hover:bg-red-600 font-bold"
+                        variant="contained"
                         type="submit"
                         onClick={handleRejectByAdmin}
                       >
@@ -347,8 +347,8 @@ const TicketDocument = () => {
                 <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                   <div className="col-start-5">
                     <Button
-                      className="px-6 py-2 rounded w-[150px]"
-                      variant="outlined"
+                      className="px-6 py-2 rounded w-[150px] bg-red-300 text-red-800 hover:text-white hover:bg-red-600 font-bold"
+                      variant="contained"
                       type="submit"
                       onClick={handleRejectByAdminwithNote}
                     >
@@ -412,8 +412,8 @@ const TicketDocument = () => {
                   <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                     <div className="col-start-3">
                       <Button
-                        className="px-3 py-2 rounded w-[172px] h-[42px] bg-blue-600 text-[14px] text-white hover:text-blue-600"
-                        variant="outlined"
+                        className="px-3 py-2 rounded w-[172px] h-[42px] bg-blue-300 text-[14px] text-blue-800 hover:text-white hover:bg-blue-600"
+                        variant="contained"
                         type="submit"
                         onClick={handleSendToAdmin}
                       >
@@ -422,8 +422,8 @@ const TicketDocument = () => {
                     </div>
                     <div className="col-start-4">
                       <Button
-                        className="px-6 py-2 rounded w-[172px] bg-blue-600 text-white hover:text-blue-600"
-                        variant="outlined"
+                        className="px-6 py-2 rounded w-[172px]  bg-yellow-300 text-yellow-800 hover:text-white hover:bg-yellow-600"
+                        variant="contained"
                         type="submit"
                         onClick={handleInprogress}
                       >
@@ -432,8 +432,8 @@ const TicketDocument = () => {
                     </div>
                     <div className="col-start-5">
                       <Button
-                        className="px-6 py-2 rounded w-[172px] bg-blue-600 text-white hover:text-blue-600"
-                        variant="outlined"
+                        className="px-6 py-2 rounded w-[172px]  bg-red-300 text-red-800 hover:text-white hover:bg-red-600 font-bold"
+                        variant="contained"
                         type="submit"
                         onClick={handleRejectByRequestHandler}
                       >
@@ -475,8 +475,8 @@ const TicketDocument = () => {
                     <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                       <div className="col-start-5">
                         <Button
-                          className="px-6 py-2 rounded w-[172px] bg-blue-600 text-white hover:text-blue-600"
-                          variant="outlined"
+                          className="px-6 py-2 rounded w-[172px]  bg-yellow-300 text-yellow-800 hover:text-white hover:bg-yellow-600"
+                          variant="contained"
                           type="submit"
                           onClick={handleInprogressWithDate}
                         >
@@ -514,8 +514,8 @@ const TicketDocument = () => {
                   <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                     <div className="col-start-5">
                       <Button
-                        className="px-6 py-2 rounded w-[172px] bg-blue-600 text-white hover:text-blue-600"
-                        variant="outlined"
+                        className="px-6 py-2 rounded w-[172px] bg-yellow-300 text-yellow-800 hover:text-white hover:bg-yellow-600"
+                        variant="contained"
                         type="submit"
                         onClick={handleInprogress}
                       >
@@ -592,8 +592,8 @@ const TicketDocument = () => {
                 <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                   <div className="col-start-5">
                     <Button
-                      className="px-6 py-2 rounded w-[150px] bg-blue-600 text-white hover:text-blue-600"
-                      variant="outlined"
+                      className="px-6 py-2 rounded w-[150px]  bg-green-300 text-green-800 hover:text-white hover:bg-green-600 font-bold"
+                      variant="contained"
                       type="submit"
                       onClick={handleComplete}
                     >
@@ -615,8 +615,8 @@ const TicketDocument = () => {
             )}
             {(ticket.ticketStatus === "COMPLETED" ||
               ticket.ticketStatus === "SENT_TO_ADMIN" ||
-              ticket.ticketStatus === "REJECT_A" ||
-              ticket.ticketStatus === "REJECT_R") && (
+              ticket.ticketStatus === "REJECTED_A" ||
+              ticket.ticketStatus === "REJECTED_R") && (
               <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                 <div className="col-start-6">
                   <Button

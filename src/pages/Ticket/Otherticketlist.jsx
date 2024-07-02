@@ -8,13 +8,44 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import LoginService from "../Login/LoginService";
 
+const getStatusClass = (status) => {
+  switch (status) {
+    case "PENDING":
+      return "bg-yellow-500 text-white w-[115px]";
+    case "COMPLETED":
+      return "bg-green-500 text-white text-sm w-[115px]";
+    case "IN PROGRESS":
+      return "bg-blue-500 text-white w-[115px]";
+    case "REJECTED":
+      return "bg-red-500 text-white w-[115px]";
+    case "ACCEPTED":
+      return "bg-green-500 text-white w-[115px]";
+    case "SENT TO ADMIN":
+      return "bg-purple-500 text-white";
+
+    default:
+      return "bg-blue-500 text-white w-[115px]";
+     
+  }
+};
+
 const columns = [
   { field: "id", headerName: "ID", width: 200 },
-  
   { field: "date", headerName: "Date", width: 200 },
   { field: "itemName", headerName: "Item Name", width: 200 },
   { field: "itemBrand", headerName: "Item Brand", width: 200 },
-  { field: "ticketStatus", headerName: "Status", width: 200 },
+  {
+    field: "ticketStatus",
+    headerName: "Status",
+    width: 200,
+    renderCell: (params) => (
+      <div
+        className={`p-2 rounded text-center ${getStatusClass(params.value)}`}
+      >
+        {params.value}
+      </div>
+    ),
+  },
 
   //{ field: 'status', headerName: 'Status', width: 130 },
 ];
@@ -25,8 +56,6 @@ const Ticket = () => {
   const [rows, setRows] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState({});
   const [profileInfo, setProfileInfo] = useState({});
-
-
 
   const isAdmin = LoginService.isAdmin();
   const isRequestHandler = LoginService.isReqHandler();
@@ -53,8 +82,6 @@ const Ticket = () => {
     }
   }, [profileInfo]);
 
-
-
   const fetchTickets = () => {
     axios
       .get("http://localhost:8080/ticket/getAll")
@@ -64,10 +91,9 @@ const Ticket = () => {
             if (isAdmin) {
               return (
                 ticket.user.role === "REQUEST_HANDLER" ||
-                ticket.ticketStatus === "SENT_TO_ADMIN"||
-                ticket.ticketStatus === "ACCEPTED"||
+                ticket.ticketStatus === "SENT_TO_ADMIN" ||
+                ticket.ticketStatus === "ACCEPTED" ||
                 ticket.ticketStatus === "REJECTED_A"
-
               );
             } else {
               console.log("user" + ticket.user.userId);
@@ -83,13 +109,19 @@ const Ticket = () => {
             itemBrand: ticket.itemId.brand,
             ticketStatus:
               isAdmin && ticket.ticketStatus === "SENT_TO_ADMIN"
-                ? "Pending"
+                ? "PENDING"
                 : ticket.ticketStatus === "REJECTED_A" ||
                   ticket.ticketStatus === "REJECTED_R"
-                ? "Rejected"
+                ? "REJECTED"
+                : ticket.ticketStatus === "SENT_TO_ADMIN"
+                ? "SENT TO ADMIN"
+                : ticket.ticketStatus === "IN_PROGRESS"
+                ? "IN PROGRESS"
                 : ticket.ticketStatus,
-          }));
-        setRows(data);
+            statusUpdateTime: ticket.statusUpdateTime,
+          }))
+          const sortedData=data.sort((a, b) => new Date(b.statusUpdateTime) - new Date(a.statusUpdateTime));
+        setRows(sortedData);
       })
       .catch((error) => {
         console.log(error);
@@ -105,7 +137,7 @@ const Ticket = () => {
     if (rowSelectionModel > 0) {
       const selectedTicketId = rowSelectionModel[0];
       navigate("/ticket/ticketdoc/" + selectedTicketId);
-    }  
+    }
   };
 
   const handleDelete = () => {
@@ -126,12 +158,12 @@ const Ticket = () => {
               itemName: ticket.itemId.itemName,
               itemBrand: ticket.itemId.brand,
               ticketStatus:
-              isAdmin && ticket.ticketStatus === "SENT_TO_ADMIN"
-                ? "Pending"
-                : ticket.ticketStatus === "REJECTED_A" ||
-                  ticket.ticketStatus === "REJECTED_R"
-                ? "Rejected"
-                : ticket.ticketStatus,
+                isAdmin && ticket.ticketStatus === "SENT_TO_ADMIN"
+                  ? "PENDING"
+                  : ticket.ticketStatus === "REJECTED_A" ||
+                    ticket.ticketStatus === "REJECTED_R"
+                  ? "REJECTED"
+                  : ticket.ticketStatus,
             }));
           setRows(data);
         });
@@ -160,29 +192,28 @@ const Ticket = () => {
       }}
     >
       <Box className="flex pt-2 pb-2">
-      {rowSelectionModel > 0 && (
+        {rowSelectionModel > 0 && (
           <div className="grid grid-cols-11 grid-rows-1 gap-y-7 gap-x-[5] mb-2 ">
-          <div className="col-start-8">
-            <Button
-              variant="contained"
-              className="bg-blue-600 px-6 py-2 text-white rounded left-[68%] w-[120px] ml-10"
-              onClick={handleView}
-            >
-              View
-            </Button>
-          </div> 
-          <div className="col-start-10">
-            <Button
-              variant="contained"
-              className="bg-blue-600 px-6 py-2 text-white rounded left-[68%] w-[120px] "
-              onClick={handleDelete}
-            >
-              Delete
-            </Button>
+            <div className="col-start-8">
+              <Button
+                variant="contained"
+                className="bg-blue-600 px-6 py-2 text-white rounded left-[68%] w-[120px] ml-10"
+                onClick={handleView}
+              >
+                View
+              </Button>
+            </div>
+            <div className="col-start-10">
+              <Button
+                variant="contained"
+                className="bg-blue-600 px-6 py-2 text-white rounded left-[68%] w-[120px] "
+                onClick={handleDelete}
+              >
+                Delete
+              </Button>
+            </div>
           </div>
-          </div>
-        )
-      }
+        )}
       </Box>
       <DataGrid
         rows={rows}
