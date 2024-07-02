@@ -9,9 +9,8 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import LoginService from '../Login/LoginService'; // Ensure the path is correct
 
-// Define a functional component named Table to display data with a loading state
+// Table component to display data with a loading state
 function Table({ rows, columns, loading, onRowClick }) {
-  // Show a loading spinner if data is being fetched
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -20,7 +19,6 @@ function Table({ rows, columns, loading, onRowClick }) {
     );
   }
 
-  // Display the DataGrid with rows and columns once the data is fetched
   return (
     <div>
       <DataGrid
@@ -53,30 +51,29 @@ function Table({ rows, columns, loading, onRowClick }) {
   );
 }
 
-// Define the main component for displaying employee requests and items
+// Main component for displaying employee requests and items
 const EmployeeInRequestList = () => {
   const navigate = useNavigate();
   const [isEmployee, setIsEmployee] = useState(false);
-  const [isOnlineEmployee, setIsOnlineEmployee] = useState(false);
+  const [isReqHandler, setIsReqHandler] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [value, setValue] = useState('1');
   const [requestRows, setRequestRows] = useState([]);
   const [itemsRows, setItemsRows] = useState([]);
   const [loadingRequests, setLoadingRequests] = useState(true);
   const [loadingItems, setLoadingItems] = useState(true);
 
-  // useEffect to check employee status and fetch request data when component mounts
   useEffect(() => {
     checkEmployeeStatus();
     fetchRequestsData();
   }, []);
 
-  // Function to check if the user is an employee and if they are online
   const checkEmployeeStatus = () => {
     setIsEmployee(LoginService.isEmployee());
-    setIsOnlineEmployee(LoginService.isOnlineEmployee());
+    setIsReqHandler(LoginService.isReqHandler());
+    setIsAdmin(LoginService.isAdmin());
   };
 
-  // Function to fetch item details by itemId
   const fetchItemDetails = async (itemId) => {
     try {
       const response = await axios.get(`http://localhost:8080/inventory-item/getById/${itemId}`);
@@ -87,39 +84,36 @@ const EmployeeInRequestList = () => {
     }
   };
 
-  // Function to fetch request data from the server
   const fetchRequestsData = async () => {
     try {
       const userId = LoginService.returnUserID();
       const response = await axios.get(`http://localhost:8080/request/user/${userId}`);
       let data = formatRequestsData(response.data);
 
-      if (isOnlineEmployee) {
-        // Filter out requests with status "DISPATCHED" or "RECEIVED" if the user is an online employee
-        data = data.filter(request => request.status !== 'DISPATCHED' && request.status !== 'RECEIVED');
-      } else {
-        // Filter out requests with workSite "ONSITE" and status "RECEIVED" or "DISPATCHED" if the user is not an online employee
-        data = data.filter(request => !(request.workSite === 'ONSITE' && (request.status === 'RECEIVED' || request.status === 'DISPATCHED')));
-      }
+      const acceptedItems = data.filter(item => item.status === 'ACCEPTED');
+      const acceptedItemDetailsPromises = acceptedItems.map(item => fetchItemDetails(item.itemId));
+      const acceptedItemNames = await Promise.all(acceptedItemDetailsPromises);
+
+      const acceptedItemsWithNames = acceptedItems.map((item, index) => ({
+        ...item,
+        itemName: acceptedItemNames[index],
+      }));
 
       setRequestRows(data);
       setLoadingRequests(false);
 
-      // Filter the requests for items in hand
       const receivedItems = data.filter(item => item.status === 'RECEIVED');
-
-      // Fetch item names for the received items
       const itemDetailsPromises = receivedItems.map(item => fetchItemDetails(item.itemId));
       const itemNames = await Promise.all(itemDetailsPromises);
 
-      // Add item names to the received items
       const receivedItemsWithNames = receivedItems.map((item, index) => ({
         ...item,
         itemName: itemNames[index],
       }));
 
-      setItemsRows(receivedItemsWithNames);
+      setItemsRows(receivedItemsWithNames.concat(acceptedItemsWithNames));
       setLoadingItems(false);
+
     } catch (error) {
       console.error('Failed to fetch inventory requests:', error);
       setLoadingRequests(false);
@@ -127,7 +121,6 @@ const EmployeeInRequestList = () => {
     }
   };
 
-  // Function to format the request data
   const formatRequestsData = (data) => {
     return data
       .map((inventoryRequest, index) => {
@@ -143,9 +136,9 @@ const EmployeeInRequestList = () => {
           quantity: inventoryRequest.quantity,
           createdDateTime: createdDate,
           receivedDate: inventoryRequest.updateDateTime ? new Date(...inventoryRequest.updateDateTime.slice(0, 6)).toLocaleDateString('en-US') : '',
-          itemId: inventoryRequest.itemId, // Add itemId for later use
-          workSite: inventoryRequest.workSite, // Add workSite for filtering
-          reqId: inventoryRequest.reqId, // Add reqId for navigation
+          itemId: inventoryRequest.itemId,
+          workSite: inventoryRequest.workSite,
+          reqId: inventoryRequest.reqId,
         };
       })
       .sort((a, b) => b.createdDateTime - a.createdDateTime)
@@ -155,14 +148,12 @@ const EmployeeInRequestList = () => {
       }));
   };
 
-  // Handler for changing the tab
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  // Define columns for the requests table
   const requestColumns = [
-    { field: 'id', headerName: isEmployee && isOnlineEmployee ? 'Delivery Request No:' : 'Inventory Request No:', width: 200 },
+    { field: 'id', headerName: 'Inventory Request No:', width: 200 },
     { field: 'date', headerName: 'Date', width: 200 },
     { field: 'time', headerName: 'Time', width: 200 },
     { field: 'reason', headerName: 'Reason', width: 200 },
@@ -173,26 +164,19 @@ const EmployeeInRequestList = () => {
       renderCell: (params) => {
         const status = params.value;
         let backgroundColor;
-        // Determine the background color based on the status
         switch (status) {
           case 'PENDING':
-            backgroundColor = '#ADD8E6'; // lightblue
+            backgroundColor = '#ADD8E6';
             break;
           case 'ACCEPTED':
-            backgroundColor = '#90EE90'; // lightgreen
+            backgroundColor = '#90EE90';
             break;
           case 'REJECTED':
-            backgroundColor = '#F08080'; // lightcoral
+            backgroundColor = '#F08080';
             break;
           case 'SENT_TO_ADMIN':
-            backgroundColor = '#FFFFE0'; // lightyellow
+            backgroundColor = '#FFFFE0';
             break;
-          case 'DISPATCHED':
-            backgroundColor = '#FFA07A'; // light orange
-            break;
-            case 'RECEIVED':
-              backgroundColor = '#D8BFD8'; // thistle
-              break;
         }
         return (
           <Box 
@@ -211,7 +195,6 @@ const EmployeeInRequestList = () => {
     },
   ];
 
-  // Define columns for the items table
   const itemsColumns = [
     { field: 'id', headerName: 'No:', width: 200 },
     { field: 'itemName', headerName: 'Item Name', width: 250 },
@@ -219,16 +202,29 @@ const EmployeeInRequestList = () => {
     { field: 'quantity', headerName: 'Requested Quantity', width: 250 },
   ];
 
+  const renderSectionHeader = () => {
+    if (isEmployee) {
+      return <SectionHeader title="Inventory Requests" color="#00008B" />;
+    }
+    if (isReqHandler || isAdmin) {
+      return <SectionHeader title="Employee Inventory Requests List" color="#00008B" />;
+    }
+    return null;
+  };
+
+  const filteredRequestRows = requestRows.filter(row => row.status !== 'ACCEPTED');
+
   return (
-    <Box>
+    <Box sx={{ width: '100%' }}>
       <div className="flex justify-end">
         <Button
           className="text-white bg-blue-600 rounded hover:bg-blue-400"
           onClick={() => navigate('/in-request/create-new-in-request')}
         >
-          {isEmployee && isOnlineEmployee ? 'Create New Delivery Request' : 'Create New Inventory Request'}
+          Create New Inventory Request
         </Button>
       </div>
+      
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleChange} aria-label="lab API tabs example">
@@ -237,33 +233,36 @@ const EmployeeInRequestList = () => {
           </TabList>
         </Box>
         <TabPanel value="1">
-          {isEmployee && isOnlineEmployee ? (
-            <SectionHeader title="My Delivery Request List" color="#006400" />
-          ) : (
-            <SectionHeader title="My Inventory Request List" color="#00008B" />
-          )}
-          <Table rows={requestRows} columns={requestColumns} loading={loadingRequests} onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} />
+          {renderSectionHeader()}
+          <Table 
+            rows={filteredRequestRows} 
+            columns={requestColumns} 
+            loading={loadingRequests} 
+            onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
+          />
         </TabPanel>
+
         <TabPanel value="2">
-        {isEmployee && isOnlineEmployee ? (
-          <SectionHeader title="Items In My Home" color="#6a1b9a" />
-        ) : (
-<SectionHeader title="Items In My Hand" color="#6a1b9a" />
-        )}
-          <Table rows={itemsRows} columns={itemsColumns} loading={loadingItems} onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} />
+          <SectionHeader title="Items In My Hand" color="#6a1b9a" />
+          <Table 
+            rows={itemsRows} 
+            columns={itemsColumns} 
+            loading={loadingItems} 
+            onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
+          />
         </TabPanel>
       </TabContext>
     </Box>
   );
 };
 
-// SectionHeader component for consistent header styling
-const SectionHeader = ({ title, color }) => (
-  <Box className="flex flex-col items-center pb-4">
-    <Box className="w-full text-white text-center py-4 m-4" sx={{ backgroundColor: color }}>
-      <header className="text-3xl font-bold">{title}</header>
+// SectionHeader component for displaying section headers
+const SectionHeader = ({ title, color }) => {
+  return (
+    <Box sx={{ backgroundColor: color, padding: '16px', textAlign: 'center', color: 'white' }}>
+      <h2>{title}</h2>
     </Box>
-  </Box>
-);
+  );
+};
 
 export default EmployeeInRequestList;
