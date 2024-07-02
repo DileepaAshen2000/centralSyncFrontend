@@ -9,10 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-//import image from "../assests/flyer-Photo.jpg";
-//import DragDrop from "./Drag&Drop";
-//import { DropzoneArea } from 'material-ui-dropzone';
-//import Dropzone from "./Dropzone";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
@@ -398,7 +394,7 @@ const CreateUser = () => {
               <Button
                 variant="outlined"
                 className="px-6 py-2 rounded w-[150px] text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-[#007EF2]"
-                onClick={() => navigate("/user")}
+                onClick={() =>navigate(-1)}
               >
                 Cancel
               </Button>

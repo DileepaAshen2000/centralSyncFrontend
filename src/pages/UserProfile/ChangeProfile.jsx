@@ -114,15 +114,15 @@ const EditProfile= () => {
         Swal.fire({
           icon: "success",
           title: "Success!",
-          text: "User details successfully edited!",
+          text: "User profile successfully updated!",
         });
-        navigate("/user");
+        navigate(-1); 
       }
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Error!",
-        text: "Failed to edit user details. Please check your inputs.",
+        text: "Failed to update user profile. Please check your inputs.",
       });
       if (error.response) {
         setErrors(error.response.data);
@@ -424,7 +424,7 @@ const EditProfile= () => {
               <Button
                 variant="outlined"
                 className="bg-white w-[150px] rounded text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-blue-600"
-                onClick={() => navigate("/user")}
+                onClick={() => navigate(-1)}
               >
                 Cancel
               </Button>

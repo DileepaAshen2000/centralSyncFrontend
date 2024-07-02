@@ -7,20 +7,15 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-// import { useForm } from "react-hook-form";
-//import image from "../assests/flyer-Photo.jpg";
 import axios from "axios";
 import MenuItem from "@mui/material/MenuItem";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Badge from "@mui/material/Badge";
 import Swal from "sweetalert2";
-//import SmallAvatar from "@mui/material/SmallAvatar";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import Avatar from "@mui/material/Avatar";
-//import DragDrop from "./Drag&Drop";
-//import { DropzoneArea } from 'material-ui-dropzone';
-//import Dropzone from "./Dropzone";
+ 
 
 const Userupdate = () => {
   // State for user details
@@ -420,7 +415,7 @@ const Userupdate = () => {
               <Button
                 variant="outlined"
                 className="bg-white w-[150px] rounded text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-blue-600"
-                onClick={() => navigate("/user")}
+                onClick={() =>navigate(-1)}
               >
                 Cancel
               </Button>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 import axios from "axios";
 import {
   Typography,
@@ -21,6 +22,8 @@ const TicketDocument = () => {
   const [completionDate, setCompletionDate] = useState("");
   const [showCompletionDate, setShowCompletionDate] = useState(false);
   const [showNoteInput, setShowNoteInput] = useState(false);
+  const [profileInfo, setProfileInfo] = useState({});
+
   const [ticket, setTicket] = useState({
     date: "",
     description: "",
@@ -28,6 +31,7 @@ const TicketDocument = () => {
     ticketStatus: "",
     itemId: "",
     note: "",
+    user: "",
   });
 
   const [item, setItem] = useState({
@@ -36,6 +40,16 @@ const TicketDocument = () => {
   });
   const isAdmin = LoginService.isAdmin();
   const isRequestHandler = LoginService.isReqHandler();
+
+  const fetchProfileInfo = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await LoginService.getYourProfile(token);
+      setProfileInfo(response.users);
+    } catch (error) {
+      console.error("Error fetching profile information:", error);
+    }
+  };
 
   useEffect(() => {
     loadTicket();
@@ -65,8 +79,15 @@ const TicketDocument = () => {
   const handleSendToAdmin = () => {
     axios
       .patch(`http://localhost:8080/ticket/sendtoadmin/${id}`, { note })
-      .then(() => {
-        navigate("/ticket");
+      .then((response) => {
+        if (response.status === 200) {
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Ticket sent to admin succesfully!",
+          });
+          navigate(-1);
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -77,10 +98,22 @@ const TicketDocument = () => {
   const handleAccept = () => {
     axios
       .patch(`http://localhost:8080/ticket/accept/${id}`, { note })
-      .then(() => {
-        navigate("/ticket");
+      .then((response) => {
+        if (response.status === 200) {
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Ticket status updated succesfully!",
+          });
+          navigate("/ticket");
+        }
       })
       .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Failed to update status",
+        });
         console.log(error);
       });
   };
@@ -95,10 +128,22 @@ const TicketDocument = () => {
         note,
         completionDate,
       })
-      .then(() => {
-        navigate("/ticket");
+      .then((response) => {
+        if (response.status === 200) {
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Ticket status updated succesfully!",
+          });
+          navigate("/ticket");
+        }
       })
       .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Failed to update status",
+        });
         console.log(error);
       });
   };
@@ -110,10 +155,22 @@ const TicketDocument = () => {
   const handleRejectByAdminwithNote = () => {
     axios
       .patch(`http://localhost:8080/ticket/adminreject/${id}`, { note })
-      .then(() => {
-        navigate("/ticket");
+      .then((response) => {
+        if (response.status === 200) {
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Ticket status updated succesfully!",
+          });
+          navigate("/ticket");
+        }
       })
       .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Failed to update status",
+        });
         console.log(error);
       });
   };
@@ -124,10 +181,22 @@ const TicketDocument = () => {
       .patch(`http://localhost:8080/ticket/requesthandlerreject/${id}`, {
         note,
       })
-      .then(() => {
-        navigate("/ticket");
+      .then((response) => {
+        if (response.status === 200) {
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Ticket status updated succesfully!",
+          });
+          navigate(-1);
+        }
       })
       .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Failed to update status",
+        });
         console.log(error);
       });
   };
@@ -136,10 +205,22 @@ const TicketDocument = () => {
   const handleComplete = () => {
     axios
       .patch(`http://localhost:8080/ticket/complete/${id}`, { note })
-      .then(() => {
-        navigate("/ticket");
+      .then((response) => {
+        if (response.status === 200) {
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Ticket status updated succesfully!",
+          });
+          navigate(-1);
+        }
       })
       .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Failed to update status",
+        });
         console.log(error);
       });
   };
@@ -242,13 +323,17 @@ const TicketDocument = () => {
                 <li className="font-bold">Item Name</li>
                 <li className="font-bold">Item Brand</li>
                 <li className="font-bold">Date</li>
+                <li className="font-bold">Topic</li>
               </ul>
               <ul className="flex flex-col gap-2">
                 <li>{id}</li>
-                <li>Dileepa Ashen</li>
+                <li>
+                  {ticket.user.firstName} {ticket.user.lastName}
+                </li>
                 <li>{item.itemName}</li>
                 <li>{item.brand}</li>
                 <li>{ticket.date}</li>
+                <li className="font-bold text-red-600">{ticket.topic}</li>
               </ul>
             </section>
           </div>
@@ -263,19 +348,20 @@ const TicketDocument = () => {
               </Typography>
             </div>
           </div>
-         {isAdmin && <>
-          {ticket.note && (
-            <div className="mt-4 mb-4">
-              <Typography variant="h6" className="font-bold" gutterBottom>
-                Note from Request Handler:
-              </Typography>
-              <Typography variant="subtitle1" className="text-red-500">
-                {ticket.note}
-              </Typography>
-            </div>
+          {isAdmin && (
+            <>
+              {ticket.note && (
+                <div className="mt-4 mb-4">
+                  <Typography variant="h6" className="font-bold" gutterBottom>
+                    Note from Request Handler:
+                  </Typography>
+                  <Typography variant="subtitle1" className="text-red-500">
+                    {ticket.note}
+                  </Typography>
+                </div>
+              )}
+            </>
           )}
-          </>
-         }
           <div>
             <Typography variant="caption" gutterBottom>
               Generated Date/Time :{" "}
@@ -319,7 +405,7 @@ const TicketDocument = () => {
                         className="px-6 py-2 rounded w-[150px]"
                         variant="outlined"
                         type="submit"
-                        onClick={() => navigate("/ticket")}
+                        onClick={() => navigate(-1)}
                       >
                         Cancel
                       </Button>
@@ -360,7 +446,7 @@ const TicketDocument = () => {
                       className="px-6 py-2 rounded w-[150px]"
                       variant="outlined"
                       type="submit"
-                      onClick={() => navigate("/ticket")}
+                      onClick={() => navigate(-1)}
                     >
                       Cancel
                     </Button>
@@ -370,20 +456,20 @@ const TicketDocument = () => {
             )}
 
             {(ticket.ticketStatus === "ACCEPTED" ||
-              ticket.ticketStatus === "REJECTED_A")&& (
-                <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
-                  <div className="col-start-6">
-                    <Button
-                      className="px-6 py-2 rounded w-[150px]"
-                      variant="outlined"
-                      type="submit"
-                      onClick={() => navigate("/ticket")}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
+              ticket.ticketStatus === "REJECTED_A") && (
+              <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
+                <div className="col-start-6">
+                  <Button
+                    className="px-6 py-2 rounded w-[150px]"
+                    variant="outlined"
+                    type="submit"
+                    onClick={() => navigate(-1)}
+                  >
+                    Cancel
+                  </Button>
                 </div>
-              )}
+              </div>
+            )}
           </>
         )}
 
@@ -445,7 +531,7 @@ const TicketDocument = () => {
                         className="px-6 py-2 rounded w-[172px]"
                         variant="outlined"
                         type="submit"
-                        onClick={() => navigate("/ticket")}
+                        onClick={() => navigate(-1)}
                       >
                         Cancel
                       </Button>
@@ -488,7 +574,7 @@ const TicketDocument = () => {
                           className="px-6 py-2 rounded w-[172px] text-md"
                           variant="outlined"
                           type="submit"
-                          onClick={() => navigate("/ticket/ticketdoc/:id")}
+                          onClick={() => navigate(-1)}
                         >
                           Cancel
                         </Button>
@@ -501,14 +587,20 @@ const TicketDocument = () => {
 
             {ticket.ticketStatus === "ACCEPTED" && (
               <div>
-                <div className="flex gap-6 mt-6 ml-6">
-                  <h4>Note :</h4>
-                  <textarea
-                    className="w-2/3 h-20 p-2 mt-2 border-2 border-gray-300 rounded-md"
-                    placeholder="Write something here.."
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                  ></textarea>
+                <div className="grid grid-cols-12 grid-rows-1 gap-y-7 mt-10">
+                  <div className="col-span-3">
+                    <Typography variant="subtitle1" className="font-semibold">
+                      Additional Note :
+                    </Typography>
+                  </div>
+                  <div className="col-span-3 col-start-4">
+                    <textarea
+                      className="w-[600px] h-20 p-2 mt-2 border-2 border-gray-300 rounded-md"
+                      placeholder="Add notes here.."
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                    ></textarea>
+                  </div>
                 </div>
                 {!showCompletionDate && (
                   <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
@@ -527,7 +619,7 @@ const TicketDocument = () => {
                         className="px-6 py-2 rounded w-[172px]"
                         variant="outlined"
                         type="submit"
-                        onClick={() => navigate("/ticket")}
+                        onClick={() => navigate(-1)}
                       >
                         Cancel
                       </Button>
@@ -537,14 +629,23 @@ const TicketDocument = () => {
 
                 {showCompletionDate && (
                   <div>
-                    <div className="flex gap-6 mt-6 ml-6">
-                      <h4>Completion Date :</h4>
-                      <TextField
-                        type="date"
-                        className="w-2/3 mt-2"
-                        value={completionDate}
-                        onChange={(e) => setCompletionDate(e.target.value)}
-                      />
+                    <div className="grid grid-cols-12 grid-rows-1 gap-y-7 mt-1">
+                      <div className="col-span-3">
+                        <Typography
+                          variant="subtitle1"
+                          className="font-semibold"
+                        >
+                          Expected Completion Date :
+                        </Typography>
+                      </div>
+                      <div className="col-start-4">
+                        <TextField
+                          type="date"
+                          className="w-[220px] mt-2 border-2 border-gray-300 bg-white"
+                          value={completionDate}
+                          onChange={(e) => setCompletionDate(e.target.value)}
+                        />
+                      </div>
                     </div>
                     <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                       <div className="col-start-5">
@@ -562,7 +663,7 @@ const TicketDocument = () => {
                           className="px-6 py-2 rounded w-[150px] text-md"
                           variant="outlined"
                           type="submit"
-                          onClick={() => navigate("/ticket")}
+                          onClick={() => navigate(-1)}
                         >
                           Cancel
                         </Button>
@@ -605,7 +706,7 @@ const TicketDocument = () => {
                       className="px-6 py-2 rounded w-[150px]"
                       variant="outlined"
                       type="submit"
-                      onClick={() => navigate("/ticket")}
+                      onClick={() => navigate(-1)}
                     >
                       Cancel
                     </Button>
@@ -623,7 +724,7 @@ const TicketDocument = () => {
                     className="px-6 py-2 rounded w-[150px]"
                     variant="outlined"
                     type="submit"
-                    onClick={() => navigate("/ticket")}
+                    onClick={() => navigate(-1)}
                   >
                     Cancel
                   </Button>
