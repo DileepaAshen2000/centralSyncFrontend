@@ -105,6 +105,7 @@ const UsageBarChart = ({ category, year }) => {
             },
           ]}
           xAxis={[{ data: xLabels, scaleType: "band" }]}
+          grid={{ vertical: true, horizontal: true }}
         />
       )}
     </div>

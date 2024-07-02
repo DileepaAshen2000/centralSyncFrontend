@@ -52,13 +52,14 @@ const AddItemForm = () => {
   const onItemGroupChange = (e) => {
     setInventoryItem({ ...inventoryItem, itemGroup: e.target.value });
   };
-  const onImageChange = (e) => {
+  const handleImageChange = (e) => {
     setInventoryItem({ ...inventoryItem, image: e.target.files[0] });
   };
 
   const handleSave = async (e) => {
-    setLoading(true);
     e.preventDefault();
+    setLoading(true);
+    
     const formData = new FormData();
     formData.append(
       "item",
@@ -315,7 +316,7 @@ const AddItemForm = () => {
               type="file"
               id="image"
               accept="image/*"
-              onChange={onImageChange}
+              onChange={handleImageChange}
               className="mt-4 mb-2"
             />
           </div>

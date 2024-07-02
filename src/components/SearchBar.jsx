@@ -12,7 +12,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText, 
+  DialogContentText,
   DialogTitle,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -49,10 +49,13 @@ const SearchBar = () => {
     fetchItemNames();
   }, []);
 
-  const handleSearch = async () => {
+  const handleSearch = async (term) => {
+    if (!term) {
+      return;
+    }
     try {
       const response = await axios.get(
-        `http://localhost:8080/inventory-item/search?itemName=${searchTerm}&itemGroup=${selectedCategories}`
+        `http://localhost:8080/inventory-item/search?itemName=${term}&itemGroup=${selectedCategories}`
       );
       if (response.status === 200) {
         if (response.data.length === 0) {
@@ -62,7 +65,7 @@ const SearchBar = () => {
             state: {
               searchResult: response.data,
               currentRoute: location.pathname,
-              searchTerm: searchTerm,
+              searchTerm: term,
             },
           });
         }
@@ -116,9 +119,6 @@ const SearchBar = () => {
   return (
     <div className="relative  bg-opacity-15  ml-5 md:w-[400px] sm:mr-3 sm:w-auto">
       <Autocomplete
-        InputProps={{
-          className: "border-rounded-2xl ",
-        }}
         value={searchTerm}
         options={itemsOptions
           .filter(
@@ -126,11 +126,14 @@ const SearchBar = () => {
               self.findIndex((t) => t.itemName === item.itemName) === index
           )
           .map((item) => item.itemName)}
-        onInputChange={(event, newSearchTerm) => setSearchTerm(newSearchTerm)}
-        onClick={(event, clickedName) => {
-          setSearchTerm(clickedName);
-          handleSearch();
+        onChange={(event, selectedOption) => {
+          if (selectedOption) {
+            setSearchTerm(selectedOption);
+            handleSearch(selectedOption);
+          }
         }}
+       
+        onInputChange={(event, newSearchTerm) => setSearchTerm(newSearchTerm)}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -149,7 +152,7 @@ const SearchBar = () => {
               endAdornment: (
                 <InputAdornment position="end">
                   <SearchIcon
-                    onClick={handleSearch}
+                    onClick={()=>handleSearch(searchTerm)}
                     style={{ cursor: "pointer" }}
                   />
                 </InputAdornment>
@@ -193,7 +196,7 @@ const SearchBar = () => {
             <Button
               className="rounded-sm text-black"
               variant="outlined"
-              onClick={handleSearch}
+              onClick={()=>handleSearch(searchTerm)}
             >
               Apply Filters
             </Button>

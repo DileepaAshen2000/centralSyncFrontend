@@ -91,13 +91,13 @@ const OrderDataGrid = () => {
         <p className="inline-block">Here are all orders!!</p>
         {rowSelectionModel > 0 ? (
           <>
-            <Button
+            {/* <Button
               variant="contained"
               className="bg-blue-600 px-6 py-2 text-white rounded left-[45%] w-[145px]"
               onClick={handleEdit}
             >
               Edit
-            </Button>
+            </Button> */}
 
             <Button
               variant="contained"

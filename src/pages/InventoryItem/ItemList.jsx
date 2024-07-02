@@ -49,6 +49,15 @@ const ItemDataGrid = () => {
 
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
 
+  const categoryMapping = {
+    COMPUTERS_AND_LAPTOPS: "Computers & Laptops",
+    COMPUTER_ACCESSORIES: "Computer Accessories",
+    PRINTERS_AND_SCANNERS: "Printers & Scanners",
+    COMPUTER_HARDWARE: "Computer Hardware",
+    FURNITURE: "Furniture",
+    OFFICE_SUPPLIES: "Office supplies",
+    OTHER: "Other",
+  };
   // Fetch data from the API
   useEffect(() => {
     const fetchData = async () => {
@@ -61,7 +70,7 @@ const ItemDataGrid = () => {
         const data = response.data.map((item) => ({
           id: item.itemId,
           item_name: item.itemName,
-          group: item.itemGroup,
+          group: categoryMapping[item.itemGroup],
           quantity: item.quantity,
           status: item.status,
         }));

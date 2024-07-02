@@ -13,13 +13,11 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
-import LoginService from "../Login/LoginService";
 
 const ViewItemDetails = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { itemID } = useParams();
-  const isAdmin = LoginService.isAdmin();
   const [inventoryItem, setInventoryItem] = useState({
     itemName: "",
     itemGroup: "",
@@ -29,7 +27,6 @@ const ViewItemDetails = () => {
     weight: "",
     description: "",
     quantity: "",
-    status: "",
     image: null,
   });
 
@@ -42,7 +39,7 @@ const ViewItemDetails = () => {
     weight,
     description,
     quantity,
-    status
+    image,
   } = inventoryItem;
 
   useEffect(() => {
@@ -61,7 +58,7 @@ const ViewItemDetails = () => {
           weight: response.data.weight,
           description: response.data.description,
           quantity: response.data.quantity,
-          status:response.data.status,
+          status: response.data.status,
           image: response.data.image,
         };
         setInventoryItem(item);
@@ -74,79 +71,6 @@ const ViewItemDetails = () => {
 
     fetchItemDetails();
   }, [itemID]);
-
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleMoreButton = (event) => {
-    setAnchorEl(event.currentTarget);
-    setIsOpen(true);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-    setIsOpen(false);
-  };
-
-  const handleDelete = async () => {
-    setIsOpen(false);
-    setLoading(true);
-    try {
-      await axios.delete(
-        `http://localhost:8080/inventory-item/deleteItem/${itemID}`
-      );
-      Swal.fire({
-        icon: "success",
-        title: "Deleted",
-        text: "Inventory Item deleted successfully!",
-      }).then(() => {
-        navigate(-1);
-      });
-    } catch (error) {
-      if (error.response.status === 409) {
-        Swal.fire({
-          icon: "error",
-          title: "Cannot delete item",
-          text: "Inventory Item is currently in use and cannot be deleted.",
-        });
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "An unexpected error occurred.",
-        });
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleMarkAsInactiveButton = () => {
-    setIsOpen(false);
-    setLoading(true);
-    axios
-      .patch(`http://localhost:8080/inventory-item/markAsInactive/${itemID}`)
-      .then(() => {
-        navigate(-1);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const handleMarkAsActiveButton = () => {
-    setIsOpen(false);
-    setLoading(true);
-    axios
-      .patch(`http://localhost:8080/inventory-item/markAsActive/${itemID}`)
-      .then(() => {
-        navigate(-1);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
 
   return (
     <>
@@ -313,62 +237,6 @@ const ViewItemDetails = () => {
           />
         </div>
 
-        {/*Buttons*/}
-        {isAdmin && (
-          <>
-            <Button
-              variant="contained"
-              className="row-start-1 col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
-              onClick={handleMoreButton}
-            >
-              More
-            </Button>
-            <Popover
-              open={isOpen}
-              anchorEl={anchorEl}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-            >
-              <MenuList>
-                {console.log("inventoryItem.status:", inventoryItem.status)}
-                {inventoryItem.status === "ACTIVE" ? (
-                  <MenuItem>
-                    <Button
-                      variant="contained"
-                      className="col-start-6 rounded-sm  bg-blue-500 ml-10 w-[180px]"
-                      onClick={handleMarkAsInactiveButton}
-                    >
-                      Mark as Inactive
-                    </Button>
-                  </MenuItem>
-                ) : (
-                  <MenuItem>
-                    <Button
-                      variant="contained"
-                      className="col-start-6 rounded-sm  bg-blue-500 ml-10 w-[180px]"
-                      onClick={handleMarkAsActiveButton}
-                    >
-                      Mark as Active
-                    </Button>
-                  </MenuItem>
-                )}
-                <MenuItem>
-                  <Button
-                    variant="contained"
-                    className="col-start-6 rounded-sm bg-red-500 ml-10 w-[180px]"
-                    onClick={handleDelete}
-                  >
-                    Delete
-                  </Button>
-                </MenuItem>
-              </MenuList>
-            </Popover>
-          </>
-        )}
-
         <Button
           variant="outlined"
           className="row-start-12 col-start-8 rounded-sm bg-white text-blue-60blue-600"
@@ -380,7 +248,6 @@ const ViewItemDetails = () => {
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}
-        onClick={handleClose}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
