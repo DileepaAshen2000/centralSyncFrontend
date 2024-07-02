@@ -177,15 +177,17 @@ const SideBar = () => {
       </Collapse>
 
       {/* Initiate Order */}
-      <a href="/order">
-      <ListItem
-        button
-        className="rounded-lg hover:bg-blue-100 focus:bg-blue-400"
-      >
-        <ShoppingCartIcon></ShoppingCartIcon>
-        <ListItemText primary="Initiate Order" className="pl-4 pr-4" />
-      </ListItem>
-      </a>
+      {!isEmployee &&(
+        <a href="/order">
+          <ListItem
+            button
+            className="rounded-lg hover:bg-blue-100 focus:bg-blue-400"
+          >
+            <ShoppingCartIcon></ShoppingCartIcon>
+            <ListItemText primary="Initiate Order" className="pl-4 pr-4" />
+          </ListItem>
+        </a>
+      )}
 
       <ListItem
         button

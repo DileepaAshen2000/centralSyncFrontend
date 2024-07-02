@@ -11,10 +11,12 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import axios from "axios";
+import LoginService from "../Login/LoginService";
 
 const ViewItemDetails = () => {
   const navigate = useNavigate();
   const { itemID } = useParams();
+  const isAdmin = LoginService.isAdmin();
 
 
 
@@ -107,10 +109,10 @@ const ViewItemDetails = () => {
 
 
   return (
-    <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
-      <h1 className=" col-span-4 text-3xl pt-2 font-bold ">Item Details</h1>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="itemID" className="flex-none text-black w-32 ">
+    <form className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14">
+      <h1 className="col-span-4 pt-2 text-3xl font-bold ">Item Details</h1>
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="itemID" className="flex-none w-32 text-black ">
           Item Id
         </InputLabel>
         <TextField
@@ -124,10 +126,10 @@ const ViewItemDetails = () => {
         />
       </div>
 
-      <div className="col-start-1 col-span-4 flex items-center">
+      <div className="flex items-center col-span-4 col-start-1">
         <InputLabel
           htmlFor="name"
-          className="flex-none text-black w-32 "
+          className="flex-none w-32 text-black "
         >
           Item Name
         </InputLabel>
@@ -141,8 +143,8 @@ const ViewItemDetails = () => {
         />
       </div>
 
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="itemGroup" className="flex-none text-black w-32 ">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="itemGroup" className="flex-none w-32 text-black ">
           Item Group
         </InputLabel>
         <div className="flex-grow">
@@ -169,8 +171,8 @@ const ViewItemDetails = () => {
         </div>
       </div>
 
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="unit" className="flex-none text-black w-32 ">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="unit" className="flex-none w-32 text-black ">
           Unit
         </InputLabel>
         <TextField
@@ -184,8 +186,8 @@ const ViewItemDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="brand" className="flex-none text-black w-32 ">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="brand" className="flex-none w-32 text-black ">
           Brand
         </InputLabel>
         <TextField
@@ -199,8 +201,8 @@ const ViewItemDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="dimension" className="flex-none text-black  w-32">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="dimension" className="flex-none w-32 text-black">
           Dimension
         </InputLabel>
         <TextField
@@ -214,8 +216,8 @@ const ViewItemDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="weight" className="flex-none text-black  w-32">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="weight" className="flex-none w-32 text-black">
           Weight
         </InputLabel>
         <TextField
@@ -229,10 +231,10 @@ const ViewItemDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex">
+      <div className="flex col-span-4 col-start-1">
         <InputLabel
           htmlFor="description"
-          className="flex-none text-black  w-32 mt-0"
+          className="flex-none w-32 mt-0 text-black"
         >
           Description
         </InputLabel>
@@ -249,8 +251,8 @@ const ViewItemDetails = () => {
           }}
         />
       </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="quantity" className="flex-none text-black w-32 ">
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="quantity" className="flex-none w-32 text-black ">
           Initial quantity
         </InputLabel>
         <TextField
@@ -267,6 +269,7 @@ const ViewItemDetails = () => {
 
       {/*Buttons*/}
       <>
+      {isAdmin && (
         <Button
           variant="contained"
           className="row-start-1 col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
@@ -274,6 +277,8 @@ const ViewItemDetails = () => {
         >
           More
         </Button>
+      )}
+        
         <Popover
           open={isOpen}
           anchorEl={anchorEl}
@@ -308,7 +313,7 @@ const ViewItemDetails = () => {
 
       <Button
         variant="outlined"
-        className="row-start-11 col-start-8 rounded-sm bg-white text-blue-60blue-600"
+        className="col-start-8 bg-white rounded-sm row-start-11 text-blue-60blue-600"
         onClick={() => navigate("/item")}
       >
         Cancel
