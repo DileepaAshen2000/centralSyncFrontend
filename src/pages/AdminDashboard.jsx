@@ -29,8 +29,6 @@ export default function AdminDashboard() {
           <ItemPieChart />
         </div>
         <div className="flex flex-col items-center justify-center col-span-8 row-span-4 p-4 text-5xl text-center text-black bg-blue-200 rounded-lg">
-          {/* <div className="text-xl">Inventory-Statistic</div> */}
-          {/* <InventoryStatistic /> */}
           <PendingActivities/>
         </div>
       </div>
