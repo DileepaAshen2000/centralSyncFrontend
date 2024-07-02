@@ -84,20 +84,31 @@ const RequestHandlerInRequestList = () => {
 
       // Filtering requests based on role
       const reviewingRequests = data.filter(item => item.role === 'EMPLOYEE');
+      console.log('Reviewing Requests:', reviewingRequests);
       const myRequests = data.filter(item => item.role === 'REQUEST_HANDLER' && item.status !== 'ACCEPTED' && item.status !== 'WANT_TO_RETURN_ITEM'); // Filter out ACCEPTED and WANT_TO_RETURN_ITEM statuses
-      const itemsOnHand = data.filter(item => item.status === 'ACCEPTED' || item.status === 'WANT_TO_RETURN_ITEM'); // Filter for items on hand
+      const itemsOnHand = data.filter(item => item.role === 'REQUEST_HANDLER' && (item.status === 'ACCEPTED' || item.status === 'WANT_TO_RETURN_ITEM')); // Filter for items on hand
+      
 
       // Add sequential IDs
       setReviewingRequestRows(reviewingRequests.map((item, index) => ({ ...item, id: index + 1 })));
       setMyRequestRows(myRequests.map((item, index) => ({ ...item, id: index + 1 })));
       setItemsOnHandRows(itemsOnHand.map((item, index) => ({ ...item, id: index + 1 })));
-
+      
       setLoadingRequests(false);
     } catch (error) {
       console.error('Failed to fetch inventory requests:', error);
       setLoadingRequests(false);
     }
   };
+  useEffect(() => {
+    checkEmployeeStatus();
+    fetchRequestsData();
+  }, []);
+  
+  useEffect(() => {
+    console.log('ReviewingRequestRows State:', reviewingRequestRows);
+    
+  }, [reviewingRequestRows]);
 
   const formatRequestsData = (data) => {
     return data
@@ -184,7 +195,14 @@ const RequestHandlerInRequestList = () => {
     { field: 'quantity', headerName: 'Requested Quantity', width: 250 },
   ];
 
-  const filteredReviewingRequestRows = reviewingRequestRows.filter(row => row.status !== 'ACCEPTED' && row.status !== 'WANT_TO_RETURN_ITEM');
+  const filteredReviewingRequestRows = reviewingRequestRows
+  .filter(row => row.status !== 'WANT_TO_RETURN_ITEM')
+  .sort((a, b) => {
+    // *** Sorting logic to move 'PENDING' status rows to the top ***
+    if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
+    if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
+    return 0;
+  });
 
   return (
     <Box sx={{ width: '100%' }}>

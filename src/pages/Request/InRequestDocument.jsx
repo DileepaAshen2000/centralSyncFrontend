@@ -12,6 +12,7 @@ import axios from 'axios';
 import ReactToPrint from 'react-to-print';
 import LoginService from '../Login/LoginService';
 import { set } from 'date-fns';
+import { TramRounded } from '@mui/icons-material';
 
 
 const formatDateTime = (dateTimeArray) => {
@@ -96,14 +97,33 @@ const RequestDocument = () => {
 
 
   const [open, setOpen] = useState(false);
-  const [openID, setOpenID] = useState(false); // Added state for the item return dialog
+  const [openID, setOpenID] = useState(false);
+  const[openSA, setOpenSA] = useState(false);
+  const[openRD, setOpenRD] = useState(false);
+  const[openAD, setOpenAD] = useState(false);
 
   const handleClickItemReturn = () => { 
     setOpenID(true); 
   };
 
+  const handleClickSendToAdmin = () =>{
+setOpenSA(true);
+  };
+
+  const handleClickReject = () => {
+    setOpenRD(true);
+  };
+
+  const handleClickAccept = () => {
+    setOpenAD(true);
+  };
+  
+
   const handleClose = () => {
     setOpenID(false);
+    setOpenRD(false);
+    setOpenSA(false);
+    setOpenAD(false);
   };
 
   const [workSite, setWorkSite] = useState('');
@@ -152,7 +172,7 @@ const RequestDocument = () => {
       .patch(`http://localhost:8080/request/updateStatus/reject/${reqId}`)
       .then(() => {
         setInventoryRequest(!inventoryRequest);
-        navigate("/admin-inventory-request-list");
+        navigate("/requestHandler/in-request-list");
       })
       .catch((error) => {
         console.log(error);
@@ -164,7 +184,21 @@ const RequestDocument = () => {
       .patch(`http://localhost:8080/request/updateStatus/accept/${reqId}`)
       .then(() => {
         setInventoryRequest(!inventoryRequest);
-        navigate("/admin-inventory-request-list");
+        navigate("/requestHandler/in-request-list");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleSendToAdmin = () => {
+    setOpenSA(true);
+    axios
+      .patch(`http://localhost:8080/request/updateStatus/sendToAdmin/${reqId}`)
+      .then(() => {
+        setInventoryRequest(!inventoryRequest);
+        navigate("/requestHandler/in-request-list");
+        handleClose();
       })
       .catch((error) => {
         console.log(error);
@@ -407,25 +441,90 @@ const RequestDocument = () => {
                 className="px-6 py-2 bg-green-500 text-white hover:bg-green-400"
                 variant='contained'
                 type='submit'
-                onClick={handleAccept}
+                onClick={handleClickAccept}
               >
                 Accept
               </Button>
             </>
           )}
+          <Dialog
+            open={openAD}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle>
+              {"Are you want to accept this inventory request?"}
+            </DialogTitle>
+            <DialogActions>
+              <Button onClick={handleClose} color="primary">
+                No
+              </Button>
+              <Button onClick={handleAccept} color="primary" autoFocus>
+                Yes
+              </Button>
+            </DialogActions>
+          </Dialog>
           {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' && role !== 'EMPLOYEE' && (
             <>
               <Button
                 className="px-6 py-2 bg-red-500 text-white hover:bg-red-400"
                 variant='contained'
                 type='submit'
-                onClick={handleReject}
+                onClick={handleClickReject}
               >
                 Reject
               </Button>
             </>
           )}
-
+          <Dialog
+            open={openRD}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle>
+              {"Are you want to reject this inventory request?"}
+            </DialogTitle>
+            <DialogActions>
+              <Button onClick={handleClose} color="primary">
+                No
+              </Button>
+              <Button onClick={handleReject} color="primary" autoFocus>
+                Yes
+              </Button>
+            </DialogActions>
+          </Dialog>
+          {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' &&  role === 'REQUEST_HANDLER' && (
+            <>
+              <Button
+                className="px-6 py-2 bg-yellow-500 text-white hover:bg-yellow-400"
+                variant='contained'
+                type='submit'
+                onClick={handleClickSendToAdmin}
+              >
+                Send to Admin
+              </Button>
+            </>
+          )}
+           <Dialog
+            open={openSA}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle>
+              {"Are you sure, you want to send this inventory request to admin review?"}
+            </DialogTitle>
+            <DialogActions>
+              <Button onClick={handleClose} color="primary">
+                No
+              </Button>
+              <Button onClick={handleSendToAdmin} color="primary" autoFocus>
+                Yes
+              </Button>
+            </DialogActions>
+          </Dialog>
           {inventoryRequest && inventoryRequest.reqStatus === 'ACCEPTED' && role === 'EMPLOYEE' && (
             <>
               <Button
