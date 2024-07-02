@@ -11,7 +11,7 @@ const StockLineChart = ({ category, year }) => {
   const [stockIn, setStockIn] = useState([]);
   const [stockOut, setStockOut] = useState([]);
   const [loading, setLoading] = useState();
-  const { width, height = 0, ref } = useResizeDetector();
+  const { width=800, height = 400, ref } = useResizeDetector();
 
   useEffect(() => {
     const fetchStockData = async () => {

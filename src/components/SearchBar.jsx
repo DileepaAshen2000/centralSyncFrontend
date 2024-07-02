@@ -72,6 +72,8 @@ const SearchBar = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setSearchTerm("");
     }
   };
 
@@ -132,7 +134,6 @@ const SearchBar = () => {
             handleSearch(selectedOption);
           }
         }}
-       
         onInputChange={(event, newSearchTerm) => setSearchTerm(newSearchTerm)}
         renderInput={(params) => (
           <TextField
@@ -152,7 +153,7 @@ const SearchBar = () => {
               endAdornment: (
                 <InputAdornment position="end">
                   <SearchIcon
-                    onClick={()=>handleSearch(searchTerm)}
+                    onClick={() => handleSearch(searchTerm)}
                     style={{ cursor: "pointer" }}
                   />
                 </InputAdornment>
@@ -196,7 +197,7 @@ const SearchBar = () => {
             <Button
               className="rounded-sm text-black"
               variant="outlined"
-              onClick={()=>handleSearch(searchTerm)}
+              onClick={() => handleSearch(searchTerm)}
             >
               Apply Filters
             </Button>

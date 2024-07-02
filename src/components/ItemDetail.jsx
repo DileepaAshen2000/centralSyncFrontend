@@ -75,7 +75,7 @@ const ItemDetail = () => {
             />
           </div>
         
-          {item.status === "ACTIVE" && (
+          {item.status === "ACTIVE" ? (
             <>
               <Divider variant="middle" className="mb-4" />
 
@@ -108,7 +108,11 @@ const ItemDetail = () => {
                 </Button>
               </div>
             </>
-          )}
+          ):(<>
+            <Typography variant="body2" color="error" className="text-red-500">
+              Cannot perform any activities on inactive items.
+            </Typography>
+          </>)}
         </CardContent>
       </Card>
     </div>

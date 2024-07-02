@@ -37,16 +37,25 @@ const Usage = () => {
     setOpen(false);
   };
 
- 
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-10">
       <Select
         label="Group"
         id="selectItemGroup"
-        className="col-start-1 bg-blue-600  w-[250px] h-10   text-white"
+        className="col-start-1 bg-blue-600  w-[250px] h-10   text-white  "
         value={category}
         onChange={(e) => setCategory(e.target.value)}
+        sx={{
+          "& .MuiOutlinedInput-notchedOutline": {
+            border: "none",
+          },
+          "&:hover .MuiOutlinedInput-notchedOutline": {
+            border: "none",
+          },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            border: "none",
+          },
+        }}
       >
         <MenuItem value="COMPUTERS_AND_LAPTOPS">Computers & Laptops</MenuItem>
         <MenuItem value="COMPUTER_ACCESSORIES">Computer Accessories</MenuItem>
