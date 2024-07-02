@@ -363,11 +363,11 @@ const RequestDocument = () => {
               <div className="w-2/3">
                 <Typography variant="body2">{inventoryRequest?.description}</Typography>
               </div>
-              <div className='mt-6'>
+             { inventoryRequest?.filePath && (<div className='mt-6'>
                 <h1>Download File:</h1>
-                <button onClick={handleFileDownload}> {workSite === "ONLINE" ? (<u><span className="text-blue-800">Click to download attched file with Delivery Request</span></u>) :
-                  (<u><span className="text-blue-800">Click to download attched file with Inventory Request</span></u>)}</button>
-              </div>
+                <button onClick={handleFileDownload}> 
+                  <u><span className="text-blue-800">Click to download attched file with Inventory Request</span></u></button>
+              </div>)}
               <div className='mt-20 float-right ...'>
                 <Typography variant="caption" gutterBottom>
                   Computer Generated Report By CENTRAL SYNC &#174; | No Signature Required.

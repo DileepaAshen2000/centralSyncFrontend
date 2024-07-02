@@ -40,6 +40,15 @@ const SideBar = () => {
     setOpenReport(!openReport);
   };
 
+   {/* Inventroy request section routing according to login role */}
+   const getInventoryRequestListLink = () => {
+    if (isAdmin) return "/admin-in-request-list";
+    if (isReqHandler) return "/requestHandler/in-request-list";
+    if (isEmployee) return "/employee-in-request-list";
+    return "/default-request-list";
+  };
+
+
   return (
     <List className="mx-2 mt-2">
       {/* Dashboard sections */}
@@ -118,7 +127,7 @@ const SideBar = () => {
       </ListItem>
       <Collapse in={openRequestReservation} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <a href="/employee-in-request-list">
+          <a href={getInventoryRequestListLink()}>
             <ListItem button className="pl-8 rounded-lg">
               <ListItemText primary="Request" />
             </ListItem>

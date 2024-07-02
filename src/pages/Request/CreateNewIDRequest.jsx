@@ -81,7 +81,7 @@ const NewRequest = () => {
       .then((response) => {
         if (response.ok) {
           console.log("New inventory request added");
-          navigate("/employee-in-request-list");
+          navigate(getInventoryRequestListLink());
         } else {
           response.json().then((backendErrors) => {
             setErrors(backendErrors);
@@ -111,6 +111,13 @@ const NewRequest = () => {
       setItemId("");
       setAvailableQuantity(0);
     }
+  };
+
+  const getInventoryRequestListLink = () => {
+    if (LoginService.isAdmin()) return "/admin-in-request-list";
+    if (LoginService.isReqHandler()) return "/requestHandler/in-request-list";
+    if (LoginService.isEmployee()) return "/employee-in-request-list";
+    return "/default-request-list";
   };
 
   return (

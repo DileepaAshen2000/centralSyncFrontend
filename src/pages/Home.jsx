@@ -17,7 +17,7 @@ import EditItem from "./InventoryItem/EditItem";
 
 import AdminInRequestList from "./Request/AdminInRequestList";
 import AdminInRequestDocument from "./Request/AdminInRequestDocument";
-import InRequestHandlerRequestList from "./Request/InRequestHandlerInRequestList";
+import RequestHandlerRequestList from "./Request/RequestHandlerInRequestList";
 import InRequestHandlerInRequestDocument from "./Request/InRequestHandlerInRequestDocument";
 import EmployeeInRequestList from "./Request/EmployeeInRequestList";
 import InRequestDocument from "./Request/InRequestDocument";
@@ -172,8 +172,8 @@ const Home = () => {
                 ></Route>
                 {/*InRequest Handler view routing */}
                 <Route
-                  path="/in-requestHandler-in-request-list"
-                  element={<InRequestHandlerRequestList />}
+                  path="/requestHandler/in-request-list"
+                  element={<RequestHandlerRequestList />}
                 ></Route>
                 <Route
                   path="/in-request-handlerlist/in-request-document/:reqId"

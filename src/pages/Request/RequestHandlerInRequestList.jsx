@@ -10,7 +10,7 @@ import TabPanel from '@mui/lab/TabPanel';
 import LoginService from '../Login/LoginService'; // Ensure the path is correct
 
 // Table component to display data with a loading state
-function Table({ rows, columns, loading, onRowClick }) {
+const Table = ({ rows, columns, loading, onRowClick }) => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -49,19 +49,24 @@ function Table({ rows, columns, loading, onRowClick }) {
       />
     </div>
   );
-}
+};
+
+// SectionHeader component for displaying section headers
+const SectionHeader = ({ title, color }) => (
+  <Box sx={{ backgroundColor: color, padding: '16px', textAlign: 'center', color: 'white' }}>
+    <h2>{title}</h2>
+  </Box>
+);
 
 // Main component for displaying employee requests and items
-const EmployeeInRequestList = () => {
+const RequestHandlerInRequestList = () => {
   const navigate = useNavigate();
-  const [isEmployee, setIsEmployee] = useState(false);
   const [isReqHandler, setIsReqHandler] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [value, setValue] = useState('1');
-  const [requestRows, setRequestRows] = useState([]);
-  const [itemsRows, setItemsRows] = useState([]);
+  const [reviewingRequestRows, setReviewingRequestRows] = useState([]);
+  const [myRequestRows, setMyRequestRows] = useState([]);
+  const [itemsOnHandRows, setItemsOnHandRows] = useState([]); // New state for items on hand
   const [loadingRequests, setLoadingRequests] = useState(true);
-  const [loadingItems, setLoadingItems] = useState(true);
 
   useEffect(() => {
     checkEmployeeStatus();
@@ -69,55 +74,28 @@ const EmployeeInRequestList = () => {
   }, []);
 
   const checkEmployeeStatus = () => {
-    setIsEmployee(LoginService.isEmployee());
     setIsReqHandler(LoginService.isReqHandler());
-    setIsAdmin(LoginService.isAdmin());
-  };
-
-  const fetchItemDetails = async (itemId) => {
-    try {
-      const response = await axios.get(`http://localhost:8080/inventory-item/getById/${itemId}`);
-      return response.data.itemName;
-    } catch (error) {
-      console.error(`Failed to fetch item details for itemId ${itemId}:`, error);
-      return '';
-    }
   };
 
   const fetchRequestsData = async () => {
     try {
-      const userId = LoginService.returnUserID();
-      const response = await axios.get(`http://localhost:8080/request/user/${userId}`);
+      const response = await axios.get('http://localhost:8080/request/getAll');
       let data = formatRequestsData(response.data);
 
-      const acceptedItems = data.filter(item => item.status === 'ACCEPTED' || item.status === 'WANT_TO_RETURN_ITEM');
-      const acceptedItemDetailsPromises = acceptedItems.map(item => fetchItemDetails(item.itemId));
-      const acceptedItemNames = await Promise.all(acceptedItemDetailsPromises);
+      // Filtering requests based on role
+      const reviewingRequests = data.filter(item => item.role === 'EMPLOYEE');
+      const myRequests = data.filter(item => item.role === 'REQUEST_HANDLER' && item.status !== 'ACCEPTED' && item.status !== 'WANT_TO_RETURN_ITEM'); // Filter out ACCEPTED and WANT_TO_RETURN_ITEM statuses
+      const itemsOnHand = data.filter(item => item.status === 'ACCEPTED' || item.status === 'WANT_TO_RETURN_ITEM'); // Filter for items on hand
 
-      const acceptedItemsWithNames = acceptedItems.map((item, index) => ({
-        ...item,
-        itemName: acceptedItemNames[index],
-      }));
+      // Add sequential IDs
+      setReviewingRequestRows(reviewingRequests.map((item, index) => ({ ...item, id: index + 1 })));
+      setMyRequestRows(myRequests.map((item, index) => ({ ...item, id: index + 1 })));
+      setItemsOnHandRows(itemsOnHand.map((item, index) => ({ ...item, id: index + 1 })));
 
-      setRequestRows(data);
       setLoadingRequests(false);
-
-      const receivedItems = data.filter(item => item.status === 'RECEIVED');
-      const itemDetailsPromises = receivedItems.map(item => fetchItemDetails(item.itemId));
-      const itemNames = await Promise.all(itemDetailsPromises);
-
-      const receivedItemsWithNames = receivedItems.map((item, index) => ({
-        ...item,
-        itemName: itemNames[index],
-      }));
-
-      setItemsRows(receivedItemsWithNames.concat(acceptedItemsWithNames));
-      setLoadingItems(false);
-
     } catch (error) {
       console.error('Failed to fetch inventory requests:', error);
       setLoadingRequests(false);
-      setLoadingItems(false);
     }
   };
 
@@ -128,7 +106,7 @@ const EmployeeInRequestList = () => {
           ...inventoryRequest.creationDateTime.slice(0, 6)
         );
         return {
-          id: index + 1,
+          id: index + 1, // Temporary ID, will be reassigned later
           date: createdDate.toLocaleDateString('en-US'),
           time: createdDate.toLocaleTimeString('en-US'),
           reason: inventoryRequest.reason,
@@ -137,22 +115,20 @@ const EmployeeInRequestList = () => {
           createdDateTime: createdDate,
           receivedDate: inventoryRequest.updateDateTime ? new Date(...inventoryRequest.updateDateTime.slice(0, 6)).toLocaleDateString('en-US') : '',
           itemId: inventoryRequest.itemId,
+          itemName: inventoryRequest.itemName,  // Assuming the itemName field exists in your data
           workSite: inventoryRequest.workSite,
           reqId: inventoryRequest.reqId,
+          role: inventoryRequest.role,  // Adding role field
         };
       })
-      .sort((a, b) => b.createdDateTime - a.createdDateTime)
-      .map((item, index) => ({
-        ...item,
-        id: index + 1,
-      }));
+      .sort((a, b) => b.createdDateTime - a.createdDateTime);
   };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const requestColumns = [
+  const columns = [
     { field: 'id', headerName: 'Inventory Request No:', width: 200 },
     { field: 'date', headerName: 'Date', width: 200 },
     { field: 'time', headerName: 'Time', width: 200 },
@@ -177,6 +153,11 @@ const EmployeeInRequestList = () => {
           case 'SENT_TO_ADMIN':
             backgroundColor = '#FFFFE0';
             break;
+          case 'WANT_TO_RETURN_ITEM':
+            backgroundColor = '#FFCC00';
+            break;
+          default:
+            backgroundColor = '#FFFFFF';
         }
         return (
           <Box 
@@ -195,24 +176,15 @@ const EmployeeInRequestList = () => {
     },
   ];
 
-  const itemsColumns = [
-    { field: 'id', headerName: 'No:', width: 200 },
+  // New columns for "Items On My Hand"
+  const itemsOnHandColumns = [
+    { field: 'id', headerName: 'Inventory Request No:', width: 200 },
     { field: 'itemName', headerName: 'Item Name', width: 250 },
     { field: 'date', headerName: 'Received Date', width: 300 },
     { field: 'quantity', headerName: 'Requested Quantity', width: 250 },
   ];
 
-  const renderSectionHeader = () => {
-    if (isEmployee) {
-      return <SectionHeader title="Inventory Requests" color="#00008B" />;
-    }
-    if (isReqHandler || isAdmin) {
-      return <SectionHeader title="Employee Inventory Requests List" color="#00008B" />;
-    }
-    return null;
-  };
-
-  const filteredRequestRows = requestRows.filter(row => row.status !== 'ACCEPTED'&& row.status!=='WANT_TO_RETURN_ITEM');
+  const filteredReviewingRequestRows = reviewingRequestRows.filter(row => row.status !== 'ACCEPTED' && row.status !== 'WANT_TO_RETURN_ITEM');
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -228,26 +200,37 @@ const EmployeeInRequestList = () => {
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleChange} aria-label="lab API tabs example">
-            <Tab label="My Requests" value="1" />
-            <Tab label="Items in My Hand" value="2" />
+            <Tab label="Employee Requests" value="1"/>
+            <Tab label="My Requests" value="2" />
+            <Tab label="Items On My Hand" value="3" /> {/* New tab for Items On My Hand */}
           </TabList>
         </Box>
         <TabPanel value="1">
-          {renderSectionHeader()}
+          <SectionHeader title="Employee Inventory Requests List" color="#3f51b5" />
           <Table 
-            rows={filteredRequestRows} 
-            columns={requestColumns} 
+            rows={filteredReviewingRequestRows} 
+            columns={columns} 
             loading={loadingRequests} 
             onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
           />
         </TabPanel>
 
         <TabPanel value="2">
-          <SectionHeader title="Items In My Hand" color="#6a1b9a" />
+          <SectionHeader title="My Inventory Requests" color="#3f51b5" />
           <Table 
-            rows={itemsRows} 
-            columns={itemsColumns} 
-            loading={loadingItems} 
+            rows={myRequestRows} 
+            columns={columns} 
+            loading={loadingRequests} 
+            onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
+          />
+        </TabPanel>
+
+        <TabPanel value="3"> {/* New TabPanel for Items On My Hand */}
+          <SectionHeader title="Items On My Hand" color="#3f51b5" />
+          <Table 
+            rows={itemsOnHandRows} 
+            columns={itemsOnHandColumns} 
+            loading={loadingRequests} 
             onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
           />
         </TabPanel>
@@ -256,13 +239,4 @@ const EmployeeInRequestList = () => {
   );
 };
 
-// SectionHeader component for displaying section headers
-const SectionHeader = ({ title, color }) => {
-  return (
-    <Box sx={{ backgroundColor: color, padding: '16px', textAlign: 'center', color: 'white' }}>
-      <h2>{title}</h2>
-    </Box>
-  );
-};
-
-export default EmployeeInRequestList;
+export default RequestHandlerInRequestList;
