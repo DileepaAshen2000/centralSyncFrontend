@@ -6,10 +6,13 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Typography, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Alert, AlertTitle, CircularProgress, Box } from '@mui/material';
+import { Typography, Button, Alert, AlertTitle, CircularProgress, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import ReactToPrint from 'react-to-print';
+import LoginService from '../Login/LoginService';
+import { set } from 'date-fns';
+
 
 const formatDateTime = (dateTimeArray) => {
   if (!dateTimeArray) return '';
@@ -30,9 +33,11 @@ const buttonColor = (reqStatus, updateDateTime) => {
         <div style={{ marginLeft: '67px' }}>Time {time}</div>
       </Alert>
     );
-  } else if (reqStatus === 'REJECTED') {
+  }
+  else if (reqStatus === 'REJECTED') {
     return (
       <Alert severity="error" sx={{ width: '300px', margin: 5 }}>
+         <AlertTitle>Rejected</AlertTitle>
         <div>Updated: Date {date}</div>
         <div style={{ marginLeft: '67px' }}>Time {time}</div>
       </Alert>
@@ -40,13 +45,38 @@ const buttonColor = (reqStatus, updateDateTime) => {
   } else if (reqStatus === 'ACCEPTED') {
     return (
       <Alert severity="success" sx={{ width: '300px', margin: 5 }}>
+        <AlertTitle>Accepted</AlertTitle>
         <div>Updated: Date {date}</div>
         <div style={{ marginLeft: '67px' }}>Time {time}</div>
       </Alert>
     );
   } else if (reqStatus === 'SENT_TO_ADMIN') {
     return (
-      <Alert severity="warning" sx={{ width: '300px', margin: 5 }}>
+      <Alert severity="warning"
+        sx={{
+          width: '300px',
+          margin: 5,
+          backgroundColor: '#FFFFE0',
+          color: 'black'
+        }}>
+          <AlertTitle>Sent To Admin</AlertTitle>
+        <div>Updated: Date {date}</div>
+        <div style={{ marginLeft: '67px' }}>Time {time}</div>
+      </Alert>
+    );
+  }
+  else if (reqStatus === 'WANT_TO_RETURN_ITEM') {
+    return (
+      <Alert
+        severity="info"
+        sx={{
+          width: '300px',
+          margin: 5,
+          backgroundColor: '#D3D3D3',
+          color: 'black'
+        }}
+      >
+        <AlertTitle>Want to retun item</AlertTitle>
         <div>Updated: Date {date}</div>
         <div style={{ marginLeft: '67px' }}>Time {time}</div>
       </Alert>
@@ -54,19 +84,36 @@ const buttonColor = (reqStatus, updateDateTime) => {
   }
 };
 
-const InRequestDocument = () => {
+const RequestDocument = () => {
   const { reqId } = useParams();
   const [inventoryRequest, setInventoryRequest] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
   const [itemDetails, setItemDetails] = useState(null);
-  const [loading, setLoading] = useState(true); // New state for loading
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [note, setNote] = useState('');
   const printRef = useRef();
-  const [email, setEmail] = useState('');
-  const [dialogOpen, setDialogOpen] = useState(false);
+
+
+  const [open, setOpen] = useState(false);
+  const [openID, setOpenID] = useState(false); // Added state for the item return dialog
+
+  const handleClickItemReturn = () => { 
+    setOpenID(true); 
+  };
+
+  const handleClose = () => {
+    setOpenID(false);
+  };
+
+  const [workSite, setWorkSite] = useState('');
+
+  const fetchWorkSite = () => {
+    setWorkSite(workSite);
+  };
 
   useEffect(() => {
+    fetchWorkSite();
     const fetchInventoryRequest = async () => {
       setLoading(true); // Start loading
       try {
@@ -90,17 +137,14 @@ const InRequestDocument = () => {
     fetchInventoryRequest();
   }, [reqId]);
 
-  const handleDispatch = (email) => {
-    axios
-      .patch(`http://localhost:8080/request/updateStatus/dispatch/${reqId}?email=${email}`)
-      .then(() => {
-        setInventoryRequest(!inventoryRequest);
-        setDialogOpen(false);
-        navigate(`/new-stockout`);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const fetchAdminDetails = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/user/users/1');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching admin details:', error);
+      return null;
+    }
   };
 
   const handleReject = () => {
@@ -115,20 +159,65 @@ const InRequestDocument = () => {
       });
   };
 
-  const handleOpenDialog = () => {
-    setDialogOpen(true);
+  const handleAccept = () => {
+    axios
+      .patch(`http://localhost:8080/request/updateStatus/accept/${reqId}`)
+      .then(() => {
+        setInventoryRequest(!inventoryRequest);
+        navigate("/admin-inventory-request-list");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  const handleCloseDialog = () => {
-    setDialogOpen(false);
-  };
+  const handleItemReturn = async () => {
+    try {
 
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
-  };
+      const adminDetails = await fetchAdminDetails();
+      if (!adminDetails) {
+        throw new Error('Failed to fetch admin details');
+      }
+      const emailSubject = `Want To Item Returning: Ref No ${inventoryRequest.reqId}`;
 
-  const handleSubmitEmail = () => {
-    handleDispatch(email);
+      const emailBody = `
+        <h2>Want To Return Item</h2>
+        <p>The user has confirmed Want to Return item with the following details:</p>
+        <table border="1" cellpadding="5" cellspacing="0">
+          <tr><th>Ref No:</th><td>${inventoryRequest.reqId}</td></tr>
+          <tr><th>Emp. ID:</th><td>${userDetails.userId}</td></tr>
+          <tr><th>User Name:</th><td>${userDetails.firstName} ${userDetails.lastName}</td></tr>
+          <tr><th>Department:</th><td>${userDetails.department}</td></tr>
+          <tr><th>Item ID:</th><td>${inventoryRequest.itemId}</td></tr>
+          <tr><th>Item Name:</th><td>${itemDetails.itemName}</td></tr>
+          <tr><th>Item Group:</th><td>${itemDetails.itemGroup}</td></tr>
+          <tr><th>Quantity:</th><td>${inventoryRequest.quantity}</td></tr>
+        </table>
+      `;
+
+      await axios.post('http://localhost:8080/request/sendMimeEmail',null, {
+        params: {
+        toEmail: adminDetails.email,
+        subject: emailSubject,
+        body: emailBody,
+        }
+      });
+      console.log('Email sent successfully');
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
+
+    // Update item return status
+    axios
+      .patch(`http://localhost:8080/request/updateStatus/ItemWantToReturn/${reqId}`)
+      .then(() => {
+        setInventoryRequest(!inventoryRequest);
+        navigate(`/employee/in-request-document/${reqId}`);
+        handleClose(); // Close the dialog
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const handleSendNote = () => {
@@ -146,6 +235,26 @@ const InRequestDocument = () => {
     }
   };
 
+  const handleFileDownload = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/request/getFileById/${reqId}`, { responseType: 'blob' });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'Inventory_Request_Document.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      setOpen(true);
+    } catch (error) {
+      console.error('Error downloading PDF file:', error);
+    }
+  };
+
+
+
   const role = localStorage.getItem('role');
 
   if (loading) {
@@ -158,9 +267,18 @@ const InRequestDocument = () => {
 
   return (
     <div>
+
+      {role === 'EMPLOYEE' && (
+        <div>
+          <p className='text-gray-500'>Any Inquiry,</p>
+          <Button className="px-6 py-2 hover:bg-white-400" variant='outlined' onClick={() => navigate("/newTicket")}>
+            Create A Ticket
+          </Button>
+        </div>
+      )}
       <main>
         <div className="flex items-end justify-end p-6 mr-10 space-x-10">
-          {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' && role !== ('ADMIN' || 'REQUEST_HANDLER') && (
+          {inventoryRequest.reqStatus === 'PENDING' && role === 'EMPLOYEE' && (
             <Button
               className="px-6 py-2 text-white bg-blue-600 rounded"
               variant='contained'
@@ -184,9 +302,13 @@ const InRequestDocument = () => {
           style={{ width: '1000px', height: '1000px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
           <div>
             <section>
-              <div className="w-full bg-blue-900 text-white text-center py-4">
-                <header className="text-3xl font-bold">INVENTORY REQUEST</header>
-              </div>
+              
+                
+               
+                <div className="w-full  bg-blue-900 text-white text-center py-4">
+                  <header className="text-3xl font-bold">INVENTORY REQUEST</header>
+                </div>
+        
               {inventoryRequest && buttonColor(inventoryRequest.reqStatus, inventoryRequest.updateDateTime)}
             </section>
           </div>
@@ -241,8 +363,19 @@ const InRequestDocument = () => {
               <div className="w-2/3">
                 <Typography variant="body2">{inventoryRequest?.description}</Typography>
               </div>
+              <div className='mt-6'>
+                <h1>Download File:</h1>
+                <button onClick={handleFileDownload}> {workSite === "ONLINE" ? (<u><span className="text-blue-800">Click to download attched file with Delivery Request</span></u>) :
+                  (<u><span className="text-blue-800">Click to download attched file with Inventory Request</span></u>)}</button>
+              </div>
+              <div className='mt-20 float-right ...'>
+                <Typography variant="caption" gutterBottom>
+                  Computer Generated Report By CENTRAL SYNC &#174; | No Signature Required.
+                </Typography>
+              </div>
             </div>
           )}
+
         </div>
 
         {inventoryRequest?.reqStatus === 'PENDING' && role !== 'EMPLOYEE' && (
@@ -268,17 +401,20 @@ const InRequestDocument = () => {
         )}
 
         <div className='flex justify-end gap-4 ml-[60%] mt-6'>
-          {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' &&role !== 'EMPLOYEE' &&  (
+        {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' && role !== 'EMPLOYEE' && (
             <>
               <Button
                 className="px-6 py-2 bg-green-500 text-white hover:bg-green-400"
                 variant='contained'
                 type='submit'
-                onClick={handleOpenDialog}
+                onClick={handleAccept}
               >
                 Accept
               </Button>
-
+            </>
+          )}
+          {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' && role !== 'EMPLOYEE' && (
+            <>
               <Button
                 className="px-6 py-2 bg-red-500 text-white hover:bg-red-400"
                 variant='contained'
@@ -289,43 +425,58 @@ const InRequestDocument = () => {
               </Button>
             </>
           )}
+
+          {inventoryRequest && inventoryRequest.reqStatus === 'ACCEPTED' && role === 'EMPLOYEE' && (
+            <>
+              <Button
+                className="px-6 py-2 bg-purple-500 text-white hover:bg-purple-400"
+                variant='variant'
+                type='submit'
+                onClick={handleClickItemReturn}
+              >
+
+                Return Item
+              </Button>
+            </>)}
+          <Dialog
+            open={openID}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle>
+              {"Are you sure you want to return this Item to Company?"}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                By clicking on "Yes" you will mark your confirming return the item.<br />
+                (After one or two days you will be contacted by the company admin section)
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose} color="primary">
+                No
+              </Button>
+              <Button onClick={handleItemReturn} color="primary" autoFocus>
+                Yes
+              </Button>
+            </DialogActions>
+          </Dialog>
           <Button
             className="px-6 py-2 hover:bg-white-400"
             variant='outlined'
             type='submit'
             onClick={() => navigate("/employee-in-request-list")}
           >
+
             Cancel
           </Button>
         </div>
 
-        {/* Dialog for email input */}
-        <Dialog open={dialogOpen} onClose={handleCloseDialog}>
-          <DialogTitle>Enter Email Address</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Please enter the delivery service's email address to send a confirmation link.
-            </DialogContentText>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="email"
-              label="Email Address"
-              type="email"
-              fullWidth
-              variant="standard"
-              value={email}
-              onChange={handleEmailChange}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleSubmitEmail}>Submit</Button>
-            <Button onClick={handleCloseDialog}>Cancel</Button>
-          </DialogActions>
-        </Dialog>
+
       </main>
     </div>
   );
 }
 
-export default InRequestDocument;
+export default RequestDocument;
