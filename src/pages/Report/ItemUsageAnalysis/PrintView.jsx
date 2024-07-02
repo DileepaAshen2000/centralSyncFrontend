@@ -1,13 +1,13 @@
-import React,{forwardRef} from "react";
+import React, { forwardRef } from "react";
 import AvgCards from "./AvgCards";
 import UsageBarChart from "./ItemUsageBarGraph";
 import StockLineChart from "./StockIn&OutChart";
-import InsightTable from "./InsightTable1";
+import InsightTable from "./InsightTable";
 
-const PrintView = forwardRef(({ category, year },ref) => {
+const PrintView = forwardRef(({ category, year }, ref) => {
   return (
-    <div ref={ref}  className="grid grid-cols-10">
-       <h1 className="row start-1 col-span-10 text-3xl text-center p-10 ">
+    <div ref={ref} className="grid grid-cols-10">
+      <h1 className="row start-1 col-span-10 text-3xl text-center p-10 ">
         USAGE ANALYSIS OF ITEM CATEGORY {category}
         <br /> (JAN-DEC)
         <br /> {year}
@@ -33,9 +33,7 @@ const PrintView = forwardRef(({ category, year },ref) => {
         <InsightTable category={category} year={year} isOpen={true} />
       </div>
     </div>
-   
   );
-})
-
+});
 
 export default PrintView;

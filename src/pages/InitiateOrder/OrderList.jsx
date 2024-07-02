@@ -1,6 +1,6 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -42,29 +42,31 @@ const columns = [
 
 const OrderDataGrid = () => {
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState();
   const [rows, setRows] = useState([]);
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/orders/getAll");
-      const data = response.data.map((order) => ({
-        id: order.orderId,
-        email_address: order.vendorEmail,
-        vendor_name: order.vendorName,
-        date: order.date,
-        status: order.status,
-      }));
-      setRows(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get("http://localhost:8080/orders/getAll");
+        const data = response.data.map((order) => ({
+          id: order.orderId,
+          email_address: order.vendorEmail,
+          vendor_name: order.vendorName,
+          date: order.date,
+          status: order.status,
+        }));
+        setRows(data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchData();
-}, []);
-
+    fetchData();
+  }, []);
 
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
 
@@ -89,13 +91,13 @@ useEffect(() => {
         <p className="inline-block">Here are all orders!!</p>
         {rowSelectionModel > 0 ? (
           <>
-            <Button
+            {/* <Button
               variant="contained"
               className="bg-blue-600 px-6 py-2 text-white rounded left-[45%] w-[145px]"
               onClick={handleEdit}
             >
               Edit
-            </Button>
+            </Button> */}
 
             <Button
               variant="contained"
@@ -117,23 +119,28 @@ useEffect(() => {
       </Box>
 
       {/* Data grid component */}
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
+      {loading ? (
+        <div className="flex justify-center mostRequestedItems-center">
+          <CircularProgress />
+        </div>
+      ) : (
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 5,
+              },
             },
-          },
-        }}
-        autoHeight
-        pageSizeOptions={[5]}
-        checkboxSelection
-        disableRowSelectionOnClick
-        rowSelectionModel={rowSelectionModel}
-        onRowSelectionModelChange={handleRowSelectionModelChange}
-      />
+          }}
+          autoHeight
+          pageSizeOptions={[5]}
+          checkboxSelection
+          rowSelectionModel={rowSelectionModel}
+          onRowSelectionModelChange={handleRowSelectionModelChange}
+        />
+      )}
     </Box>
   );
 };

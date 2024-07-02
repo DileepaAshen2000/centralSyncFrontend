@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
-import { Button } from "@mui/material";
+import {
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { Button, Backdrop, CircularProgress } from "@mui/material";
 import Swal from "sweetalert2";
 import axios from "axios";
 
@@ -10,7 +16,7 @@ const AddItemForm = () => {
   const navigate = useNavigate();
 
   const [errors, setErrors] = useState({});
-
+  const [loading, setLoading] = useState(false);
   const [fetchData, setFetchData] = useState(false);
 
   //State for item object with properties -->initial state of properties=null
@@ -46,12 +52,14 @@ const AddItemForm = () => {
   const onItemGroupChange = (e) => {
     setInventoryItem({ ...inventoryItem, itemGroup: e.target.value });
   };
-  const onImageChange = (e) => {
+  const handleImageChange = (e) => {
     setInventoryItem({ ...inventoryItem, image: e.target.files[0] });
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    
     const formData = new FormData();
     formData.append(
       "item",
@@ -102,225 +110,240 @@ const AddItemForm = () => {
       if (error.response && error.response.status === 400) {
         setErrors(error.response.data);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14">
-      <h1 className="col-span-4 pt-2 text-3xl font-bold ">New item</h1>
+    <>
+      <form className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14">
+        <h1 className="col-span-4 pt-2 text-3xl font-bold ">New item</h1>
 
-      <div className="flex items-center col-span-4 col-start-1">
-        <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
-          Item Name
-        </InputLabel>
-        <div>
-          {errors.itemName && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">
-              {errors.itemName}
-            </div>
-          )}
-          <TextField
-            id="itemName"
-            value={itemName}
-            onChange={onInputChange}
-            variant="outlined"
-            InputProps={{
-              className: "w-[300px]   h-10 ml-5 bg-white  ",
-            }}
-          />
+        <div className="flex items-center col-span-4 col-start-1">
+          <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
+            Item Name
+          </InputLabel>
+          <div>
+            {errors.itemName && (
+              <div className="text-[#FC0000] text-xs ml-6 my-1">
+                {errors.itemName}
+              </div>
+            )}
+            <TextField
+              id="itemName"
+              value={itemName}
+              onChange={onInputChange}
+              variant="outlined"
+              InputProps={{
+                className: "w-[300px]   h-10 ml-5 bg-white  ",
+              }}
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="flex items-center col-span-4 col-start-1">
-        <InputLabel htmlFor="itemGroup" className="flex-none w-32 text-black ">
-          Item Group
-        </InputLabel>
-        <div className="flex-grow">
-          {errors.itemGroup && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">
-              {errors.itemGroup}
-            </div>
-          )}
-          <Select
-            id="itemGroup"
-            value={itemGroup}
-            onChange={onItemGroupChange}
-            className="w-[300px] h-10 ml-5 bg-white  "
+        <div className="flex items-center col-span-4 col-start-1">
+          <InputLabel
+            htmlFor="itemGroup"
+            className="flex-none w-32 text-black "
           >
-            {" "}
-            <MenuItem value="COMPUTERS_AND_LAPTOPS">
-              Computers & Laptops
-            </MenuItem>
-            <MenuItem value="COMPUTER_ACCESSORIES">
-              Computer Accessories
-            </MenuItem>
-            <MenuItem value="COMPUTER_HARDWARE">Computer Hardware</MenuItem>
-            <MenuItem value="PRINTERS_AND_SCANNERS">
-              Printers & Scanners
-            </MenuItem>
-            <MenuItem value="FURNITURE">Furniture</MenuItem>
-            <MenuItem value="OFFICE_SUPPLIES">Office Supplies</MenuItem>
-            <MenuItem value="OTHER">Other</MenuItem>
-          </Select>
+            Item Group
+          </InputLabel>
+          <div className="flex-grow">
+            {errors.itemGroup && (
+              <div className="text-[#FC0000] text-xs ml-6 my-1">
+                {errors.itemGroup}
+              </div>
+            )}
+            <Select
+              id="itemGroup"
+              value={itemGroup}
+              onChange={onItemGroupChange}
+              className="w-[300px] h-10 ml-5 bg-white  "
+            >
+              {" "}
+              <MenuItem value="COMPUTERS_AND_LAPTOPS">
+                Computers & Laptops
+              </MenuItem>
+              <MenuItem value="COMPUTER_ACCESSORIES">
+                Computer Accessories
+              </MenuItem>
+              <MenuItem value="COMPUTER_HARDWARE">Computer Hardware</MenuItem>
+              <MenuItem value="PRINTERS_AND_SCANNERS">
+                Printers & Scanners
+              </MenuItem>
+              <MenuItem value="FURNITURE">Furniture</MenuItem>
+              <MenuItem value="OFFICE_SUPPLIES">Office Supplies</MenuItem>
+              <MenuItem value="OTHER">Other</MenuItem>
+            </Select>
+          </div>
         </div>
-      </div>
 
-      <div className="col-start-1 col-span-4 flex ">
-        <InputLabel htmlFor="unit" className="flex-none text-black w-32 ">
-          Unit
-        </InputLabel>
-        <div>
-          {errors.unit && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">
-              {errors.unit}
-            </div>
-          )}
-          <TextField
-            id="unit"
-            value={unit}
-            onChange={onInputChange}
-            variant="outlined"
-            InputProps={{
-              className: "w-[300px] h-10 ml-5 bg-white  ",
-            }}
-            helperText="Enter the quantity measurement unit(e.g., pcs, kg, boxes,)."
-          />
+        <div className="col-start-1 col-span-4 flex ">
+          <InputLabel htmlFor="unit" className="flex-none text-black w-32 ">
+            Unit
+          </InputLabel>
+          <div>
+            {errors.unit && (
+              <div className="text-[#FC0000] text-xs ml-6 my-1">
+                {errors.unit}
+              </div>
+            )}
+            <TextField
+              id="unit"
+              value={unit}
+              onChange={onInputChange}
+              variant="outlined"
+              InputProps={{
+                className: "w-[300px] h-10 ml-5 bg-white  ",
+              }}
+              helperText="Enter the quantity measurement unit(e.g., pcs, kg, boxes,)."
+            />
+          </div>
         </div>
-      </div>
-      <div className="flex items-center col-span-4 col-start-1">
-        <InputLabel htmlFor="brand" className="flex-none w-32 text-black ">
-          Brand
-        </InputLabel>
-        <div>
-          {errors.brand && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">
-              {errors.brand}
-            </div>
-          )}
-          <TextField
-            id="brand"
-            value={brand}
-            onChange={onInputChange}
-            variant="outlined"
-            InputProps={{
-              className: "w-[300px] h-10 ml-5 bg-white  ",
-            }}
-          />
+        <div className="flex items-center col-span-4 col-start-1">
+          <InputLabel htmlFor="brand" className="flex-none w-32 text-black ">
+            Brand
+          </InputLabel>
+          <div>
+            {errors.brand && (
+              <div className="text-[#FC0000] text-xs ml-6 my-1">
+                {errors.brand}
+              </div>
+            )}
+            <TextField
+              id="brand"
+              value={brand}
+              onChange={onInputChange}
+              variant="outlined"
+              InputProps={{
+                className: "w-[300px] h-10 ml-5 bg-white  ",
+              }}
+            />
+          </div>
         </div>
-      </div>
-      <div className="flex items-center col-span-4 col-start-1">
-        <InputLabel htmlFor="dimension" className="flex-none w-32 text-black">
-          Dimension
-        </InputLabel>
-        <div>
-          {errors.dimension && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">
-              {errors.dimension}
-            </div>
-          )}
-          <TextField
-            id="dimension"
-            value={dimension}
-            onChange={onInputChange}
-            variant="outlined"
-            InputProps={{
-              className: "w-[300px] h-10 ml-5 bg-white  ",
-            }}
-          />
+        <div className="flex items-center col-span-4 col-start-1">
+          <InputLabel htmlFor="dimension" className="flex-none w-32 text-black">
+            Dimension
+          </InputLabel>
+          <div>
+            {errors.dimension && (
+              <div className="text-[#FC0000] text-xs ml-6 my-1">
+                {errors.dimension}
+              </div>
+            )}
+            <TextField
+              id="dimension"
+              value={dimension}
+              onChange={onInputChange}
+              variant="outlined"
+              InputProps={{
+                className: "w-[300px] h-10 ml-5 bg-white  ",
+              }}
+            />
+          </div>
         </div>
-      </div>
-      <div className="col-start-1 col-span-4 flex items-center">
-        <InputLabel htmlFor="weight" className="flex-none text-black  w-32">
-          Weight
-        </InputLabel>
-        <div>
-          {errors.weight && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">
-              {errors.weight}
-            </div>
-          )}
-          <TextField
-            id="weight"
-            value={weight}
-            onChange={onInputChange}
-            variant="outlined"
-            InputProps={{
-              className: "w-[300px] h-10 ml-5 bg-white  ",
-            }}
-          />
+        <div className="col-start-1 col-span-4 flex items-center">
+          <InputLabel htmlFor="weight" className="flex-none text-black  w-32">
+            Weight
+          </InputLabel>
+          <div>
+            {errors.weight && (
+              <div className="text-[#FC0000] text-xs ml-6 my-1">
+                {errors.weight}
+              </div>
+            )}
+            <TextField
+              id="weight"
+              value={weight}
+              onChange={onInputChange}
+              variant="outlined"
+              InputProps={{
+                className: "w-[300px] h-10 ml-5 bg-white  ",
+              }}
+            />
+          </div>
         </div>
-      </div>
-      <div className="col-start-1 col-span-4 flex ">
-        <InputLabel
-          htmlFor="description"
-          className="flex-none w-32 mt-0 text-black"
-        >
-          Description
-        </InputLabel>
-        <TextField
-          id="description"
-          value={description}
-          onChange={onInputChange}
-          variant="outlined"
-          multiline
-          rows={6}
-          InputProps={{
-            className: "w-[500px] ml-5 bg-white  ",
-          }}
-        />
-      </div>
-      <div className="flex items-center col-span-4 col-start-1">
-        <InputLabel htmlFor="quantity" className="flex-none w-32 text-black ">
-          Initial Quantity
-        </InputLabel>
-        <div>
-          {errors.quantity && (
-            <div className="text-[#FC0000] text-xs ml-6 my-1">
-              {errors.quantity}
-            </div>
-          )}
+        <div className="col-start-1 col-span-4 flex ">
+          <InputLabel
+            htmlFor="description"
+            className="flex-none w-32 mt-0 text-black"
+          >
+            Description
+          </InputLabel>
           <TextField
-            id="quantity"
-            value={quantity}
+            id="description"
+            value={description}
             onChange={onInputChange}
             variant="outlined"
+            multiline
+            rows={6}
             InputProps={{
-              className: "w-[300px] h-10 ml-5 bg-white  ",
+              className: "w-[500px] ml-5 bg-white  ",
             }}
           />
         </div>
-       
-      </div>
-      <div className="col-start-1  col-span-5 flex-row ">
-      <Typography display="block" gutterBottom>
-           Upload an image
+        <div className="flex items-center col-span-4 col-start-1">
+          <InputLabel htmlFor="quantity" className="flex-none w-32 text-black ">
+            Initial Quantity
+          </InputLabel>
+          <div>
+            {errors.quantity && (
+              <div className="text-[#FC0000] text-xs ml-6 my-1">
+                {errors.quantity}
+              </div>
+            )}
+            <TextField
+              id="quantity"
+              value={quantity}
+              onChange={onInputChange}
+              variant="outlined"
+              InputProps={{
+                className: "w-[300px] h-10 ml-5 bg-white  ",
+              }}
+            />
+          </div>
+        </div>
+        <div className="col-start-1  col-span-5 flex-row ">
+          {errors.image && (
+            <div className="text-[#FC0000] text-xs  my-1">{errors.image}</div>
+          )}
+          <Typography display="block" gutterBottom>
+            Upload an image
           </Typography>
           <div>
             <input
               type="file"
               id="image"
               accept="image/*"
-              onChange={onImageChange}
+              onChange={handleImageChange}
               className="mt-4 mb-2"
             />
           </div>
         </div>
-        
-      <Button
-        variant="contained"
-        className="col-start-6 bg-blue-600 rounded-sm row-start-11 "
-        onClick={handleSave}
+
+        <Button
+          variant="contained"
+          className="col-start-6 bg-blue-600 rounded-sm row-start-11 "
+          onClick={handleSave}
+        >
+          Save
+        </Button>
+        <Button
+          variant="outlined"
+          className="col-start-8 bg-white rounded-sm row-start-11 text-blue-60-lue-600 "
+          onClick={() => navigate("/item")}
+        >
+          Cancel
+        </Button>
+      </form>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
       >
-        Save
-      </Button>
-      <Button
-        variant="outlined"
-        className="col-start-8 bg-white rounded-sm row-start-11 text-blue-60-lue-600 "
-        onClick={() => navigate("/item")}
-      >
-        Cancel
-      </Button>
-    </form>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </>
   );
 };
 

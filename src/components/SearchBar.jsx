@@ -18,7 +18,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,9 +28,10 @@ const SearchBar = () => {
   const [noResult, setNoResult] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const fetchItemName = async () => {
+    const fetchItemNames = async () => {
       try {
         const response = await axios.get(
           "http://localhost:8080/inventory-item/getAll"
@@ -45,25 +46,34 @@ const SearchBar = () => {
       }
     };
 
-    fetchItemName();
+    fetchItemNames();
   }, []);
 
-  const handleSearch = async () => {
+  const handleSearch = async (term) => {
+    if (!term) {
+      return;
+    }
     try {
       const response = await axios.get(
-        `http://localhost:8080/inventory-item/search?itemName=${searchTerm}&itemGroup=${selectedCategories}`
+        `http://localhost:8080/inventory-item/search?itemName=${term}&itemGroup=${selectedCategories}`
       );
       if (response.status === 200) {
         if (response.data.length === 0) {
           setNoResult(true);
         } else {
           navigate("/search-result", {
-            state: { searchResult: response.data },
+            state: {
+              searchResult: response.data,
+              currentRoute: location.pathname,
+              searchTerm: term,
+            },
           });
         }
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setSearchTerm("");
     }
   };
 
@@ -118,8 +128,13 @@ const SearchBar = () => {
               self.findIndex((t) => t.itemName === item.itemName) === index
           )
           .map((item) => item.itemName)}
+        onChange={(event, selectedOption) => {
+          if (selectedOption) {
+            setSearchTerm(selectedOption);
+            handleSearch(selectedOption);
+          }
+        }}
         onInputChange={(event, newSearchTerm) => setSearchTerm(newSearchTerm)}
-        // onClick={handleSearch}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -127,30 +142,31 @@ const SearchBar = () => {
             variant="outlined"
             InputProps={{
               ...params.InputProps,
+              className: "text-gray-500 m-2 h-[30px] ",
               startAdornment: (
-                <InputAdornment position="end">
+                <InputAdornment position="start">
                   <IconButton onClick={handleFilterClick}>
                     <FilterListIcon className="mr-0" />
                   </IconButton>
                 </InputAdornment>
               ),
               endAdornment: (
-                <InputAdornment position="start">
+                <InputAdornment position="end">
                   <SearchIcon
-                    onClick={handleSearch}
+                    onClick={() => handleSearch(searchTerm)}
                     style={{ cursor: "pointer" }}
                   />
                 </InputAdornment>
               ),
-              className: "text-gray-500 m-2 h-[30px] border-rounded-2xl ",
-              sx: {
-                "&:focus-within .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "transparent",
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "transparent",
-                },
-              },
+
+              // sx: {
+              //   "&:focus-within .MuiOutlinedInput-notchedOutline": {
+              //     borderColor: "transparent",
+              //   },
+              //   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              //     borderColor: "transparent",
+              //   },
+              // },
             }}
           />
         )}
@@ -181,7 +197,7 @@ const SearchBar = () => {
             <Button
               className="rounded-sm text-black"
               variant="outlined"
-              onClick={handleSearch}
+              onClick={() => handleSearch(searchTerm)}
             >
               Apply Filters
             </Button>
@@ -189,7 +205,7 @@ const SearchBar = () => {
         </div>
       </Popover>
       <Dialog open={noResult} onClose={handleClose}>
-        <DialogTitle>Sorry</DialogTitle>
+        <DialogTitle>Sorry!</DialogTitle>
         <DialogContent>
           <DialogContentText>
             No results were found for "{searchTerm}"
