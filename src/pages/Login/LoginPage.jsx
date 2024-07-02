@@ -25,7 +25,7 @@ export default function LoginPage() {
                 case 'ADMIN':
                   navigate('/admin-dashboard');
                   break;
-                case 'REQ_HANDLER':
+                case 'REQUEST_HANDLER':
                   navigate('/request-handler-dashboard');
                   break;
                 case 'EMPLOYEE':

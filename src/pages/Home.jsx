@@ -15,15 +15,15 @@ import AddItemForm from "./InventoryItem/NewItem";
 import ViewItemDetails from "./InventoryItem/ViewDetails";
 import EditItem from "./InventoryItem/EditItem";
 
-import AdminInRequestList from "./InventoryRequest/AdminInRequestList";
-import AdminInRequestDocument from "./InventoryRequest/AdminInRequestDocument";
-import InRequestHandlerRequestList from "./InventoryRequest/InRequestHandlerInRequestList";
-import InRequestHandlerInRequestDocument from "./InventoryRequest/InRequestHandlerInRequestDocument";
-import EmployeeInRequestList from "./InventoryRequest/EmployeeInRequestList";
-import InRequestDocument from "./InventoryRequest/InRequestDocument";
-import DeliveryRequestDocument from "./InventoryRequest/DeliveryRequestDocument";
-import CreateNewIDRequest from "./InventoryRequest/CreateNewIDRequest";
-import EditRequest from "./InventoryRequest/EditInRequest";
+import AdminInRequestList from "./Request/AdminInRequestList";
+import AdminInRequestDocument from "./Request/AdminInRequestDocument";
+import InRequestHandlerRequestList from "./Request/InRequestHandlerInRequestList";
+import InRequestHandlerInRequestDocument from "./Request/InRequestHandlerInRequestDocument";
+import EmployeeInRequestList from "./Request/EmployeeInRequestList";
+import InRequestDocument from "./Request/InRequestDocument";
+import DeliveryRequestDocument from "./Request/DeliveryRequestDocument";
+import CreateNewIDRequest from "./Request/CreateNewIDRequest";
+import EditRequest from "./Request/EditInRequest";
 
 import UserActivityHistory from "./User/History";
 import EditAdjustment from "./Adjustment/EditAdjustment";
@@ -192,7 +192,7 @@ const Home = () => {
                   path="/employee/delivery-request-document/:reqId"
                   element={<DeliveryRequestDocument />}
                 ></Route>
-                {/*Common views for three actors rounting*/}
+                {/*Common views for three actors routing*/}
                 <Route
                   path="/in-request/create-new-in-request"
                   element={<CreateNewIDRequest />}
