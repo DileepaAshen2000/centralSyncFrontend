@@ -18,7 +18,7 @@ const AddItemForm = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [fetchData, setFetchData] = useState(false);
-
+  const [validationErrors, setValidationErrors] = useState({});
   //State for item object with properties -->initial state of properties=null
   const [inventoryItem, setInventoryItem] = useState({
     itemName: "",
@@ -46,7 +46,8 @@ const AddItemForm = () => {
   } = inventoryItem;
 
   const onInputChange = (e) => {
-    setInventoryItem({ ...inventoryItem, [e.target.id]: e.target.value });
+    setInventoryItem({ ...inventoryItem, [e.target.name]: e.target.value });
+    setValidationErrors({ ...validationErrors, [e.target.name]: "" });
   };
 
   const onItemGroupChange = (e) => {
@@ -58,8 +59,13 @@ const AddItemForm = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    const frontEndValidation = validateInputs();
+    if (Object.keys(frontEndValidation).length > 0) {
+      setValidationErrors(frontEndValidation);
+      // return;
+    }
     setLoading(true);
-    
+
     const formData = new FormData();
     formData.append(
       "item",
@@ -114,10 +120,38 @@ const AddItemForm = () => {
       setLoading(false);
     }
   };
+  const validateInputs = () => {
+    const errors = {};
+    if (!itemName) {
+      errors.itemName = "Item Name is required";
+    }
+    if (!itemGroup) {
+      errors.itemGroup = "Item group is required";
+    }
+    if (!unit) {
+      errors.itemGroup = "Unit is required";
+    }
+    if (!brand) {
+      errors.itemGroup = "Brand is required is required";
+    }
+    if (!dimension) {
+      errors.itemGroup = "Dimension is required";
+    }
+    if (!weight) {
+      errors.itemGroup = "Weight is required";
+    }
+    if (!quantity) {
+      errors.itemGroup = "Quantity is required";
+    }
+    return errors;
+  };
 
   return (
     <>
-      <form className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14">
+      <form
+        onSubmit={(e) => handleSave(e)}
+        className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14"
+      >
         <h1 className="col-span-4 pt-2 text-3xl font-bold ">New item</h1>
 
         <div className="flex items-center col-span-4 col-start-1">
@@ -131,10 +165,12 @@ const AddItemForm = () => {
               </div>
             )}
             <TextField
-              id="itemName"
+              name="itemName"
               value={itemName}
               onChange={onInputChange}
               variant="outlined"
+              error={!!validationErrors.itemName}
+              helperText={validationErrors.itemName}
               InputProps={{
                 className: "w-[300px]   h-10 ml-5 bg-white  ",
               }}
@@ -156,7 +192,7 @@ const AddItemForm = () => {
               </div>
             )}
             <Select
-              id="itemGroup"
+              name="itemGroup"
               value={itemGroup}
               onChange={onItemGroupChange}
               className="w-[300px] h-10 ml-5 bg-white  "
@@ -190,10 +226,12 @@ const AddItemForm = () => {
               </div>
             )}
             <TextField
-              id="unit"
+              name="unit"
               value={unit}
               onChange={onInputChange}
               variant="outlined"
+              error={!!validationErrors.unit}
+              // helperText={validationErrors.unit}
               InputProps={{
                 className: "w-[300px] h-10 ml-5 bg-white  ",
               }}
@@ -212,10 +250,12 @@ const AddItemForm = () => {
               </div>
             )}
             <TextField
-              id="brand"
+              name="brand"
               value={brand}
               onChange={onInputChange}
               variant="outlined"
+              error={!!validationErrors.brand}
+              helperText={validationErrors.brand}
               InputProps={{
                 className: "w-[300px] h-10 ml-5 bg-white  ",
               }}
@@ -233,10 +273,12 @@ const AddItemForm = () => {
               </div>
             )}
             <TextField
-              id="dimension"
+              name="dimension"
               value={dimension}
               onChange={onInputChange}
               variant="outlined"
+              error={!!validationErrors.dimension}
+              helperText={validationErrors.dimension}
               InputProps={{
                 className: "w-[300px] h-10 ml-5 bg-white  ",
               }}
@@ -254,10 +296,12 @@ const AddItemForm = () => {
               </div>
             )}
             <TextField
-              id="weight"
+              name="weight"
               value={weight}
               onChange={onInputChange}
               variant="outlined"
+              error={!!validationErrors.weight}
+              helperText={validationErrors.weight}
               InputProps={{
                 className: "w-[300px] h-10 ml-5 bg-white  ",
               }}
@@ -272,7 +316,7 @@ const AddItemForm = () => {
             Description
           </InputLabel>
           <TextField
-            id="description"
+            name="description"
             value={description}
             onChange={onInputChange}
             variant="outlined"
@@ -294,10 +338,12 @@ const AddItemForm = () => {
               </div>
             )}
             <TextField
-              id="quantity"
+              name="quantity"
               value={quantity}
               onChange={onInputChange}
               variant="outlined"
+              error={!!validationErrors.quantity}
+              helperText={validationErrors.quantity}
               InputProps={{
                 className: "w-[300px] h-10 ml-5 bg-white  ",
               }}
@@ -324,8 +370,8 @@ const AddItemForm = () => {
 
         <Button
           variant="contained"
+          type="submit"
           className="col-start-6 bg-blue-600 rounded-sm row-start-11 "
-          onClick={handleSave}
         >
           Save
         </Button>
