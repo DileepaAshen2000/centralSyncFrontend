@@ -10,7 +10,7 @@ const colour = ["#5C998E"];
 const UsageBarChart = ({ category, year }) => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState();
-  const { width, height=0, ref } = useResizeDetector();
+  const { width, height = 0, ref } = useResizeDetector();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,7 +20,7 @@ const UsageBarChart = ({ category, year }) => {
           `http://localhost:8080/request/filtered?itemGroup=${category}&year=${year}`
         );
         console.log("Requests response:", response.data);
-        setRequests(Array.isArray(response.data) ? response.data : []);
+        setRequests(response.data);
       } catch (error) {
         console.log(error);
         setRequests([]);
@@ -54,20 +54,24 @@ const UsageBarChart = ({ category, year }) => {
       const date = new Date(rq.date);
       const month = date.toLocaleDateString("default", { month: "short" });
       acc[month] = acc[month] || [];
-      if (
-        rq.status === "ACCEPTED" ||
-        rq.status === "DELIVERED" ||
-        rq.status === "PENDING"
-      ) {
+      if (rq.status !== "REJECTED") {
         acc[month].push(rq);
       }
       return acc;
     }, {});
-
   console.log("requests By month", requestsByMonth);
-  if (Object.keys(requestsByMonth).length === 0) {
+  // Check if there are any months with data
+  const hasData = Object.values(requestsByMonth).some(
+    (monthData) => monthData.length > 0
+  );
+
+  if (!hasData) {
     return <div className="text-center m-10">No records found</div>;
   }
+
+  // if (Object.keys(requestsByMonth).length === 0) {
+  //   return <div className="text-center m-10">No records found</div>;
+  // }
 
   console.log(requestsByMonth);
   const xLabels = [
@@ -95,7 +99,7 @@ const UsageBarChart = ({ category, year }) => {
         <BarChart
           colors={colour}
           width={width}
-          height={height-50}
+          height={height - 50}
           series={[
             {
               data: noOfItemsUsed,
