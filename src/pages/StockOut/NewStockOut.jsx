@@ -80,7 +80,7 @@ const NewStockOut = () => {
     if (parseInt(outQty) >= availableQuantity) {
       Swal.fire({
         title: "Error!",
-        text: "Quantity Out should be less than the available quantity in the inventory.",
+        text: "Quantity Out should be less than the available quantity in the inventory. Available Quantity : "+ availableQuantity,
         icon: "error"
       });
       return;
