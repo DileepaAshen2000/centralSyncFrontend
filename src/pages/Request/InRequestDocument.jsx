@@ -430,9 +430,12 @@ setOpenSA(true);
 
         </div>
 
-        {inventoryRequest?.reqStatus === 'PENDING' &&
+        { (inventoryRequest?.reqStatus === 'PENDING' &&
          role !== 'EMPLOYEE' && 
-         !(inventoryRequest.role === role) &&(
+         !(inventoryRequest.role === role)) || 
+         (role === 'ADMIN')  &&  
+         (inventoryRequest?.reqStatus === 'SENT_TO_ADMIN') &&
+         (
           <div className='flex gap-6 mt-6 ml-6'>
             <h4>Note :</h4>
             <div className="flex w-2/3">
@@ -457,8 +460,8 @@ setOpenSA(true);
         <div className='flex justify-end gap-4 ml-[50%] mt-6'>
         {inventoryRequest && 
         inventoryRequest.reqStatus === 'PENDING' && 
-        role !== 'EMPLOYEE' && 
-        !(inventoryRequest.role === role) && (
+       ( role !== 'EMPLOYEE' && 
+        !(inventoryRequest.role === role)) || (role === 'ADMIN')  && (
             <>
               <Button
                 className="px-6 py-2 bg-green-500 text-white hover:bg-green-400"
@@ -488,10 +491,10 @@ setOpenSA(true);
               </Button>
             </DialogActions>
           </Dialog>
-          {inventoryRequest && 
+          {(inventoryRequest && 
           inventoryRequest.reqStatus === 'PENDING' && 
           role !== 'EMPLOYEE' &&
-          !(inventoryRequest.role === role) && (
+          !(inventoryRequest.role === role)) || (role === 'ADMIN') && (
             <>
               <Button
                 className="px-6 py-2 bg-red-500 text-white hover:bg-red-400"
@@ -562,7 +565,6 @@ setOpenSA(true);
                 type='submit'
                 onClick={handleClickItemReturn}
               >
-
                 Return Item
               </Button>
             </>)}
