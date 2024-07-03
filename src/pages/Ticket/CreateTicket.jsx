@@ -22,7 +22,7 @@ const CreateTicket = () => {
   const location=useLocation();
   const [topic, settopic] = useState("");
   const [description, setdescription] = useState("");
-  const [date, setdate] = useState("");
+  const [date, setdate] = useState(new Date().toISOString().split("T")[0]);
   const [itemName, setItemName] = useState("");
   const [brand, setBrand] = useState("");
   const [fetchData, setFetchData] = useState(false);
@@ -187,7 +187,10 @@ const CreateTicket = () => {
               >
                 <MenuItem disabled value={topic}></MenuItem>
                 <MenuItem value="Network Issues">Network Issues</MenuItem>
-                <MenuItem value="Hardware Problems">Hardware Problems</MenuItem>
+                <MenuItem value="Hardware Issues">Hardware Issues</MenuItem>
+                <MenuItem value="Software Issues">Software Issues</MenuItem>
+                <MenuItem value="Security Issues">Security Issues</MenuItem>
+                <MenuItem value="Delivery Issues">Delivery Issues</MenuItem>
                 <MenuItem value="Other">Other</MenuItem>
               </Select>
             </div>
@@ -206,9 +209,10 @@ const CreateTicket = () => {
                 variant="outlined"
                 InputProps={{
                   className: " w-[300px] ",
+                  readOnly: true
                 }}
                 value={date}
-                onChange={(e) => setdate(e.target.value)}
+                //onChange={(e) => setdate(e.target.value)}
                 size="small"
               />
             </div>
@@ -253,7 +257,7 @@ const CreateTicket = () => {
               <Button
                 variant="outlined"
                 className="bg-white w-[150px] rounded-md text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-[#007EF2]"
-                onClick={() => navigate("/ticket")}
+                onClick={() => navigate(-1)}
               >
                 Cancel
               </Button>

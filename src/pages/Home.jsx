@@ -14,7 +14,6 @@ import ItemDataGrid from "./InventoryItem/ItemList";
 import AddItemForm from "./InventoryItem/NewItem";
 import ViewItemDetails from "./InventoryItem/ViewDetails";
 import EditItem from "./InventoryItem/EditItem";
-
 import AdminInRequestList from "./Request/AdminInRequestList";
 import AdminInRequestDocument from "./Request/AdminInRequestDocument";
 import RequestHandlerRequestList from "./Request/RequestHandlerInRequestList";
@@ -24,7 +23,6 @@ import InRequestDocument from "./Request/InRequestDocument";
 import DeliveryRequestDocument from "./Request/DeliveryRequestDocument";
 import CreateNewIDRequest from "./Request/CreateNewIDRequest";
 import EditRequest from "./Request/EditInRequest";
-
 import UserActivityHistory from "./User/History";
 import EditAdjustment from "./Adjustment/EditAdjustment";
 import StockInList from "./StockIn/StockInList";
@@ -51,10 +49,15 @@ import InventorySummary from "./Report/InventorySummary";
 import LoginPage from "./Login/LoginPage";
 import LoginService from "./Login/LoginService";
 import CreatePassword from "./User/CreatePassword";
+import MyTicketList from "./Ticket/Myticketlist";
 import SearchResult from "../components/SearchResult";
 import ItemDetail from "../components/ItemDetail";
 import ForgotPassword from "./Login/ForgotPassword";
 import ResetPassword from "./Login/ResetPassword";
+import EditTicket from "./Ticket/EditTicket";
+import ChangePassword from "./UserProfile/ChangePasword";
+import EditProfile from "./UserProfile/ChangeProfile";
+ 
 
 const Home = () => {
   const isAuthenticated = LoginService.isAuthenticated();
@@ -138,7 +141,9 @@ const Home = () => {
                   element={<UserActivityHistory />}
                 ></Route>
                 <Route path="/user/users/:ID" element={<ViewUser />}></Route>
-
+                  {/* User Profile routing */}
+                  <Route path="/userprofile/changepassword" element={<ChangePassword/>}></Route>
+                  <Route path="/userprofile/editprofile" element={<EditProfile/>}></Route>
                 {/* Ticket routing */}
                 <Route path="/newTicket" element={<CreateTicket />}></Route>
                 <Route path="/ticket" element={<Ticket />}></Route>
@@ -146,6 +151,8 @@ const Home = () => {
                   path="ticket/ticketdoc/:id"
                   element={<TicketDocument />}
                 ></Route>
+                <Route path="/ticket/myticketlist/:userId" element={<MyTicketList/>}></Route>
+                <Route path="/ticket/editticket/:id" element={<EditTicket/>}></Route>
 
                 {/* Inventory Item routing */}
 

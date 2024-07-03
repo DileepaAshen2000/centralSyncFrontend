@@ -19,14 +19,11 @@ const SideBar = () => {
   const [openRequestReservation, setOpenRequestReservation] = useState(false);
   const [openReport, setOpenReport] = useState(false);
 
-
   const navigate = useNavigate();
 
   const isEmployee = LoginService.isEmployee();
   const isAdmin = LoginService.isAdmin();
   const isReqHandler = LoginService.isReqHandler();
-
-
 
   const handleInventoryClick = () => {
     setOpenInventory(!openInventory);
@@ -113,7 +110,6 @@ const SideBar = () => {
           </ListItem>
         </a>
       )}
-      
 
       {/* Request & Reservation with dropdown and sub-parts */}
       <ListItem
@@ -134,18 +130,15 @@ const SideBar = () => {
           </a>
 
           <a href="/reservation">
-          <ListItem button className="pl-8 rounded-lg">
-            <ListItemText primary="Reservation" />
-          </ListItem>
+            <ListItem button className="pl-8 rounded-lg">
+              <ListItemText primary="Reservation" />
+            </ListItem>
           </a>
 
-          
-
-          
           <a href="/ticket">
-          <ListItem button className="pl-8 rounded-lg">
-            <ListItemText primary="Maintain Ticket" />
-          </ListItem>
+            <ListItem button className="pl-8 rounded-lg">
+              <ListItemText primary="Maintain Ticket" />
+            </ListItem>
           </a>
         </List>
       </Collapse>
@@ -177,16 +170,18 @@ const SideBar = () => {
               <ListItemText primary="Stock Alert" />
             </ListItem>
           </a>
-          <a href="/report/item-usage-analysis">
-          <ListItem button className="pl-8 rounded-lg">
-            <ListItemText primary="Item Usage Analysis" />
-          </ListItem>
-          </a>
+          {!isEmployee && (
+            <a href="/report/item-usage-analysis">
+              <ListItem button className="pl-8 rounded-lg">
+                <ListItemText primary="Item Usage Analysis" />
+              </ListItem>
+            </a>
+          )}
         </List>
       </Collapse>
 
       {/* Initiate Order */}
-      {!isEmployee &&(
+      {isAdmin && (
         <a href="/order">
           <ListItem
             button
