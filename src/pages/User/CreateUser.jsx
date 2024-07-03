@@ -55,10 +55,9 @@ const CreateUser = () => {
 
   const handleClick = async (e) => {
     e.preventDefault();
-
+  
     const formData = new FormData();
-
-    // Append form fields as a JSON object
+  
     const user = {
       firstName,
       lastName,
@@ -71,18 +70,18 @@ const CreateUser = () => {
       role,
       workSite,
     };
-
+  
     formData.append(
       "user",
       new Blob([JSON.stringify(user)], { type: "application/json" })
     );
-
-    // Append file if it exists
+  
     if (image) {
       formData.append("image", image);
     }
-
+  
     try {
+      // Make the POST request
       const response = await axios.post(
         "http://localhost:8080/user/add",
         formData,
@@ -92,8 +91,9 @@ const CreateUser = () => {
           },
         }
       );
-
+    
       if (response.status === 200) {
+        // Handle success case
         Swal.fire({
           icon: "success",
           title: "Success!",
@@ -103,16 +103,23 @@ const CreateUser = () => {
         navigate("/user", { fetchData });
       }
     } catch (error) {
+      // Handle error case
       Swal.fire({
         icon: "error",
         title: "Error!",
         text: "Failed to add new user. Please check your inputs.",
       });
-      if (error.response) {
+    
+      // Check if error has response data and status code 400
+      if (error.response && error.response.status === 400) {
         setErrors(error.response.data);
       }
     }
+    
   };
+  
+
+
 
   
   return (
@@ -146,6 +153,7 @@ const CreateUser = () => {
             <div></div>
             <div className="row-span-4 col-span-2">
               <div className="w-[200px] h-[200px] border-2 border-gray-300 rounded-full flex items-center justify-center">
+              
                 {imageUrl ? (
                   <>
                     <img
@@ -174,6 +182,9 @@ const CreateUser = () => {
                   className="hidden"
                 />
               </div>
+              {errors.imagePath && (
+                <div className="text-[#FC0000] text-sm pl-9">{errors.imagePath}</div>
+              )}
             </div>
             <div className="col-span-2">
               {errors.lastName && (
