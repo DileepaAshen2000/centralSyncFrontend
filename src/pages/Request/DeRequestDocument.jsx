@@ -95,7 +95,7 @@ const getInventoryRequestListLink = () => {
   if (isEmployee) return "/employee-in-request-list";
   return "/default-request-list";
 };
-const RequestDocument = () => {
+const DeRequestDocument = () => {
   const { reqId } = useParams();
   const [inventoryRequest, setInventoryRequest] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
@@ -617,4 +617,4 @@ setOpenSA(true);
   );
 }
 
-export default RequestDocument;
+export default DeRequestDocument;

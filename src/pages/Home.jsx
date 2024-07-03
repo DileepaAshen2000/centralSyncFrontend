@@ -20,7 +20,7 @@ import RequestHandlerRequestList from "./Request/RequestHandlerInRequestList";
 
 import EmployeeInRequestList from "./Request/EmployeeInRequestList";
 import InRequestDocument from "./Request/InRequestDocument";
-import DeliveryRequestDocument from "./Request/DeliveryRequestDocument";
+import DeRequestDocument from "./Request/DeRequestDocument";
 import CreateNewIDRequest from "./Request/CreateNewIDRequest";
 import EditRequest from "./Request/EditInRequest";
 import UserActivityHistory from "./User/History";
@@ -194,7 +194,7 @@ const Home = () => {
                 ></Route>
                 <Route
                   path="/employee/delivery-request-document/:reqId"
-                  element={<DeliveryRequestDocument />}
+                  element={<DeRequestDocument />}
                 ></Route>
                 {/*Common views for three actors routing*/}
                 <Route

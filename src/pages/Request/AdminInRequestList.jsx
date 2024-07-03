@@ -241,7 +241,7 @@ const AdminInRequestList = () => {
             rows={myRequestRows} 
             columns={columns} 
             loading={loadingRequests} 
-            onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
+            onRowClick={(params) => navigate(`/employee/delivery-request-document/${params.row.reqId}`)} 
           />
         </TabPanel>
 
