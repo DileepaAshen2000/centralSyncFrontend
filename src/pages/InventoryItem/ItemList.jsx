@@ -7,6 +7,16 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoginService from "../Login/LoginService";
 
+
+const getStatusClass = (status) => {
+  switch (status) {
+    case "ACTIVE":
+      return "bg-green-500 text-white w-[90px]";
+    case "INACTIVE":
+      return "bg-red-500 text-white text-sm w-[90px]";  
+  }
+};
+
 const columns = [
   { field: "id", headerName: "Item ID", width: 150 },
   {
@@ -28,16 +38,21 @@ const columns = [
     headerName: "Quantity",
     type: "number",
     minwidth: 150,
-    editable: true,
+    editable: false,
     flex: 1,
   },
   {
     field: "status",
     headerName: "Status",
-    description: "This column has a value getter and is not sortable.",
-    sortable: false,
     minwidth: 200,
     flex: 1,
+    renderCell: (params) => (
+      <div
+        className={`p-2 rounded text-center ${getStatusClass(params.value)}`}
+      >
+        {params.value}
+      </div>
+    ),
   },
 ];
 
