@@ -12,7 +12,7 @@ import axios from 'axios';
 import ReactToPrint from 'react-to-print';
 import LoginService from '../Login/LoginService';
 import { set } from 'date-fns';
-import { TramRounded } from '@mui/icons-material';
+import { Token, TramRounded } from '@mui/icons-material';
 
 
 const formatDateTime = (dateTimeArray) => {
@@ -255,11 +255,28 @@ setOpenSA(true);
   };
 
   const handleSendNote = () => {
+    const toEmail = userDetails.email;
+    
     if (note.trim() !== '') {
+      // Create a FormData object
+      const formData = new FormData();
+      formData.append('toEmail', toEmail);
+      formData.append('subject', 'Inventory Request Note');
+      formData.append('body', note);
+  
       axios
-        .post(`http://localhost:8080/request/sendSimpleEmail`, { note })
+        .post(
+          'http://localhost:8080/request/sendSimpleEmail',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
         .then(() => {
-          alert('Note sent successfully');
+          console.log('Note sent successfully');
+          window.location.reload();
         })
         .catch((error) => {
           console.error('Error sending note:', error);
@@ -268,6 +285,7 @@ setOpenSA(true);
       alert('Please write a note before sending.');
     }
   };
+  
 
   const handleFileDownload = async () => {
     try {
@@ -412,7 +430,9 @@ setOpenSA(true);
 
         </div>
 
-        {inventoryRequest?.reqStatus === 'PENDING' && role !== 'EMPLOYEE' && (
+        {inventoryRequest?.reqStatus === 'PENDING' &&
+         role !== 'EMPLOYEE' && 
+         !(inventoryRequest.role === role) &&(
           <div className='flex gap-6 mt-6 ml-6'>
             <h4>Note :</h4>
             <div className="flex w-2/3">
@@ -434,8 +454,11 @@ setOpenSA(true);
           </div>
         )}
 
-        <div className='flex justify-end gap-4 ml-[60%] mt-6'>
-        {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' && role !== 'EMPLOYEE' && (
+        <div className='flex justify-end gap-4 ml-[50%] mt-6'>
+        {inventoryRequest && 
+        inventoryRequest.reqStatus === 'PENDING' && 
+        role !== 'EMPLOYEE' && 
+        !(inventoryRequest.role === role) && (
             <>
               <Button
                 className="px-6 py-2 bg-green-500 text-white hover:bg-green-400"
@@ -465,7 +488,10 @@ setOpenSA(true);
               </Button>
             </DialogActions>
           </Dialog>
-          {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' && role !== 'EMPLOYEE' && (
+          {inventoryRequest && 
+          inventoryRequest.reqStatus === 'PENDING' && 
+          role !== 'EMPLOYEE' &&
+          !(inventoryRequest.role === role) && (
             <>
               <Button
                 className="px-6 py-2 bg-red-500 text-white hover:bg-red-400"
@@ -495,7 +521,10 @@ setOpenSA(true);
               </Button>
             </DialogActions>
           </Dialog>
-          {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' &&  role === 'REQUEST_HANDLER' && (
+          {
+          inventoryRequest.reqStatus === 'PENDING' &&
+          role !== 'EMPLOYEE' &&  
+          !(inventoryRequest.role === role)  && (
             <>
               <Button
                 className="px-6 py-2 bg-yellow-500 text-white hover:bg-yellow-400"
