@@ -5,6 +5,7 @@ import StockLineChart from "./StockIn&OutChart";
 import InsightTable from "./InsightTable";
 
 const PrintView = forwardRef(({ category, year }, ref) => {
+  console.log("printView",category,year,ref);
   return (
     <div ref={ref} className="grid grid-cols-10">
       <h1 className="row start-1 col-span-10 text-3xl text-center p-10 ">

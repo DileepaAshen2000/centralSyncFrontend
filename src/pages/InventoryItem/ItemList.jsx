@@ -11,9 +11,9 @@ import LoginService from "../Login/LoginService";
 const getStatusClass = (status) => {
   switch (status) {
     case "ACTIVE":
-      return "bg-green-500 text-white w-[90px]";
+      return "bg-green-500 text-black w-[90px]";
     case "INACTIVE":
-      return "bg-red-500 text-white text-sm w-[90px]";  
+      return "bg-red-500 text-black text-sm w-[90px]";  
   }
 };
 

@@ -127,7 +127,7 @@ const StockLineChart = ({ category, year }) => {
 
   const stockInData = xLabels.map((label) => sumByMonthSI[label] || 0);
   const stockOutData = xLabels.map((label) => sumByMonthSO[label] || 0);
-
+  console.log("ref",ref);
   return (
     <div ref={ref} className="w-full h-full">
       {width && height && (

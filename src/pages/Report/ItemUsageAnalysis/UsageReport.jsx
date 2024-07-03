@@ -36,7 +36,7 @@ const Usage = () => {
     setYear(dayjs(selectedYear, "YYYY").format("YYYY"));
     setOpen(false);
   };
-
+  console.log("printRef", printRef);
   return (
     <div className="grid grid-cols-1 md:grid-cols-10">
       <Select

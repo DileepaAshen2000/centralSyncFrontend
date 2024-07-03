@@ -9,9 +9,9 @@ import axios from "axios";
 const getStatusClass = (status) => {
   switch (status) {
     case "REVIEWED":
-      return "bg-green-500 text-white w-[90px]";
+      return "bg-green-500 text-black w-[90px]";
     case "PENDING":
-      return "bg-yellow-400 text-white text-sm w-[90px]";  
+      return "bg-yellow-400 text-black text-sm w-[90px]";  
   }
 };
 
