@@ -6,6 +6,15 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const getStatusClass = (status) => {
+  switch (status) {
+    case "REVIEWED":
+      return "bg-green-500 text-white w-[90px]";
+    case "PENDING":
+      return "bg-yellow-400 text-white text-sm w-[90px]";  
+  }
+};
+
 const columns = [
   { field: "id", headerName: "Order ID", width: 150 },
   {
@@ -33,10 +42,15 @@ const columns = [
   {
     field: "status",
     headerName: "Status",
-    description: "This column has a value getter and is not sortable.",
-    sortable: false,
     minwidth: 200,
     flex: 1,
+    renderCell: (params) => (
+      <div
+        className={`p-2 rounded text-center ${getStatusClass(params.value)}`}
+      >
+        {params.value}
+      </div>
+    ),
   },
 ];
 
