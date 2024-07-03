@@ -245,10 +245,50 @@ const ViewItemDetails = () => {
         >
           Cancel
         </Button>
+      )}
+        
+        <Popover
+          open={isOpen}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+        >
+          <MenuList>
+            <MenuItem>
+              <Button
+                variant="contained"
+                className="col-start-6 rounded-sm bg-red-600 ml-10 w-[180px]"
+                onClick={handleDelete}
+              >
+                Delete
+              </Button>
+            </MenuItem>
+            <MenuItem>
+              <Button
+                variant="contained"
+                className=" col-start-6 rounded-sm bg-blue-600 ml-10 w-[180px]"
+                onClick={handleMarkAsInactiveButton}
+              >
+                Mark as inactive
+              </Button>
+            </MenuItem>
+          </MenuList>
+        </Popover>
+      </>
+
+      <Button
+        variant="outlined"
+        className="col-start-8 bg-white rounded-sm row-start-11 text-blue-60blue-600"
+        onClick={() => navigate("/item")}
+
       </form>
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}
+
       >
         <CircularProgress color="inherit" />
       </Backdrop>
