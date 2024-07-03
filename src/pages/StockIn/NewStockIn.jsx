@@ -3,20 +3,24 @@ import { FormControl, Select, MenuItem, TextField, InputLabel, Typography, Butto
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import LoginService from '../Login/LoginService';
 
 const NewStockIn = () => {
 
   let navigate = useNavigate();
+  const [profileInfo,setProfileInfo] = useState();
+  const [backEndErrors, setBackEndErrors] = useState({}); 
   const [stockIn,setStockIn] = useState({  // create state for adjustment, initial state is empty with object.
     location:"",
     date:new Date().toISOString().split("T")[0], // Set to today's date
     description:"",
     inQty:"",
     itemId:"",
+    userId:"",
     file:null
   })
 
-  const{location,date,description,inQty,itemId,file} = stockIn; // Destructure the state
+  const{location,date,description,inQty,itemId,userId,file} = stockIn; // Destructure the state
 
   // item fetching
   const [options, setOptions] = useState([]);
@@ -28,6 +32,12 @@ const NewStockIn = () => {
       try {
         const response = await axios.get('http://localhost:8080/inventory-item/getAll');
         setOptions(response.data);
+        
+        const token = localStorage.getItem('token');
+        const profile = await LoginService.getYourProfile(token);
+        setProfileInfo(profile.users);
+        setStockIn(preStockIn => ({ ...preStockIn, userId: profile.users.userId }));
+        
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -61,7 +71,7 @@ const NewStockIn = () => {
     console.log(Object.keys(validationErrors).length)
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      return;
+      // return;
     }
 
     try {
@@ -73,6 +83,7 @@ const NewStockIn = () => {
       formData.append('description', description);
       formData.append('inQty', inQty);
       formData.append('itemId', itemId);
+      formData.append('userId', userId);
       formData.append('file', file); // Append the file to the formData
 
       const result = await axios.post("http://localhost:8080/stock-in/add", formData, {
@@ -87,15 +98,75 @@ const NewStockIn = () => {
         text: "Stock-In Successfully Submitted.!",
         icon: "success"
       });
+      setBackEndErrors({}); // Clear the errors
     } catch (error) {
-      console.error("Error:", error);
-      Swal.fire({
-        title: "Error!",
-        text: "Failed to submit Stock-In. Please try again.",
-        icon: "error"
-      });
+      if (error.response && error.response.status === 400) {
+        console.log(error.response.data);
+        setBackEndErrors(error.response.data);
+      }else{
+        console.error("Error:", error);
+        console.log(error.response.data);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to submit Stock-In. Please try again.",
+          icon: "error"
+        });
+      }
     }
   }
+
+  // const onSubmit = async (e) => {
+  //   e.preventDefault();
+  //   const formData = new FormData();
+  //   formData.append(
+  //     "stockIn",
+  //     new Blob(
+  //       [
+  //         JSON.stringify({
+  //           location,
+  //           date,
+  //           description,
+  //           inQty,
+  //           itemId,
+  //           userId,
+  //         }),
+  //       ],
+  //       { type: "application/json" }
+  //     )
+  //   );
+  //   if (file) {
+  //     formData.append("file", file);
+  //   }
+  //   try {
+  //     const response = await axios.post(
+  //       "http://localhost:8080/stock-in/add",
+  //       formData,
+  //       {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       }
+  //     );
+  //     if (response.status === 201) {
+  //       Swal.fire({
+  //         icon: "success",
+  //         title: "Success!",
+  //         text: "Item successfully added!",
+  //       });
+  //       // setFetchData(!fetchData);
+  //       navigate("/item");
+  //     }
+  //   } catch (error) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Error!",
+  //       text: "Failed to add new item. Please check your inputs.",
+  //     });
+  //     if (error.response && error.response.status === 400) {
+  //       setErrors(error.response.data);
+  //     }
+  //   }
+  // }
 
   const validateInputs = () => {
     const errors = {};
@@ -107,6 +178,9 @@ const NewStockIn = () => {
     }
     if (!inQty) {
       errors.inQty = 'Quantity In is required';
+    }
+    if (!itemId) {
+      errors.itemId = 'Item ID is required';
     }
     if (inQty<0){
       errors.inQty = 'Quantity should be positive value'
@@ -157,7 +231,6 @@ const NewStockIn = () => {
                 helperText={errors.itemId}/>}
                 size='small'
               />
-              <Typography variant='caption' className='text-red-600'>{errors.itemId}</Typography>
             </div>
           </div>
           
@@ -233,6 +306,7 @@ const NewStockIn = () => {
                 value={description}
                 onChange={(e)=>onInputChange(e)}
               />
+              {backEndErrors.description && <span>{backEndErrors.description}</span>}
             </div>
           </div>
         

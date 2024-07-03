@@ -9,6 +9,11 @@ import {
   FormControlLabel,
   Button,
   FormGroup,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -20,10 +25,12 @@ const SearchBar = () => {
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [itemsOptions, setItemsOptions] = useState([]);
+  const [noResult, setNoResult] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchItemName = async () => {
       try {
         const response = await axios.get(
           "http://localhost:8080/inventory-item/getAll"
@@ -38,7 +45,7 @@ const SearchBar = () => {
       }
     };
 
-    fetchData();
+    fetchItemName();
   }, []);
 
   const handleSearch = async () => {
@@ -47,7 +54,13 @@ const SearchBar = () => {
         `http://localhost:8080/inventory-item/search?itemName=${searchTerm}&itemGroup=${selectedCategories}`
       );
       if (response.status === 200) {
-        navigate("/search-result", { state: { searchResult: response.data } });
+        if (response.data.length === 0) {
+          setNoResult(true);
+        } else {
+          navigate("/search-result", {
+            state: { searchResult: response.data },
+          });
+        }
       }
     } catch (error) {
       console.log(error);
@@ -62,6 +75,8 @@ const SearchBar = () => {
     setFilterAnchorEl(null);
   };
 
+  const open = Boolean(filterAnchorEl);
+
   const handleCategoryChange = (category) => {
     setSelectedCategories((prev) => {
       if (prev.includes(category)) {
@@ -71,19 +86,26 @@ const SearchBar = () => {
     });
   };
 
-  const open = Boolean(filterAnchorEl);
-  const id = open ? "simple-popover" : undefined;
+  const handleClose = () => {
+    setNoResult(false);
+  };
 
   const categories = [
+    "COMPUTERS_AND_LAPTOPS",
     "COMPUTER_ACCESSORIES",
-    "PRINTER",
     "COMPUTER_HARDWARE",
+    "PRINTERS_AND_SCANNERS",
+    "OFFICE_SUPPLIES",
+    "FURNITURE",
     "OTHER",
   ];
   const categoryMapping = {
+    COMPUTERS_AND_LAPTOPS: "Computers & Laptops",
     COMPUTER_ACCESSORIES: "Computer Accessories",
-    PRINTER: "Printer",
+    PRINTERS_AND_SCANNERS: "Printers & Scanners",
     COMPUTER_HARDWARE: "Computer Hardware",
+    FURNITURE: "Furniture",
+    OFFICE_SUPPLIES: "Office supplies",
     OTHER: "Other",
   };
   return (
@@ -134,7 +156,6 @@ const SearchBar = () => {
         )}
       />
       <Popover
-        id={id}
         open={open}
         anchorEl={filterAnchorEl}
         onClose={handleFilterClose}
@@ -167,6 +188,17 @@ const SearchBar = () => {
           </FormGroup>
         </div>
       </Popover>
+      <Dialog open={noResult} onClose={handleClose}>
+        <DialogTitle>Sorry</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            No results were found for "{searchTerm}"
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

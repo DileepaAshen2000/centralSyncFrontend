@@ -14,7 +14,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginService from "../pages/Login/LoginService";
 
-// React component for the SideBar
 const SideBar = () => {
   const [openInventory, setOpenInventory] = useState(false);
   const [openRequestReservation, setOpenRequestReservation] = useState(false);
@@ -39,13 +38,6 @@ const SideBar = () => {
 
   const handleReportClick = () => {
     setOpenReport(!openReport);
-  };
- {/* Inventroy request section routing according to login role */}
-  const getInventoryRequestListLink = () => {
-    if (isAdmin) return "/admin-in-request-list";
-    if (isReqHandler) return "/req-handler-in-request-list";
-    if (isEmployee) return "/employee-in-request-list";
-    return "/default-request-list";
   };
 
   return (
@@ -83,14 +75,14 @@ const SideBar = () => {
               <ListItemText primary="Adjustment" />
             </ListItem>
           </a>
-          {isAdmin && (
+          {!isEmployee && (
             <a href="/stockIn">
               <ListItem button className="pl-8 rounded-lg">
                 <ListItemText primary="Stock In" />
               </ListItem>
             </a>
           )}
-          {isAdmin && (
+          {!isEmployee && (
             <a href="/stockOut">
               <ListItem button className="pl-8 rounded-lg">
                 <ListItemText primary="Stock Out" />
@@ -126,7 +118,7 @@ const SideBar = () => {
       </ListItem>
       <Collapse in={openRequestReservation} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <a href={getInventoryRequestListLink()}>
+          <a href="/employee-in-request-list">
             <ListItem button className="pl-8 rounded-lg">
               <ListItemText primary="Request" />
             </ListItem>
@@ -185,15 +177,17 @@ const SideBar = () => {
       </Collapse>
 
       {/* Initiate Order */}
-      <a href="/order">
-      <ListItem
-        button
-        className="rounded-lg hover:bg-blue-100 focus:bg-blue-400"
-      >
-        <ShoppingCartIcon></ShoppingCartIcon>
-        <ListItemText primary="Initiate Order" className="pl-4 pr-4" />
-      </ListItem>
-      </a>
+      {!isEmployee &&(
+        <a href="/order">
+          <ListItem
+            button
+            className="rounded-lg hover:bg-blue-100 focus:bg-blue-400"
+          >
+            <ShoppingCartIcon></ShoppingCartIcon>
+            <ListItemText primary="Initiate Order" className="pl-4 pr-4" />
+          </ListItem>
+        </a>
+      )}
 
       <ListItem
         button

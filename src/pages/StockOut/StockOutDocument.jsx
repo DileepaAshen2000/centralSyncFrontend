@@ -1,101 +1,82 @@
-import React from 'react'
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { Typography,Button } from '@mui/material';
-import { useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Button } from '@mui/material';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useReactToPrint } from 'react-to-print';
+import LoginService from '../Login/LoginService';
 
-
-const handlePrint=()=>{
-  window.print();
-}
 const StockOutDocument = () => {
   const navigate = useNavigate();
-  const {soutId} = useParams(); // get the StockOut id from the url
-  const [stockOut,setStockOut] = useState({  // create state for StockOut, initial state is empty with object.
-    date:"",
-    description:"",
-    outQty:"",
-    department:"",
-    itemId:""
-  })
+  const { soutId } = useParams(); // Get the StockOut ID from the URL
+  const [stockOut, setStockOut] = useState({  // Create state for StockOut, initial state is empty object
+    date: "",
+    description: "",
+    outQty: "",
+    department: "",
+    filePath: null,
+    itemId: {} , // Initialize itemId as an empty object
+    userId:{},
+    generatedBy:""
+  });
 
-const{date,description,outQty,department,itemId} = stockOut;
+  const { date, description, outQty, department, itemId,userId,generatedBy,filePath} = stockOut;
+  const printRef = useRef();
 
-const [item,setItem] = useState({  // create state for stockOut, initial state is empty with object.
-  itemName:"",
-  quantity:"",
-  itemGroup:""
-})
-const{itemName,quantity,itemGroup} = item;
+  useEffect(() => {
+    loadStockOut();
+  }, []);
 
-useEffect(() => {
-  loadStockOut();
-},[]);
+  // Get selected StockOut data
+  const loadStockOut = async () => {
+    try {
+      const result = await axios.get(`http://localhost:8080/stock-out/getById/${soutId}`);
+      setStockOut(result.data); 
+      // console.log(stockOut.data);
 
-//get selected StockIn data
-const loadStockOut = async () => {
-  try {
-    const result = await axios.get(`http://localhost:8080/stock-out/getById/${soutId}`);
-    setStockOut(result.data);  // Make sure the fetched data structure matches the structure of your state
-    
-    const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${result.data.itemId}`);
-    setItem(result1.data);
-  } catch (error) {
-    console.error('Error loading Stock-Out:', error);
-  }
-}
+      const token = localStorage.getItem('token');
+      const profile = await LoginService.getYourProfile(token);
+      setStockOut(preStockOut => ({ ...preStockOut, generatedBy: profile.users.userId }));
+      
+    } catch (error) {
+      console.error('Error loading Stock-Out:', error);
+    }
+  };
 
-const handleFileDownload = async () => {
-  try {
-    const response = await axios.get("http://localhost:8080/stock-out/getFileById/" + soutId, {
-      responseType: 'blob'
-    });
+  const handleFileDownload = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/stock-out/getFileById/${soutId}`, {
+        responseType: 'blob'
+      });
 
-    // Create a blob object from the response data
-    const blob = new Blob([response.data], { type: 'application/pdf' }); // Ensure the blob is treated as a PDF
-    // Create a temporary URL for the blob object
-    const url = window.URL.createObjectURL(blob);
-    // Create an anchor tag
-    const link = document.createElement('a');
-    // Set the href attribute to the URL of the blob
-    link.href = url;
-    // Set the download attribute to specify the file name with .pdf extension
-    link.download = 'CentralSync_Document.pdf'; // Specify .pdf extension for the downloaded file
-    // Simulate a click on the anchor tag to trigger the download
-    document.body.appendChild(link);
-    link.click();
-    // Remove the anchor tag from the document
-    document.body.removeChild(link);
-    // Release the temporary URL
-    window.URL.revokeObjectURL(url);
-    
-    alert('PDF file download successful !!');
-  } catch (error) {
-    console.error('Error downloading PDF file:', error);
-  }
-};
-  // Get the current date and time
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'CentralSync_Document.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      alert('PDF file download successful !!');
+    } catch (error) {
+      console.error('Error downloading PDF file:', error);
+    }
+  };
+
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current,
+  });
+
   const currentDate = new Date();
-
-  // Extract components of the date and time
   const year = currentDate.getFullYear();
-  const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based, so add 1
+  const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
   const day = currentDate.getDate().toString().padStart(2, '0');
   const hours = currentDate.getHours().toString().padStart(2, '0');
   const minutes = currentDate.getMinutes().toString().padStart(2, '0');
   const seconds = currentDate.getSeconds().toString().padStart(2, '0');
-
-  // Format the date and time as needed
   const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  
+
   return (
     <div>
       <div>
@@ -108,25 +89,27 @@ const handleFileDownload = async () => {
               variant='contained'
               type='submit'
               onClick={handlePrint}
-          >print</Button>
+          >Print</Button>
         </div>
-        <div className="p-10 ml-6 mr-6 bg-white">
+        <div ref={printRef} className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section className="flex flex-row items-end justify-end mt-4 mb-10">
               <header className="text-3xl">Stock-Out Report</header>
             </section>
             <section className="flex flex-row items-end justify-end gap-10">
               <ul className='flex flex-col gap-2'>
-                <li className="font-bold">Ref. No</li>
+                <li className="font-bold">Reference No.</li>
                 <li className="font-bold">Group</li>
                 <li className="font-bold">Created By</li>
                 <li className="font-bold">Date</li>
+                <li className="font-bold">User ID</li>
               </ul>
               <ul className='flex flex-col gap-2'>
                 <li>{soutId}</li>
-                <li>{itemGroup}</li>
-                <li>Dileepa Ashen</li>
+                <li>{itemId.itemGroup}</li>
+                <li>{userId.firstName} {userId.lastName}</li>
                 <li>{date}</li>
+                <li>{generatedBy}</li>
               </ul>
             </section>
           </div>
@@ -143,11 +126,11 @@ const handleFileDownload = async () => {
               </TableHead>
               <TableBody>
                   <TableRow>
-                    <TableCell align="right">{itemId}</TableCell>
-                    <TableCell align="right">{itemName}</TableCell>
+                    <TableCell align="right">{itemId.itemId}</TableCell> {/* Access itemId.id */}
+                    <TableCell align="right">{itemId.itemName}</TableCell>
                     <TableCell align="right">{department}</TableCell>
                     <TableCell align="right">{outQty}</TableCell>
-                    <TableCell align="right">{quantity - outQty}</TableCell>
+                    <TableCell align="right">{itemId.quantity}</TableCell>
                   </TableRow>
               </TableBody>
             </Table>
@@ -159,10 +142,12 @@ const handleFileDownload = async () => {
               <Typography variant="body2">{description}</Typography>
             </div>
           </div>
-          <div className='mt-8'>
-            <h1>Download File :</h1>
-            <button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download</span></u></button>
-          </div>
+          {filePath && (
+            <div className='mt-8'>
+              <h1>Download File :</h1>
+              <button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download</span></u></button>
+            </div>
+          )}
           <div className='mt-16'>
             <Typography variant="caption" gutterBottom>Generated Date/Time : </Typography>
             <Typography variant="caption" gutterBottom>{formattedDateTime}</Typography>
@@ -175,10 +160,11 @@ const handleFileDownload = async () => {
                 variant='outlined'
                 type='submit'
                 onClick={() => navigate("/stockOut")}
-                  >cancel</Button>
+                  >Cancel</Button>
         </div>
       </main>
     </div>
-  )
-}
+  );
+};
+
 export default StockOutDocument;

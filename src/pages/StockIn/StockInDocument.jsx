@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{ useRef } from 'react'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -11,11 +11,10 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
+import { useReactToPrint } from 'react-to-print';
+import LoginService from '../Login/LoginService';
 
 
-const handlePrint=()=>{
-  window.print();
-}
 const StockInDocument = () => {
   const navigate = useNavigate();
   const {sinId} = useParams(); // get the StockIn id from the url
@@ -24,17 +23,21 @@ const StockInDocument = () => {
     description:"",
     inQty:"",
     location:"",
-    itemId:""
+    filePath:null,
+    itemId:{},
+    userId:{},
+    generatedBy:""
   })
 
-const{date,description,inQty,location,itemId} = stockIn;
+const{date,description,inQty,location,itemId,userId,generatedBy,filePath} = stockIn;
 
-const [item,setItem] = useState({  // create state for StockIn, initial state is empty with object.
-  itemName:"",
-  quantity:"",
-  itemGroup:""
-})
-const{itemName,quantity,itemGroup} = item;
+// const [item,setItem] = useState({  // create state for StockIn, initial state is empty with object.
+//   itemName:"",
+//   quantity:"",
+//   itemGroup:""
+// })
+// const{itemName,quantity,itemGroup} = item;
+const printRef = useRef();
 
 useEffect(() => {
   loadStockIn();
@@ -45,9 +48,13 @@ const loadStockIn = async () => {
   try {
     const result = await axios.get(`http://localhost:8080/stock-in/getById/${sinId}`);
     setStockIn(result.data);  // Make sure the fetched data structure matches the structure of your state
+
+    const token = localStorage.getItem('token');
+    const profile = await LoginService.getYourProfile(token);
+    setStockIn(preStockIn => ({ ...preStockIn, generatedBy: profile.users.userId }));
     
-    const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${result.data.itemId}`);
-    setItem(result1.data);
+    // const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${result.data.itemId}`);
+    // setItem(result1.data);
   } catch (error) {
     console.error('Error loading StockIn:', error);
   }
@@ -82,7 +89,11 @@ const handleFileDownload = async () => {
     console.error('Error downloading PDF file:', error);
   }
 };
-  // Get the current date and time
+
+const handlePrint = useReactToPrint({
+  content: () => printRef.current,
+});
+
   const currentDate = new Date();
 
   // Extract components of the date and time
@@ -93,7 +104,6 @@ const handleFileDownload = async () => {
   const minutes = currentDate.getMinutes().toString().padStart(2, '0');
   const seconds = currentDate.getSeconds().toString().padStart(2, '0');
 
-  // Format the date and time as needed
   const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   
   return (
@@ -110,23 +120,25 @@ const handleFileDownload = async () => {
               onClick={handlePrint}
           >print</Button>
         </div>
-        <div className="p-10 ml-6 mr-6 bg-white">
+        <div ref={printRef} className="p-10 ml-6 mr-6 bg-white">
           <div>
             <section className="flex flex-row items-end justify-end mt-4 mb-10">
               <header className="text-3xl">Stock-In Report</header>
             </section>
             <section className="flex flex-row items-end justify-end gap-10">
               <ul className='flex flex-col gap-2'>
-                <li className="font-bold">Ref. No</li>
+                <li className="font-bold">Reference No.</li>
                 <li className="font-bold">Group</li>
                 <li className="font-bold">Created By</li>
                 <li className="font-bold">Date</li>
+                <li className="font-bold">User ID</li>
               </ul>
               <ul className='flex flex-col gap-2'>
                 <li>{sinId}</li>
-                <li>{itemGroup}</li>
-                <li>Dileepa Ashen</li>
+                <li>{itemId.itemGroup}</li>
+                <li>{userId.firstName} {userId.lastName}</li>
                 <li>{date}</li>
+                <li>{generatedBy}</li>
               </ul>
             </section>
           </div>
@@ -143,11 +155,11 @@ const handleFileDownload = async () => {
               </TableHead>
               <TableBody>
                   <TableRow>
-                    <TableCell align="right">{itemId}</TableCell>
-                    <TableCell align="right">{itemName}</TableCell>
+                    <TableCell align="right">{itemId.itemId}</TableCell>
+                    <TableCell align="right">{itemId.itemName}</TableCell>
                     <TableCell align="right">{location}</TableCell>
                     <TableCell align="right">{inQty}</TableCell>
-                    <TableCell align="right">{quantity + inQty}</TableCell>
+                    <TableCell align="right">{itemId.quantity}</TableCell>
                   </TableRow>
               </TableBody>
             </Table>
@@ -159,10 +171,12 @@ const handleFileDownload = async () => {
               <Typography variant="body2">{description}</Typography>
             </div>
           </div>
-          <div className='mt-6'>
+          {filePath &&(
+            <div className='mt-6'>
               <h1>Download File :</h1>
-              <button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download</span></u></button>
-            </div>
+            < button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download</span></u></button>
+          </div>
+          )}
           <div className='mt-16'>
             <Typography variant="caption" gutterBottom>Generated Date/Time : </Typography>
             <Typography variant="caption" gutterBottom>{formattedDateTime}</Typography>

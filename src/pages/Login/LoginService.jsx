@@ -115,7 +115,7 @@ class LoginService{
 
         static isReqHandler(){
             const role = localStorage.getItem('role')
-            return role === 'REQ_HANDLER'
+            return role === 'REQUEST_HANDLER'
         }
 
         static isAdmin(){
@@ -134,8 +134,14 @@ class LoginService{
         }
 
 
+        static isOnlineEmployee(){
+            const workSite = localStorage.getItem('workSite')
+            return workSite === 'ONLINE'
+        }
+
+
     static reqHandlerOnly(){
-        return this.isAuthenticated() && this.isRequestHandler();
+        return this.isAuthenticated() && this.isReqHandler();
     }
  }
 

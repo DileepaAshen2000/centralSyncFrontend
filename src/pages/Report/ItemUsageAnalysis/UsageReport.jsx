@@ -20,7 +20,7 @@ import PrintView from "./PrintView";
 import ReactToPrint from "react-to-print";
 
 const Usage = () => {
-  const [category, setCategory] = useState("COMPUTER_ACCESSORIES");
+  const [category, setCategory] = useState("COMPUTERS_AND_LAPTOPS");
   const [year, setYear] = useState(dayjs().endOf("year").format("YYYY"));
   const [open, setOpen] = useState(false);
   const printRef = useRef();
@@ -50,9 +50,12 @@ const Usage = () => {
         value={category}
         onChange={(e) => setCategory(e.target.value)}
       >
+       <MenuItem value="COMPUTERS_AND_LAPTOPS">Computers & Laptops</MenuItem>
         <MenuItem value="COMPUTER_ACCESSORIES">Computer Accessories</MenuItem>
-        <MenuItem value="PRINTER">Printer</MenuItem>
         <MenuItem value="COMPUTER_HARDWARE">Computer Hardware</MenuItem>
+        <MenuItem value="PRINTERS_AND_SCANNERS">Printers & Scanners</MenuItem>
+        <MenuItem value="FURNITURE">Furniture</MenuItem>
+        <MenuItem value="OFFICE_SUPPLIES">Office Supplies</MenuItem>
         <MenuItem value="OTHER">Other</MenuItem>
       </Select>
 

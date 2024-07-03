@@ -19,12 +19,13 @@ export default function LoginPage() {
         localStorage.setItem('token', userData.token);
         localStorage.setItem('role', userData.role);
         localStorage.setItem('userId', userData.userId);
+        localStorage.setItem('workSite', userData.workSite);
                // Navigate based on role
                switch (userData.role) {
                 case 'ADMIN':
                   navigate('/admin-dashboard');
                   break;
-                case 'REQ_HANDLER':
+                case 'REQUEST_HANDLER':
                   navigate('/request-handler-dashboard');
                   break;
                 case 'EMPLOYEE':
@@ -83,7 +84,7 @@ export default function LoginPage() {
             >
               Login
             </button>
-            <p className="text-center">Forgot Username or Password ?</p>
+            <a href="/forgot-password" className="text-center ">Forgot Password ?</a>
           </form>
         </div>
       </div>

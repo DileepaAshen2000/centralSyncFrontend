@@ -23,13 +23,13 @@ const StockOutList = () => {
     axios
       .get("http://localhost:8080/stock-out/getAll")
       .then((response) => {
-        const data = response.data.map((stockIOut) => ({
-            id: stockIOut.soutId,
-            itemId: stockIOut.itemId,
-            description: stockIOut.description,
-            quantity: stockIOut.outQty,
-            date: stockIOut.date,
-            department:stockIOut.department
+        const data = response.data.map((stockOut) => ({
+            id: stockOut.soutId,
+            itemId: stockOut.itemId.itemId,
+            description: stockOut.description,
+            quantity: stockOut.outQty,
+            date: stockOut.date,
+            department:stockOut.department
         }));
         setRows(data);
       })

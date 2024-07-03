@@ -5,6 +5,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import LoginService from "../Login/LoginService";
 
 const columns = [
     { field: 'id', headerName: 'Adjustment ID', width: 150 },
@@ -13,109 +14,120 @@ const columns = [
     { field: 'adjusted_Qty', headerName: 'Adjusted_Qty', width: 150 },
     { field: 'date', headerName: 'Date', width: 150 },
     { field: 'status', headerName: 'Status', width: 100 },
-  ];
+];
 
 const UserAdjustment = () => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    const [rows, setRows] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [rowSelectionModel, setRowSelectionModel] = useState([]);
+    const [profileInfo, setProfileInfo] = useState(null);
 
-  const [rows, setRows] = useState([]);
-  useEffect(() => {
-    axios
-      .get("http://localhost:8080/adjustment/getAll")
-      .then((response) => {
-        const data = response.data.map((adj) => ({
-            id: adj.adjId,
-            reason: adj.reason,
-            description: adj.description,
-            adjusted_Qty: adj.adjustedQuantity,
-            date: adj.date,
-            status:adj.status
-        }));
-        setRows(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+    useEffect(() => {
+      fetchProfileInfo();
+        const fetchAdjustments = async () => {
+            try {
+                const response = await axios.get("http://localhost:8080/adjustment/getAll");
+                const filteredData = response.data
+                    .filter(adj => adj.userId !== 1) // Filter out adjustments created by the admin (1 is the admin userId)
+                    .map(adj => ({
+                        id: adj.adjId,
+                        reason: adj.reason,
+                        description: adj.description,
+                        adjusted_Qty: adj.adjustedQuantity,
+                        date: adj.date,
+                        status: adj.status
+                    }));
+                setRows(filteredData);
+                setLoading(false);
+            } catch (error) {
+                console.log(error);
+                setLoading(false);
+            }
+        };
 
-  const [rowSelectionModel, setRowSelectionModel] = useState([]);
-  const handlerowSelectionModelChange = (newSelectedRow) => {
-    setRowSelectionModel(newSelectedRow);
-  };
+        fetchAdjustments();
+    }, []);
 
-  const handleClick = () => {
-    if (rowSelectionModel > 0) {
-      const selectedAdjId = rowSelectionModel[0];
-      console.log("selected adj id :" + selectedAdjId);
-      navigate("/adjustment/editadjustment/" + selectedAdjId);
-    } else {
-      navigate("/newadjustment");
+    const fetchProfileInfo = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await LoginService.getYourProfile(token);
+        setProfileInfo(response.users);
+      } catch (error) {
+        console.error('Error fetching profile information:', error);
+      }
+    };
+
+    const handlerowSelectionModelChange = (newSelectedRow) => {
+        setRowSelectionModel(newSelectedRow);
+    };
+
+    // const handleClick = () => {
+    //     if (rowSelectionModel.length > 0) {
+    //         const selectedAdjId = rowSelectionModel[0];
+    //         navigate("/adjustment/editadjustment/" + selectedAdjId);
+    //     } else {
+    //         navigate("/newadjustment");
+    //     }
+    // };
+
+    const handleViewClick = () => {
+        if (rowSelectionModel.length > 0) {
+            const selectedAdjId = rowSelectionModel[0];
+            navigate("/adjustment/" + selectedAdjId);
+        } else {
+            navigate("/newadjustment");
+        }
+    };
+
+    if (loading) {
+        return <div>Loading...</div>;
     }
-  };
-  
-  const handleViewClick = () => {
-    if (rowSelectionModel > 0) {
-      const selectedAdjId = rowSelectionModel[0];
-      navigate("/adjustment/" + selectedAdjId);
-    } else {
-      navigate("/newadjustment");
-    }
-  };
 
-  return (
-    <Box className="h-[400px] w-full flex-row space-y-4">
-      <Box className="flex p-4 space-x-96">
-        
-        {rowSelectionModel > 0 ? (
-          <div className="flex items-center">
-            {rows.find(row => row.id === rowSelectionModel[0]).status === "PENDING" && (
-              <Button
-                variant="contained"
-                className="bg-blue-600 py-2 text-white rounded w-[auto]"
-                onClick={handleClick}
-              >
-                Edit
-              </Button>
-            )}
-            
-            <div className="pl-10">
-              <Button
-                variant="contained"
-                className="bg-blue-600  py-2 text-white rounded w-[auto]"
-                onClick={handleViewClick}
-              >
-                View
-              </Button>
-            </div>  
-          </div>
-        ) : (
-          
-          <div className="flex items-center">
-            <h1>Created By Employee or Request Handler</h1>
-          </div>
-          
-        )}
-      </Box>
+    return (
+        <Box className="h-[400px] w-full flex-row space-y-4">
+            <Box className="flex p-4 space-x-96">
+                {rowSelectionModel.length > 0 ? (
+                    <div className="flex items-center">
+                        <div className="pl-10">
+                            <Button
+                                variant="contained"
+                                className="bg-blue-600 py-2 text-white rounded w-[auto]"
+                                onClick={handleViewClick}
+                            >
+                                View
+                            </Button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="flex items-center">
+                        <h1>Created By Employee or Request Handler</h1>
+                    </div>
+                )}
+            </Box>
 
-        <DataGrid className='shadow-lg'
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
-            },
-          }}
-          autoHeight
-          pageSizeOptions={[5]}
-          checkboxSelection
-          disableRowSelectionOnClick
-          disableMultipleSelection={true} // Prevent multiple row selection
-          rowSelectionModel={rowSelectionModel}
-          onRowSelectionModelChange={handlerowSelectionModelChange}
-        />
-    </Box>
-  );
+            <DataGrid
+                className="shadow-lg"
+                rows={rows}
+                columns={columns}
+                initialState={{
+                    pagination: {
+                        paginationModel: {
+                            pageSize: 5,
+                        },
+                    },
+                }}
+                autoHeight
+                pageSizeOptions={[5]}
+                checkboxSelection
+                disableRowSelectionOnClick
+                disableMultipleSelection={true} // Prevent multiple row selection
+                rowSelectionModel={rowSelectionModel}
+                onRowSelectionModelChange={handlerowSelectionModelChange}
+            />
+        </Box>
+    );
 };
+
 export default UserAdjustment;
