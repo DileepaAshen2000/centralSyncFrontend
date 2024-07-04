@@ -28,7 +28,7 @@ import EditAdjustment from "./Adjustment/EditAdjustment";
 import StockInList from "./StockIn/StockInList";
 import StockOutList from "./StockOut/StockOutList";
 import AdjustmentList from "./Adjustment/AdjustmentList";
-import OrderDataGrid from "./InitiateOrder/OrderList";
+import OrderTab from "./InitiateOrder/OrderList";
 import CreateTicket from "./Ticket/CreateTicket";
 import NewOrderForm from "./InitiateOrder/NewOrder";
 import ViewOrderDetails from "./InitiateOrder/OrderDoc";
@@ -57,7 +57,6 @@ import ResetPassword from "./Login/ResetPassword";
 import EditTicket from "./Ticket/EditTicket";
 import ChangePassword from "./UserProfile/ChangePasword";
 import EditProfile from "./UserProfile/ChangeProfile";
- 
 
 const Home = () => {
   const isAuthenticated = LoginService.isAuthenticated();
@@ -67,8 +66,8 @@ const Home = () => {
       <Routes>
         <Route path="/user/:id/password" element={<CreatePassword />}></Route>
         <Route path="/" element={<LoginPage />}></Route>
-        <Route path="/forgot-password" element={<ForgotPassword/>}></Route>
-        <Route path="/resetPassword" element={<ResetPassword/>}></Route>
+        <Route path="/forgot-password" element={<ForgotPassword />}></Route>
+        <Route path="/resetPassword" element={<ResetPassword />}></Route>
       </Routes>
       {isAuthenticated && (
         <div>
@@ -90,8 +89,6 @@ const Home = () => {
               style={{ backgroundColor: "#eeeeee" }}
               className="w-screen p-10"
             >
-
-
               <Routes>
                 {/* Enter components here, that you want to insert. */}
 
@@ -100,11 +97,11 @@ const Home = () => {
                   path="/admin-dashboard"
                   element={<AdminDashboard />}
                 ></Route>
-                   <Route
+                <Route
                   path="/request-handler-dashboard"
                   element={<AdminDashboard />}
                 ></Route>
-                  <Route
+                <Route
                   path="/employee-dashboard"
                   element={<AdminDashboard />}
                 ></Route>
@@ -141,9 +138,15 @@ const Home = () => {
                   element={<UserActivityHistory />}
                 ></Route>
                 <Route path="/user/users/:ID" element={<ViewUser />}></Route>
-                  {/* User Profile routing */}
-                  <Route path="/userprofile/changepassword" element={<ChangePassword/>}></Route>
-                  <Route path="/userprofile/editprofile" element={<EditProfile/>}></Route>
+                {/* User Profile routing */}
+                <Route
+                  path="/userprofile/changepassword"
+                  element={<ChangePassword />}
+                ></Route>
+                <Route
+                  path="/userprofile/editprofile"
+                  element={<EditProfile />}
+                ></Route>
                 {/* Ticket routing */}
                 <Route path="/newTicket" element={<CreateTicket />}></Route>
                 <Route path="/ticket" element={<Ticket />}></Route>
@@ -151,8 +154,14 @@ const Home = () => {
                   path="ticket/ticketdoc/:id"
                   element={<TicketDocument />}
                 ></Route>
-                <Route path="/ticket/myticketlist/:userId" element={<MyTicketList/>}></Route>
-                <Route path="/ticket/editticket/:id" element={<EditTicket/>}></Route>
+                <Route
+                  path="/ticket/myticketlist/:userId"
+                  element={<MyTicketList />}
+                ></Route>
+                <Route
+                  path="/ticket/editticket/:id"
+                  element={<EditTicket />}
+                ></Route>
 
                 {/* Inventory Item routing */}
 
@@ -182,7 +191,7 @@ const Home = () => {
                   path="/requestHandler/in-request-list"
                   element={<RequestHandlerRequestList />}
                 ></Route>
-               
+
                 {/*Employee view routing */}
                 <Route
                   path="/employee-in-request-list"
@@ -222,8 +231,8 @@ const Home = () => {
                   element={<StockOutDocument />}
                 ></Route>
 
-                {/*Initiate order routing*/}
-                <Route path="/order" element={<OrderDataGrid />}></Route>
+                {/*Item order routing*/}
+                <Route path="/order" element={<OrderTab />}></Route>
                 <Route
                   path="/order/new-order"
                   element={<NewOrderForm />}
@@ -260,7 +269,6 @@ const Home = () => {
                 <Route path="/search-result" element={<SearchResult />}></Route>
                 <Route path="/item-detail" element={<ItemDetail />} />
               </Routes>
-
             </Grid>
           </Grid>
         </div>
