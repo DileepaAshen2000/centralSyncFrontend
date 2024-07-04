@@ -9,9 +9,11 @@ import axios from "axios";
 const getStatusClass = (status) => {
   switch (status) {
     case "REVIEWED":
-      return "bg-green-500 text-black w-[90px]";
+      return "bg-blue-500 text-black w-[90px]";
     case "PENDING":
-      return "bg-yellow-400 text-black text-sm w-[90px]";  
+      return "bg-yellow-400 text-black text-sm w-[90px]";
+    case "COMPLETED":
+      return "bg-green-400 text-black text-sm w-[90px]";
   }
 };
 
@@ -93,11 +95,6 @@ const OrderDataGrid = () => {
     navigate("/order/view-order/" + selectedItemId);
   };
 
-  const handleEdit = () => {
-    const selectedItemId = rowSelectionModel[0];
-    navigate("/order/edit-order/" + selectedItemId);
-  };
-
   return (
     <Box className="h-[400px] w-full">
       <Box className="py-4">
@@ -105,17 +102,9 @@ const OrderDataGrid = () => {
         <p className="inline-block">Here are all orders!!</p>
         {rowSelectionModel > 0 ? (
           <>
-            {/* <Button
-              variant="contained"
-              className="bg-blue-600 px-6 py-2 text-white rounded left-[45%] w-[145px]"
-              onClick={handleEdit}
-            >
-              Edit
-            </Button> */}
-
             <Button
               variant="contained"
-              className="bg-blue-600  py-2 text-white rounded left-[55%] w-[145px]"
+              className="bg-blue-600  py-2 text-white rounded left-[70%] w-[145px]"
               onClick={handleView}
             >
               View
@@ -154,20 +143,20 @@ const OrderDataGrid = () => {
           rowSelectionModel={rowSelectionModel}
           onRowSelectionModelChange={handleRowSelectionModelChange}
           sx={{
-          '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: '#f5f5f5',
-            borderBottom: '2px solid #000',
-          },
-          '& .MuiDataGrid-cell': {
-            borderBottom: '1px solid #ddd',
-          },
-          '& .MuiDataGrid-row': {
-            borderBottom: '2px solid #000',
-          },
-          '& .MuiDataGrid-root': {
-            border: '2px solid #000',
-          },
-        }}
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: "#f5f5f5",
+              borderBottom: "2px solid #000",
+            },
+            "& .MuiDataGrid-cell": {
+              borderBottom: "1px solid #ddd",
+            },
+            "& .MuiDataGrid-row": {
+              borderBottom: "2px solid #000",
+            },
+            "& .MuiDataGrid-root": {
+              border: "2px solid #000",
+            },
+          }}
         />
       )}
     </Box>

@@ -48,7 +48,6 @@ const EditItem = () => {
     description,
     quantity,
     status,
-    
   } = inventoryItem;
 
   const onInputChange = (e) => {
@@ -301,8 +300,9 @@ const EditItem = () => {
             name="itemId"
             variant="outlined"
             InputProps={{
-              className: "w-[300px] h-10 ml-5 bg-white  ",
+              className: "w-[300px]  ml-5   ",
             }}
+            size="small"
           />
         </div>
 
@@ -324,9 +324,10 @@ const EditItem = () => {
               error={!!validationErrors.itemName}
               helperText={validationErrors.itemName}
               InputProps={{
-                className: "w-[300px] h-10 ml-5 bg-white  ",
+                className: "w-[300px]  ml-5   ",
                 readOnly: false,
               }}
+              size="small"
             />
           </div>
         </div>
@@ -348,9 +349,10 @@ const EditItem = () => {
               name="itemGroup"
               value={itemGroup}
               onChange={onItemGroupChange}
-              className="w-[300px] h-10 ml-5 bg-white  "
+              className="w-[300px]  ml-5 bg-white  "
               error={!!validationErrors.itemGroup}
               helperText={validationErrors.itemGroup}
+              size="small"
             >
               <MenuItem value="COMPUTERS_AND_LAPTOPS">
                 Computers & Laptops
@@ -387,8 +389,9 @@ const EditItem = () => {
               error={!!validationErrors.unit}
               //helperText={validationErrors.unit}
               InputProps={{
-                className: "w-[300px] h-10 ml-5 bg-white  ",
+                className: "w-[300px]  ml-5   ",
               }}
+              size="small"
               helperText="The quantity measurement unit(e.g., pcs, kg, boxes,)."
             />
           </div>
@@ -411,8 +414,9 @@ const EditItem = () => {
               error={!!validationErrors.brand}
               helperText={validationErrors.brand}
               InputProps={{
-                className: "w-[300px] h-10 ml-5 bg-white  ",
+                className: "w-[300px]  ml-5   ",
               }}
+              size="small"
             />
           </div>
         </div>
@@ -431,9 +435,10 @@ const EditItem = () => {
             error={!!validationErrors.dimension}
             helperText={validationErrors.dimension}
             InputProps={{
-              className: "w-[300px] h-10 ml-5 bg-white  ",
+              className: "w-[300px]  ml-5   ",
               readOnly: false,
             }}
+            size="small"
           />
         </div>
         <div className="col-start-1 col-span-4 flex items-center">
@@ -448,9 +453,10 @@ const EditItem = () => {
             error={!!validationErrors.weight}
             helperText={validationErrors.weight}
             InputProps={{
-              className: "w-[300px] h-10 ml-5 bg-white  ",
+              className: "w-[300px]  ml-5   ",
               readOnly: false,
             }}
+            size="small"
           />
         </div>
         <div className="col-start-1 col-span-4 flex">
@@ -468,7 +474,7 @@ const EditItem = () => {
             multiline
             rows={6}
             InputProps={{
-              className: "w-[500px] ml-5 bg-white  ",
+              className: "w-[500px] ml-5   ",
               readOnly: false,
             }}
           />
@@ -491,9 +497,10 @@ const EditItem = () => {
               error={!!validationErrors.quantity}
               helperText={validationErrors.quantity}
               InputProps={{
-                className: "w-[300px] h-10 ml-5 bg-white  ",
+                className: "w-[300px]  ml-5   ",
                 readOnly: false,
               }}
+              size="small"
             />
           </div>
         </div>

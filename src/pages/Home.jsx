@@ -31,7 +31,7 @@ import AdjustmentList from "./Adjustment/AdjustmentList";
 import OrderDataGrid from "./InitiateOrder/OrderList";
 import CreateTicket from "./Ticket/CreateTicket";
 import NewOrderForm from "./InitiateOrder/NewOrder";
-import ViewOrderDetails from "./InitiateOrder/ViewOrder";
+import ViewOrderDetails from "./InitiateOrder/OrderDoc";
 import EditOrderDetails from "./InitiateOrder/EditOrder";
 import Usage from "./Report/ItemUsageAnalysis/UsageReport";
 import LowStockReport from "./Report/LowStockReport";
