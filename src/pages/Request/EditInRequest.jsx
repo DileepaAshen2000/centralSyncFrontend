@@ -9,6 +9,7 @@ const EditInventoryRequest = () => {
 
   const [itemName, setItemName] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [availableQuantity, setAvailableQuantity] = useState(0);
   const [createdDate, setCreatedDate] = useState("");
   const [createdTime, setCreatedTime] = useState("");
   const [updatedDateTime, setUpdatedDateTime] = useState("");
@@ -25,6 +26,11 @@ const EditInventoryRequest = () => {
 
   const { reqId } = useParams();
   const navigate = useNavigate();
+
+  const isEmployee = LoginService.isEmployee();
+  const isReqHandler = LoginService.isReqHandler();
+  const userID = LoginService.returnUserID();
+  const isOnlineEmployee = LoginService.isOnlineEmployee();
 
   const formatDate = (dateArray) => {
     if (!dateArray) return { formattedDate: "", formattedTime: "" };
@@ -78,6 +84,7 @@ const EditInventoryRequest = () => {
         const item = items.find(item => item.itemId === data.itemId);
         if (item) {
           setItemName(item.itemName);
+          setAvailableQuantity(item.quantity);
         }
 
         setLoading(false); // Set loading to false once data is fetched
@@ -99,7 +106,8 @@ const EditInventoryRequest = () => {
       tempErrors.quantity = "Quantity is required.";
     } else if (!isPositiveNumber(quantity)) {
       tempErrors.quantity = "Quantity must be a positive number.";
-    }
+    }else if (quantity > availableQuantity)
+      tempErrors.quantity = "Quantity exceeds available stock.";
     if (!reason) tempErrors.reason = "Reason is required.";
     if (!description) tempErrors.description = "Description is required.";
     if (files.length > 5) tempErrors.files = "You can upload a maximum of 5 files.";
@@ -125,7 +133,7 @@ const EditInventoryRequest = () => {
       .put(`http://localhost:8080/request/updateById/${reqId}`, formData)
       .then(() => {
         console.log("Successfully updated");
-        navigate("/inventory-request");
+        navigate(getInventoryRequestListLink());
       })
       .catch((error) => {
         console.log(error);
@@ -134,6 +142,12 @@ const EditInventoryRequest = () => {
 
   const handleFileChange = (e) => {
     setFiles(e.target.files);
+  };
+
+  const getInventoryRequestListLink = () => {
+    if (isReqHandler) return "/requestHandler/in-request-list";
+    if(isOnlineEmployee) return "/employee-de-request-list"
+    return  "/employee-in-request-list";
   };
 
   return (
@@ -303,7 +317,8 @@ const EditInventoryRequest = () => {
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
                     error={!!errors.quantity}
-                    helperText={errors.quantity}
+                    helperText={errors.quantity ||
+                      `Available quantity: ${availableQuantity}`}
                   />
                 </Grid>
               </Grid>
@@ -359,7 +374,7 @@ const EditInventoryRequest = () => {
               <Button
                 className="px-6 py-2 rounded"
                 variant='outlined'
-                onClick={() => navigate(`/employee/in-request-document/${reqId}`)}
+                onClick={() => navigate(-1)}
               >
                 Cancel
               </Button>

@@ -85,7 +85,7 @@ const EmployeeDeRequestList = () => {
       let data = formatRequestsData(response.data);
       console.log('User ID:', userId);
       // Filtering requests based on role
-      const myRequests = data.filter(item => item.userId === userId);
+      const myRequests = data.filter(item => (item.userId === userId));
       console.log('My Requests:', myRequests);
       const itemsOnHand = data.filter(item =>(item.status === 'WANT_TO_RETURN_ITEM') && (item.userId === userId)); // Filter for items on hand
       

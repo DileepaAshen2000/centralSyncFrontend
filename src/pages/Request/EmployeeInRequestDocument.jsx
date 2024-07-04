@@ -11,8 +11,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import ReactToPrint from 'react-to-print';
 import LoginService from '../Login/LoginService';
-import { set } from 'date-fns';
-import { Token, TramRounded } from '@mui/icons-material';
 
 
 const formatDateTime = (dateTimeArray) => {
@@ -381,7 +379,7 @@ setOpenSA(true);
         </div>
 
         <div ref={printRef} className="p-10 ml-6 mr-6 bg-white"
-          style={{ width: '1000px', height: '1000px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
+          style={{ width: '1000px', height: '1100px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
           <div>
             <section>
               
@@ -401,7 +399,6 @@ setOpenSA(true);
                 <li className="font-bold">Ref. No</li>
                 <li className="font-bold">Created Date</li>
                 <li className="font-bold">Created Time</li>
-                <li className="font-bold">Reason</li>
                 <li className="font-bold">Department</li>
                 <li className="font-bold">Created By</li>
                 <li className="font-bold">Emp.ID</li>
@@ -410,7 +407,6 @@ setOpenSA(true);
                 <li>{inventoryRequest?.reqId}</li>
                 <li>{inventoryRequest ? formatDateTime(inventoryRequest.updateDateTime).date : ''}</li>
                 <li>{inventoryRequest ? formatDateTime(inventoryRequest.updateDateTime).time : ''}</li>
-                <li>{inventoryRequest?.reason}</li>
                 <li>{userDetails?.department}</li>
                 <li>{userDetails?.firstName}</li>
                 <li>{userDetails?.userId}</li>
@@ -438,13 +434,25 @@ setOpenSA(true);
               </TableBody>
             </Table>
           </TableContainer>
-
+          <div className="mt-16 mb-32">
+          <section className="flex flex-row gap-1 mb-3">
+              <ul className='flex flex-col'>
+                <li className="font-bold">Reason:</li>
+              </ul>
+              <ul className='flex flex-col'>
+                <li>{inventoryRequest?.reason}</li>
+              </ul>
+            </section>
+       
           {inventoryRequest?.description && (
-            <div className="mt-16 mb-32">
-              <Typography variant="body1" gutterBottom>Description :</Typography>
+           <>
+              <Typography level="title-lg"><b>Description :</b></Typography>
               <div className="w-2/3">
-                <Typography variant="body2">{inventoryRequest?.description}</Typography>
+                <Typography level="body-lg">{inventoryRequest?.description}</Typography>
               </div>
+              </>
+            )}
+            
              { inventoryRequest?.filePath && (<div className='mt-6'>
                 <h1>Download File:</h1>
                 <button onClick={handleFileDownload}> 
@@ -456,7 +464,7 @@ setOpenSA(true);
                 </Typography>
               </div>
             </div>
-          )}
+         
 
         </div>
 
@@ -488,101 +496,8 @@ setOpenSA(true);
         )}
 
         <div className='flex justify-end gap-4 ml-[50%] mt-6'>
-        {inventoryRequest.reqStatus === 'PENDING' &&
-        (
-            <>
-              <Button
-                className="px-6 py-2 bg-green-500 text-white hover:bg-green-400"
-                variant='contained'
-                type='submit'
-                onClick={handleClickAccept}
-              >
-                Accept
-              </Button>
-            </>
-          )}
-          <Dialog
-            open={openAD}
-            onClose={handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle>
-              {"Are you want to accept this inventory request?"}
-            </DialogTitle>
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                No
-              </Button>
-              <Button onClick={handleAccept} color="primary" autoFocus>
-                Yes
-              </Button>
-            </DialogActions>
-          </Dialog>
-          {inventoryRequest.reqStatus === 'PENDING' &&
-       (
-            <>
-              <Button
-                className="px-6 py-2 bg-red-500 text-white hover:bg-red-400"
-                variant='contained'
-                type='submit'
-                onClick={handleClickReject}
-              >
-                Reject
-              </Button>
-            </>
-          )}
-          <Dialog
-            open={openRD}
-            onClose={handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle>
-              {"Are you want to reject this inventory request?"}
-            </DialogTitle>
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                No
-              </Button>
-              <Button onClick={handleReject} color="primary" autoFocus>
-                Yes
-              </Button>
-            </DialogActions>
-          </Dialog>
-          {
-          inventoryRequest.reqStatus === 'PENDING' &&
-          role !== 'EMPLOYEE' && role !== 'ADMIN' &&  
-          !(inventoryRequest.role === role)  && (
-            <>
-              <Button
-                className="px-6 py-2 bg-yellow-500 text-white hover:bg-yellow-400"
-                variant='contained'
-                type='submit'
-                onClick={handleClickSendToAdmin}
-              >
-                Send to Admin
-              </Button>
-            </>
-          )}
-           <Dialog
-            open={openSA}
-            onClose={handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle>
-              {"Are you sure, you want to send this inventory request to admin review?"}
-            </DialogTitle>
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                No
-              </Button>
-              <Button onClick={handleSendToAdmin} color="primary" autoFocus>
-                Yes
-              </Button>
-            </DialogActions>
-          </Dialog>
+          
+
           {inventoryRequest && inventoryRequest.reqStatus === 'ACCEPTED' && role === 'EMPLOYEE' && (
             <>
               <Button

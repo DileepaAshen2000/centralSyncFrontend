@@ -19,6 +19,7 @@ import AdminInRequestDocument from "./Request/AdminInRequestDocument";
 import RequestHandlerRequestList from "./Request/RequestHandlerInRequestList";
 import EmployeeDeRequestList from "./Request/EmployeeDeRequestList";
 import EmployeeInRequestList from "./Request/EmployeeInRequestList";
+import EmployeeInRequestDocument from "./Request/EmployeeInRequestDocument";
 import InRequestDocument from "./Request/InRequestDocument";
 import DeRequestDocument from "./Request/DeRequestDocument";
 import CreateNewIDRequest from "./Request/CreateNewIDRequest";
@@ -190,6 +191,10 @@ const Home = () => {
                 ></Route>
                 <Route
                   path="/employee/in-request-document/:reqId"
+                  element={<EmployeeInRequestDocument />}
+                ></Route>
+                <Route
+                  path="/employee/request-document/:reqId"
                   element={<InRequestDocument />}
                 ></Route>
                 <Route
