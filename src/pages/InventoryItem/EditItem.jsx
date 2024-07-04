@@ -48,7 +48,7 @@ const EditItem = () => {
     description,
     quantity,
     status,
-    image,
+    
   } = inventoryItem;
 
   const onInputChange = (e) => {

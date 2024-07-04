@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -23,8 +23,9 @@ const AddItemForm = () => {
   const [inventoryItem, setInventoryItem] = useState({
     itemName: "",
     itemGroup: "",
-    unit: "",
     brand: "",
+    specification: "",
+    unit: "",
     dimension: "",
     weight: "",
     description: "",
@@ -36,8 +37,9 @@ const AddItemForm = () => {
   const {
     itemName,
     itemGroup,
-    unit,
     brand,
+    specification,
+    unit,
     dimension,
     weight,
     description,
@@ -74,8 +76,9 @@ const AddItemForm = () => {
           JSON.stringify({
             itemName,
             itemGroup,
-            unit,
             brand,
+            specification,
+            unit,
             dimension,
             weight,
             description,
@@ -108,13 +111,20 @@ const AddItemForm = () => {
         navigate("/item");
       }
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: "Failed to add new item. Please check your inputs.",
-      });
-      if (error.response && error.response.status === 400) {
+      console.error("Error response:", error.response); 
+      if ( error.response.status === 400) {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Failed to add new item. Please check your inputs.",
+        });
         setErrors(error.response.data);
+      } else if (error.response.status === 409) {
+        Swal.fire({
+          icon: "error",
+          title: "Conflict!",
+          text: `Similar item is already present in the inventory with an id : ${error.response.data.itemId}`,
+        });
       }
     } finally {
       setLoading(false);
@@ -134,6 +144,18 @@ const AddItemForm = () => {
     if (!brand) {
       errors.itemGroup = "Brand is required is required";
     }
+    if (
+      [
+        "COMPUTERS_AND_LAPTOPS",
+        "COMPUTER_ACCESSORIES",
+        "COMPUTER_HARDWARE",
+        "PRINTERS_AND_SCANNERS",
+      ].includes(itemGroup) &&
+      !specification
+    ) {
+      errors.specification =
+        "Specification is required for the selected item group";
+    }
     if (!dimension) {
       errors.itemGroup = "Dimension is required";
     }
@@ -145,6 +167,11 @@ const AddItemForm = () => {
     }
     return errors;
   };
+
+  // useEffect(() => {
+  //   const errors = validateInputs();
+  //   setValidationErrors(errors);
+  // }, [inventoryItem]);
 
   return (
     <>
@@ -172,8 +199,9 @@ const AddItemForm = () => {
               error={!!validationErrors.itemName}
               helperText={validationErrors.itemName}
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5  ",
               }}
+              size="small"
             />
           </div>
         </div>
@@ -195,7 +223,8 @@ const AddItemForm = () => {
               name="itemGroup"
               value={itemGroup}
               onChange={onItemGroupChange}
-              className="w-[300px] h-10 ml-5 bg-white  "
+              className="w-[300px]  ml-5   "
+              size="small"
             >
               {" "}
               <MenuItem value="COMPUTERS_AND_LAPTOPS">
@@ -212,6 +241,64 @@ const AddItemForm = () => {
               <MenuItem value="OFFICE_SUPPLIES">Office Supplies</MenuItem>
               <MenuItem value="OTHER">Other</MenuItem>
             </Select>
+          </div>
+        </div>
+        {[
+          "COMPUTERS_AND_LAPTOPS",
+          "COMPUTER_ACCESSORIES",
+          "COMPUTER_HARDWARE",
+          "PRINTERS_AND_SCANNERS",
+        ].includes(itemGroup) && (
+          <div className="flex  col-span-4 col-start-1">
+            <InputLabel
+              htmlFor="specification"
+              className="flex-none w-32 text-black "
+            >
+              Specification
+            </InputLabel>
+            <div>
+              {errors.specification && (
+                <div className="text-[#FC0000] text-xs ml-6 my-1">
+                  {errors.specification}
+                </div>
+              )}
+              <TextField
+                name="specification"
+                value={specification}
+                onChange={onInputChange}
+                variant="outlined"
+                error={!!validationErrors.specification}
+                helperText="Specifications are required for the selected item group"
+                InputProps={{
+                  className: "w-[300px] ml-5",
+                }}
+                size="small"
+              />
+            </div>
+          </div>
+        )}
+        <div className="flex items-center col-span-4 col-start-1">
+          <InputLabel htmlFor="brand" className="flex-none w-32 text-black ">
+            Brand
+          </InputLabel>
+          <div>
+            {errors.brand && (
+              <div className="text-[#FC0000] text-xs ml-6 my-1">
+                {errors.brand}
+              </div>
+            )}
+            <TextField
+              name="brand"
+              value={brand}
+              onChange={onInputChange}
+              variant="outlined"
+              error={!!validationErrors.brand}
+              helperText={validationErrors.brand}
+              InputProps={{
+                className: "w-[300px] ml-5   ",
+              }}
+              size="small"
+            />
           </div>
         </div>
 
@@ -233,35 +320,14 @@ const AddItemForm = () => {
               error={!!validationErrors.unit}
               // helperText={validationErrors.unit}
               InputProps={{
-                className: "w-[300px] h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5   ",
               }}
+              size="small"
               helperText="Enter the quantity measurement unit(e.g., pcs, kg, boxes,)."
             />
           </div>
         </div>
-        <div className="flex items-center col-span-4 col-start-1">
-          <InputLabel htmlFor="brand" className="flex-none w-32 text-black ">
-            Brand
-          </InputLabel>
-          <div>
-            {errors.brand && (
-              <div className="text-[#FC0000] text-xs ml-6 my-1">
-                {errors.brand}
-              </div>
-            )}
-            <TextField
-              name="brand"
-              value={brand}
-              onChange={onInputChange}
-              variant="outlined"
-              error={!!validationErrors.brand}
-              helperText={validationErrors.brand}
-              InputProps={{
-                className: "w-[300px] h-10 ml-5 bg-white  ",
-              }}
-            />
-          </div>
-        </div>
+
         <div className="flex items-center col-span-4 col-start-1">
           <InputLabel htmlFor="dimension" className="flex-none w-32 text-black">
             Dimension
@@ -280,8 +346,9 @@ const AddItemForm = () => {
               error={!!validationErrors.dimension}
               helperText={validationErrors.dimension}
               InputProps={{
-                className: "w-[300px] h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5  ",
               }}
+              size="small"
             />
           </div>
         </div>
@@ -303,8 +370,9 @@ const AddItemForm = () => {
               error={!!validationErrors.weight}
               helperText={validationErrors.weight}
               InputProps={{
-                className: "w-[300px] h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5   ",
               }}
+              size="small"
             />
           </div>
         </div>
@@ -345,8 +413,9 @@ const AddItemForm = () => {
               error={!!validationErrors.quantity}
               helperText={validationErrors.quantity}
               InputProps={{
-                className: "w-[300px] h-10 ml-5 bg-white  ",
+                className: "w-[300px]  ml-5  ",
               }}
+              size="small"
             />
           </div>
         </div>
@@ -371,13 +440,13 @@ const AddItemForm = () => {
         <Button
           variant="contained"
           type="submit"
-          className="col-start-6 bg-blue-600 rounded-sm row-start-11 "
+          className="col-start-6 bg-blue-600 rounded-sm row-start-12 "
         >
           Save
         </Button>
         <Button
           variant="outlined"
-          className="col-start-8 bg-white rounded-sm row-start-11 text-blue-60-lue-600 "
+          className="col-start-8 bg-white rounded-sm row-start-12 text-blue-60-lue-600 "
           onClick={() => navigate("/item")}
         >
           Cancel

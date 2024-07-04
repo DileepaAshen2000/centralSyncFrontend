@@ -68,6 +68,7 @@ const SearchBar = () => {
               searchTerm: term,
             },
           });
+          setSearchTerm("");
         }
       }
     } catch (error) {
