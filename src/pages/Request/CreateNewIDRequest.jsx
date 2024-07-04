@@ -30,6 +30,7 @@ const NewRequest = () => {
   const isEmployee = LoginService.isEmployee();
   const isReqHandler = LoginService.isReqHandler();
   const userID = LoginService.returnUserID();
+  const isOnlineEmployee = LoginService.isOnlineEmployee();
 
   useEffect(() => {
     const fetchWorkSite = () => {
@@ -134,10 +135,9 @@ const NewRequest = () => {
   };
 
   const getInventoryRequestListLink = () => {
-    if (LoginService.isAdmin()) return "/admin-in-request-list";
-    if (LoginService.isReqHandler()) return "/requestHandler/in-request-list";
-    if (LoginService.isEmployee()) return "/employee-in-request-list";
-    return "/default-request-list";
+    if (isReqHandler) return "/requestHandler/in-request-list";
+    if(isOnlineEmployee) return "/employee-de-request-list"
+    return  "/employee-in-request-list";
   };
 
   return (

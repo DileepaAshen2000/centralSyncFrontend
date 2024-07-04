@@ -13,6 +13,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginService from "../pages/Login/LoginService";
+import { is } from "date-fns/locale";
 
 const SideBar = () => {
   const [openInventory, setOpenInventory] = useState(false);
@@ -24,6 +25,7 @@ const SideBar = () => {
   const isEmployee = LoginService.isEmployee();
   const isAdmin = LoginService.isAdmin();
   const isReqHandler = LoginService.isReqHandler();
+  const isOnlineEmployee = LoginService.isOnlineEmployee();
 
   const handleInventoryClick = () => {
     setOpenInventory(!openInventory);
@@ -41,8 +43,8 @@ const SideBar = () => {
    const getInventoryRequestListLink = () => {
     if (isAdmin) return "/admin-in-request-list";
     if (isReqHandler) return "/requestHandler/in-request-list";
-    if (isEmployee) return "/employee-in-request-list";
-    return "/default-request-list";
+    if(isOnlineEmployee) return "/employee-de-request-list"
+    return  "/employee-in-request-list";
   };
 
 

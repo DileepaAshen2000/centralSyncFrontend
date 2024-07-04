@@ -124,7 +124,7 @@ export default function NavBar() {
     });
 
     stompClient.onConnect = () => {
-      stompClient.subscribe("/topic/notifications", (message) => {
+      stompClient.subscribe("/user/1/topic/notifications", (message) => {
         try {
           const notification = JSON.parse(message.body);
           console.log("Received notification:", notification);

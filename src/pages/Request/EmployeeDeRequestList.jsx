@@ -59,7 +59,7 @@ const SectionHeader = ({ title, color }) => (
 );
 
 // Main component for displaying employee requests and items
-const AdminInRequestList = () => {
+const EmployeeDeRequestList = () => {
   const navigate = useNavigate();
   const [isReqHandler, setIsReqHandler] = useState(false);
   const [value, setValue] = useState('1');
@@ -67,6 +67,8 @@ const AdminInRequestList = () => {
   const [myRequestRows, setMyRequestRows] = useState([]);
   const [itemsOnHandRows, setItemsOnHandRows] = useState([]); // New state for items on hand
   const [loadingRequests, setLoadingRequests] = useState(true);
+  const userId = localStorage.getItem('userId');
+  
 
   useEffect(() => {
     checkEmployeeStatus();
@@ -81,16 +83,14 @@ const AdminInRequestList = () => {
     try {
       const response = await axios.get('http://localhost:8080/request/getAll');
       let data = formatRequestsData(response.data);
-
+      console.log('User ID:', userId);
       // Filtering requests based on role
-      const reviewingRequests = data.filter(item => (item.status === 'SENT_TO_ADMIN'|| item.status === 'REJECTED'|| item.status === 'ACCEPTED') && item.workSite !== 'ONLINE');
-      console.log('Reviewing Requests:', reviewingRequests);
-      const myRequests = data.filter(item => item.workSite === 'ONLINE');
-      const itemsOnHand = data.filter(item =>item.status === 'WANT_TO_RETURN_ITEM'); // Filter for items on hand
+      const myRequests = data.filter(item => item.userId === userId);
+      console.log('My Requests:', myRequests);
+      const itemsOnHand = data.filter(item =>(item.status === 'WANT_TO_RETURN_ITEM') && (item.userId === userId)); // Filter for items on hand
       
 
       // Add sequential IDs
-      setReviewingRequestRows(reviewingRequests.map((item, index) => ({ ...item, id: index + 1 })));
       setMyRequestRows(myRequests.map((item, index) => ({ ...item, id: index + 1 })));
       setItemsOnHandRows(itemsOnHand.map((item, index) => ({ ...item, id: index + 1 })));
       
@@ -129,7 +129,8 @@ const AdminInRequestList = () => {
           itemName: inventoryRequest.itemName,  // Assuming the itemName field exists in your data
           workSite: inventoryRequest.workSite,
           reqId: inventoryRequest.reqId,
-          role: inventoryRequest.role,  // Adding role field
+          role: inventoryRequest.role,
+          userId: inventoryRequest.userId,
         };
       })
       .sort((a, b) => b.createdDateTime - a.createdDateTime);
@@ -213,30 +214,20 @@ const AdminInRequestList = () => {
           className="text-white bg-blue-600 rounded hover:bg-blue-400"
           onClick={() => navigate('/in-request/create-new-in-request')}
         >
-          Create New Inventory Request
+          Create New Delivery Request
         </Button>
       </div>
 )}
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleChange} aria-label="lab API tabs example">
-            <Tab label="Need Admin Review" value="1"/>
-            <Tab label="Delivery Requests" value="2" />
-            <Tab label="Return Pending" value="3" /> {/* New tab for Items On My Hand */}
+            <Tab label="Delivery Requests" value="1" />
+            <Tab label="Return Pending" value="2" /> {/* New tab for Items On My Hand */}
           </TabList>
         </Box>
-        <TabPanel value="1">
-          <SectionHeader title="Inventory Requests List" color="#3f51b5" />
-          <Table 
-            rows={filteredReviewingRequestRows} 
-            columns={columns} 
-            loading={loadingRequests} 
-            onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
-          />
-        </TabPanel>
 
-        <TabPanel value="2">
-          <SectionHeader title="Work From Home Employee's Delivery Requests List" color="#006400" />
+        <TabPanel value="1">
+          <SectionHeader title="My Delivery Requests List" color="#006400" />
           <Table 
             rows={myRequestRows} 
             columns={columns} 
@@ -245,7 +236,7 @@ const AdminInRequestList = () => {
           />
         </TabPanel>
 
-        <TabPanel value="3"> {/* New TabPanel for Items On My Hand */}
+        <TabPanel value="2"> {/* New TabPanel for Items On My Hand */}
           <SectionHeader title="Want To Return Item List" color="#800080" />
           <Table 
             rows={itemsOnHandRows} 
@@ -259,4 +250,4 @@ const AdminInRequestList = () => {
   );
 };
 
-export default AdminInRequestList;
+export default EmployeeDeRequestList;

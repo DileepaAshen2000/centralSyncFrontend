@@ -176,6 +176,18 @@ setOpenSA(true);
       return null;
     }
   };
+  const handleDelete = () => {
+    axios
+      .patch(`http://localhost:8080/request/deleteRequest/${reqId}`)
+      .then(() => {
+        setInventoryRequest(!inventoryRequest);
+        navigate(getInventoryRequestListLink());
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
 
   const handleReject = () => {
     axios
@@ -350,6 +362,14 @@ setOpenSA(true);
               Edit
             </Button>
           )}
+           {(inventoryRequest.reqStatus === 'REJECTED' && role === 'ADMIN' && <Button
+              className="px-6 py-2 text-white bg-blue-600 rounded"
+              variant='contained'
+              type='submit'
+              onClick={handleDelete}
+            >
+              Delete
+            </Button>)}
           <ReactToPrint
             trigger={() => (
               <Button className="px-6 py-2 text-white bg-blue-600 rounded" variant='contained'>
@@ -500,7 +520,7 @@ setOpenSA(true);
               </Button>
             </DialogActions>
           </Dialog>
-          {inventoryRequest.reqStatus === 'PENDING' && inventoryRequest.reqStatus === 'REJECTED' &&
+          {inventoryRequest.reqStatus === 'PENDING' &&
        ( role !== 'EMPLOYEE' && 
         !(inventoryRequest.role === role)) || (role === 'ADMIN')  && (
             <>

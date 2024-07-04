@@ -17,7 +17,7 @@ import EditItem from "./InventoryItem/EditItem";
 import AdminInRequestList from "./Request/AdminInRequestList";
 import AdminInRequestDocument from "./Request/AdminInRequestDocument";
 import RequestHandlerRequestList from "./Request/RequestHandlerInRequestList";
-
+import EmployeeDeRequestList from "./Request/EmployeeDeRequestList";
 import EmployeeInRequestList from "./Request/EmployeeInRequestList";
 import InRequestDocument from "./Request/InRequestDocument";
 import DeRequestDocument from "./Request/DeRequestDocument";
@@ -195,6 +195,10 @@ const Home = () => {
                 <Route
                   path="/employee/delivery-request-document/:reqId"
                   element={<DeRequestDocument />}
+                ></Route>
+                <Route
+                  path="/employee-de-request-list"
+                  element={<EmployeeDeRequestList/>}
                 ></Route>
                 {/*Common views for three actors routing*/}
                 <Route
