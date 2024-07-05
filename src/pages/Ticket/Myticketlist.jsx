@@ -12,17 +12,17 @@ import LoginService from "../Login/LoginService";
 const getStatusClass = (status) => {
   switch (status) {
     case "PENDING":
-      return "bg-yellow-500 text-black w-[90px] font-bold";
+      return "bg-yellow-500 text-black w-[115px] font-bold";
     case "COMPLETED":
-      return "bg-green-500 text-black w-[90px] font-bold";
+      return "bg-green-500 text-black w-[115px] font-bold";
     case "INPROGRESS":
-      return "bg-blue-500 text-black w-[90px] font-bold";
+      return "bg-blue-500 text-black w-[115px] font-bold";
     case "REJECTED":
     
-      return "bg-red-500 text-black w-[90px] font-bold";
+      return "bg-red-500 text-black w-[115px] font-bold";
       case "ACCEPTED":
     
-      return "bg-green-500 text-black w-[90px] font-bold";
+      return "bg-green-500 text-black w-[115px] font-bold";
     default:
       return "";
   }
@@ -92,7 +92,7 @@ const MyTicketList = () => {
             : ticket.ticketStatus === "REJECTED_A" || ticket.ticketStatus === "REJECTED_R"
             ? "REJECTED"
             : ticket.ticketStatus === "IN_PROGRESS"
-            ? "IN PROGRESS"
+            ? "INPROGRESS"
             : ticket.ticketStatus,
         statusUpdateTime: ticket.statusUpdateTime,
       }));

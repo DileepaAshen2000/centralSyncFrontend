@@ -235,14 +235,15 @@ const UserActivityHistory = () => {
         return (
           <ReservationIcon className="bg-yellow-500 rounded-full h-7 w-7" />
         );
+        case action.includes("delivered"):
+          return <LocalShippingIcon className="bg-blue-600 rounded-full h-7 w-7" />;
       case action.includes("item") || action.includes("Item"):
         return <ItemIcon className="bg-blue-700 rounded-full h-7 w-7" />;
       case action.includes("Order") || action.includes("order"):
         return <OrderIcon className="bg-green-700 rounded-full h-7 w-7" />;
       case action.includes("Adjustment") || action.includes("adjustment"):
         return <AdjustmentIcon className="bg-blue-800 rounded-full h-7 w-7" />;
-      case action.includes("delivered"):
-        return <LocalShippingIcon className="bg-blue-600 rounded-full h-7 w-7" />;
+     
       case action.includes("Profile"):
         return <ManageAccountsIcon className="bg-purple-600 rounded-full h-7 w-7" />;
 

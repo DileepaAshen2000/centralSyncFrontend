@@ -8,6 +8,11 @@ import {
   TextField,
   Alert,
   AlertTitle,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import LoginService from "../Login/LoginService";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -19,10 +24,19 @@ const TicketDocument = () => {
   const navigate = useNavigate();
   const { id } = useParams(); // Get the ticket ID from the URL
   const [note, setNote] = useState("");
+  const [error, setError] = useState("");
+  const [dateerror, setDateError] = useState("");
+  const [rejecterror, setRejectError] = useState("");
   const [completionDate, setCompletionDate] = useState("");
   const [showCompletionDate, setShowCompletionDate] = useState(false);
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [profileInfo, setProfileInfo] = useState({});
+  const [openRA, setOpenRA] = useState(false);
+  const [openRR, setOpenRR] = useState(false);
+  const [openSA, setOpenSA] = useState(false);
+  const [openSP, setOpenSP] = useState(false);
+  const [openA, setOpenA] = useState(false);
+  const [openC, setOpenC] = useState(false);
 
   const [ticket, setTicket] = useState({
     date: "",
@@ -40,6 +54,10 @@ const TicketDocument = () => {
   });
   const isAdmin = LoginService.isAdmin();
   const isRequestHandler = LoginService.isReqHandler();
+
+  useEffect(() => {
+    fetchProfileInfo();
+  }, []);
 
   const fetchProfileInfo = async () => {
     try {
@@ -73,6 +91,58 @@ const TicketDocument = () => {
     } catch (error) {
       console.error("Error loading data:", error);
     }
+  };
+
+  const handleClickRejectAdmin = () => {
+    if (!note.trim()) {
+      setRejectError("Please add a note before reject.");
+      return;
+    }
+    setRejectError("");
+    setOpenRA(true);
+  };
+
+  const handleClickRejectRequestHandler = () => {
+    if (!note.trim()) {
+      setRejectError("Please add a note before reject.");
+      return;
+    }
+    setRejectError("");
+    setOpenRR(true);
+  };
+  const handleClickSendtoAdmin = () => {
+    if (!note.trim()) {
+      setError("Please add a note before sending to admin.");
+      return;
+    }
+    setError("");
+    setOpenSA(true);
+  };
+
+  const handleClickStartProgress = () => {
+    if (!completionDate.trim()) {
+      setDateError("Please add completion date.");
+      return;
+    }
+    setDateError("");
+    setOpenSP(true);
+  };
+
+  const handleClickAccept = () => {
+    setOpenA(true);
+  };
+
+  const handleClickComplete = () => {
+    setOpenC(true);
+  };
+
+  const handleClose = () => {
+    setOpenRA(false);
+    setOpenRR(false);
+    setOpenSA(false);
+    setOpenSP(false);
+    setOpenA(false);
+    setOpenC(false);
   };
 
   // Handle ticket send to admin
@@ -371,6 +441,121 @@ const TicketDocument = () => {
             </Typography>
           </div>
         </div>
+        <Dialog
+          open={openRA}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle>{"Are you want to reject the ticket?"}</DialogTitle>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              No
+            </Button>
+            <Button
+              onClick={handleRejectByAdminwithNote}
+              color="primary"
+              autoFocus
+            >
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={openRR}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle>{"Are you want to reject the ticket?"}</DialogTitle>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              No
+            </Button>
+            <Button
+              onClick={handleRejectByRequestHandler}
+              color="primary"
+              autoFocus
+            >
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={openSA}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle>{"Are you want to Send to Admin?"}</DialogTitle>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              No
+            </Button>
+            <Button onClick={handleSendToAdmin} color="primary" autoFocus>
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={openSP}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle>{"Are you want to Start Progress?"}</DialogTitle>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              No
+            </Button>
+            <Button
+              onClick={handleInprogressWithDate}
+              color="primary"
+              autoFocus
+            >
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={openA}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle>{"Are you sure want to Accept the ticket?"}</DialogTitle>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              No
+            </Button>
+            <Button onClick={handleAccept} color="primary" autoFocus>
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={openC}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle>
+            {"Are you sure want to Complete the Progress?"}
+          </DialogTitle>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              No
+            </Button>
+            <Button onClick={handleComplete} color="primary" autoFocus>
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         {/*Admin workflow*/}
         {isAdmin && (
@@ -385,7 +570,7 @@ const TicketDocument = () => {
                         className="px-6 py-2 rounded w-[150px] bg-green-300 text-green-800 hover:text-white hover:bg-green-600 font-bold"
                         variant="contained"
                         type="submit"
-                        onClick={handleAccept}
+                        onClick={handleClickAccept}
                       >
                         Accept
                       </Button>
@@ -421,6 +606,7 @@ const TicketDocument = () => {
                       Additional Note :
                     </Typography>
                   </div>
+
                   <div className="col-span-3 col-start-4">
                     <textarea
                       className="w-[600px] h-20 p-2 mt-2 border-2 border-gray-300 rounded-md"
@@ -430,13 +616,18 @@ const TicketDocument = () => {
                     ></textarea>
                   </div>
                 </div>
+                {rejecterror && (
+                  <div className="text-red-600 mt-1 text-bold text-sm ml-[280px]">
+                    {rejecterror}
+                  </div>
+                )}
                 <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                   <div className="col-start-5">
                     <Button
                       className="px-6 py-2 rounded w-[150px] bg-red-300 text-red-800 hover:text-white hover:bg-red-600 font-bold"
                       variant="contained"
                       type="submit"
-                      onClick={handleRejectByAdminwithNote}
+                      onClick={handleClickRejectAdmin}
                     >
                       Reject
                     </Button>
@@ -446,7 +637,7 @@ const TicketDocument = () => {
                       className="px-6 py-2 rounded w-[150px]"
                       variant="outlined"
                       type="submit"
-                      onClick={() => navigate(-1)}
+                      onClick={() => navigate(setShowNoteInput(false))}
                     >
                       Cancel
                     </Button>
@@ -485,6 +676,7 @@ const TicketDocument = () => {
                       Additional Note :
                     </Typography>
                   </div>
+
                   <div className="col-span-3 col-start-4">
                     <textarea
                       className="w-[600px] h-20 p-2 mt-2 border-2 border-gray-300 rounded-md"
@@ -494,18 +686,30 @@ const TicketDocument = () => {
                     ></textarea>
                   </div>
                 </div>
+                {rejecterror && (
+                  <div className="text-red-600 mt-1 text-bold text-sm ml-[280px]">
+                    {rejecterror}
+                  </div>
+                )}
+                {error && (
+                  <div className="text-red-600 mt-1 text-bold text-sm ml-[280px]">
+                    {error}
+                  </div>
+                )}
                 {!showCompletionDate && (
                   <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
-                    <div className="col-start-3">
-                      <Button
-                        className="px-3 py-2 rounded w-[172px] h-[42px] bg-blue-300 text-[14px] text-blue-800 hover:text-white hover:bg-blue-600"
-                        variant="contained"
-                        type="submit"
-                        onClick={handleSendToAdmin}
-                      >
-                        Send to Admin
-                      </Button>
-                    </div>
+                    {(ticket.user.role !== "ADMIN") && (
+                      <div className="col-start-3">
+                        <Button
+                          className="px-3 py-2 rounded w-[172px] h-[42px] bg-blue-300 text-[14px] text-blue-800 hover:text-white hover:bg-blue-600"
+                          variant="contained"
+                          type="submit"
+                          onClick={handleClickSendtoAdmin}
+                        >
+                          Send to Admin
+                        </Button>
+                      </div>
+                    )}
                     <div className="col-start-4">
                       <Button
                         className="px-6 py-2 rounded w-[172px]  bg-yellow-300 text-yellow-800 hover:text-white hover:bg-yellow-600"
@@ -521,7 +725,7 @@ const TicketDocument = () => {
                         className="px-6 py-2 rounded w-[172px]  bg-red-300 text-red-800 hover:text-white hover:bg-red-600 font-bold"
                         variant="contained"
                         type="submit"
-                        onClick={handleRejectByRequestHandler}
+                        onClick={handleClickRejectRequestHandler}
                       >
                         Reject
                       </Button>
@@ -549,6 +753,7 @@ const TicketDocument = () => {
                           Expected Completion Date :
                         </Typography>
                       </div>
+
                       <div className="col-start-4">
                         <TextField
                           type="date"
@@ -558,13 +763,18 @@ const TicketDocument = () => {
                         />
                       </div>
                     </div>
+                    {dateerror && (
+                      <div className="text-red-600 mt-1 ml-[280px] text-sm">
+                        {dateerror}
+                      </div>
+                    )}
                     <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                       <div className="col-start-5">
                         <Button
                           className="px-6 py-2 rounded w-[172px]  bg-yellow-300 text-yellow-800 hover:text-white hover:bg-yellow-600"
                           variant="contained"
                           type="submit"
-                          onClick={handleInprogressWithDate}
+                          onClick={handleClickStartProgress}
                         >
                           Start Progress
                         </Button>
@@ -574,7 +784,7 @@ const TicketDocument = () => {
                           className="px-6 py-2 rounded w-[172px] text-md"
                           variant="outlined"
                           type="submit"
-                          onClick={() => navigate(-1)}
+                          onClick={() => setShowCompletionDate(false)}
                         >
                           Cancel
                         </Button>
@@ -647,13 +857,18 @@ const TicketDocument = () => {
                         />
                       </div>
                     </div>
+                    {dateerror && (
+                      <div className="text-red-600 mt-1 ml-[280px] text-sm">
+                        {dateerror}
+                      </div>
+                    )}
                     <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                       <div className="col-start-5">
                         <Button
                           className="px-6 py-2 rounded w-[150px] bg-blue-600 text-white hover:text-blue-600"
                           variant="outlined"
                           type="submit"
-                          onClick={handleInprogressWithDate}
+                          onClick={handleClickStartProgress}
                         >
                           Submit
                         </Button>
@@ -696,7 +911,7 @@ const TicketDocument = () => {
                       className="px-6 py-2 rounded w-[150px]  bg-green-300 text-green-800 hover:text-white hover:bg-green-600 font-bold"
                       variant="contained"
                       type="submit"
-                      onClick={handleComplete}
+                      onClick={handleClickComplete}
                     >
                       Complete
                     </Button>

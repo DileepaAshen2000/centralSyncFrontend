@@ -155,7 +155,7 @@ export default function NavBar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" className="bg-white">
+      <AppBar position="static" className="bg-white z-50">
         <Toolbar>
           <img src={myLogo} alt="Inventory Logo" className="w-32 h-auto " />
           <h4 className="hidden text-xl font-bold text-blue-800 md:block">
@@ -213,7 +213,7 @@ export default function NavBar() {
 
       {/* Notifications list */}
       {notificationsOpen && (
-        <Box className="absolute right-0 mt-2 w-80 bg-white border border-gray-300 z-50 rounded-md shadow-lg">
+        <Box className="absolute right-0 mt-2 w-80 bg-white border border-gray-300 z-40 rounded-md shadow-lg">
           <Box className="p-2">
             {notifications.length > 0 ? (
               notifications.map((notification, index) => (
@@ -236,6 +236,10 @@ export default function NavBar() {
         </Box>
       )}
 
+      <div className="relative">
+    
+      {sidebarOpen && <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-30"  style={{ top: "75px" }}></div>}
+
       <div
         className={`w-80 absolute right-0 h-screen z-50 bg-[#D0D0D0] text-black ${
           sidebarOpen ? "block" : "hidden"
@@ -257,6 +261,7 @@ export default function NavBar() {
                 <Button
                   variant="outlined"
                   className="bg-white w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5 "
+                  onClick={() => setSidebarOpen(false)}
                 >
                   <AccountCircleOutlinedIcon />
                   <span>Edit Profile</span>
@@ -268,6 +273,7 @@ export default function NavBar() {
                 <Button
                   variant="outlined"
                   className="bg-white w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
+                  onClick={() => setSidebarOpen(false)}
                 >
                   <HistoryIcon />
                   <span>View History</span>
@@ -279,6 +285,7 @@ export default function NavBar() {
                 <Button
                   variant="outlined"
                   className="bg-white w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
+                  onClick={() => setSidebarOpen(false)}
                 >
                   <KeyOutlinedIcon />
                   <span>Change Password</span>
@@ -301,6 +308,7 @@ export default function NavBar() {
           </div>
         </div>
       </div>
+    </div>
 
       <div
         className={`${menuOpen ? "block" : "hidden"} md:hidden bg-slate-300 `}
