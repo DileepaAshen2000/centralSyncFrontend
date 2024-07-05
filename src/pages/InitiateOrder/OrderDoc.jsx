@@ -1,7 +1,6 @@
 import {
   Button,
   Typography,
-  Backdrop,
   CircularProgress,
   Table,
   TableBody,
@@ -11,15 +10,21 @@ import {
   TableRow,
   Paper,
   Chip,
+  IconButton,
+  Alert,
+  AlertTitle,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import Print from "@mui/icons-material/Print";
+import ReactToPrint from "react-to-print";
 import axios from "axios";
+import ArrowBack from "@mui/icons-material/ArrowBack";
 
 const ViewOrderDetails = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const printRef = useRef();
   const { orderID } = useParams();
 
   const [order, setOrder] = useState({
@@ -65,40 +70,6 @@ const ViewOrderDetails = () => {
     fetchOrderDetails();
   }, [orderID]);
 
-  
-  const handleDelete = async () => {
-    setLoading(true);
-    try {
-      await axios.delete(`http://localhost:8080/orders/deleteOrder/${orderID}`);
-      Swal.fire({
-        title: "Deleted!",
-        text: "Order has been deleted successfully.",
-        icon: "success",
-        confirmButtonText: "OK",
-      }).then(() => {
-        navigate(-1);
-      });
-    } catch (error) {
-      let errorMessage = "An error occurred while deleting the order.";
-      if (error.response) {
-        if (error.response.status === 404) {
-          errorMessage = "Order not found.";
-        } else if (error.response.status === 400) {
-          errorMessage =
-            "Order cannot be deleted because its status is PENDING.";
-        }
-      }
-      Swal.fire({
-        title: "Error!",
-        text: errorMessage,
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleMarkAsReviewed = async () => {
     try {
       await axios.patch(`http://localhost:8080/orders/review/${orderID}`);
@@ -116,14 +87,26 @@ const ViewOrderDetails = () => {
     }
   };
 
-  const getStatusChipColor = (status) => {
-    return status === "COMPLETED"
-      ? "bg-green-500"
-      : status === "REVIEWED"
-      ? "bg-blue-500"
-      : status === "PENDING"
-      ? "bg-yellow-500"
-      : "bg-gray-400";
+  const getOrderStatus = (status) => {
+    if (status === "COMPLETED") {
+      return (
+        <Alert severity="success" sx={{ width: "300px" }}>
+          <AlertTitle>Completed</AlertTitle>
+        </Alert>
+      );
+    } else if (status === "REVIEWED") {
+      return (
+        <Alert severity="info" sx={{ width: "300px" }}>
+          <AlertTitle>Reviewed</AlertTitle>
+        </Alert>
+      );
+    } else if (status === "PENDING") {
+      return (
+        <Alert severity="warning" sx={{ width: "300px" }}>
+          <AlertTitle>Pending</AlertTitle>
+        </Alert>
+      );
+    }
   };
 
   return (
@@ -133,13 +116,21 @@ const ViewOrderDetails = () => {
           <CircularProgress />
         </div>
       ) : (
-        <div className="p-10 bg-white rounded-2xl ml-14 mr-14">
-          <Typography variant="h4" className="font-bold mb-6">
-            Order Details
-          </Typography>
+        <div className="p-10 bg-white rounded-2xl shadow-lg mx-auto ">
+          <div className="flex items-center mb-6">
+            <IconButton onClick={() => navigate(-1)} className="mr-2">
+              <ArrowBack />
+            </IconButton>
+            <Typography variant="h4" className="font-bold flex-1">
+              Order Details
+            </Typography>
+            <div className="ml-auto">{getOrderStatus(order.status)}</div>
+          </div>
+
           <div className=" flex flex-col items-end justify-end  ">
             <section className="flex flex-row gap-10">
               <ul className="flex flex-col col-span-2 gap-2 ">
+                <li className="font-bold">Order Id</li>
                 <li className="font-bold">Vendor Name</li>
                 <li className="font-bold">Company Name</li>
                 <li className="font-bold">Email Address</li>
@@ -147,17 +138,12 @@ const ViewOrderDetails = () => {
                 <li className="font-bold">Date</li>
               </ul>
               <ul className="flex flex-col gap-2">
+                <li>{orderID}</li>
                 <li>{vendorName}</li>
                 <li>{companyName}</li>
                 <li>{vendorEmail}</li>
                 <li>{mobile}</li>
                 <li>{date}</li>
-                <li>
-                  <Chip
-                    label={`Status: ${status}`}
-                    className={`${getStatusChipColor(status)} text-white`}
-                  />
-                </li>
               </ul>
             </section>
 
@@ -199,7 +185,7 @@ const ViewOrderDetails = () => {
             </div>
           )}
           {/* buttons */}
-          <div className="mt-6">
+          <div className="mt-6 flex items-center justify-between">
             {status !== "COMPLETED" && (
               <Button
                 variant="contained"
@@ -220,17 +206,89 @@ const ViewOrderDetails = () => {
                 Mark as Reviewed
               </Button>
             )}
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={() => navigate(-1)}
-              className="justify-end"
-            >
-              Cancel
-            </Button>
+            <ReactToPrint
+              trigger={() => (
+                <Button variant="outlined" className=" rounded-sm ml-auto">
+                  <Print />
+                  Print
+                </Button>
+              )}
+              content={() => printRef.current}
+            />
           </div>
         </div>
       )}
+
+      {/* Print view of the doc */}
+      <div className="hidden">
+        <div ref={printRef} className="p-10 bg-white rounded-2xl ml-14 mr-14">
+          <Typography variant="h4" className="font-bold mb-6">
+            Order Details
+          </Typography>
+
+          <div className=" flex flex-col items-end justify-end  ">
+            <section className="flex flex-row gap-10">
+              <ul className="flex flex-col col-span-2 gap-2 ">
+                <li className="font-bold">Order Id</li>
+                <li className="font-bold">Vendor Name</li>
+                <li className="font-bold">Company Name</li>
+                <li className="font-bold">Email Address</li>
+                <li className="font-bold"> Mobile</li>
+                <li className="font-bold">Date</li>
+              </ul>
+              <ul className="flex flex-col gap-2">
+                <li>{orderID}</li>
+                <li>{vendorName}</li>
+                <li>{companyName}</li>
+                <li>{vendorEmail}</li>
+                <li>{mobile}</li>
+                <li>{date}</li>
+              </ul>
+            </section>
+
+            <TableContainer component={Paper} className="p-8 mt-6">
+              <Table>
+                <TableHead>
+                  <TableRow className=" bg-zinc-800">
+                    <TableCell className="text-white">
+                      <strong>Item Name</strong>
+                    </TableCell>
+                    <TableCell className="text-white">
+                      <strong>Brand Name</strong>
+                    </TableCell>
+                    <TableCell className="text-white">
+                      <strong>Quantity</strong>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>{itemName}</TableCell>
+                    <TableCell>{brandName}</TableCell>
+                    <TableCell>{quantity}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+          {description !== "" && (
+            <div className="mt-10 mb-30">
+              <Typography variant="h6" className="font-bold" gutterBottom>
+                Description :{" "}
+              </Typography>
+              <div className="w-2/3">
+                <Typography variant="subtitle1" className="text-red-500">
+                  {description}
+                </Typography>
+              </div>
+            </div>
+          )}
+          <Typography variant="caption" gutterBottom>
+            Computer Generated Document By CENTRAL SYNC &#174; | No Signature
+            Required.
+          </Typography>
+        </div>
+      </div>
     </>
   );
 };

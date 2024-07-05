@@ -18,6 +18,7 @@ const AddItemForm = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [fetchData, setFetchData] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
   //State for item object with properties -->initial state of properties=null
   const [inventoryItem, setInventoryItem] = useState({
@@ -56,7 +57,20 @@ const AddItemForm = () => {
     setInventoryItem({ ...inventoryItem, itemGroup: e.target.value });
   };
   const handleImageChange = (e) => {
-    setInventoryItem({ ...inventoryItem, image: e.target.files[0] });
+    const file = e.target.files[0];
+    setInventoryItem({ ...inventoryItem, image: file });
+
+    // Create a preview URL for the selected image
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
+    }
+
   };
 
   const handleSave = async (e) => {
@@ -111,8 +125,8 @@ const AddItemForm = () => {
         navigate("/item");
       }
     } catch (error) {
-      console.error("Error response:", error.response); 
-      if ( error.response.status === 400) {
+      console.error("Error response:", error.response);
+      if (error.response.status === 400) {
         Swal.fire({
           icon: "error",
           title: "Error!",
@@ -434,6 +448,14 @@ const AddItemForm = () => {
               onChange={handleImageChange}
               className="mt-4 mb-2"
             />
+            <div >
+              <img
+               
+                src={imagePreview}
+                alt={inventoryItem.itemName}
+                className="-[300px] ml-5w"
+              />
+            </div>
           </div>
         </div>
 

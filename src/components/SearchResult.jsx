@@ -76,7 +76,7 @@ const SearchResult = () => {
                       </Typography>
 
                       <Chip
-                        label={item.itemGroup}
+                        label={item.itemGroup.replaceAll("_", " ")}
                         className="mt-2 md:mt-0 md:ml-4"
                       />
                     </div>
