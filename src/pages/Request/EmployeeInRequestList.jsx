@@ -141,19 +141,25 @@ const EmployeeInRequestList = () => {
           reqId: inventoryRequest.reqId,
         };
       })
-      .sort((a, b) => b.createdDateTime - a.createdDateTime)
+      .sort((a, b) => {
+        // Sort by status "PENDING" first, then by creation date
+        if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
+        if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
+        return b.createdDateTime - a.createdDateTime;
+      })
       .map((item, index) => ({
         ...item,
         id: index + 1,
       }));
   };
 
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   const requestColumns = [
-    { field: 'id', headerName: 'Inventory Request No:', width: 200 },
+    { field: 'id', headerName: 'No:', width: 200 },
     { field: 'date', headerName: 'Date', width: 200 },
     { field: 'time', headerName: 'Time', width: 200 },
     { field: 'reason', headerName: 'Reason', width: 200 },
@@ -196,21 +202,52 @@ const EmployeeInRequestList = () => {
   ];
 
   const itemsColumns = [
-    { field: 'id', headerName: 'No:', width: 200 },
-    { field: 'itemName', headerName: 'Item Name', width: 250 },
-    { field: 'date', headerName: 'Received Date', width: 300 },
-    { field: 'quantity', headerName: 'Requested Quantity', width: 250 },
+    { field: 'id', headerName: 'No:', width: 180 },
+    { field: 'itemName', headerName: 'Item Name', width: 180 },
+    { field: 'date', headerName: 'Received Date', width: 180},
+    { field: 'quantity', headerName: 'Requested Quantity', width: 180 },
+    { 
+      field: 'status', 
+      headerName: 'Status', 
+      width: 210,
+      renderCell: (params) => {
+        const status = params.value;
+        let backgroundColor;
+        switch (status) {
+          case 'PENDING':
+            backgroundColor = '#ADD8E6';
+            break;
+          case 'ACCEPTED':
+            backgroundColor = '#90EE90';
+            break;
+          case 'REJECTED':
+            backgroundColor = '#F08080';
+            break;
+          case 'SENT_TO_ADMIN':
+            backgroundColor = '#FFFFE0';
+            break;
+          case 'WANT_TO_RETURN_ITEM':
+            backgroundColor = '#af5c9b';
+            break;
+        }
+        return (
+          <Box 
+            sx={{ 
+              padding: '4px 8px', 
+              borderRadius: '4px', 
+              textAlign: 'center', 
+              fontWeight: 'bold',
+              backgroundColor 
+            }}
+          >
+            {status}
+          </Box>
+        );
+      }
+    },
+    
   ];
 
-  const renderSectionHeader = () => {
-    if (isEmployee) {
-      return <SectionHeader title="Inventory Requests" color="#00008B" />;
-    }
-    if (isReqHandler || isAdmin) {
-      return <SectionHeader title="Employee Inventory Requests List" color="#00008B" />;
-    }
-    return null;
-  };
 
   const filteredRequestRows = requestRows.filter(row => row.status !== 'ACCEPTED'&& row.status!=='WANT_TO_RETURN_ITEM');
 
@@ -233,7 +270,7 @@ const EmployeeInRequestList = () => {
           </TabList>
         </Box>
         <TabPanel value="1">
-          {renderSectionHeader()}
+        <SectionHeader title="Inventory Requests" color="#00008B" />
           <Table 
             rows={filteredRequestRows} 
             columns={requestColumns} 

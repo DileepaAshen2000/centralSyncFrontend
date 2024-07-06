@@ -76,20 +76,24 @@ export default function NavBar() {
   const stompClientRef = useRef(null);
 
   useEffect(() => {
-    fetchProfileInfo().then(() => {
-      connectWebSocket();
-    });
-    return () => {
-      disconnectWebSocket();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (notifications.length > 0) {
-      console.log("New notification added: ", notifications);
+    if (isAuthenticated) {
+      fetchProfileInfo();
     }
-  }, [notifications]);
+    }, [isAuthenticated]);
 
+
+    useEffect(() => {
+      if (profileInfo.userId) {
+        console.log("Profile info available:", profileInfo.userId);
+        connectWebSocket(profileInfo.userId); // Connect WebSocket when userId is available
+        
+      }
+      
+      return () => {
+        disconnectWebSocket();
+      };
+    }, [profileInfo.userId]);
+    
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -118,7 +122,8 @@ export default function NavBar() {
     }
   };
 
-  const connectWebSocket = () => {
+  const connectWebSocket = (userId) => {
+    console.log(`Attempting to connect WebSocket for user: ${userId}`);
     const socket = new SockJS("http://localhost:8080/ws");
     const stompClient = new Client({
       webSocketFactory: () => socket,
@@ -130,50 +135,42 @@ export default function NavBar() {
       reconnectDelay: 5000,
     });
 
-    stompClient.onConnect = () => {
-      const userId = localStorage.userId;
-      console.log(`Subscribing to /user/${userId}/topic/notifications`);
-      stompClient.subscribe(`/user/${userId}/topic/notifications`, (message) => {
-        console.log("Received user-specific notification:", message);
+    stompClient.onConnect = (frame) => {
+      console.log("Connected to WebSocket");
+      const subscription = stompClient.subscribe(`/user/${userId}/topic/notifications`, (message) => {
+        console.log("Received message:", message);
         try {
           const notification = JSON.parse(message.body);
-          console.log("Received user-specific notification:", notification);
-
-          if (notification.type === "warnings") { // Mama
-            notification.data.forEach((warning) => { // Mama
-              setNotifications((prevNotifications) => [ // Mama
-                ...prevNotifications,
-                { message: warning.message, type: "warning" }, // Mama
-              ]); // Mama
-            }); // Mama
-          } else {
-            setNotifications((prevNotifications) => [
-              ...prevNotifications,
-              notification,
-            ]);
-          }
-
+          console.log("Parsed notification:", notification);
           setNotificationCount((prevCount) => prevCount + 1);
+          setNotifications((prevNotifications) => [
+            ...prevNotifications,
+            notification,
+          ]);
         } catch (error) {
           console.error("Error parsing notification message:", error);
         }
       });
+
+      console.log("Subscription:", subscription);
+    };
+
+    stompClient.onWebSocketClose = (frame) => {
+      console.warn(`WebSocket closed: ${frame}`);
     };
 
     stompClient.onWebSocketError = (error) => {
-      console.error("WebSocket error: ", error);
-    };
-
-    stompClient.onWebSocketClose = (event) => {
-      console.log("WebSocket closed: ", event);
+      console.error(`WebSocket error: ${error}`);
     };
 
     stompClient.activate();
     stompClientRef.current = stompClient;
   };
+  
 
   const disconnectWebSocket = () => {
     if (stompClientRef.current) {
+      console.log("Disconnecting WebSocket");
       stompClientRef.current.deactivate();
     }
   };

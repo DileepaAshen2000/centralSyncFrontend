@@ -497,7 +497,14 @@ setOpenSA(true);
 
         <div className='flex justify-end gap-4 ml-[50%] mt-6'>
           
-
+        <Button
+                className="px-6 py-2 bg-red-500 text-white hover:bg-red-400"
+                variant='contained'
+                type='submit'
+                onClick={handleReject}
+              >
+                Reject
+              </Button>
           {inventoryRequest && inventoryRequest.reqStatus === 'ACCEPTED' && role === 'EMPLOYEE' && (
             <>
               <Button
@@ -525,11 +532,11 @@ setOpenSA(true);
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                No
-              </Button>
               <Button onClick={handleItemReturn} color="primary" autoFocus>
                 Yes
+              </Button>
+              <Button onClick={handleClose} color="primary">
+                No
               </Button>
             </DialogActions>
           </Dialog>

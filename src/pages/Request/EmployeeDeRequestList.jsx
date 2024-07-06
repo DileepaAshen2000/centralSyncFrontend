@@ -10,7 +10,7 @@ import TabPanel from '@mui/lab/TabPanel';
 import LoginService from '../Login/LoginService'; // Ensure the path is correct
 
 // Table component to display data with a loading state
-const Table = ({ rows, columns, loading, onRowClick }) => {
+function Table({ rows, columns, loading, onRowClick }) {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -49,26 +49,19 @@ const Table = ({ rows, columns, loading, onRowClick }) => {
       />
     </div>
   );
-};
-
-// SectionHeader component for displaying section headers
-const SectionHeader = ({ title, color }) => (
-  <Box sx={{ backgroundColor: color, padding: '16px', textAlign: 'center', color: 'white' }}>
-    <h2>{title}</h2>
-  </Box>
-);
+}
 
 // Main component for displaying employee requests and items
 const EmployeeDeRequestList = () => {
   const navigate = useNavigate();
+  const [isEmployee, setIsEmployee] = useState(false);
   const [isReqHandler, setIsReqHandler] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [value, setValue] = useState('1');
-  const [reviewingRequestRows, setReviewingRequestRows] = useState([]);
-  const [myRequestRows, setMyRequestRows] = useState([]);
-  const [itemsOnHandRows, setItemsOnHandRows] = useState([]); // New state for items on hand
+  const [requestRows, setRequestRows] = useState([]);
+  const [itemsRows, setItemsRows] = useState([]);
   const [loadingRequests, setLoadingRequests] = useState(true);
-  const userId = localStorage.getItem('userId');
-  
+  const [loadingItems, setLoadingItems] = useState(true);
 
   useEffect(() => {
     checkEmployeeStatus();
@@ -76,39 +69,57 @@ const EmployeeDeRequestList = () => {
   }, []);
 
   const checkEmployeeStatus = () => {
+    setIsEmployee(LoginService.isEmployee());
     setIsReqHandler(LoginService.isReqHandler());
+    setIsAdmin(LoginService.isAdmin());
+  };
+
+  const fetchItemDetails = async (itemId) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/inventory-item/getById/${itemId}`);
+      return response.data.itemName;
+    } catch (error) {
+      console.error(`Failed to fetch item details for itemId ${itemId}:`, error);
+      return '';
+    }
   };
 
   const fetchRequestsData = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/request/getAll');
+      const userId = LoginService.returnUserID();
+      const response = await axios.get(`http://localhost:8080/request/user/${userId}`);
       let data = formatRequestsData(response.data);
-      console.log('User ID:', userId);
-      // Filtering requests based on role
-      const myRequests = data.filter(item => (item.userId === userId));
-      console.log('My Requests:', myRequests);
-      const itemsOnHand = data.filter(item =>(item.status === 'WANT_TO_RETURN_ITEM') && (item.userId === userId)); // Filter for items on hand
-      
 
-      // Add sequential IDs
-      setMyRequestRows(myRequests.map((item, index) => ({ ...item, id: index + 1 })));
-      setItemsOnHandRows(itemsOnHand.map((item, index) => ({ ...item, id: index + 1 })));
-      
+      const acceptedItems = data.filter(item => item.status === 'ACCEPTED' || item.status === 'WANT_TO_RETURN_ITEM');
+      const acceptedItemDetailsPromises = acceptedItems.map(item => fetchItemDetails(item.itemId));
+      const acceptedItemNames = await Promise.all(acceptedItemDetailsPromises);
+
+      const acceptedItemsWithNames = acceptedItems.map((item, index) => ({
+        ...item,
+        itemName: acceptedItemNames[index],
+      }));
+
+      setRequestRows(data);
       setLoadingRequests(false);
+
+      const receivedItems = data.filter(item => item.status === 'RECEIVED');
+      const itemDetailsPromises = receivedItems.map(item => fetchItemDetails(item.itemId));
+      const itemNames = await Promise.all(itemDetailsPromises);
+
+      const receivedItemsWithNames = receivedItems.map((item, index) => ({
+        ...item,
+        itemName: itemNames[index],
+      }));
+
+      setItemsRows(receivedItemsWithNames.concat(acceptedItemsWithNames));
+      setLoadingItems(false);
+
     } catch (error) {
       console.error('Failed to fetch inventory requests:', error);
       setLoadingRequests(false);
+      setLoadingItems(false);
     }
   };
-  useEffect(() => {
-    checkEmployeeStatus();
-    fetchRequestsData();
-  }, []);
-  
-  useEffect(() => {
-    console.log('ReviewingRequestRows State:', reviewingRequestRows);
-    
-  }, [reviewingRequestRows]);
 
   const formatRequestsData = (data) => {
     return data
@@ -117,7 +128,7 @@ const EmployeeDeRequestList = () => {
           ...inventoryRequest.creationDateTime.slice(0, 6)
         );
         return {
-          id: index + 1, // Temporary ID, will be reassigned later
+          id: index + 1,
           date: createdDate.toLocaleDateString('en-US'),
           time: createdDate.toLocaleTimeString('en-US'),
           reason: inventoryRequest.reason,
@@ -126,22 +137,29 @@ const EmployeeDeRequestList = () => {
           createdDateTime: createdDate,
           receivedDate: inventoryRequest.updateDateTime ? new Date(...inventoryRequest.updateDateTime.slice(0, 6)).toLocaleDateString('en-US') : '',
           itemId: inventoryRequest.itemId,
-          itemName: inventoryRequest.itemName,  // Assuming the itemName field exists in your data
           workSite: inventoryRequest.workSite,
           reqId: inventoryRequest.reqId,
-          role: inventoryRequest.role,
-          userId: inventoryRequest.userId,
         };
       })
-      .sort((a, b) => b.createdDateTime - a.createdDateTime);
+      .sort((a, b) => {
+        // Sort by status "PENDING" first, then by creation date
+        if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
+        if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
+        return b.createdDateTime - a.createdDateTime;
+      })
+      .map((item, index) => ({
+        ...item,
+        id: index + 1,
+      }));
   };
+
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const columns = [
-    { field: 'id', headerName: 'Inventory Request No:', width: 200 },
+  const requestColumns = [
+    { field: 'id', headerName: 'No:', width: 200 },
     { field: 'date', headerName: 'Date', width: 200 },
     { field: 'time', headerName: 'Time', width: 200 },
     { field: 'reason', headerName: 'Reason', width: 200 },
@@ -165,11 +183,6 @@ const EmployeeDeRequestList = () => {
           case 'SENT_TO_ADMIN':
             backgroundColor = '#FFFFE0';
             break;
-          case 'WANT_TO_RETURN_ITEM':
-            backgroundColor = '#FFCC00';
-            break;
-          default:
-            backgroundColor = '#FFFFFF';
         }
         return (
           <Box 
@@ -188,27 +201,58 @@ const EmployeeDeRequestList = () => {
     },
   ];
 
-  // New columns for "Items On My Hand"
-  const itemsOnHandColumns = [
-    { field: 'id', headerName: 'Inventory Request No:', width: 200 },
-    { field: 'itemName', headerName: 'Item Name', width: 250 },
-    { field: 'date', headerName: 'Received Date', width: 300 },
-    { field: 'quantity', headerName: 'Requested Quantity', width: 250 },
+  const itemsColumns = [
+    { field: 'id', headerName: 'No:', width: 180 },
+    { field: 'itemName', headerName: 'Item Name', width: 180 },
+    { field: 'date', headerName: 'Received Date', width: 180},
+    { field: 'quantity', headerName: 'Requested Quantity', width: 180 },
+    { 
+      field: 'status', 
+      headerName: 'Status', 
+      width: 210,
+      renderCell: (params) => {
+        const status = params.value;
+        let backgroundColor;
+        switch (status) {
+          case 'PENDING':
+            backgroundColor = '#ADD8E6';
+            break;
+          case 'ACCEPTED':
+            backgroundColor = '#90EE90';
+            break;
+          case 'REJECTED':
+            backgroundColor = '#F08080';
+            break;
+          case 'SENT_TO_ADMIN':
+            backgroundColor = '#FFFFE0';
+            break;
+          case 'WANT_TO_RETURN_ITEM':
+            backgroundColor = '#af5c9b';
+            break;
+        }
+        return (
+          <Box 
+            sx={{ 
+              padding: '4px 8px', 
+              borderRadius: '4px', 
+              textAlign: 'center', 
+              fontWeight: 'bold',
+              backgroundColor 
+            }}
+          >
+            {status}
+          </Box>
+        );
+      }
+    },
+    
   ];
 
-  const filteredReviewingRequestRows = reviewingRequestRows
-  .filter(row => row.status !== 'WANT_TO_RETURN_ITEM')
-  .sort((a, b) => {
-    // *** Sorting logic to move 'PENDING' status rows to the top ***
-    if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
-    if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
-    return 0;
-  });
-  const role = localStorage.getItem('role');
+
+  const filteredRequestRows = requestRows.filter(row => row.status !== 'ACCEPTED'&& row.status!=='WANT_TO_RETURN_ITEM');
 
   return (
     <Box sx={{ width: '100%' }}>
-     {(role === 'EMPLOYEE' || role === 'REQUEST_HANDLER') && (
       <div className="flex justify-end">
         <Button
           className="text-white bg-blue-600 rounded hover:bg-blue-400"
@@ -217,35 +261,43 @@ const EmployeeDeRequestList = () => {
           Create New Delivery Request
         </Button>
       </div>
-)}
+      
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleChange} aria-label="lab API tabs example">
-            <Tab label="Delivery Requests" value="1" />
-            <Tab label="Return Pending" value="2" /> {/* New tab for Items On My Hand */}
+            <Tab label="My Requests" value="1" />
+            <Tab label="Items in My Hand" value="2" />
           </TabList>
         </Box>
-
         <TabPanel value="1">
-          <SectionHeader title="My Delivery Requests List" color="#006400" />
+        <SectionHeader title="Delivery Requests" color="#006400" />
           <Table 
-            rows={myRequestRows} 
-            columns={columns} 
-            loading={loadingRequests} 
-            onRowClick={(params) => navigate(`/employee/delivery-request-document/${params.row.reqId}`)} 
-          />
-        </TabPanel>
-
-        <TabPanel value="2"> {/* New TabPanel for Items On My Hand */}
-          <SectionHeader title="Want To Return Item List" color="#800080" />
-          <Table 
-            rows={itemsOnHandRows} 
-            columns={itemsOnHandColumns} 
+            rows={filteredRequestRows} 
+            columns={requestColumns} 
             loading={loadingRequests} 
             onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
           />
         </TabPanel>
+
+        <TabPanel value="2">
+          <SectionHeader title="Items In My Hand" color="#6a1b9a" />
+          <Table 
+            rows={itemsRows} 
+            columns={itemsColumns} 
+            loading={loadingItems} 
+            onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
+          />
+        </TabPanel>
       </TabContext>
+    </Box>
+  );
+};
+
+// SectionHeader component for displaying section headers
+const SectionHeader = ({ title, color }) => {
+  return (
+    <Box sx={{ backgroundColor: color, padding: '16px', textAlign: 'center', color: 'white' }}>
+      <h2>{title}</h2>
     </Box>
   );
 };
