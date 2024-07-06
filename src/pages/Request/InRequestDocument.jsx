@@ -184,7 +184,7 @@ setOpenSA(true);
       .patch(`http://localhost:8080/request/updateStatus/accept/${reqId}`)
       .then(() => {
         setInventoryRequest(!inventoryRequest);
-        navigate("/requestHandler/in-request-list");
+        navigate("/employee-in-request-list");
       })
       .catch((error) => {
         console.log(error);
@@ -435,7 +435,7 @@ setOpenSA(true);
         )}
 
         <div className='flex justify-end gap-4 ml-[60%] mt-6'>
-        {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' && role !== 'EMPLOYEE' && (
+        {inventoryRequest && inventoryRequest.reqStatus === 'PENDING' && (
             <>
               <Button
                 className="px-6 py-2 bg-green-500 text-white hover:bg-green-400"

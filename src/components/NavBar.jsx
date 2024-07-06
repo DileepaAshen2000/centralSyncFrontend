@@ -24,6 +24,7 @@ import SearchBar from "./SearchBar";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import Avatar from "@mui/material/Avatar";
+import { sub } from "date-fns";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -77,12 +78,18 @@ export default function NavBar() {
 
   useEffect(() => {
     fetchProfileInfo();
-    connectWebSocket();
     return () => {
       disconnectWebSocket();
     };
   }, []);
 
+  useEffect(() => {
+    if (profileInfo.userId) {
+      console.log("Connecting to WebSocket for user ID:", profileInfo.userId);
+      connectWebSocket(profileInfo.userId);
+    }
+  }, [profileInfo]);
+ 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -111,37 +118,46 @@ export default function NavBar() {
     }
   };
 
-  const connectWebSocket = () => {
-    const socket = new SockJS("http://localhost:8080/ws");
-    const stompClient = new Client({
-      webSocketFactory: () => socket,
-      debug: (str) => console.log(str),
-      onStompError: (frame) => {
-        console.error("Broker reported error: " + frame.headers["message"]);
-        console.error("Additional details: " + frame.body);
-      },
-      reconnectDelay: 5000,
+ const connectWebSocket = (userId) => {
+  console.log("Connecting to WebSocket...");
+  const socket = new SockJS("http://localhost:8080/ws");
+  const stompClient = new Client({
+    webSocketFactory: () => socket,
+    debug: (str) => console.log(str),
+    onStompError: (frame) => {
+      console.error("Broker reported error: " + frame.headers["message"]);
+      console.error("Additional details: " + frame.body);
+    },
+    reconnectDelay: 5000,
+  });
+
+  stompClient.onConnect = () => {
+    console.log("Connected to WebSocket.");
+    // Subscribe to the user-specific notifications endpoint
+   
+    stompClient.subscribe(`/user/`+ userId +`/private`, (message) => {
+      console.log("Received user-specific notification:", message);
+      try {
+        const notification = JSON.parse(message.body);
+        console.log("Received notification:", notification);
+        setNotificationCount((prevCount) => prevCount + 1);
+        setNotifications((prevNotifications) => [
+          ...prevNotifications,
+          notification,
+        ]);
+      } catch (error) {
+        console.error("Error parsing notification message:", error);
+      }
     });
-
-    stompClient.onConnect = () => {
-      stompClient.subscribe("/topic/notifications", (message) => {
-        try {
-          const notification = JSON.parse(message.body);
-          console.log("Received notification:", notification);
-          setNotificationCount((prevCount) => prevCount + 1);
-          setNotifications((prevNotifications) => [
-            ...prevNotifications,
-            notification,
-          ]);
-        } catch (error) {
-          console.error("Error parsing notification message:", error);
-        }
-      });
-    };
-
-    stompClient.activate();
-    stompClientRef.current = stompClient;
   };
+
+  stompClient.activate();
+  stompClientRef.current = stompClient;
+};
+
+
+
+
 
   const disconnectWebSocket = () => {
     if (stompClientRef.current) {
