@@ -25,7 +25,7 @@ const NewAdjustment = () => {
   let navigate = useNavigate();
   const [profileInfo, setProfileInfo] = useState({});
   const [adj, setAdj] = useState({
-    // create state for adjustment, initial state is empty with object.
+    
     reason: "",
     date: new Date().toISOString().split("T")[0], // Set to today's date
     description: "",
@@ -53,7 +53,7 @@ const NewAdjustment = () => {
     itemId,
     userId,
     file,
-  } = adj; // Destructure the adj state
+  } = adj; 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -97,6 +97,40 @@ const NewAdjustment = () => {
     }
   };
 
+
+  const validateField = (name, value) => {
+    const validationErrors = {};
+    if (name === "itemName" && !value) {
+      validationErrors.reason = "Itemname is required";
+    }
+    else if (name === "reason" && !value) {
+      validationErrors.reason = "Reason is required";
+    } else if (name === "date" && !value) {
+      validationErrors.date = "Date is required";
+    } else if (name === "newQuantity") {
+      if (!value) {
+        validationErrors.newQuantity = "New Quantity is required";
+      } else if (isNaN(value) || value <= 0) {
+        validationErrors.newQuantity = "New Quantity must be a positive number";
+      }
+    } else if (name === "itemId" && !value) {
+      validationErrors.itemId = "Item ID is required";
+    }
+  
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validationErrors[name],
+    }));
+  
+    // Remove the error if there is no validation error for the field
+    if (!validationErrors[name]) {
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest;
+      });
+    }
+  };
+
   const onInputChange = async (e) => {
     const { name, value } = e.target;
     let updatedAdj = { ...adj, [name]: value };
@@ -104,18 +138,18 @@ const NewAdjustment = () => {
       updatedAdj.adjustedQuantity = value - item.quantity;
     }
     setAdj(updatedAdj);
-    setErrors({ ...errors, [name]: "" });
+    if (errors[name]) {
+      validateField(name, value);
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const errors = validateInputs();
-
-  if (Object.keys(errors).length > 0) {
-    setErrors(errors);
-    return;
-  }
-
     const formData = new FormData();
     formData.append(
       "adjustment",
@@ -164,40 +198,12 @@ const NewAdjustment = () => {
           title: "Error!",
           text: "Failed to submit adjustment. Please check your inputs.",
         });
-        setErrors(error.response.data);
-      } else {
-        console.log("Network error:", error.message);
-        Swal.fire({
-          icon: "error",
-          title: "Network Error!",
-          text: "Failed to submit adjustment due to network issues.",
-        });
-      }
+        //setErrors(error.response.data);
+      }  
     }
   };
 
-  // Validate the input fields
-  const validateInputs = () => {
-    const errors = {};
-    if (!reason) {
-      errors.reason = "Reason is required";
-    }
-    if (!date) {
-      errors.date = "Date is required";
-    }
-
-    if (!newQuantity) {
-      errors.newQuantity = "New Quantity is required";
-    }
-    if (!itemId) {
-      errors.itemId = "Item ID is required";
-    }
-    if (newQuantity < 0) {
-      errors.newQuantity = "Quantity should be positive value";
-    }
-
-    return errors;
-  };
+  
 
   const handleFileChange = (e) => {
     setAdj({ ...adj, file: e.target.files[0] });
@@ -215,10 +221,7 @@ const NewAdjustment = () => {
           Item Name
         </InputLabel>
         
-       {/* {errors.itemName && (
-                <div className="text-[#FC0000] text-sm">{errors.itemName}</div>
-              )}
-              */}
+     
         <div>
           <Autocomplete
             disablePortal
@@ -269,20 +272,19 @@ const NewAdjustment = () => {
         <InputLabel htmlFor="date" className="flex-none w-32 text-black ">
           Date
         </InputLabel>
-        {errors.date && (
-                <div className="text-[#FC0000] text-sm">{errors.date}</div>
-              )}
+        
         <div>
           <TextField
             style={{ width: "300px" }}
             label="Date"
             name="date"
             value={date}
+            onBlur={handleBlur}
             size="small"
             error={!!errors.date}
             helperText={errors.date}
             InputLabelProps={{
-              // To shrink the label
+              
               shrink: true,
             }}
           />
@@ -295,14 +297,13 @@ const NewAdjustment = () => {
         </InputLabel>
         
         <div className="flex-grow">
-        {/*{errors.reason && (
-                <div className="text-[#FC0000] text-sm">{errors.reason}</div>
-              )}*/}
+        
           <Select
             value={reason}
             onChange={(e) => onInputChange(e)}
             size="small"
             name="reason"
+            onBlur={handleBlur}
             error={!!errors.reason}
             helperText={errors.reason}
             className="w-[300px] h-10  bg-white"
@@ -380,6 +381,7 @@ const NewAdjustment = () => {
                       onChange={(e) => onInputChange(e)}
                       error={!!errors.newQuantity}
                       helperText={errors.newQuantity}
+                      onBlur={handleBlur}
                     ></TextField>
                   </TableCell>
                   {/* adjusted Qty */}

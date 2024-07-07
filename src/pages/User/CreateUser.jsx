@@ -182,8 +182,8 @@ const CreateUser = () => {
                   className="hidden"
                 />
               </div>
-              {errors.imagePath && (
-                <div className="text-[#FC0000] text-sm pl-9">{errors.imagePath}</div>
+              {errors.image && (
+                <div className="text-[#FC0000] text-sm pl-9">{errors.image}</div>
               )}
             </div>
             <div className="col-span-2">

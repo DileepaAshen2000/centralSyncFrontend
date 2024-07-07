@@ -89,7 +89,7 @@ const UserActivityHistory = () => {
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
-    filterLogs(date, selectedWord);
+    filterLogs(date === null ? null : date, selectedWord);
   };
 
   const handleWordChange = (word) => {
@@ -287,6 +287,8 @@ const UserActivityHistory = () => {
                     onChange={handleDateChange}
                     className="w-[250px] bg-slate-200 border"
                     renderInput={(params) => <TextField {...params} />}
+                    clearable={true}
+                     
                   />
                 </div>
                 <div className="col-start-7 col-span-1 gap-2">
