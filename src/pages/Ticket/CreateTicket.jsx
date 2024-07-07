@@ -240,6 +240,7 @@ const CreateTicket = () => {
                 size="small"
                 onBlur={handleBlur}
                 error={!!errors.topic}
+                value={topic}
               >
                 <MenuItem disabled value={topic}></MenuItem>
                 <MenuItem value="Network Issues">Network Issues</MenuItem>

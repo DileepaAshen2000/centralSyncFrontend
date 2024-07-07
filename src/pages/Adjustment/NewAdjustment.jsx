@@ -85,14 +85,9 @@ const NewAdjustment = () => {
       setSelectedItemId(value.itemId);
       setAdj({ ...adj, itemId: value.itemId }); // Update the itemId in the adj state
       fetchItemDetails(value.itemId);
-      validateField("itemName", value.itemName); // Validate itemName when selected
-      clearItemNameError(); 
     } else {
       setSelectedItemId(null);
       setAdj({ ...adj, itemId: "" });
-      setAdj((prevAdj) => ({ ...prevAdj, itemId: "", itemName: "" }));
-      validateField("itemName", "");
-   
     }
   };
 
@@ -145,7 +140,6 @@ const NewAdjustment = () => {
     validateField("reason", adj.reason);
     validateField("date", adj.date);
     validateField("newQuantity", adj.newQuantity);
-    
 
     return Object.keys(errors).length === 0;
   };
@@ -169,7 +163,7 @@ const NewAdjustment = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    
+
     const formData = new FormData();
     formData.append(
       "adjustment",
@@ -248,7 +242,6 @@ const NewAdjustment = () => {
             options={options}
             getOptionLabel={(option) => option.itemName}
             onChange={handleItemChange}
-            name="itemName"
             sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField
@@ -257,6 +250,7 @@ const NewAdjustment = () => {
                 helperText={errors.itemName || "Please select the item name."}
                 error={!!errors.itemName}
                 onBlur={handleBlur}
+                name="itemName"
               />
             )}
             size="small"
