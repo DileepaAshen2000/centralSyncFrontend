@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
-import Avatar from "react-avatar-edit";
+import Avatar from "@mui/material/Avatar";
 import DeleteIcon from "@mui/icons-material/Delete";
 import camera from "../../assests/camera.png";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
@@ -37,10 +37,89 @@ const CreateUser = () => {
   const [preview, setPreview] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
 
+  const validateField = (name, value) => {
+    const validationErrors = {};
+    if (name === "firstName") {
+      if (!value) {
+        validationErrors.firstName = "First name is required";
+      } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
+        validationErrors.firstName = "First name must contain only letters";
+      }
+    } else if (name === "lastName" && !value) {
+      if (!value) {
+        validationErrors.lastName = "Last name is required";
+      } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
+        validationErrors.lastName = "Last name must contain only letters";
+      }
+    } else if (name === "role" && !value) {
+      validationErrors.role = "Role is required";
+    } else if (name === "mobileNo") {
+      if (!value) {
+        validationErrors.mobileNo = "Mobile number is required";
+      } else if (!/^\d{10}$/.test(value)) {
+        validationErrors.mobileNo = "Mobile number must be 10 digits";
+      }
+    } else if (name === "telNo") {
+      if (!value) {
+        validationErrors.telNo = "Telephone number is required";
+      } else if (!/^\d{10}$/.test(value)) {
+        validationErrors.telNo = "Telephone number must be 10 digits";
+      }
+    } else if (name === "email") {
+      if (!value) {
+        validationErrors.email = "Email address is required";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        validationErrors.email = "Invalid email address";
+      }
+    } else if (name === "dateOfBirth") {
+      if (!value) {
+        validationErrors.dateOfBirth = "Date of birth is required";
+      } else if (new Date(value) >= new Date()) {
+        validationErrors.dateOfBirth = "Date should be past";
+      }
+    } else if (name === "address" && !value) {
+      validationErrors.address = "Address is required";
+    } else if (name === "department" && !value) {
+      validationErrors.department = "Department is required";
+    } else if (name === "workSite" && !value) {
+      validationErrors.workSite = "Worksite is required";
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validationErrors[name],
+    }));
+
+    // Remove the error if there is no validation error for the field
+    if (!validationErrors[name]) {
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest;
+      });
+    }
+  };
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
+  };
+
   const handleImageChange = (e) => {
     setImage(e.target.files[0]); // Handle file change
     const file = e.target.files[0];
     if (file) {
+      const validTypes = ["image/jpeg", "image/jpg", "image/png"];
+      if (!validTypes.includes(file.type)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          image: "File must be a JPG, JPEG, or PNG image",
+        }));
+        return;
+      }
+
+      setErrors((prevErrors) => {
+        const { image, ...rest } = prevErrors;
+        return rest;
+      });
       const reader = new FileReader();
       reader.onloadend = () => {
         setImageUrl(reader.result);
@@ -55,9 +134,17 @@ const CreateUser = () => {
 
   const handleClick = async (e) => {
     e.preventDefault();
-  
+
+    if (!image) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        image: "Profile picture is required",
+      }));
+      return;
+    }
+
     const formData = new FormData();
-  
+
     const user = {
       firstName,
       lastName,
@@ -70,16 +157,16 @@ const CreateUser = () => {
       role,
       workSite,
     };
-  
+
     formData.append(
       "user",
       new Blob([JSON.stringify(user)], { type: "application/json" })
     );
-  
+
     if (image) {
       formData.append("image", image);
     }
-  
+
     try {
       // Make the POST request
       const response = await axios.post(
@@ -91,7 +178,7 @@ const CreateUser = () => {
           },
         }
       );
-    
+
       if (response.status === 200) {
         // Handle success case
         Swal.fire({
@@ -109,19 +196,27 @@ const CreateUser = () => {
         title: "Error!",
         text: "Failed to add new user. Please check your inputs.",
       });
-    
-      // Check if error has response data and status code 400
-      if (error.response && error.response.status === 400) {
-        setErrors(error.response.data);
+      if (!validateAllFields()) {
+        return;
       }
     }
-    
   };
-  
 
+  const validateAllFields = () => {
+    validateField("firstName", firstName);
+    validateField("lastName", lastName);
+    validateField("role", role);
+    validateField("department", department);
+    validateField("workSite", workSite);
+    validateField("dateOfBirth", dateOfBirth);
+    validateField("mobileNo", role);
+    validateField("telNo", telNo);
+    validateField("address", address);
+    validateField("email", email);
 
+    return Object.keys(errors).length === 0;
+  };
 
-  
   return (
     <>
       <Box className="p-5 bg-white rounded-2xl w-[1122.7px]">
@@ -148,18 +243,20 @@ const CreateUser = () => {
                 value={firstName}
                 onChange={(e) => setfName(e.target.value)}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.firstName}
+                name="firstName"
               />
             </div>{" "}
             <div></div>
             <div className="row-span-4 col-span-2">
               <div className="w-[200px] h-[200px] border-2 border-gray-300 rounded-full flex items-center justify-center">
-              
                 {imageUrl ? (
                   <>
-                    <img
+                    <Avatar
+                      alt="Profile pic"
                       src={imageUrl}
-                      alt="Uploaded"
-                      className="w-[200px] h-[200px] object-cover rounded-full ml-6"
+                      sx={{ width: 220, height: 220 }}
                     />
 
                     <DeleteIcon
@@ -170,9 +267,10 @@ const CreateUser = () => {
                 ) : (
                   <label htmlFor="image-upload" className="cursor-pointer">
                     <AddAPhotoIcon className="w-[60px] h-[60px] ml-5 text-[#007EF2]" />
-                    <Typography className="font-bold">Profile Picture</Typography>
+                    <Typography className="font-bold">
+                      Profile Picture
+                    </Typography>
                   </label>
-                 
                 )}
                 <input
                   type="file"
@@ -183,7 +281,7 @@ const CreateUser = () => {
                 />
               </div>
               {errors.image && (
-                <div className="text-[#FC0000] text-sm pl-9">{errors.image}</div>
+                <div className="text-[#FC0000] text-sm ">{errors.image}</div>
               )}
             </div>
             <div className="col-span-2">
@@ -199,6 +297,9 @@ const CreateUser = () => {
                 value={lastName}
                 onChange={(e) => setlName(e.target.value)}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.lastName}
+                name="lastName"
               />
             </div>
             <div></div>
@@ -206,11 +307,10 @@ const CreateUser = () => {
               <label htmlFor="2">Department</label>
             </div>
             <div className="col-span-2">
-              {errors.department && (
-                <div className="text-[#FC0000] text-sm">
-                  {errors.department}
-                </div>
-              )}
+              <Typography variant="subtitle1" className="text-red-500">
+                {errors.department}
+              </Typography>
+
               <Select
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
@@ -219,6 +319,8 @@ const CreateUser = () => {
                 className="w-[300px]"
                 size="small"
                 label="Department"
+                onBlur={handleBlur}
+                error={!!errors.department}
               >
                 <MenuItem disabled value={department}></MenuItem>
                 <MenuItem value="Programming">Programming</MenuItem>
@@ -230,9 +332,9 @@ const CreateUser = () => {
               <label htmlFor="3">Role</label>
             </div>
             <div className="col-span-2">
-              {errors.role && (
-                <div className="text-[#FC0000] text-sm">{errors.role}</div>
-              )}{" "}
+              <Typography variant="subtitle1" className="text-red-500">
+                {errors.role}
+              </Typography>{" "}
               <Select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
@@ -240,6 +342,8 @@ const CreateUser = () => {
                 id="role"
                 className="w-[300px]"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.role}
               >
                 <MenuItem disabled value={role}></MenuItem>
                 <MenuItem value="ADMIN">Admin</MenuItem>
@@ -252,9 +356,9 @@ const CreateUser = () => {
               <label htmlFor="3">Work Site</label>
             </div>
             <div className="col-span-2">
-              {errors.workSite && (
-                <div className="text-[#FC0000] text-sm">{errors.workSite}</div>
-              )}{" "}
+              <Typography variant="subtitle1" className="text-red-500">
+                {errors.workSite}
+              </Typography>{" "}
               <Select
                 value={workSite}
                 onChange={(e) => setWorkSite(e.target.value)}
@@ -262,6 +366,8 @@ const CreateUser = () => {
                 id="workSite"
                 className="w-[300px]"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.workSite}
               >
                 <MenuItem disabled value={workSite}></MenuItem>
                 <MenuItem value="ONSITE">Onsite</MenuItem>
@@ -291,6 +397,9 @@ const CreateUser = () => {
                 value={dateOfBirth}
                 onChange={(e) => setDOb(e.target.value)}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.dateOfBirth}
+                name="dateOfBirth"
               />
             </div>
             <div></div>
@@ -313,6 +422,9 @@ const CreateUser = () => {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.address}
+                name="address"
               />
             </div>
             <div></div>
@@ -343,6 +455,9 @@ const CreateUser = () => {
                 value={mobileNo}
                 onChange={(e) => setMNumber(e.target.value)}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.mobileNo}
+                name="mobileNo"
               />{" "}
             </div>
             <div className="col-span-1">
@@ -364,6 +479,9 @@ const CreateUser = () => {
                 value={telNo}
                 onChange={(e) => setTelNUmber(e.target.value)}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.telNo}
+                name="telNo"
               />
             </div>
             <div className="col-span-1">
@@ -383,6 +501,9 @@ const CreateUser = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.email}
+                name="email"
               />
             </div>
             <div></div>
@@ -405,7 +526,7 @@ const CreateUser = () => {
               <Button
                 variant="outlined"
                 className="px-6 py-2 rounded w-[150px] text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-[#007EF2]"
-                onClick={() =>navigate(-1)}
+                onClick={() => navigate(-1)}
               >
                 Cancel
               </Button>

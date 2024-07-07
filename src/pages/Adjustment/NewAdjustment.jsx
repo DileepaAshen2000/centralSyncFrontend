@@ -25,7 +25,6 @@ const NewAdjustment = () => {
   let navigate = useNavigate();
   const [profileInfo, setProfileInfo] = useState({});
   const [adj, setAdj] = useState({
-    
     reason: "",
     date: new Date().toISOString().split("T")[0], // Set to today's date
     description: "",
@@ -53,7 +52,7 @@ const NewAdjustment = () => {
     itemId,
     userId,
     file,
-  } = adj; 
+  } = adj;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,14 +73,26 @@ const NewAdjustment = () => {
     fetchData();
   }, []);
 
+  const clearItemNameError = () => {
+    setErrors((prevErrors) => {
+      const { itemName, ...rest } = prevErrors;
+      return rest;
+    });
+  };
+
   const handleItemChange = (event, value) => {
     if (value) {
       setSelectedItemId(value.itemId);
       setAdj({ ...adj, itemId: value.itemId }); // Update the itemId in the adj state
       fetchItemDetails(value.itemId);
+      validateField("itemName", value.itemName); // Validate itemName when selected
+      clearItemNameError(); 
     } else {
       setSelectedItemId(null);
       setAdj({ ...adj, itemId: "" });
+      setAdj((prevAdj) => ({ ...prevAdj, itemId: "", itemName: "" }));
+      validateField("itemName", "");
+   
     }
   };
 
@@ -97,13 +108,11 @@ const NewAdjustment = () => {
     }
   };
 
-
   const validateField = (name, value) => {
     const validationErrors = {};
     if (name === "itemName" && !value) {
-      validationErrors.reason = "Itemname is required";
-    }
-    else if (name === "reason" && !value) {
+      validationErrors.itemName = "Itemname is required";
+    } else if (name === "reason" && !value) {
       validationErrors.reason = "Reason is required";
     } else if (name === "date" && !value) {
       validationErrors.date = "Date is required";
@@ -116,12 +125,12 @@ const NewAdjustment = () => {
     } else if (name === "itemId" && !value) {
       validationErrors.itemId = "Item ID is required";
     }
-  
+
     setErrors((prevErrors) => ({
       ...prevErrors,
       [name]: validationErrors[name],
     }));
-  
+
     // Remove the error if there is no validation error for the field
     if (!validationErrors[name]) {
       setErrors((prevErrors) => {
@@ -129,6 +138,16 @@ const NewAdjustment = () => {
         return rest;
       });
     }
+  };
+
+  const validateAllFields = () => {
+    validateField("itemName", adj.itemName);
+    validateField("reason", adj.reason);
+    validateField("date", adj.date);
+    validateField("newQuantity", adj.newQuantity);
+    
+
+    return Object.keys(errors).length === 0;
   };
 
   const onInputChange = async (e) => {
@@ -150,6 +169,7 @@ const NewAdjustment = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    
     const formData = new FormData();
     formData.append(
       "adjustment",
@@ -198,12 +218,13 @@ const NewAdjustment = () => {
           title: "Error!",
           text: "Failed to submit adjustment. Please check your inputs.",
         });
+        if (!validateAllFields()) {
+          return;
+        }
         //setErrors(error.response.data);
-      }  
+      }
     }
   };
-
-  
 
   const handleFileChange = (e) => {
     setAdj({ ...adj, file: e.target.files[0] });
@@ -220,20 +241,22 @@ const NewAdjustment = () => {
         <InputLabel htmlFor="itemName" className="flex-none w-32 text-black ">
           Item Name
         </InputLabel>
-        
-     
+
         <div>
           <Autocomplete
             disablePortal
             options={options}
             getOptionLabel={(option) => option.itemName}
             onChange={handleItemChange}
+            name="itemName"
             sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField
                 {...params}
                 label="Item Name"
-                helperText="Please select the item name."
+                helperText={errors.itemName || "Please select the item name."}
+                error={!!errors.itemName}
+                onBlur={handleBlur}
               />
             )}
             size="small"
@@ -247,7 +270,6 @@ const NewAdjustment = () => {
           Item ID
         </InputLabel>
         <div>
-         
           <Autocomplete
             disabled
             options={[{ itemId: selectedItemId }]} // Provide the selected itemId as an option
@@ -261,6 +283,7 @@ const NewAdjustment = () => {
                 label="Item ID"
                 error={!!errors.itemId}
                 helperText={errors.itemId}
+                onBlur={handleBlur}
               />
             )}
             size="small"
@@ -272,7 +295,7 @@ const NewAdjustment = () => {
         <InputLabel htmlFor="date" className="flex-none w-32 text-black ">
           Date
         </InputLabel>
-        
+
         <div>
           <TextField
             style={{ width: "300px" }}
@@ -284,7 +307,6 @@ const NewAdjustment = () => {
             error={!!errors.date}
             helperText={errors.date}
             InputLabelProps={{
-              
               shrink: true,
             }}
           />
@@ -295,9 +317,8 @@ const NewAdjustment = () => {
         <InputLabel htmlFor="reason" className="flex-none w-32 text-black ">
           Reason
         </InputLabel>
-        
+
         <div className="flex-grow">
-        
           <Select
             value={reason}
             onChange={(e) => onInputChange(e)}
@@ -325,9 +346,8 @@ const NewAdjustment = () => {
         >
           Description
         </InputLabel>
-       
+
         <div>
-         
           <TextField
             label="Description"
             name="description"
@@ -369,9 +389,8 @@ const NewAdjustment = () => {
                   {/* available Qty */}
                   <TableCell align="right">{item.quantity}</TableCell>
                   {/* new Qty */}
-                  
+
                   <TableCell align="right">
-                  
                     <TextField
                       size="small"
                       placeholder="Enter New Qty"
