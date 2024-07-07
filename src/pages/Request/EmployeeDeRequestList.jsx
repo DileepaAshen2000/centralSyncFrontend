@@ -131,7 +131,7 @@ const EmployeeDeRequestList = () => {
           id: index + 1,
           date: createdDate.toLocaleDateString('en-US'),
           time: createdDate.toLocaleTimeString('en-US'),
-          reason: inventoryRequest.reason,
+          itemName: inventoryRequest.itemName,
           status: inventoryRequest.reqStatus,
           quantity: inventoryRequest.quantity,
           createdDateTime: createdDate,
@@ -162,7 +162,7 @@ const EmployeeDeRequestList = () => {
     { field: 'id', headerName: 'No:', width: 200 },
     { field: 'date', headerName: 'Date', width: 200 },
     { field: 'time', headerName: 'Time', width: 200 },
-    { field: 'reason', headerName: 'Reason', width: 200 },
+    { field: 'itemName', headerName: 'Item Name', width: 200 },
     { 
       field: 'status', 
       headerName: 'Status', 
@@ -174,15 +174,18 @@ const EmployeeDeRequestList = () => {
           case 'PENDING':
             backgroundColor = '#ADD8E6';
             break;
-          case 'ACCEPTED':
-            backgroundColor = '#90EE90';
-            break;
           case 'REJECTED':
             backgroundColor = '#F08080';
             break;
-          case 'SENT_TO_ADMIN':
-            backgroundColor = '#FFFFE0';
+       case 'WANT_TO_RETURN_ITEM':
+            backgroundColor = '#af5c9b';
             break;
+            case 'RECEIVED':
+              backgroundColor = '#4540bd';
+              break;
+              case 'DELIVERED':
+                backgroundColor = '#90EE90';
+                break;
         }
         return (
           <Box 
@@ -217,15 +220,15 @@ const EmployeeDeRequestList = () => {
           case 'PENDING':
             backgroundColor = '#ADD8E6';
             break;
-          case 'ACCEPTED':
-            backgroundColor = '#90EE90';
-            break;
           case 'REJECTED':
             backgroundColor = '#F08080';
             break;
-          case 'SENT_TO_ADMIN':
-            backgroundColor = '#FFFFE0';
+            case 'RECEIVED':
+            backgroundColor = '#7a7a7a';
             break;
+            case 'DELIVERED':
+              backgroundColor = '#90EE90';
+              break;
           case 'WANT_TO_RETURN_ITEM':
             backgroundColor = '#af5c9b';
             break;
@@ -249,7 +252,7 @@ const EmployeeDeRequestList = () => {
   ];
 
 
-  const filteredRequestRows = requestRows.filter(row => row.status !== 'ACCEPTED'&& row.status!=='WANT_TO_RETURN_ITEM');
+  const filteredRequestRows = requestRows.filter(row => row.status !== 'RECEIVED'&& row.status!=='WANT_TO_RETURN_ITEM');
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -275,7 +278,7 @@ const EmployeeDeRequestList = () => {
             rows={filteredRequestRows} 
             columns={requestColumns} 
             loading={loadingRequests} 
-            onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
+            onRowClick={(params) => navigate(`/employee/de-request-document/${params.row.reqId}`)} 
           />
         </TabPanel>
 
@@ -285,7 +288,7 @@ const EmployeeDeRequestList = () => {
             rows={itemsRows} 
             columns={itemsColumns} 
             loading={loadingItems} 
-            onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
+            onRowClick={(params) => navigate(`/employee/de-request-document/${params.row.reqId}`)} 
           />
         </TabPanel>
       </TabContext>

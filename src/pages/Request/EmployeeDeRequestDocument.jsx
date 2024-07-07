@@ -6,11 +6,13 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Typography, Button, Alert, AlertTitle, CircularProgress, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Typography, Button, Alert, AlertTitle, CircularProgress, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,TextField } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import ReactToPrint from 'react-to-print';
 import LoginService from '../Login/LoginService';
+import { set } from 'date-fns';
+import { Token, TramRounded } from '@mui/icons-material';
 
 
 const formatDateTime = (dateTimeArray) => {
@@ -41,24 +43,35 @@ const buttonColor = (reqStatus, updateDateTime) => {
         <div style={{ marginLeft: '67px' }}>Time {time}</div>
       </Alert>
     );
-  } else if (reqStatus === 'ACCEPTED') {
+  } else if (reqStatus === 'DISPATCHED') {
     return (
       <Alert severity="success" sx={{ width: '300px', margin: 5 }}>
-        <AlertTitle>Accepted</AlertTitle>
+        <AlertTitle>Dispatched</AlertTitle>
         <div>Updated: Date {date}</div>
         <div style={{ marginLeft: '67px' }}>Time {time}</div>
       </Alert>
     );
-  } else if (reqStatus === 'SENT_TO_ADMIN') {
+  }
+  else if (reqStatus === 'DELIVERED') {
     return (
-      <Alert severity="warning"
+      <Alert severity="info" sx={{ width: '300px', margin: 5, backgroundColor: '#DFF2BF' }}>
+        <AlertTitle>Delivered</AlertTitle>
+        <div>Updated: Date {date}</div>
+        <div style={{ marginLeft: '67px' }}>Time {time}</div>
+      </Alert>
+    );
+  }else if (reqStatus === 'RECEIVED') {
+    return (
+      <Alert
+        severity="info"
         sx={{
           width: '300px',
           margin: 5,
-          backgroundColor: '#FFFFE0',
+          backgroundColor: '#7a7a7a',
           color: 'black'
-        }}>
-          <AlertTitle>Sent To Admin</AlertTitle>
+        }}
+      >
+        <AlertTitle>Received</AlertTitle>
         <div>Updated: Date {date}</div>
         <div style={{ marginLeft: '67px' }}>Time {time}</div>
       </Alert>
@@ -93,7 +106,7 @@ const getInventoryRequestListLink = () => {
   if (isEmployee) return "/employee-in-request-list";
   return "/default-request-list";
 };
-const RequestDocument = () => {
+const DeRequestDocument = () => {
   const { reqId } = useParams();
   const [inventoryRequest, setInventoryRequest] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
@@ -109,22 +122,26 @@ const RequestDocument = () => {
   const[openSA, setOpenSA] = useState(false);
   const[openRD, setOpenRD] = useState(false);
   const[openAD, setOpenAD] = useState(false);
+ ;
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleClickItemReturn = () => { 
     setOpenID(true); 
   };
 
-  const handleClickSendToAdmin = () =>{
-setOpenSA(true);
-  };
-
-  const handleClickReject = () => {
+  const handleClickReceived = () => {
     setOpenRD(true);
   };
 
-  const handleClickAccept = () => {
-    setOpenAD(true);
+
+
+  const handleOpenDialog = () => {
+    setOpenRD(true);
   };
+
+ 
+
+  
   
 
   const handleClose = () => {
@@ -174,12 +191,13 @@ setOpenSA(true);
       return null;
     }
   };
-  const handleDelete = () => {
+
+  const handleReceived = () => {
     axios
-      .patch(`http://localhost:8080/request/deleteRequest/${reqId}`)
+      .patch(`http://localhost:8080/request/updateStatus/received/${reqId}`)
       .then(() => {
         setInventoryRequest(!inventoryRequest);
-        navigate(getInventoryRequestListLink());
+        navigate("/employee-de-request-list");
       })
       .catch((error) => {
         console.log(error);
@@ -187,43 +205,7 @@ setOpenSA(true);
   };
 
 
-  const handleReject = () => {
-    axios
-      .patch(`http://localhost:8080/request/updateStatus/reject/${reqId}`)
-      .then(() => {
-        setInventoryRequest(!inventoryRequest);
-        navigate(getInventoryRequestListLink());
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
 
-  const handleAccept = () => {
-    axios
-      .patch(`http://localhost:8080/request/updateStatus/accept/${reqId}`)
-      .then(() => {
-        setInventoryRequest(!inventoryRequest);
-        navigate(getInventoryRequestListLink());
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const handleSendToAdmin = () => {
-    setOpenSA(true);
-    axios
-      .patch(`http://localhost:8080/request/updateStatus/sendToAdmin/${reqId}`)
-      .then(() => {
-        setInventoryRequest(!inventoryRequest);
-        navigate("/requestHandler/in-request-list");
-        handleClose();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
 
   const handleItemReturn = async () => {
     try {
@@ -274,37 +256,8 @@ setOpenSA(true);
       });
   };
 
-  const handleSendNote = () => {
-    const toEmail = userDetails.email;
-    
-    if (note.trim() !== '') {
-      // Create a FormData object
-      const formData = new FormData();
-      formData.append('toEmail', toEmail);
-      formData.append('subject', 'Inventory Request Note');
-      formData.append('body', note);
   
-      axios
-        .post(
-          'http://localhost:8080/request/sendSimpleEmail',
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        )
-        .then(() => {
-          console.log('Note sent successfully');
-          window.location.reload();
-        })
-        .catch((error) => {
-          console.error('Error sending note:', error);
-        });
-    } else {
-      alert('Please write a note before sending.');
-    }
-  };
+   
   
 
   const handleFileDownload = async () => {
@@ -360,14 +313,6 @@ setOpenSA(true);
               Edit
             </Button>
           )}
-           {(inventoryRequest.reqStatus === 'REJECTED' && role === 'ADMIN' && <Button
-              className="px-6 py-2 text-white bg-blue-600 rounded"
-              variant='contained'
-              type='submit'
-              onClick={handleDelete}
-            >
-              Delete
-            </Button>)}
           <ReactToPrint
             trigger={() => (
               <Button className="px-6 py-2 text-white bg-blue-600 rounded" variant='contained'>
@@ -379,14 +324,14 @@ setOpenSA(true);
         </div>
 
         <div ref={printRef} className="p-10 ml-6 mr-6 bg-white"
-          style={{ width: '1000px', height: '1100px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
+          style={{ width: '1000px', height: '1000px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
           <div>
             <section>
               
                 
                
-                <div className="w-full  bg-blue-900 text-white text-center py-4">
-                  <header className="text-3xl font-bold">INVENTORY REQUEST</header>
+                <div className="w-full  bg-green-900 text-white text-center py-4">
+                  <header className="text-3xl font-bold">Delivery Request</header>
                 </div>
         
               {inventoryRequest && buttonColor(inventoryRequest.reqStatus, inventoryRequest.updateDateTime)}
@@ -434,6 +379,8 @@ setOpenSA(true);
               </TableBody>
             </Table>
           </TableContainer>
+          
+
           <div className="mt-16 mb-32">
           <section className="flex flex-row gap-1 mb-3">
               <ul className='flex flex-col'>
@@ -468,37 +415,47 @@ setOpenSA(true);
 
         </div>
 
-        { (inventoryRequest?.reqStatus === 'PENDING' &&
-         role !== 'EMPLOYEE' && 
-         !(inventoryRequest.role === role)) || 
-         (role === 'ADMIN')  &&  
-         (inventoryRequest?.reqStatus === 'SENT_TO_ADMIN') &&
-         (
-          <div className='flex gap-6 mt-6 ml-6'>
-            <h4>Note :</h4>
-            <div className="flex w-2/3">
-              <textarea
-                className="w-full h-20 p-2 mt-2 border-2 border-gray-300 rounded-md"
-                placeholder='Write something here..'
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-              />
-              <Button
-                className="ml-2 px-4 py-2 text-white bg-blue-600 rounded"
-                variant='contained'
-                onClick={handleSendNote}
-                style={{ height: 'fit-content', alignSelf: 'center' }}
-              >
-                Send
-              </Button>
-            </div>
-          </div>
-        )}
+
 
         <div className='flex justify-end gap-4 ml-[50%] mt-6'>
+        {(inventoryRequest.reqStatus === 'DELIVERED') && 
+          (
+            <>
+              <Button
+                className="px-6 py-2 bg-gray-500 text-white hover:bg-gray-400"
+                variant='contained'
+                type='submit'
+                onClick={handleClickReceived}
+              >
+                Received
+              </Button>
+            </>
+          )}
+           <Dialog
+            open={openRD}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle>
+              {"Are you sure you successfully Recieved received requested item?"}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                (By clicking on "Yes" you will mark your confirming you received delivered item successfully.)
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleReceived} color="primary" autoFocus>
+                Yes
+              </Button>
+              <Button onClick={handleClose} color="primary">
+                No
+              </Button>
+            </DialogActions>
+          </Dialog>
           
-       
-          {inventoryRequest && inventoryRequest.reqStatus === 'ACCEPTED' && (role === 'EMPLOYEE'||role === 'REQUEST_HANDLER') && (
+          {(inventoryRequest.reqStatus === 'ACCEPTED' || inventoryRequest.reqStatus === 'RECEIVED') && role === 'EMPLOYEE'  &&(
             <>
               <Button
                 className="px-6 py-2 bg-purple-500 text-white hover:bg-purple-400"
@@ -525,11 +482,11 @@ setOpenSA(true);
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleItemReturn} color="primary" autoFocus>
-                Yes
-              </Button>
               <Button onClick={handleClose} color="primary">
                 No
+              </Button>
+              <Button onClick={handleItemReturn} color="primary" autoFocus>
+                Yes
               </Button>
             </DialogActions>
           </Dialog>
@@ -537,9 +494,8 @@ setOpenSA(true);
             className="px-6 py-2 hover:bg-white-400"
             variant='outlined'
             type='submit'
-            onClick={() => navigate("/employee-in-request-list")}
+            onClick={() => navigate("/employee-de-request-list")}
           >
-
             Cancel
           </Button>
         </div>
@@ -550,4 +506,4 @@ setOpenSA(true);
   );
 }
 
-export default RequestDocument;
+export default DeRequestDocument;

@@ -75,7 +75,7 @@ const NewRequest = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleClick = (e) => {
+  const handleClick = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
@@ -85,34 +85,41 @@ const NewRequest = () => {
     formData.append("description", description);
     formData.append("userId", userID);
     formData.append("itemId", itemId);
-    if (isReqHandler) {
-      formData.append("role", "REQ_HANDLER");
-    } else if (isEmployee) {
-      formData.append("role", "EMPLOYEE");
-    }
 
     for (let i = 0; i < files.length; i++) {
       formData.append("file", files[i]);
     }
 
-    fetch("http://localhost:8080/request/add", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log("New inventory request added");
-          navigate(getInventoryRequestListLink());
-        } else {
-          response.json().then((backendErrors) => {
-            setErrors(backendErrors);
-          });
-        }
-      })
-      .catch((error) => {
-        console.error("Error during fetch:", error);
+    try {
+      // Changed: Added 'await' keyword to the fetch call
+      const response = await fetch("http://localhost:8080/request/add", {
+        method: "POST",
+        headers: {
+          'Authorization': `Bearer ${LoginService.getAuthToken()}`,
+        },
+        body: formData,
       });
-  };
+      const responseText = await response.text();
+      if (response.ok) {
+        console.log("New inventory request added");
+        navigate(getInventoryRequestListLink());
+      } else {
+        console.error("Error response from server:", responseText);
+        try {
+          const backendErrors = JSON.parse(responseText);
+          setErrors(backendErrors);
+        } catch (e) {
+          console.error("Failed to parse error response as JSON:", e);
+          setErrors({ form: `Failed to submit request. Server responded with: ${responseText}` });
+        }
+      }
+  } catch (error) {
+    console.error("Error during fetch:", error);
+    setErrors({ form: `Failed to submit request. Network or server error: ${error.message}` });
+  }
+};
+
+      
 
   const handleFileChange = (e) => {
     setFiles(Array.from(e.target.files));

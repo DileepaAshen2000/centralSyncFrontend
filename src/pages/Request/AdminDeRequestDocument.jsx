@@ -45,7 +45,11 @@ const buttonColor = (reqStatus, updateDateTime) => {
     );
   } else if (reqStatus === 'DISPATCHED') {
     return (
-      <Alert severity="success" sx={{ width: '300px', margin: 5 }}>
+      <Alert severity="info" 
+      sx={{ width: '300px',
+         margin: 5, 
+        backgroundColor: '#FDBA74',
+        color: 'black' }}>
         <AlertTitle>Dispatched</AlertTitle>
         <div>Updated: Date {date}</div>
         <div style={{ marginLeft: '67px' }}>Time {time}</div>
@@ -90,7 +94,7 @@ const getInventoryRequestListLink = () => {
   if (isEmployee) return "/employee-in-request-list";
   return "/default-request-list";
 };
-const DeRequestDocument = () => {
+const AdminDeRequestDocument = () => {
   const { reqId } = useParams();
   const [inventoryRequest, setInventoryRequest] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
@@ -200,7 +204,7 @@ const DeRequestDocument = () => {
       .then(() => {
         setInventoryRequest(!inventoryRequest);
         setDialogOpen(false);
-        navigate(`/stockIn`);
+        navigate(`/stockOut`);
       })
       .catch((error) => {
         console.log(error);
@@ -433,11 +437,8 @@ const DeRequestDocument = () => {
 
         </div>
 
-        { (inventoryRequest?.reqStatus === 'PENDING' &&
-         role !== 'EMPLOYEE' && 
-         !(inventoryRequest.role === role)) || 
-         (role === 'ADMIN')  &&  
-         (inventoryRequest?.reqStatus === 'SENT_TO_ADMIN') &&
+        { (inventoryRequest?.reqStatus !== 'RECEIVED') &&
+      
          (
           <div className='flex gap-6 mt-6 ml-6'>
             <h4>Note :</h4>
@@ -582,4 +583,4 @@ const DeRequestDocument = () => {
   );
 }
 
-export default DeRequestDocument;
+export default AdminDeRequestDocument;

@@ -83,9 +83,9 @@ const AdminInRequestList = () => {
       let data = formatRequestsData(response.data);
 
       // Filtering requests based on role
-      const reviewingRequests = data.filter(item => (item.status === 'SENT_TO_ADMIN'|| item.status === 'REJECTED'|| item.status === 'ACCEPTED') && item.workSite !== 'ONLINE');
+      const reviewingRequests = data.filter(item => (item.status === 'SENT_TO_ADMIN' && item.workSite !== 'ONLINE'));
       console.log('Reviewing Requests:', reviewingRequests);
-      const myRequests = data.filter(item => item.workSite === 'ONLINE');
+      const myRequests = data.filter(item => (item.workSite === 'ONLINE')&& (item.status === 'PENDING'));
       const itemsOnHand = data.filter(item =>item.status === 'WANT_TO_RETURN_ITEM'); // Filter for items on hand
       
 
@@ -143,7 +143,7 @@ const AdminInRequestList = () => {
     { field: 'id', headerName: 'Inventory Request No:', width: 200 },
     { field: 'date', headerName: 'Date', width: 200 },
     { field: 'time', headerName: 'Time', width: 200 },
-    { field: 'reason', headerName: 'Reason', width: 200 },
+    { field: 'itemName', headerName: 'Item Name', width: 200 },
     { 
       field: 'status', 
       headerName: 'Status', 
@@ -162,10 +162,10 @@ const AdminInRequestList = () => {
             backgroundColor = '#F08080';
             break;
           case 'SENT_TO_ADMIN':
-            backgroundColor = '#FFFFE0';
+            backgroundColor = '#F59E0B';
             break;
           case 'WANT_TO_RETURN_ITEM':
-            backgroundColor = '#FFCC00';
+            backgroundColor = '#af5c9b';
             break;
           default:
             backgroundColor = '#FFFFFF';
@@ -189,10 +189,51 @@ const AdminInRequestList = () => {
 
   // New columns for "Items On My Hand"
   const itemsOnHandColumns = [
-    { field: 'id', headerName: 'Inventory Request No:', width: 200 },
-    { field: 'itemName', headerName: 'Item Name', width: 250 },
-    { field: 'date', headerName: 'Received Date', width: 300 },
-    { field: 'quantity', headerName: 'Requested Quantity', width: 250 },
+    { field: 'id', headerName: 'Inventory Request No:', width: 180 },
+    { field: 'itemName', headerName: 'Item Name', width: 180 },
+    { field: 'date', headerName: 'Received Date', width: 180 },
+    { field: 'quantity', headerName: 'Requested Quantity', width: 180 },
+    { 
+      field: 'status', 
+      headerName: 'Status', 
+      width: 220,
+      renderCell: (params) => {
+        const status = params.value;
+        let backgroundColor;
+        switch (status) {
+          case 'PENDING':
+            backgroundColor = '#ADD8E6';
+            break;
+          case 'ACCEPTED':
+            backgroundColor = '#90EE90';
+            break;
+          case 'REJECTED':
+            backgroundColor = '#F08080';
+            break;
+          case 'SENT_TO_ADMIN':
+            backgroundColor = '#F59E0B';
+            break;
+          case 'WANT_TO_RETURN_ITEM':
+            backgroundColor = '#FFCC00';
+            break;
+          default:
+            backgroundColor = '#FFFFFF';
+        }
+        return (
+          <Box 
+            sx={{ 
+              padding: '4px 8px', 
+              borderRadius: '4px', 
+              textAlign: 'center', 
+              fontWeight: 'bold',
+              backgroundColor 
+            }}
+          >
+            {status}
+          </Box>
+        );
+      }
+    },
   ];
 
   const filteredReviewingRequestRows = reviewingRequestRows
@@ -231,7 +272,7 @@ const AdminInRequestList = () => {
             rows={filteredReviewingRequestRows} 
             columns={columns} 
             loading={loadingRequests} 
-            onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
+            onRowClick={(params) => navigate(`/admin/in-request-document/${params.row.reqId}`)} 
           />
         </TabPanel>
 
@@ -241,7 +282,7 @@ const AdminInRequestList = () => {
             rows={myRequestRows} 
             columns={columns} 
             loading={loadingRequests} 
-            onRowClick={(params) => navigate(`/employee/delivery-request-document/${params.row.reqId}`)} 
+            onRowClick={(params) => navigate(`/admin/de-request-document/${params.row.reqId}`)} 
           />
         </TabPanel>
 

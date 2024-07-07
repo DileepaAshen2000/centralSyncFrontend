@@ -13,6 +13,10 @@ class LoginService{
         }
     }
 
+    static getAuthToken() {
+        return localStorage.getItem('token');
+    }
+
 
     // static async register (userData, token){
     //     try{

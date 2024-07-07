@@ -17,11 +17,13 @@ import EditItem from "./InventoryItem/EditItem";
 import AdminInRequestList from "./Request/AdminInRequestList";
 import AdminInRequestDocument from "./Request/AdminInRequestDocument";
 import RequestHandlerRequestList from "./Request/RequestHandlerInRequestList";
+import ReqHandlerInRequestDocument from "./Request/ReqHandlerInRequestDocument";
 import EmployeeDeRequestList from "./Request/EmployeeDeRequestList";
 import EmployeeInRequestList from "./Request/EmployeeInRequestList";
 import EmployeeInRequestDocument from "./Request/EmployeeInRequestDocument";
+import EmployeeDeRequestDocument from "./Request/EmployeeDeRequestDocument";
 import InRequestDocument from "./Request/InRequestDocument";
-import DeRequestDocument from "./Request/DeRequestDocument";
+import AdminDeRequestDocument from "./Request/AdminDeRequestDocument";
 import CreateNewIDRequest from "./Request/CreateNewIDRequest";
 import EditRequest from "./Request/EditInRequest";
 import UserActivityHistory from "./User/History";
@@ -178,10 +180,18 @@ const Home = () => {
                   path="/admin/in-request-document/:reqId"
                   element={<AdminInRequestDocument />}
                 ></Route>
+                   <Route
+                  path="/admin/de-request-document/:reqId"
+                  element={<AdminDeRequestDocument/>}
+                ></Route>
                 {/*InRequest Handler view routing */}
                 <Route
                   path="/requestHandler/in-request-list"
                   element={<RequestHandlerRequestList />}
+                ></Route>
+                <Route
+                  path="/requestHandler/in-request-document/:reqId"
+                  element={<ReqHandlerInRequestDocument />}
                 ></Route>
                
                 {/*Employee view routing */}
@@ -198,12 +208,12 @@ const Home = () => {
                   element={<InRequestDocument />}
                 ></Route>
                 <Route
-                  path="/employee/delivery-request-document/:reqId"
-                  element={<DeRequestDocument />}
-                ></Route>
-                <Route
                   path="/employee-de-request-list"
                   element={<EmployeeDeRequestList/>}
+                ></Route>
+                <Route
+                  path="/employee/de-request-document/:reqId"
+                  element={<EmployeeDeRequestDocument />}
                 ></Route>
                 {/*Common views for three actors routing*/}
                 <Route
