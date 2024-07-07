@@ -1,134 +1,81 @@
-import * as React from "react";
-import { DataGrid } from "@mui/x-data-grid";
-import { useNavigate, useParams } from "react-router-dom";
-import { TextField, Button, Stack, Select } from "@mui/material";
-import { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import axios from "axios";
-import Swal from "sweetalert2";
 
-const columns = [
-  { field: "id", headerName: "ID", width: 200 },
-  { field: "topic", headerName: "Topic", width: 200 },
-  { field: "date", headerName: "Date", width: 200 },
+import * as React from 'react';
+import PropTypes from 'prop-types';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Box from '@mui/material/Box';
+import MyTicketList from './Myticketlist';
+import Ticket from './Otherticketlist';
+import LoginService from '../Login/LoginService';
 
-  //{ field: 'status', headerName: 'Status', width: 130 },
-];
+function CustomTabPanel(props) {
+  const { children, value, index, ...other } = props;
 
-const Ticket = () => {
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [fetchData, setFetchData] = useState(false);
-
-  const navigate = useNavigate();
-  const { ID } = useParams();
-  const [rows, setRows] = useState([]);
-  useEffect(() => {
-    axios
-      .get("http://localhost:8080/ticket/getAll")
-      .then((response) => {
-        const data = response.data.map((ticket) => ({
-          id: ticket.ticketId,
-          topic: ticket.topic,
-          date: ticket.date,
-        }));
-        setRows(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
-
-  const [rowSelectionModel, setRowSelectionModel] = useState([]);
-  const handleRowSelectionModelChange = (newSelectedRow) => {
-    setRowSelectionModel(newSelectedRow);
-  };
-
-    const handleDelete = () => {
-      const ticketId= rowSelectionModel[0];
-      console.log(ticketId)
-  
-      axios
-      .delete('http://localhost:8080/ticket/delete/'+ticketId)
-        .then((response) => {
-          // Reload tickets after deletion
-          axios.get("http://localhost:8080/ticket/getAll").then((response) => {
-            const data = response.data.map((ticket) => ({
-              id: ticket.ticketId,
-              topic: ticket.topic,
-              date: ticket.date,
-            }));
-            setRows(data);
-          });
-          setRowSelectionModel([]);
-          Swal.fire({
-            icon: "success",
-            title: "Tickets deleted successfully",
-            text: "Selected tickets have been deleted.",
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-          Swal.fire({
-            icon: "error",
-            title: "Delete failed",
-            text: "Failed to delete selected tickets.",
-          });
-        });
-    };
-
-  
   return (
-    <Box
-      sx={{
-        height: 400,
-        width: "100%",
-      }}
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
     >
-      <Box className="flex pt-2 pb-2">
-        <h1 className="inline-block p-4 text-3xl font-bold">
-          Maintenance Ticket
-        </h1>
-        {rowSelectionModel > 0 ? (
-          <div className="flex items-center gap-4 ml-[48%]">
-            <Button
-              variant="contained"
-              className="bg-blue-600 px-6 py-2 text-white rounded left-[68%]"
-              onClick={handleDelete}
-            >
-              Delete
-            </Button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-6 mt-12 ">
-            <div className="col-start-6">
-              <Button
-                variant="contained"
-                className="bg-blue-600 w-[150px] rounded text-white h-10"
-                onClick={() => navigate("/newTicket")}
-              >
-                New Ticket
-              </Button>
-            </div>
-          </div>
-        )}
-      </Box>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
-          },
-        }}
-        autoHeight
-        pageSizeOptions={[5, 10]}
-        checkboxSelection
-        disableRowSelectionOnClick
-        rowSelectionModel={rowSelectionModel}
-        onRowSelectionModelChange={handleRowSelectionModelChange}
-      />
-    </Box>
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
   );
+}
+
+CustomTabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
 };
 
-export default Ticket;
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
+export default function BasicTabs() {
+  const [value, setValue] = React.useState(0);
+  const isEmployee = LoginService.isEmployee();
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  return (
+    <div>
+      {(!isEmployee) && (
+        <Box sx={{ width: '100%' }}>
+          <div className='pb-5'>
+            <h1 className="inline-block text-3xl font-bold">All Issue Tickets</h1>
+            <p>Here are all tickets</p>
+          </div>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+              <Tab label="My Tickets" {...a11yProps(0)} />
+              <Tab label="Others' Tickets" {...a11yProps(1)} />
+            </Tabs>
+          </Box>
+          <CustomTabPanel value={value} index={0}>
+          <MyTicketList/>   
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={1}>
+          <Ticket/>
+          </CustomTabPanel>
+        </Box>
+      )}
+      
+      {isEmployee  && (
+        <div>
+          <div className='pb-5'>
+            <h1 className="inline-block text-3xl font-bold">Issue Tickets</h1>          
+          </div>
+          <MyTicketList/>
+        </div>
+      )}
+    </div>
+  );
+}
