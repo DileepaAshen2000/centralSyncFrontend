@@ -302,7 +302,7 @@ const NewAdjustment = () => {
       <div className="flex-row col-span-10 col-start-1 ">
         <Typography display='block' gutterBottom>Attach File(s) to inventory adjustment </Typography>
         <input type='file' className="mt-4 mb-2" onChange={handleFileChange}></input>
-        <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 1 file, 5MB each</Typography>
+        <Typography variant='caption' display='block' gutterBottom>You can upload a maximum 10MB file.</Typography>
       </div>
 
       

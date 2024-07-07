@@ -13,7 +13,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import myLogo from '../assests/logo1.png';
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from './SideBar';
-import { Button, InputBase } from "@mui/material";
+import { Button, InputBase, Tooltip } from "@mui/material";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import HistoryIcon from "@mui/icons-material/History";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
@@ -156,17 +156,20 @@ export default function NavBar() {
           <SearchBar />
           <Box sx={{ flexGrow: 2 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: '20px' }}>
-            <IconButton 
-              size="large" 
-              aria-label="show new notifications" 
-              color="inherit" 
-              className="hidden md:block"
-              onClick={toggleNotifications} // Add onClick handler to toggle notifications
-            >
-              <Badge badgeContent={notificationCount} color="error">
-                <NotificationsIcon className='text-black' />
-              </Badge>
-            </IconButton>
+            <Tooltip title="Notification">
+              <IconButton 
+                size="large" 
+                aria-label="show new notifications" 
+                color="inherit" 
+                className="hidden md:block"
+                onClick={toggleNotifications} // Add onClick handler to toggle notifications
+              >
+                <Badge badgeContent={notificationCount} color="error">
+                  <NotificationsIcon className='text-black' />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            
             <div className='flex items-center'>
               {profileInfo ? (
                 <h4 className='text-black '>{profileInfo.firstName} {profileInfo.lastName}</h4>
@@ -174,17 +177,20 @@ export default function NavBar() {
                 <h4 className='text-black '>Loading...</h4>
               )}
             </div>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-haspopup="true"
-              onClick={toggleSidebar}
-              color="inherit"
-              className="hidden md:block"
-            >
-              <AccountCircle className='text-3xl text-black' />
-            </IconButton>
+            <Tooltip title="Account">
+              <IconButton
+                size="large"
+                edge="end"
+                aria-label="account of current user"
+                aria-haspopup="true"
+                onClick={toggleSidebar}
+                color="inherit"
+                className="hidden md:block"
+              >
+                <AccountCircle className='text-3xl text-black' />
+              </IconButton>
+            </Tooltip>
+            
           </Box>
           <div className='text-black cursor-pointer text- md:hidden' onClick={toggleMenu}>
             <MenuIcon />
@@ -194,7 +200,7 @@ export default function NavBar() {
 
       {/* Notifications list */}
       {notificationsOpen && (
-        <Box className="absolute right-0 mt-2 w-80 bg-white border border-gray-300 z-50 rounded-md shadow-lg">
+        <Box className="absolute right-0 z-50 mt-2 bg-white border border-gray-300 rounded-md shadow-lg w-80">
           <Box className="p-2">
             {notifications.length > 0 ? (
               notifications.map((notification, index) => (

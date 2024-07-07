@@ -14,6 +14,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Tooltip,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -136,10 +137,13 @@ const SearchBar = () => {
               ),
               endAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon
-                    onClick={handleSearch}
-                    style={{ cursor: "pointer" }}
-                  />
+                  <Tooltip title="Search">
+                    <SearchIcon
+                      onClick={handleSearch}
+                      style={{ cursor: "pointer" }}
+                    />
+                  </Tooltip>
+                  
                 </InputAdornment>
               ),
               className: "text-gray-500 m-2 h-[30px] border-rounded-2xl ",
@@ -164,7 +168,7 @@ const SearchBar = () => {
           horizontal: "left",
         }}
       >
-        <div className="p-2 flex flex-column">
+        <div className="flex p-2 flex-column">
           <FormGroup>
             {categories.map((category) => (
               <FormControlLabel
@@ -179,7 +183,7 @@ const SearchBar = () => {
               />
             ))}
             <Button
-              className="rounded-sm text-black"
+              className="text-black rounded-sm"
               variant="outlined"
               onClick={handleSearch}
             >

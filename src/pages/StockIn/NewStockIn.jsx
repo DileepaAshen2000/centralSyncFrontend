@@ -313,7 +313,7 @@ const NewStockIn = () => {
         <div className="flex-row col-span-10 col-start-1 ">
           <Typography display='block' gutterBottom>Attach File(s) to inventory stock-in </Typography>
           <input type='file' onChange={handleFileChange} className="mt-4 mb-2"></input>
-          <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 1 file, 5MB each</Typography>
+          <Typography variant='caption' display='block' gutterBottom>You can upload a maximum 10MB file.</Typography>
         </div>
         
         <div className='flex col-start-7 gap-6'>
