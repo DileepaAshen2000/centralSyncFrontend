@@ -45,7 +45,7 @@ const CreateUser = () => {
       } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
         validationErrors.firstName = "First name must contain only letters";
       }
-    } else if (name === "lastName" && !value) {
+    } else if (name === "lastName") {
       if (!value) {
         validationErrors.lastName = "Last name is required";
       } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
@@ -307,9 +307,9 @@ const CreateUser = () => {
               <label htmlFor="2">Department</label>
             </div>
             <div className="col-span-2">
-              <Typography variant="subtitle1" className="text-red-500">
-                {errors.department}
-              </Typography>
+             {errors.department && (
+                <div className="text-[#FC0000] text-sm">{errors.department}</div>
+              )}
 
               <Select
                 value={department}
@@ -332,9 +332,9 @@ const CreateUser = () => {
               <label htmlFor="3">Role</label>
             </div>
             <div className="col-span-2">
-              <Typography variant="subtitle1" className="text-red-500">
-                {errors.role}
-              </Typography>{" "}
+               {errors.role && (
+                <div className="text-[#FC0000] text-sm">{errors.role}</div>
+              )}{" "}
               <Select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
@@ -356,9 +356,9 @@ const CreateUser = () => {
               <label htmlFor="3">Work Site</label>
             </div>
             <div className="col-span-2">
-              <Typography variant="subtitle1" className="text-red-500">
-                {errors.workSite}
-              </Typography>{" "}
+               {errors.workSite && (
+                <div className="text-[#FC0000] text-sm">{errors.workSite}</div>
+              )}{" "}
               <Select
                 value={workSite}
                 onChange={(e) => setWorkSite(e.target.value)}
