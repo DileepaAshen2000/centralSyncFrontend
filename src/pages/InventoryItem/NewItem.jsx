@@ -19,7 +19,6 @@ const AddItemForm = () => {
   const [loading, setLoading] = useState(false);
   const [fetchData, setFetchData] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
-  const [validationErrors, setValidationErrors] = useState({});
   //State for item object with properties -->initial state of properties=null
   const [inventoryItem, setInventoryItem] = useState({
     itemName: "",
@@ -48,40 +47,100 @@ const AddItemForm = () => {
     image,
   } = inventoryItem;
 
+  const validateField = (name, value) => {
+    const validationErrors = {};
+
+    if (name === "itemName") {
+      if (!value) {
+        validationErrors.itemName = "Item name is required";
+      } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
+        validationErrors.itemName = "Item name must contain only letters";
+      }
+    } else if (name === "itemGroup" && !value) {
+      validationErrors.itemGroup = "Item Group is required";
+    } else if (
+      [
+        "COMPUTERS_AND_LAPTOPS",
+        "COMPUTER_ACCESSORIES",
+        "COMPUTER_HARDWARE",
+        "PRINTERS_AND_SCANNERS",
+      ].includes(itemGroup) &&
+      name === "specification" &&
+      !value
+    ) {
+      validationErrors.specification =
+        "Specification is required for the selected item group";
+    } else if (name === "brand" && !value) {
+      validationErrors.brand = "Brand Name is required";
+    } else if (name === "unit" && !value) {
+      validationErrors.unit = "Unit is required";
+    } else if (name === "dimension" && !value) {
+      validationErrors.dimension = "Dimension is required";
+    } else if (name === "weight" && !value) {
+      validationErrors.weight = "Weight is required";
+    } else if (name === "quantity") {
+      if (!value) {
+        validationErrors.quantity = "Quantity is required";
+      } else if (!/^[1-9]\d*$/.test(value)) {
+        validationErrors.quantity = "Quantity must be a positive number";
+      }
+    }
+    setErrors({
+      ...errors,
+      [name]: validationErrors[name],
+    });
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
+  };
+
   const onInputChange = (e) => {
+    validateField(e.target.name, e.target.value);
     setInventoryItem({ ...inventoryItem, [e.target.name]: e.target.value });
-    setValidationErrors({ ...validationErrors, [e.target.name]: "" });
   };
 
   const onItemGroupChange = (e) => {
+    validateField(e.target.name, e.target.value);
     setInventoryItem({ ...inventoryItem, itemGroup: e.target.value });
   };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    setInventoryItem({ ...inventoryItem, image: file });
 
-    // Create a preview URL for the selected image
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-    };
+    // Reset error messages
+    setErrors({
+      ...errors,
+      image: "",
+    });
+
     if (file) {
+      const validTypes = ["image/jpeg", "image/jpg", "image/png"];
+      if (!validTypes.includes(file.type)) {
+        setErrors({
+          ...errors,
+          image: "File must be a JPG, JPEG, or PNG image",
+        });
+        setImagePreview(null);
+        return;
+      }
+      setInventoryItem({ ...inventoryItem, image: file });
+
+      // Create a preview URL for the selected image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
       reader.readAsDataURL(file);
     } else {
       setImagePreview(null);
     }
-
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
-    const frontEndValidation = validateInputs();
-    if (Object.keys(frontEndValidation).length > 0) {
-      setValidationErrors(frontEndValidation);
-      // return;
-    }
     setLoading(true);
-
     const formData = new FormData();
     formData.append(
       "item",
@@ -144,48 +203,6 @@ const AddItemForm = () => {
       setLoading(false);
     }
   };
-  const validateInputs = () => {
-    const errors = {};
-    if (!itemName) {
-      errors.itemName = "Item Name is required";
-    }
-    if (!itemGroup) {
-      errors.itemGroup = "Item group is required";
-    }
-    if (!unit) {
-      errors.itemGroup = "Unit is required";
-    }
-    if (!brand) {
-      errors.itemGroup = "Brand is required is required";
-    }
-    if (
-      [
-        "COMPUTERS_AND_LAPTOPS",
-        "COMPUTER_ACCESSORIES",
-        "COMPUTER_HARDWARE",
-        "PRINTERS_AND_SCANNERS",
-      ].includes(itemGroup) &&
-      !specification
-    ) {
-      errors.specification =
-        "Specification is required for the selected item group";
-    }
-    if (!dimension) {
-      errors.itemGroup = "Dimension is required";
-    }
-    if (!weight) {
-      errors.itemGroup = "Weight is required";
-    }
-    if (!quantity) {
-      errors.itemGroup = "Quantity is required";
-    }
-    return errors;
-  };
-
-  // useEffect(() => {
-  //   const errors = validateInputs();
-  //   setValidationErrors(errors);
-  // }, [inventoryItem]);
 
   return (
     <>
@@ -201,7 +218,7 @@ const AddItemForm = () => {
           </InputLabel>
           <div>
             {errors.itemName && (
-              <div className="text-[#FC0000] text-xs ml-6 my-1">
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
                 {errors.itemName}
               </div>
             )}
@@ -210,10 +227,10 @@ const AddItemForm = () => {
               value={itemName}
               onChange={onInputChange}
               variant="outlined"
-              error={!!validationErrors.itemName}
-              helperText={validationErrors.itemName}
+              error={errors.itemName}
+              onBlur={handleBlur}
               InputProps={{
-                className: "w-[300px] ml-5  ",
+                className: "w-[300px] ml-3  ",
               }}
               size="small"
             />
@@ -229,7 +246,7 @@ const AddItemForm = () => {
           </InputLabel>
           <div className="flex-grow">
             {errors.itemGroup && (
-              <div className="text-[#FC0000] text-xs ml-6 my-1">
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
                 {errors.itemGroup}
               </div>
             )}
@@ -237,7 +254,9 @@ const AddItemForm = () => {
               name="itemGroup"
               value={itemGroup}
               onChange={onItemGroupChange}
-              className="w-[300px]  ml-5   "
+              error={errors.itemGroup}
+              onBlur={handleBlur}
+              className="w-[300px]  ml-3   "
               size="small"
             >
               {" "}
@@ -272,7 +291,7 @@ const AddItemForm = () => {
             </InputLabel>
             <div>
               {errors.specification && (
-                <div className="text-[#FC0000] text-xs ml-6 my-1">
+                <div className="text-[#d32f2f] text-xs ml-4 my-1">
                   {errors.specification}
                 </div>
               )}
@@ -281,10 +300,10 @@ const AddItemForm = () => {
                 value={specification}
                 onChange={onInputChange}
                 variant="outlined"
-                error={!!validationErrors.specification}
-                helperText="Specifications are required for the selected item group"
+                error={errors.specification}
+                onBlur={handleBlur}
                 InputProps={{
-                  className: "w-[300px] ml-5",
+                  className: "w-[300px] ml-3",
                 }}
                 size="small"
               />
@@ -297,7 +316,7 @@ const AddItemForm = () => {
           </InputLabel>
           <div>
             {errors.brand && (
-              <div className="text-[#FC0000] text-xs ml-6 my-1">
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
                 {errors.brand}
               </div>
             )}
@@ -306,10 +325,10 @@ const AddItemForm = () => {
               value={brand}
               onChange={onInputChange}
               variant="outlined"
-              error={!!validationErrors.brand}
-              helperText={validationErrors.brand}
+              error={errors.brand}
+              onBlur={handleBlur}
               InputProps={{
-                className: "w-[300px] ml-5   ",
+                className: "w-[300px] ml-3   ",
               }}
               size="small"
             />
@@ -322,7 +341,7 @@ const AddItemForm = () => {
           </InputLabel>
           <div>
             {errors.unit && (
-              <div className="text-[#FC0000] text-xs ml-6 my-1">
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
                 {errors.unit}
               </div>
             )}
@@ -331,10 +350,10 @@ const AddItemForm = () => {
               value={unit}
               onChange={onInputChange}
               variant="outlined"
-              error={!!validationErrors.unit}
-              // helperText={validationErrors.unit}
+              error={errors.unit}
+              onBlur={handleBlur}
               InputProps={{
-                className: "w-[300px] ml-5   ",
+                className: "w-[300px] ml-3   ",
               }}
               size="small"
               helperText="Enter the quantity measurement unit(e.g., pcs, kg, boxes,)."
@@ -348,7 +367,7 @@ const AddItemForm = () => {
           </InputLabel>
           <div>
             {errors.dimension && (
-              <div className="text-[#FC0000] text-xs ml-6 my-1">
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
                 {errors.dimension}
               </div>
             )}
@@ -357,10 +376,10 @@ const AddItemForm = () => {
               value={dimension}
               onChange={onInputChange}
               variant="outlined"
-              error={!!validationErrors.dimension}
-              helperText={validationErrors.dimension}
+              error={errors.dimension}
+              onBlur={handleBlur}
               InputProps={{
-                className: "w-[300px] ml-5  ",
+                className: "w-[300px] ml-3  ",
               }}
               size="small"
             />
@@ -372,7 +391,7 @@ const AddItemForm = () => {
           </InputLabel>
           <div>
             {errors.weight && (
-              <div className="text-[#FC0000] text-xs ml-6 my-1">
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
                 {errors.weight}
               </div>
             )}
@@ -381,10 +400,10 @@ const AddItemForm = () => {
               value={weight}
               onChange={onInputChange}
               variant="outlined"
-              error={!!validationErrors.weight}
-              helperText={validationErrors.weight}
+              error={errors.weight}
+              onBlur={handleBlur}
               InputProps={{
-                className: "w-[300px] ml-5   ",
+                className: "w-[300px] ml-3   ",
               }}
               size="small"
             />
@@ -405,7 +424,7 @@ const AddItemForm = () => {
             multiline
             rows={6}
             InputProps={{
-              className: "w-[500px] ml-5 bg-white  ",
+              className: "w-[500px] ml-3 bg-white  ",
             }}
           />
         </div>
@@ -415,7 +434,7 @@ const AddItemForm = () => {
           </InputLabel>
           <div>
             {errors.quantity && (
-              <div className="text-[#FC0000] text-xs ml-6 my-1">
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
                 {errors.quantity}
               </div>
             )}
@@ -424,10 +443,10 @@ const AddItemForm = () => {
               value={quantity}
               onChange={onInputChange}
               variant="outlined"
-              error={!!validationErrors.quantity}
-              helperText={validationErrors.quantity}
+              error={errors.quantity}
+              onBlur={handleBlur}
               InputProps={{
-                className: "w-[300px]  ml-5  ",
+                className: "w-[300px]  ml-3  ",
               }}
               size="small"
             />
@@ -435,7 +454,7 @@ const AddItemForm = () => {
         </div>
         <div className="col-start-1  col-span-5 flex-row ">
           {errors.image && (
-            <div className="text-[#FC0000] text-xs  my-1">{errors.image}</div>
+            <div className="text-[#d32f2f] text-xs  my-1">{errors.image}</div>
           )}
           <Typography display="block" gutterBottom>
             Upload an image
@@ -448,12 +467,11 @@ const AddItemForm = () => {
               onChange={handleImageChange}
               className="mt-4 mb-2"
             />
-            <div >
+            <div>
               <img
-               
                 src={imagePreview}
                 alt={inventoryItem.itemName}
-                className="-[300px] ml-5w"
+                className="-[300px] ml-3w"
               />
             </div>
           </div>
