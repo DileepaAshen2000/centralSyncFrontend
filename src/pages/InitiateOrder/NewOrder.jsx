@@ -42,8 +42,58 @@ const NewOrderForm = () => {
     file,
   } = order;
 
+  const validateField = (name, value) => {
+    const validationErrors = {};
+    if (name === "vendorName") {
+      if (!value) {
+        validationErrors.vendorName = "Vendor Name is required";
+      } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
+        validationErrors.vendorName = "Vendor name must contain only letters";
+      }
+    } else if (name === "companyName" && !value) {
+      validationErrors.companyName = "Company Name is required";
+    } else if (name === "vendorEmail") {
+      if (!value) {
+        validationErrors.vendorEmail = "Email address is required";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        validationErrors.vendorEmail = "Invalid email address";
+      }
+    } else if (name === "mobile") {
+      if (!value) {
+        validationErrors.mobile = "Mobile number is required";
+      } else if (!/^\d{10}$/.test(value)) {
+        validationErrors.mobile = "Mobile number must be 10 digits";
+      }
+    } else if (name === "itemName") {
+      if (!value) {
+        validationErrors.itemName = "Item Name is required";
+      } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
+        validationErrors.itemName = "item name must contain only letters";
+      }
+    } else if (name === "brandName" && !value) {
+      validationErrors.brandName = "Brand name is required";
+    } else if (name === "quantity") {
+      if (!value) {
+        validationErrors.quantity = "Quantity is required";
+      } else if (!/^[1-9]\d*$/.test(value)) {
+        validationErrors.quantity = "Quantity must be a positive number";
+      }
+    }
+
+    setErrors({
+      ...errors,
+      [name]: validationErrors[name],
+    });
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
+  };
   const onInputChange = (e) => {
-    setOrder({ ...order, [e.target.id]: e.target.value });
+    validateField(e.target.name, e.target.value);
+
+    setOrder({ ...order, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -133,19 +183,21 @@ const NewOrderForm = () => {
           </InputLabel>
           <div>
             {errors.vendorName && (
-              <div className="text-[#FC0000] text-xs ml-6 my-1">
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
                 {errors.vendorName}
               </div>
             )}
             <TextField
-              id="vendorName"
+              name="vendorName"
               value={vendorName}
               onChange={onInputChange}
+              error={errors.vendorName}
+              onBlur={handleBlur}
               variant="outlined"
               InputProps={{
-                className: "w-[300px] ml-5   ",
+                className: "w-[300px] ml-3   ",
               }}
-               size="small"
+              size="small"
             />
           </div>
         </div>
@@ -159,19 +211,21 @@ const NewOrderForm = () => {
           </InputLabel>
           <div>
             {errors.vendorEmail && (
-              <div className="text-[#FC0000] text-xs ml-6 my-1">
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
                 {errors.vendorEmail}
               </div>
             )}
             <TextField
-              id="vendorEmail"
+              name="vendorEmail"
               value={vendorEmail}
               onChange={onInputChange}
+              error={errors.vendorEmail}
+              onBlur={handleBlur}
               variant="outlined"
               InputProps={{
-                className: "w-[300px] ml-5  ",
+                className: "w-[300px] ml-3  ",
               }}
-               size="small"
+              size="small"
             />
           </div>
         </div>
@@ -182,19 +236,21 @@ const NewOrderForm = () => {
           </InputLabel>
           <div>
             {errors.companyName && (
-              <div className="text-[#FC0000] text-xs ml-6 my-1">
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
                 {errors.companyName}
               </div>
             )}
             <TextField
-              id="companyName"
+              name="companyName"
               value={companyName}
               onChange={onInputChange}
+              error={errors.companyName}
+              onBlur={handleBlur}
               variant="outlined"
               InputProps={{
-                className: "w-[300px]  ml-5  ",
+                className: "w-[300px]  ml-3  ",
               }}
-               size="small"
+              size="small"
             />
           </div>
         </div>
@@ -205,19 +261,21 @@ const NewOrderForm = () => {
           </InputLabel>
           <div>
             {errors.mobile && (
-              <div className="text-[#FC0000] text-xs ml-6 my-1">
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
                 {errors.mobile}
               </div>
             )}
             <TextField
-              id="mobile"
+              name="mobile"
               value={mobile}
               onChange={onInputChange}
+              error={errors.mobile}
+              onBlur={handleBlur}
               variant="outlined"
               InputProps={{
-                className: "w-[300px] ml-5   ",
+                className: "w-[300px] ml-3   ",
               }}
-               size="small"
+              size="small"
             />
           </div>
         </div>
@@ -227,15 +285,15 @@ const NewOrderForm = () => {
           </InputLabel>
           <div>
             <TextField
-              id="date"
+              name="date"
               value={date}
               type="date"
               variant="outlined"
               InputProps={{
-                className: "w-[300px] ml-5   ",
+                className: "w-[300px] ml-3   ",
                 readOnly: true,
               }}
-               size="small"
+              size="small"
             />
           </div>
         </div>
@@ -245,19 +303,21 @@ const NewOrderForm = () => {
           </InputLabel>
           <div>
             {errors.itemName && (
-              <div className="text-[#FC0000] text-xs ml-6 my-1">
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
                 {errors.itemName}
               </div>
             )}
             <TextField
-              id="itemName"
+              name="itemName"
               value={itemName}
               onChange={onInputChange}
+              error={errors.itemName}
+              onBlur={handleBlur}
               variant="outlined"
               InputProps={{
-                className: "w-[300px] ml-5   ",
+                className: "w-[300px] ml-3   ",
               }}
-               size="small"
+              size="small"
             />
           </div>
         </div>
@@ -270,19 +330,21 @@ const NewOrderForm = () => {
           </InputLabel>
           <div>
             {errors.brandName && (
-              <div className="text-[#FC0000] text-xs ml-6 my-1">
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
                 {errors.brandName}
               </div>
             )}
             <TextField
-              id="brandName"
+              name="brandName"
               value={brandName}
               onChange={onInputChange}
+              error={errors.brandName}
+              onBlur={handleBlur}
               variant="outlined"
               InputProps={{
-                className: "w-[300px] ml-5   ",
+                className: "w-[300px] ml-3   ",
               }}
-               size="small"
+              size="small"
             />
           </div>
         </div>
@@ -292,19 +354,21 @@ const NewOrderForm = () => {
           </InputLabel>
           <div>
             {errors.quantity && (
-              <div className="text-[#FC0000] text-xs ml-6 my-1">
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
                 {errors.quantity}
               </div>
             )}
             <TextField
-              id="quantity"
+              name="quantity"
               value={quantity}
               onChange={onInputChange}
+              error={errors.quantity}
+              onBlur={handleBlur}
               variant="outlined"
               InputProps={{
-                className: "w-[300px] ml-5 bg-white  ",
+                className: "w-[300px] ml-3 bg-white  ",
               }}
-               size="small"
+              size="small"
             />
           </div>
         </div>
@@ -316,14 +380,14 @@ const NewOrderForm = () => {
             Description
           </InputLabel>
           <TextField
-            id="description"
+            name="description"
             value={description}
             onChange={onInputChange}
             variant="outlined"
             multiline
             rows={6}
             InputProps={{
-              className: "w-[500px]  ml-5   ",
+              className: "w-[500px]  ml-3   ",
             }}
           />
         </div>

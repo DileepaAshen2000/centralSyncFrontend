@@ -20,6 +20,7 @@ import Print from "@mui/icons-material/Print";
 import ReactToPrint from "react-to-print";
 import axios from "axios";
 import ArrowBack from "@mui/icons-material/ArrowBack";
+import Swal from "sweetalert2";
 
 const ViewOrderDetails = () => {
   const navigate = useNavigate();
@@ -72,17 +73,45 @@ const ViewOrderDetails = () => {
 
   const handleMarkAsReviewed = async () => {
     try {
-      await axios.patch(`http://localhost:8080/orders/review/${orderID}`);
+      const response = await axios.patch(
+        `http://localhost:8080/orders/review/${orderID}`
+      );
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Order marked as reviewed",
+        });
+      }
       navigate(-1);
     } catch (error) {
       console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Cannot perform the action",
+      });
     }
   };
   const handleMarkAsCompleted = async () => {
     try {
-      await axios.patch(`http://localhost:8080/orders/complete/${orderID}`);
+      const response = await axios.patch(
+        `http://localhost:8080/orders/complete/${orderID}`
+      );
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Order marked as completed",
+        });
+      }
       navigate(-1);
     } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Cannot perform the action",
+      });
       console.log(error);
     }
   };
