@@ -147,6 +147,21 @@ const UserAdjustment = () => {
                 disableMultipleSelection={true} // Prevent multiple row selection
                 rowSelectionModel={rowSelectionModel}
                 onRowSelectionModelChange={handlerowSelectionModelChange}
+                sx={{
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: '#f5f5f5',
+            borderBottom: '2px solid #000',
+          },
+          '& .MuiDataGrid-cell': {
+            borderBottom: '1px solid #ddd',
+          },
+          '& .MuiDataGrid-row': {
+            borderBottom: '2px solid #000',
+          },
+          '& .MuiDataGrid-root': {
+            border: '2px solid #000',
+          },
+        }}
             />
         </Box>
     );

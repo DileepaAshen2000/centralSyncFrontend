@@ -155,7 +155,7 @@ export default function NavBar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" className="bg-white">
+      <AppBar position="static" className="z-50 bg-white">
         <Toolbar>
           <img src={myLogo} alt="Inventory Logo" className="w-32 h-auto " />
           <h4 className="hidden text-xl font-bold text-blue-800 md:block">
@@ -180,7 +180,7 @@ export default function NavBar() {
             
             <div className='flex items-center'>
               {profileInfo ? (
-                <h4 className="text-black ">
+                <h4 className="text-black text-bold ">
                   {profileInfo.firstName} {profileInfo.lastName}
                 </h4>
               ) : (
@@ -235,18 +235,23 @@ export default function NavBar() {
         </Box>
       )}
 
+      <div className="relative">
+    
+      {sidebarOpen && <div className="fixed inset-0 z-30 bg-black bg-opacity-30 backdrop-blur-sm"  style={{ top: "75px" }}></div>}
+
       <div
-        className={`w-80 absolute right-0 h-screen z-50 bg-[#9eaab2] text-black ${
+        className={`w-80 absolute right-0 h-screen z-50 bg-[#D0D0D0] text-black ${
           sidebarOpen ? "block" : "hidden"
         }`}
       >
         <div className="flex flex-col gap-10 p-6">
           <div className="flex gap-4">
-            <div>Profile Picture</div>
-            <div>
-              <h2>{profileInfo ? profileInfo.userId : "Loading..."}</h2>
+            
+            <div className="text-sm font-bold">
+              
               <h2>{profileInfo ? profileInfo.username : "Loading..."}</h2>
               <h4>{profileInfo ? profileInfo.role : "Loading..."}</h4>
+              <h2>{profileInfo ? profileInfo.userId : "Loading..."}</h2>
             </div>
           </div>
           <div>
@@ -254,7 +259,8 @@ export default function NavBar() {
               <Link to="/userprofile/editprofile">
                 <Button
                   variant="outlined"
-                  className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5 "
+                  className="bg-white w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5 "
+                  onClick={() => setSidebarOpen(false)}
                 >
                   <AccountCircleOutlinedIcon />
                   <span>Edit Profile</span>
@@ -265,7 +271,8 @@ export default function NavBar() {
               <Link to="/history/:userId">
                 <Button
                   variant="outlined"
-                  className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
+                  className="bg-white w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
+                  onClick={() => setSidebarOpen(false)}
                 >
                   <HistoryIcon />
                   <span>View History</span>
@@ -276,7 +283,8 @@ export default function NavBar() {
               <Link to="/userprofile/changepassword">
                 <Button
                   variant="outlined"
-                  className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
+                  className="bg-white w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
+                  onClick={() => setSidebarOpen(false)}
                 >
                   <KeyOutlinedIcon />
                   <span>Change Password</span>
@@ -288,7 +296,7 @@ export default function NavBar() {
                 <Link to="/" onClick={handleLogout}>
                   <Button
                     variant="outlined"
-                    className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
+                    className="bg-white w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
                   >
                     <LogoutOutlinedIcon />
                     <span>Logout</span>
@@ -299,6 +307,7 @@ export default function NavBar() {
           </div>
         </div>
       </div>
+    </div>
 
       <div
         className={`${menuOpen ? "block" : "hidden"} md:hidden bg-slate-300 `}

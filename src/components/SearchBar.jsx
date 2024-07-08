@@ -69,13 +69,12 @@ const SearchBar = () => {
               searchTerm: term,
             },
           });
+          setSearchTerm("");
         }
       }
     } catch (error) {
       console.log(error);
-    } finally {
-      setSearchTerm("");
-    }
+    } 
   };
 
   const handleFilterClick = (event) => {
@@ -99,6 +98,7 @@ const SearchBar = () => {
 
   const handleClose = () => {
     setNoResult(false);
+    setSearchTerm("");
   };
 
   const categories = [
