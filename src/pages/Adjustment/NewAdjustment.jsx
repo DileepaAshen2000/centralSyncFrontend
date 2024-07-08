@@ -89,69 +89,118 @@ const NewAdjustment = () => {
 
   const onSubmit=async(e)=>{
     e.preventDefault();
-    const validationErrors = validateInputs();
-    console.log(Object.keys(validationErrors).length)
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
+    // const validationErrors = validateInputs();
+    // console.log(Object.keys(validationErrors).length)
+    // if (Object.keys(validationErrors).length > 0) {
+    //   setErrors(validationErrors);
+    //   return;
+    // }
+
+    const formData = new FormData();
+    formData.append(
+      "adjustment",
+      new Blob(
+        [
+          JSON.stringify({
+            reason,
+            date,
+            adjustedQuantity,
+            itemId,
+            userId,
+            description,
+          }),
+        ],
+        { type: "application/json" }
+      )
+    );
+    if (file) {
+      formData.append("file", file);
     }
 
     try {
-      const formData = new FormData();
-      formData.append('reason', reason);
-      formData.append('date', date);
-      formData.append('description', description);
-      formData.append('adjustedQuantity', adjustedQuantity);
-      formData.append('itemId', itemId);
-      formData.append('userId', userId);
-      formData.append('file', file); // Append the file to the formData
+      // const formData = new FormData();
+      // formData.append('reason', reason);
+      // formData.append('date', date);
+      // formData.append('description', description);
+      // formData.append('adjustedQuantity', adjustedQuantity);
+      // formData.append('itemId', itemId);
+      // formData.append('userId', userId);
+      // formData.append('file', file); // Append the file to the formData
 
-      console.log(formData);
-      console.log(userId);
+      // console.log(formData);
+      // console.log(userId);
 
-      const result = await axios.post("http://localhost:8080/adjustment/add", formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      // const result = await axios.post("http://localhost:8080/adjustment/add", formData, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data'
+      //   }
+      // });
+      // navigate('/adjustment');// To navigate to the adjustment page
+      // Swal.fire({
+      //   title: "Done!",
+      //   text: "Adjustment Successfully Submitted!",
+      //   icon: "success"
+      // });
+
+      const response = await axios.post(
+        "http://localhost:8080/adjustment/add",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-      });
-      navigate('/adjustment');// To navigate to the adjustment page
-      Swal.fire({
-        title: "Done!",
-        text: "Adjustment Successfully Submitted!",
-        icon: "success"
-      });
+      );
+      if (response.status === 201) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Adjustment successfully Submitted.!",
+        });
+        // setFetchData(!fetchData);
+        navigate("/adjustment");
+      }
     } catch (error) {
-      console.error("Error:", error);
+      // console.error("Error:", error);
+      // Swal.fire({
+      //   title: "Error!",
+      //   text: "Failed to submit Adjustment. Please try again.",
+      //   icon: "error"
+      // });
+
       Swal.fire({
+        icon: "error",
         title: "Error!",
-        text: "Failed to submit Adjustment. Please try again.",
-        icon: "error"
+        text: "Failed to submit Adjustment. Please check your inputs.",
       });
+      if (error.response && error.response.status === 400) {
+        setErrors(error.response.data);
+      }
     }
   }
 
   // Validate the input fields
-  const validateInputs = () => {
-    const errors = {};
-    if (!reason) {
-      errors.reason = 'Reason is required';
-    }
-    if (!date) {
-      errors.date = 'Date is required';
-    }
+  // const validateInputs = () => {
+  //   const errors = {};
+  //   if (!reason) {
+  //     errors.reason = 'Reason is required';
+  //   }
+  //   if (!date) {
+  //     errors.date = 'Date is required';
+  //   }
     
-    if (!newQuantity) {
-      errors.newQuantity = 'New Quantity is required';
-    }
-    if (!itemId) {
-      errors.itemId = 'Item ID is required';
-    }
-    if (newQuantity<0){
-      errors.newQuantity = 'Quantity should be positive value'
-    }
+  //   if (!newQuantity) {
+  //     errors.newQuantity = 'New Quantity is required';
+  //   }
+  //   if (!itemId) {
+  //     errors.itemId = 'Item ID is required';
+  //   }
+  //   if (newQuantity<0){
+  //     errors.newQuantity = 'Quantity should be positive value'
+  //   }
     
-    return errors;
-  };
+  //   return errors;
+  // };
 
   const handleFileChange = (e) => {
     setAdj({ ...adj, file: e.target.files[0] });
@@ -192,9 +241,11 @@ const NewAdjustment = () => {
             value={{ itemId: selectedItemId }} // Set the value to the selected itemId
             sx={{ width: 300 }}
             renderInput={(params) => <TextField {...params} label="Item ID" 
-            error={!!errors.itemId} helperText={errors.itemId}/>}
+            // error={!!errors.itemId} helperText={errors.itemId}
+            />}
             size='small'
           />
+          <Typography variant='caption' className='text-xs text-[#FC0000]'>{errors.itemId}</Typography>
         </div>
       </div>
       
@@ -209,12 +260,13 @@ const NewAdjustment = () => {
             name='date'
             value={date}
             size='small'
-            error={!!errors.date}
-            helperText={errors.date}
+            // error={!!errors.date}
+            // helperText={errors.date}
             InputLabelProps={{ // To shrink the label
               shrink: true,
             }}
           />
+          <Typography variant='caption' className='text-xs text-[#FC0000]'>{errors.date}</Typography>
         </div>
       </div>
 
@@ -224,14 +276,14 @@ const NewAdjustment = () => {
         </InputLabel>
         <div className="flex-grow">
           <Select  value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason' 
-            error={!!errors.reason}
-            helperText={errors.reason}
+            // error={!!errors.reason}
+            // helperText={errors.reason}
             className="w-[300px] h-10  bg-white">
             <MenuItem value="Damaged Item">Damaged Item</MenuItem>
             <MenuItem value="Stolen Item">Stolen Item</MenuItem>
             <MenuItem value="Others">Others</MenuItem>
           </Select>
-          <Typography variant='caption' className='text-red-600'>{errors.reason}</Typography>
+          <Typography variant='caption' className='text-xs text-[#FC0000]'>{errors.reason}</Typography>
         </div>
       </div>
 
@@ -287,8 +339,10 @@ const NewAdjustment = () => {
                   {/* new Qty */}
                   <TableCell align="right">
                     <TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={newQuantity} onChange={(e)=>onInputChange(e)} 
-                      error={!!errors.newQuantity}
-                      helperText={errors.newQuantity}></TextField>
+                      // error={!!errors.newQuantity}
+                      // helperText={errors.newQuantity}
+                      >
+                    </TextField>
                   </TableCell>
                   {/* adjusted Qty */}
                   <TableCell align="right">{adj.newQuantity - item.quantity}</TableCell>
@@ -296,6 +350,7 @@ const NewAdjustment = () => {
               </TableBody>
               </Table>
           </TableContainer>
+          <Typography variant='caption' className='text-xs text-[#FC0000]'>{errors.adjustedQuantity}</Typography>
         </div>
       </div>
 

@@ -7,13 +7,35 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoginService from "../Login/LoginService";
 
+const getStatusClass = (status) => {
+    switch (status) {
+      case "ACCEPTED":
+        return "bg-green-500 text-white w-[90px]";
+      case "REJECTED":
+        return "bg-red-500 text-white text-sm w-[90px]";  
+      case "PENDING":
+        return "bg-blue-500 text-white text-sm w-[90px]";  
+    }
+  };
+
 const columns = [
     { field: 'id', headerName: 'Adjustment ID', width: 150 },
     { field: 'reason', headerName: 'Reason', width: 180 },
-    { field: 'description', headerName: 'Description', width: 280 },
+    { field: 'description', headerName: 'Description', width: 250 },
     { field: 'adjusted_Qty', headerName: 'Adjusted_Qty', width: 150 },
     { field: 'date', headerName: 'Date', width: 150 },
-    { field: 'status', headerName: 'Status', width: 100 },
+    {
+        field: "status",
+        headerName: "Status",
+        width: 130,
+        renderCell: (params) => (
+          <div
+            className={`p-2 rounded text-center ${getStatusClass(params.value)}`}
+          >
+            {params.value}
+          </div>
+        ),
+      },
 ];
 
 const UserAdjustment = () => {

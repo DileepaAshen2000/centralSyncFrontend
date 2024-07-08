@@ -164,17 +164,20 @@ export default function NavBar() {
           <SearchBar />
           <Box sx={{ flexGrow: 2 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: '20px' }}>
-            <IconButton 
-              size="large" 
-              aria-label="show new notifications" 
-              color="inherit" 
-              className="hidden md:block"
-              onClick={toggleNotifications} // Add onClick handler to toggle notifications
-            >
-              <Badge badgeContent={notificationCount} color="error">
-                <NotificationsIcon className='text-black' />
-              </Badge>
-            </IconButton>
+            <Tooltip title="Notification">
+              <IconButton 
+                size="large" 
+                aria-label="show new notifications" 
+                color="inherit" 
+                className="hidden md:block"
+                onClick={toggleNotifications} // Add onClick handler to toggle notifications
+              >
+                <Badge badgeContent={notificationCount} color="error">
+                  <NotificationsIcon className='text-black' />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            
             <div className='flex items-center'>
               {profileInfo ? (
                 <h4 className="text-black ">
@@ -184,17 +187,19 @@ export default function NavBar() {
                 <h4 className="text-black ">Loading...</h4>
               )}
             </div>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-haspopup="true"
-              onClick={toggleSidebar}
-              color="inherit"
-              className="hidden md:block"
-            >
-              <AccountCircle className='text-3xl text-black' />
-            </IconButton>
+            <Tooltip title="Account">
+              <IconButton
+                size="large"
+                edge="end"
+                aria-label="account of current user"
+                aria-haspopup="true"
+                onClick={toggleSidebar}
+                color="inherit"
+                className="hidden md:block"
+              >
+                <AccountCircle className='text-3xl text-black' />
+              </IconButton>
+            </Tooltip>
           </Box>
           <div
             className="text-black cursor-pointer text- md:hidden"
