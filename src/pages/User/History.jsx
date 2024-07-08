@@ -144,61 +144,67 @@ const UserActivityHistory = () => {
   // Function to handle action click
   const handleActionClick = async (entityId, action) => {
     let popoverContent = "";
-    if (action.includes("User") || action.includes("user")) {
-      const response = await axios.get(
-        `http://localhost:8080/user/users/${entityId}`
-      );
-      popoverContent = `User Id: ${entityId}\n Name: ${response.data.firstName} ${response.data.lastName}\n
+
+    try {
+      if (action.includes("User") || action.includes("user")) {
+        const response = await axios.get(
+          `http://localhost:8080/user/users/${entityId}`
+        );
+        popoverContent = `User Id: ${entityId}\n Name: ${response.data.firstName} ${response.data.lastName}\n
                                Role: ${response.data.role}\n
                                Status: ${response.data.status}`;
-    } else if (action.includes("ticket")) {
-      const response = await axios.get(
-        `http://localhost:8080/ticket/tickets/${entityId}`
-      );
-      popoverContent = `Ticket ID:${entityId}\n Status:${response.data.ticketStatus}\n Item Name:${response.data.itemId.itemName}\nItem Brand:${response.data.itemId.brand}\n`;
-    } else if (action.includes("Stock In")) {
-      const response = await axios.get(
-        `http://localhost:8080/stock-in/getById/${entityId}`
-      );
-      popoverContent = `StockIn ID:${entityId}\n Location:${response.data.location}\n Item Name:${response.data.itemId.itemName}`;
-    } else if (action.includes("Stock Out")) {
-      const response = await axios.get(
-        `http://localhost:8080/stock-out/getById/${entityId}`
-      );
-      popoverContent = `Stock Out ID: ${entityId}\n Department:${response.data.department}\nItem Name:${response.data.itemId.itemName}\n`;
-    } else if (action.includes("Reservation")) {
-      const response = await axios.get(
-        `http://localhost:8080/ticket/tickets/${entityId}`
-      );
-      popoverContent = `Ticket ID ${entityId}\n Status:${response.data.ticketStatus}\n Topic:${response.data.itemName}\nTopic:${response.data.itemBrand}\n`;
-    } else if (action.includes("Request")) {
-      const response = await axios.get(
-        `http://localhost:8080/reuest/getById/${entityId}`
-      );
-      popoverContent = `Request ID ${entityId}\n Status:${response.data.reqStatus}\n Reason:${response.data.reason}\nTopic:${response.data.itemId.itemName}\n`;
-    } else if (action.includes("Item")) {
-      const response = await axios.get(
-        `http://localhost:8080/inventory-item/getById/${entityId}`
-      );
-      popoverContent = `item Id ${entityId}\n Status:${response.data.status}\n Item Name:${response.data.itemName}\nItem Brand:${response.data.itemBrand}\n`;
-    } else if (action.includes("Order") || action.includes("order")) {
-      const response = await axios.get(
-        `http://localhost:8080/orders/getById/${entityId}`
-      );
-      popoverContent = `Order Id ${entityId}\n Status:${response.data.status}\n Item Name:${response.data.itemName}\nBrand Name:${response.data.brandname}\nVendor Name:${response.data.vendorName}\n`;
-    } else if (action.includes("Adjustment") || action.includes("adjustment")) {
-      const response = await axios.get(
-        `http://localhost:8080/adjustment/getById/${entityId}`
-      );
-      popoverContent = `Adjustment Id: ${entityId}\n Status:${response.data.status}\n Topic:${response.data.reason}\nitemId:${response.data.itemId}\n`;
-    } else if (action.includes("Password")) {
-      popoverContent = `Password succesfully changed`;
-    } 
-    else if (action.includes("Profile")) {
-      popoverContent = `Profile updated succesfully`;
-    } 
-    else {
-      popoverContent = `Details for action: ${action}`;
+      } else if (action.includes("ticket")) {
+        const response = await axios.get(
+          `http://localhost:8080/ticket/tickets/${entityId}`
+        );
+        popoverContent = `Ticket ID:${entityId}\n Status:${response.data.ticketStatus}\n Item Name:${response.data.itemId.itemName}\nItem Brand:${response.data.itemId.brand}\n`;
+      } else if (action.includes("Stock In")) {
+        const response = await axios.get(
+          `http://localhost:8080/stock-in/getById/${entityId}`
+        );
+        popoverContent = `StockIn ID:${entityId}\n Location:${response.data.location}\n Item Name:${response.data.itemId.itemName}`;
+      } else if (action.includes("Stock Out")) {
+        const response = await axios.get(
+          `http://localhost:8080/stock-out/getById/${entityId}`
+        );
+        popoverContent = `Stock Out ID: ${entityId}\n Department:${response.data.department}\nItem Name:${response.data.itemId.itemName}\n`;
+      } else if (action.includes("Reservation")) {
+        const response = await axios.get(
+          `http://localhost:8080/ticket/tickets/${entityId}`
+        );
+        popoverContent = `Ticket ID ${entityId}\n Status:${response.data.ticketStatus}\n Topic:${response.data.itemName}\nTopic:${response.data.itemBrand}\n`;
+      } else if (action.includes("Request")) {
+        const response = await axios.get(
+          `http://localhost:8080/reuest/getById/${entityId}`
+        );
+        popoverContent = `Request ID ${entityId}\n Status:${response.data.reqStatus}\n Reason:${response.data.reason}\nTopic:${response.data.itemId.itemName}\n`;
+      } else if (action.includes("Item")) {
+        const response = await axios.get(
+          `http://localhost:8080/inventory-item/getById/${entityId}`
+        );
+        popoverContent = `item Id ${entityId}\n Status:${response.data.status}\n Item Name:${response.data.itemName}\nItem Brand:${response.data.brand}\n`;
+      } else if (action.includes("Order") || action.includes("order")) {
+        const response = await axios.get(
+          `http://localhost:8080/orders/getById/${entityId}`
+        );
+        popoverContent = `Order Id ${entityId}\n Status:${response.data.status}\n Item Name:${response.data.itemName}\nBrand Name:${response.data.brandname}\nVendor Name:${response.data.vendorName}\n`;
+      } else if (
+        action.includes("Adjustment") ||
+        action.includes("adjustment")
+      ) {
+        const response = await axios.get(
+          `http://localhost:8080/adjustment/getById/${entityId}`
+        );
+        popoverContent = `Adjustment Id: ${entityId}\n Status:${response.data.status}\n Topic:${response.data.reason}\nitemId:${response.data.itemId}\n`;
+      } else if (action.includes("Password")) {
+        popoverContent = `Password succesfully changed`;
+      } else if (action.includes("Profile")) {
+        popoverContent = `Profile updated succesfully`;
+      } else {
+        popoverContent = `Details for action: ${action}`;
+      }
+    } catch (error) {
+      popoverContent = "Data not found for this action";
     }
 
     return popoverContent;
@@ -235,17 +241,21 @@ const UserActivityHistory = () => {
         return (
           <ReservationIcon className="bg-yellow-500 rounded-full h-7 w-7" />
         );
-        case action.includes("delivered"):
-          return <LocalShippingIcon className="bg-blue-600 rounded-full h-7 w-7" />;
+      case action.includes("delivered"):
+        return (
+          <LocalShippingIcon className="bg-blue-600 rounded-full h-7 w-7" />
+        );
       case action.includes("item") || action.includes("Item"):
         return <ItemIcon className="bg-blue-700 rounded-full h-7 w-7" />;
       case action.includes("Order") || action.includes("order"):
         return <OrderIcon className="bg-green-700 rounded-full h-7 w-7" />;
       case action.includes("Adjustment") || action.includes("adjustment"):
         return <AdjustmentIcon className="bg-blue-800 rounded-full h-7 w-7" />;
-     
+
       case action.includes("Profile"):
-        return <ManageAccountsIcon className="bg-purple-600 rounded-full h-7 w-7" />;
+        return (
+          <ManageAccountsIcon className="bg-purple-600 rounded-full h-7 w-7" />
+        );
 
       default:
         return <TimelineDot className="bg-red-500 rounded-full h-7 w-7" />;
@@ -288,7 +298,6 @@ const UserActivityHistory = () => {
                     className="w-[250px] bg-slate-200 border"
                     renderInput={(params) => <TextField {...params} />}
                     clearable={true}
-                     
                   />
                 </div>
                 <div className="col-start-7 col-span-1 gap-2">
