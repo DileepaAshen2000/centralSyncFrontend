@@ -14,11 +14,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-
 const EditItem = () => {
   const navigate = useNavigate();
 
   const [errors, setErrors] = useState({});
+  const [validationErrors, setValidationErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -48,11 +48,11 @@ const EditItem = () => {
     description,
     quantity,
     status,
-    image,
   } = inventoryItem;
 
   const onInputChange = (e) => {
-    setInventoryItem({ ...inventoryItem, [e.target.id]: e.target.value });
+    setInventoryItem({ ...inventoryItem, [e.target.name]: e.target.value });
+    setValidationErrors({ ...validationErrors, [e.target.name]: "" });
   };
 
   const onItemGroupChange = (e) => {
@@ -107,8 +107,13 @@ const EditItem = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    const frontEndValidation = validateInputs();
+    if (Object.keys(frontEndValidation).length > 0) {
+      setValidationErrors(frontEndValidation);
+      // return;
+    }
     setLoading(true);
-      
+
     const formData = new FormData();
     formData.append(
       "item",
@@ -123,17 +128,16 @@ const EditItem = () => {
             weight,
             description,
             quantity,
-            status
+            status,
           }),
         ],
         { type: "application/json" }
       )
     );
 
-      formData.append("image", inventoryItem.image);
-    
+    formData.append("image", inventoryItem.image);
+
     try {
-   
       const response = await axios.put(
         `http://localhost:8080/inventory-item/updateById/${itemID}`,
         formData,
@@ -234,9 +238,37 @@ const EditItem = () => {
       });
   };
 
+  const validateInputs = () => {
+    const errors = {};
+    if (!itemName) {
+      errors.itemName = "Item Name is required";
+    }
+    if (!itemGroup) {
+      errors.itemGroup = "Item group is required";
+    }
+    if (!unit) {
+      errors.itemGroup = "Unit is required";
+    }
+    if (!brand) {
+      errors.itemGroup = "Brand is required is required";
+    }
+    if (!dimension) {
+      errors.itemGroup = "Dimension is required";
+    }
+    if (!weight) {
+      errors.itemGroup = "Weight is required";
+    }
+    if (!quantity) {
+      errors.itemGroup = "Quantity is required";
+    }
+    return errors;
+  };
   return (
     <>
-      <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
+      <form
+        onSubmit={(e) => handleSave(e)}
+        className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14"
+      >
         <h1 className=" col-span-4 text-3xl pt-2  font-bold">Item Details</h1>
         <div className="col-start-1 col-span-4 flex items-center">
           {inventoryItem.image && (
@@ -253,7 +285,7 @@ const EditItem = () => {
           <input
             type="file"
             ref={fileInputRef}
-            id="image"
+            name="image"
             accept="image/*"
             onChange={handleImageChange}
             className="hidden"
@@ -265,11 +297,12 @@ const EditItem = () => {
           </InputLabel>
           <TextField
             value={itemID}
-            id="itemId"
+            name="itemId"
             variant="outlined"
             InputProps={{
-              className: "w-[300px] h-10 ml-5 bg-white  ",
+              className: "w-[300px]  ml-5   ",
             }}
+            size="small"
           />
         </div>
 
@@ -284,14 +317,17 @@ const EditItem = () => {
               </div>
             )}
             <TextField
-              id="itemName"
+              name="itemName"
               value={itemName}
               onChange={onInputChange}
               variant="outlined"
+              error={!!validationErrors.itemName}
+              helperText={validationErrors.itemName}
               InputProps={{
-                className: "w-[300px] h-10 ml-5 bg-white  ",
+                className: "w-[300px]  ml-5   ",
                 readOnly: false,
               }}
+              size="small"
             />
           </div>
         </div>
@@ -310,10 +346,13 @@ const EditItem = () => {
               </div>
             )}
             <Select
-              id="itemGroup"
+              name="itemGroup"
               value={itemGroup}
               onChange={onItemGroupChange}
-              className="w-[300px] h-10 ml-5 bg-white  "
+              className="w-[300px]  ml-5 bg-white  "
+              error={!!validationErrors.itemGroup}
+              helperText={validationErrors.itemGroup}
+              size="small"
             >
               <MenuItem value="COMPUTERS_AND_LAPTOPS">
                 Computers & Laptops
@@ -345,11 +384,14 @@ const EditItem = () => {
             <TextField
               value={unit}
               onChange={onInputChange}
-              id="unit"
+              name="unit"
               variant="outlined"
+              error={!!validationErrors.unit}
+              //helperText={validationErrors.unit}
               InputProps={{
-                className: "w-[300px] h-10 ml-5 bg-white  ",
+                className: "w-[300px]  ml-5   ",
               }}
+              size="small"
               helperText="The quantity measurement unit(e.g., pcs, kg, boxes,)."
             />
           </div>
@@ -367,11 +409,14 @@ const EditItem = () => {
             <TextField
               value={brand}
               onChange={onInputChange}
-              id="brand"
+              name="brand"
               variant="outlined"
+              error={!!validationErrors.brand}
+              helperText={validationErrors.brand}
               InputProps={{
-                className: "w-[300px] h-10 ml-5 bg-white  ",
+                className: "w-[300px]  ml-5   ",
               }}
+              size="small"
             />
           </div>
         </div>
@@ -385,12 +430,15 @@ const EditItem = () => {
           <TextField
             value={dimension}
             onChange={onInputChange}
-            id="dimension"
+            name="dimension"
             variant="outlined"
+            error={!!validationErrors.dimension}
+            helperText={validationErrors.dimension}
             InputProps={{
-              className: "w-[300px] h-10 ml-5 bg-white  ",
+              className: "w-[300px]  ml-5   ",
               readOnly: false,
             }}
+            size="small"
           />
         </div>
         <div className="col-start-1 col-span-4 flex items-center">
@@ -400,12 +448,15 @@ const EditItem = () => {
           <TextField
             value={weight}
             onChange={onInputChange}
-            id="weight"
+            name="weight"
             variant="outlined"
+            error={!!validationErrors.weight}
+            helperText={validationErrors.weight}
             InputProps={{
-              className: "w-[300px] h-10 ml-5 bg-white  ",
+              className: "w-[300px]  ml-5   ",
               readOnly: false,
             }}
+            size="small"
           />
         </div>
         <div className="col-start-1 col-span-4 flex">
@@ -418,12 +469,12 @@ const EditItem = () => {
           <TextField
             value={description}
             onChange={onInputChange}
-            id="description"
+            name="description"
             variant="outlined"
             multiline
             rows={6}
             InputProps={{
-              className: "w-[500px] ml-5 bg-white  ",
+              className: "w-[500px] ml-5   ",
               readOnly: false,
             }}
           />
@@ -441,12 +492,15 @@ const EditItem = () => {
             <TextField
               value={quantity}
               onChange={onInputChange}
-              id="quantity"
+              name="quantity"
               variant="outlined"
+              error={!!validationErrors.quantity}
+              helperText={validationErrors.quantity}
               InputProps={{
-                className: "w-[300px] h-10 ml-5 bg-white  ",
+                className: "w-[300px]  ml-5   ",
                 readOnly: false,
               }}
+              size="small"
             />
           </div>
         </div>
@@ -454,8 +508,8 @@ const EditItem = () => {
         <>
           <Button
             variant="contained"
+            type="submit"
             className="row-start-12 col-start-5 col-span-2 rounded-sm bg-blue-600 ml-10"
-            onClick={handleSave}
           >
             Save changes
           </Button>

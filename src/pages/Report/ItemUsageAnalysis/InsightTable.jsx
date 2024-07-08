@@ -63,15 +63,15 @@ const InsightTable = ({ category, year, isOpen }) => {
         const response = await axios.get(
           `http://localhost:8080/request/mostRequested?itemGroup=${category}&year=${year}`
         );
-        console.log("RequestmostRequestedItem", response.data);
+        console.log("mostRequestedItem", response.data);
 
         // Update mostRequestedItem state
-        if (response.data && response.data.inventoryRequests) {
+        if (response.data) {
           const mostRequestedItemData = {
-            id: response.data.itemId,
-            itemName: response.data.itemName,
-            brand: response.data.brand,
-            count: response.data.inventoryRequests.length,
+            id: response.data.item.itemId,
+            itemName: response.data.item.itemName,
+            brand: response.data.item.brand,
+            count: response.data.count,
           };
           setMostRequestedItem(mostRequestedItemData);
           console.log("mostRequestedItem", mostRequestedItemData);
@@ -232,7 +232,9 @@ function Row(props) {
             <TableCell component="th" scope="row">
               {detailsRow.id}
             </TableCell>
-            <TableCell>{new Date(detailsRow.date).toLocaleDateString()}</TableCell>
+            <TableCell>
+              {new Date(detailsRow.date).toLocaleDateString()}
+            </TableCell>
             <TableCell align="right">{detailsRow.issue}</TableCell>
           </TableRow>
         ))}
