@@ -36,6 +36,7 @@ const Userupdate = () => {
     department: "",
     role: "",
     workSite: "",
+    imagePath: "",
   });
 
   const validateField = (name, value) => {
@@ -147,6 +148,11 @@ const Userupdate = () => {
   };
 
   const handleImageDelete = async () => {
+    if (!user.imagePath) {  
+      setSelectedImage(null);
+      setImageUrl(null);
+    }
+    else{ 
     try {
       const response = await axios.delete(`/user/deleteimage/${ID}`);
 
@@ -160,6 +166,7 @@ const Userupdate = () => {
     } catch (error) {
       console.error('Error:', error);
     }
+  }
   };
 
 

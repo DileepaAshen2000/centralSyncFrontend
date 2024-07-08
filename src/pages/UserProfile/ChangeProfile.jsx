@@ -153,13 +153,34 @@ const EditProfile= () => {
         setImageUrl(reader.result);
       };
       reader.readAsDataURL(file);
+      setErrors({ ...errors, image: null });
     }
+    
   };
 
-  const handleImageDelete = () => {
-    setSelectedImage(null);
-    setImageUrl(null);
+  const handleImageDelete = async () => {
+    if (!profileInfo.imagePath) {  
+      setSelectedImage(null);
+      setImageUrl(null);
+    }
+    else{
+    try {
+      const response = await axios.delete(`/user/deleteimage/${profileInfo.userId}`);
+
+      if (response.status === 200) {
+        setSelectedImage(null);
+        setImageUrl(null);
+        console.log('Image deleted successfully');
+      } else {
+        console.error('Failed to delete image');
+      }
+    } catch (error) {
+      
+    }
+  }
+
   };
+
 
   const handleSave = async () => {
     const formData = new FormData();
