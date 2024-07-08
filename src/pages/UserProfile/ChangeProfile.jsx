@@ -38,7 +38,72 @@ const EditProfile= () => {
     role: "",
     workSite: "",
   });
+
+  const validateField = (name, value) => {
+    const validationErrors = {};
+    if (name === "firstName") {
+      if (!value) {
+        validationErrors.firstName = "First name is required";
+      } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
+        validationErrors.firstName = "First name must contain only letters";
+      }
+    } else if (name === "lastName") {
+      if (!value) {
+        validationErrors.lastName = "Last name is required";
+      } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
+        validationErrors.lastName = "Last name must contain only letters";
+      }
+    } else if (name === "role" && !value) {
+      validationErrors.role = "Role is required";
+    } else if (name === "mobileNo") {
+      if (!value) {
+        validationErrors.mobileNo = "Mobile number is required";
+      } else if (!/^\d{10}$/.test(value)) {
+        validationErrors.mobileNo = "Mobile number must be 10 digits";
+      }
+    } else if (name === "telNo") {
+      if (!value) {
+        validationErrors.telNo = "Telephone number is required";
+      } else if (!/^\d{10}$/.test(value)) {
+        validationErrors.telNo = "Telephone number must be 10 digits";
+      }
+    } else if (name === "email") {
+      if (!value) {
+        validationErrors.email = "Email address is required";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        validationErrors.email = "Invalid email address";
+      }
+    } else if (name === "dateOfBirth") {
+      if (!value) {
+        validationErrors.dateOfBirth = "Date of birth is required";
+      } else if (new Date(value) >= new Date()) {
+        validationErrors.dateOfBirth = "Date should be past";
+      }
+    } else if (name === "address" && !value) {
+      validationErrors.address = "Address is required";
+    } else if (name === "department" && !value) {
+      validationErrors.department = "Department is required";
+    } else if (name === "workSite" && !value) {
+      validationErrors.workSite = "Worksite is required";
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validationErrors[name],
+    }));
+
+    if (!validationErrors[name]) {
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest;
+      });
+    }
+  };
  
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
+  };
   
   useEffect(() => {
     console.log("Component mounted, fetching profile info");
@@ -73,11 +138,10 @@ const EditProfile= () => {
   };
 
 
- 
-
-  
   const handleInputChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: value });
+    validateField(name, value);
   };
 
   const handleImageChange = (e) => {
@@ -124,9 +188,9 @@ const EditProfile= () => {
         title: "Error!",
         text: "Failed to update user profile. Please check your inputs.",
       });
-      if (error.response) {
-        setErrors(error.response.data);
-      }
+
+      const backendErrors = error.response.data;
+      setErrors(backendErrors);
     }
   };
 
@@ -158,6 +222,8 @@ const EditProfile= () => {
                 onChange={handleInputChange}
                 name="firstName"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.firstName}
               />
             </div>
             <div></div>
@@ -209,6 +275,8 @@ const EditProfile= () => {
                   className: "w-[300px] ",
                 }}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.lastName}
               />
             </div>
             <div></div>
@@ -228,6 +296,7 @@ const EditProfile= () => {
                 id="workSite"
                 className="w-[300px]"
                 size="small"
+                
               >
                 <MenuItem disabled value={user.workSite}></MenuItem>
                 <MenuItem value="ONSITE">Onsite</MenuItem>
@@ -258,6 +327,8 @@ const EditProfile= () => {
                 value={user.dateOfBirth}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.dateOfBirth}
               />
             </div>
             <div></div>
@@ -280,6 +351,8 @@ const EditProfile= () => {
                 value={user.address}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.address}
               />
             </div>
             <div></div>
@@ -297,6 +370,9 @@ const EditProfile= () => {
               <label htmlFor="name">Mobile No </label>
             </div>
             <div className="col-span-2">
+            {errors.mobileNo && (
+                <div className="text-[#FC0000] text-sm">{errors.mobileNo}</div>
+              )}
               <TextField
                 type="text"
                 id="mno"
@@ -308,6 +384,8 @@ const EditProfile= () => {
                 onChange={handleInputChange}
                 name="mobileNo"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.mobileNo}
               />
             </div>
             <div className="col-span-1">
@@ -315,7 +393,11 @@ const EditProfile= () => {
                 Tel No
               </label>
             </div>
+           
             <div className="col-span-2">
+            {errors.telNo && (
+                <div className="text-[#FC0000] text-sm">{errors.telNo}</div>
+              )}
               <TextField
                 type="text"
                 id="Tno"
@@ -327,12 +409,17 @@ const EditProfile= () => {
                 value={user.telNo}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.telNo}
               />
             </div>
             <div className="col-span-1">
               <label htmlFor="name">Email Adress</label>
             </div>
             <div className="col-span-2">
+            {errors.email && (
+                <div className="text-[#FC0000] text-sm">{errors.email}</div>
+              )}
               <TextField
                 type="text"
                 id="email"
@@ -344,6 +431,8 @@ const EditProfile= () => {
                 value={user.email}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.email}
               />
             </div>
             <div></div>

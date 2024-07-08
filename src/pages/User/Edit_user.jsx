@@ -126,11 +126,11 @@ const Userupdate = () => {
   }, [ID]);
 
   const handleInputChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
-     
-      validateField([e.target.name], e.target.value);
-    
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: value });
+    validateField(name, value);
   };
+  
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -141,13 +141,28 @@ const Userupdate = () => {
         setImageUrl(reader.result);
       };
       reader.readAsDataURL(file);
+      setErrors({ ...errors, image: null });
+    }
+    
+  };
+
+  const handleImageDelete = async () => {
+    try {
+      const response = await axios.delete(`/user/deleteimage/${ID}`);
+
+      if (response.status === 200) {
+        setSelectedImage(null);
+        setImageUrl(null);
+        console.log('Image deleted successfully');
+      } else {
+        console.error('Failed to delete image');
+      }
+    } catch (error) {
+      console.error('Error:', error);
     }
   };
 
-  const handleImageDelete = () => {
-    setSelectedImage(null);
-    setImageUrl(null);
-  };
+
 
   const handleSave = async () => {
     const formData = new FormData();
@@ -184,27 +199,13 @@ const Userupdate = () => {
         text: "Failed to edit user details. Please check your inputs.",
       });
       
-      if (!validateAllFields()) {
-        return;
-      }
+      const backendErrors = error.response.data;
+      setErrors(backendErrors);
       
     }
   };
 
-  const validateAllFields = () => {
-    validateField("firstName", user.firstName);
-    validateField("lastName", user.lastName);
-    validateField("role", user.role);
-    validateField("department",user. department);
-    validateField("workSite", user.workSite);
-    validateField("dateOfBirth", user.dateOfBirth);
-    validateField("mobileNo", user.role);
-    validateField("telNo", user.telNo);
-    validateField("address", user.address);
-    validateField("email", user.email);
-
-    return Object.keys(errors).length === 0;
-  };
+  
 
   return (
     <>

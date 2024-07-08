@@ -212,10 +212,9 @@ const NewAdjustment = () => {
           title: "Error!",
           text: "Failed to submit adjustment. Please check your inputs.",
         });
-        if (!validateAllFields()) {
-          return;
-        }
-        //setErrors(error.response.data);
+        const backendErrors = error.response.data;
+      setErrors(backendErrors);
+         
       }
     }
   };
