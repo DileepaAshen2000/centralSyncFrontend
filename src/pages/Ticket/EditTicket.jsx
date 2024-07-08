@@ -67,33 +67,35 @@ const EditTicket = () => {
     fetchItemData();
   }, [id]);
 
-   
   const handleItemChange = (event, value) => {
     if (value) {
       setTicket((prevTicket) => ({
         ...prevTicket,
         itemName: value.itemName,
       }));
+      validateField("itemName", value.itemName);
     } else {
       setTicket((prevTicket) => ({
         ...prevTicket,
         itemName: "",
       }));
+      validateField("itemName", "");
     }
   };
 
-   
   const handleItembrandChange = (event, value) => {
     if (value) {
       setTicket((prevTicket) => ({
         ...prevTicket,
         brand: value.brand,
       }));
+      validateField("brand", value.brand);
     } else {
       setTicket((prevTicket) => ({
         ...prevTicket,
         brand: "",
       }));
+      validateField("brand", "");
     }
   };
 
@@ -131,7 +133,6 @@ const EditTicket = () => {
     }
   };
 
-  
   const handleBlur = (e) => {
     const { name, value } = e.target;
     validateField(name, value);
@@ -157,21 +158,9 @@ const EditTicket = () => {
           title: "Error!",
           text: "Failed to update Ticket. Please check your inputs.",
         });
-        if (!validateAllFields()) {
-          return;
-        }
+        const backendErrors = error.response.data;
+        setErrors(backendErrors);
       });
-  };
-
-
-  const validateAllFields = () => {
-    validateField("itemName", ticket.itemName);
-    validateField("brand", ticket.brand);
-    validateField("topic", ticket.topic);
-    validateField("date", ticket.date);
-    validateField("description", ticket.description);
-
-    return Object.keys(errors).length === 0;
   };
 
   return (
@@ -260,9 +249,10 @@ const EditTicket = () => {
               )}
               <Select
                 className=" w-[300px] "
-                onChange={(e) =>
-                  setTicket({ ...ticket, topic: e.target.value })
-                }
+                onChange={(e) => {
+                  setTicket({ ...ticket, topic: e.target.value });
+                  validateField("topic", e.target.value);
+                }}
                 value={ticket.topic}
                 size="small"
                 onBlur={handleBlur}
@@ -295,7 +285,10 @@ const EditTicket = () => {
                   className: " w-[300px] ",
                 }}
                 value={ticket.date}
-                onChange={(e) => setTicket({ ...ticket, date: e.target.value })}
+                onChange={(e) => {
+                  setTicket({ ...ticket, date: e.target.value });
+                  validateField("date", e.target.value);
+                }}
                 size="small"
                 onBlur={handleBlur}
                 error={!!errors.date}
@@ -320,9 +313,10 @@ const EditTicket = () => {
                   className: "w-[450px] h-[100px]",
                 }}
                 value={ticket.description}
-                onChange={(e) =>
-                  setTicket({ ...ticket, description: e.target.value })
-                }
+                onChange={(e) => {
+                  setTicket({ ...ticket, description: e.target.value });
+                  validateField("description", e.target.value);
+                }}
                 size="small"
                 onBlur={handleBlur}
                 error={!!errors.description}

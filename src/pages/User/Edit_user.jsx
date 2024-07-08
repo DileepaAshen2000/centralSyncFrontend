@@ -127,6 +127,9 @@ const Userupdate = () => {
 
   const handleInputChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
+     
+      validateField([e.target.name], e.target.value);
+    
   };
 
   const handleImageChange = (e) => {
@@ -455,6 +458,9 @@ const Userupdate = () => {
               <label htmlFor="name">Mobile No </label>
             </div>
             <div className="col-span-2">
+            {errors.mobileNo && (
+                <div className="text-[#FC0000] text-sm">{errors.mobileNo}</div>
+              )}
               <TextField
                 type="text"
                 id="mno"
@@ -477,6 +483,9 @@ const Userupdate = () => {
               </label>
             </div>
             <div className="col-span-2">
+            {errors.telNo && (
+                <div className="text-[#FC0000] text-sm">{errors.telNo}</div>
+              )}
               <TextField
                 type="text"
                 id="Tno"
@@ -497,6 +506,9 @@ const Userupdate = () => {
               <label htmlFor="name">Email Adress</label>
             </div>
             <div className="col-span-2">
+            {errors.email && (
+                <div className="text-[#FC0000] text-sm">{errors.email}</div>
+              )}
               <TextField
                 type="text"
                 id="email"
