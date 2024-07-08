@@ -97,6 +97,46 @@ const EditTicket = () => {
     }
   };
 
+  const validateField = (name, value) => {
+    const validationErrors = {};
+
+    if (name === "itemName" && !value) {
+      validationErrors.itemName = "Item name is required";
+    } else if (name === "brand" && !value) {
+      validationErrors.brand = "Item brand is required";
+    } else if (name === "topic" && !value) {
+      validationErrors.topic = "Topic is required";
+    } else if (name === "date" && !value) {
+      validationErrors.date = "Date is required";
+    } else if (name === "description") {
+      if (!value) {
+        validationErrors.description = "Description is required";
+      } else if (value.length < 10 || value.length > 200) {
+        validationErrors.description =
+          "Description must be between 10 and 200 characters";
+      }
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validationErrors[name],
+    }));
+
+    // Remove the error if there is no validation error for the field
+    if (!validationErrors[name]) {
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest;
+      });
+    }
+  };
+
+  
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
+  };
+
   const handleClick = (e) => {
     e.preventDefault();
     axios
@@ -117,10 +157,21 @@ const EditTicket = () => {
           title: "Error!",
           text: "Failed to update Ticket. Please check your inputs.",
         });
-        if (error.response) {
-          setErrors(error.response.data);
+        if (!validateAllFields()) {
+          return;
         }
       });
+  };
+
+
+  const validateAllFields = () => {
+    validateField("itemName", ticket.itemName);
+    validateField("brand", ticket.brand);
+    validateField("topic", ticket.topic);
+    validateField("date", ticket.date);
+    validateField("description", ticket.description);
+
+    return Object.keys(errors).length === 0;
   };
 
   return (
@@ -156,6 +207,9 @@ const EditTicket = () => {
                     }}
                     size="small"
                     value={ticket.itemId.itemName}
+                    onBlur={handleBlur}
+                    error={!!errors.itemName}
+                    name="itemName"
                   />
                 )}
               />
@@ -188,6 +242,9 @@ const EditTicket = () => {
                     }}
                     size="small"
                     value={ticket.itemId.brand}
+                    onBlur={handleBlur}
+                    error={!!errors.brand}
+                    name="brand"
                   />
                 )}
               />
@@ -202,17 +259,22 @@ const EditTicket = () => {
                 <div className="text-[#FC0000] text-sm">{errors.topic}</div>
               )}
               <Select
-                id="topic"
                 className=" w-[300px] "
                 onChange={(e) =>
                   setTicket({ ...ticket, topic: e.target.value })
                 }
                 value={ticket.topic}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.topic}
+                name="topic"
               >
                 <MenuItem disabled value={ticket.topic}></MenuItem>
                 <MenuItem value="Network Issues">Network Issues</MenuItem>
-                <MenuItem value="Hardware Problems">Hardware Problems</MenuItem>
+                <MenuItem value="Hardware Issues">Hardware Issues</MenuItem>
+                <MenuItem value="Software Issues">Software Issues</MenuItem>
+                <MenuItem value="Security Issues">Security Issues</MenuItem>
+                <MenuItem value="Delivery Issues">Delivery Issues</MenuItem>
                 <MenuItem value="Other">Other</MenuItem>
               </Select>
             </div>
@@ -235,6 +297,9 @@ const EditTicket = () => {
                 value={ticket.date}
                 onChange={(e) => setTicket({ ...ticket, date: e.target.value })}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.date}
+                name="date"
               />
             </div>
             <div></div>
@@ -259,6 +324,9 @@ const EditTicket = () => {
                   setTicket({ ...ticket, description: e.target.value })
                 }
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.description}
+                name="description"
               />
             </div>
             <div></div>

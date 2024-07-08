@@ -38,6 +38,73 @@ const Userupdate = () => {
     workSite: "",
   });
 
+  const validateField = (name, value) => {
+    const validationErrors = {};
+    if (name === "firstName") {
+      if (!value) {
+        validationErrors.firstName = "First name is required";
+      } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
+        validationErrors.firstName = "First name must contain only letters";
+      }
+    } else if (name === "lastName") {
+      if (!value) {
+        validationErrors.lastName = "Last name is required";
+      } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
+        validationErrors.lastName = "Last name must contain only letters";
+      }
+    } else if (name === "role" && !value) {
+      validationErrors.role = "Role is required";
+    } else if (name === "mobileNo") {
+      if (!value) {
+        validationErrors.mobileNo = "Mobile number is required";
+      } else if (!/^\d{10}$/.test(value)) {
+        validationErrors.mobileNo = "Mobile number must be 10 digits";
+      }
+    } else if (name === "telNo") {
+      if (!value) {
+        validationErrors.telNo = "Telephone number is required";
+      } else if (!/^\d{10}$/.test(value)) {
+        validationErrors.telNo = "Telephone number must be 10 digits";
+      }
+    } else if (name === "email") {
+      if (!value) {
+        validationErrors.email = "Email address is required";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        validationErrors.email = "Invalid email address";
+      }
+    } else if (name === "dateOfBirth") {
+      if (!value) {
+        validationErrors.dateOfBirth = "Date of birth is required";
+      } else if (new Date(value) >= new Date()) {
+        validationErrors.dateOfBirth = "Date should be past";
+      }
+    } else if (name === "address" && !value) {
+      validationErrors.address = "Address is required";
+    } else if (name === "department" && !value) {
+      validationErrors.department = "Department is required";
+    } else if (name === "workSite" && !value) {
+      validationErrors.workSite = "Worksite is required";
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validationErrors[name],
+    }));
+
+    if (!validationErrors[name]) {
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest;
+      });
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
+  };
+  
+
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
@@ -113,10 +180,27 @@ const Userupdate = () => {
         title: "Error!",
         text: "Failed to edit user details. Please check your inputs.",
       });
-      if (error.response) {
-        setErrors(error.response.data);
+      
+      if (!validateAllFields()) {
+        return;
       }
+      
     }
+  };
+
+  const validateAllFields = () => {
+    validateField("firstName", user.firstName);
+    validateField("lastName", user.lastName);
+    validateField("role", user.role);
+    validateField("department",user. department);
+    validateField("workSite", user.workSite);
+    validateField("dateOfBirth", user.dateOfBirth);
+    validateField("mobileNo", user.role);
+    validateField("telNo", user.telNo);
+    validateField("address", user.address);
+    validateField("email", user.email);
+
+    return Object.keys(errors).length === 0;
   };
 
   return (
@@ -172,6 +256,9 @@ const Userupdate = () => {
                   className="hidden"
                 />
               </div>
+              {errors.image && (
+                <div className="text-[#FC0000] text-sm pl-9">{errors.image}</div>
+              )}
             </div>
             <div className="col-span-1">
               <label htmlFor="name">Name</label>
@@ -191,6 +278,9 @@ const Userupdate = () => {
                 onChange={handleInputChange}
                 name="firstName"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.firstName}
+                
               />
             </div>
             <div></div>
@@ -210,6 +300,9 @@ const Userupdate = () => {
                   className: "w-[300px] ",
                 }}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.lastName}
+                
               />
             </div>
             <div></div>
@@ -230,6 +323,9 @@ const Userupdate = () => {
                 id="department"
                 className="w-[300px]"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.department}
+                
               >
                 <MenuItem disabled value={user.department}></MenuItem>
                 <MenuItem value="Programming">Programming</MenuItem>
@@ -251,6 +347,9 @@ const Userupdate = () => {
                 id="role"
                 className="w-[300px]"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.role}
+                
               >
                 <MenuItem disabled value={user.role}></MenuItem>
 
@@ -277,6 +376,9 @@ const Userupdate = () => {
                 id="workSite"
                 className="w-[300px]"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.workSite}
+                
               >
                 <MenuItem disabled value={user.workSite}></MenuItem>
                 <MenuItem value="ONSITE">Onsite</MenuItem>
@@ -307,6 +409,9 @@ const Userupdate = () => {
                 value={user.dateOfBirth}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.dateOfBirth}
+                
               />
             </div>
             <div></div>
@@ -330,6 +435,9 @@ const Userupdate = () => {
                 value={user.address}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.address}
+                
               />
             </div>
             <div></div>
@@ -358,6 +466,9 @@ const Userupdate = () => {
                 onChange={handleInputChange}
                 name="mobileNo"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.mobileNo}
+                
               />
             </div>
             <div className="col-span-1">
@@ -377,6 +488,9 @@ const Userupdate = () => {
                 value={user.telNo}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.telNo}
+                
               />
             </div>
             <div className="col-span-1">
@@ -394,6 +508,9 @@ const Userupdate = () => {
                 value={user.email}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.email}
+                
               />
             </div>
             <div></div>

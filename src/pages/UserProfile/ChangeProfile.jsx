@@ -137,19 +137,26 @@ const EditProfile= () => {
           <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit Profile</h1>
         </Box>
         <form noValidate>
-          <div className="grid grid-cols-6 grid-rows-7  gap-x-[0.25rem] gap-y-7 ">
-            <div className="col-span-1 row-span-1">
-              <label htmlFor="5">Id</label>
+          <div className="grid grid-cols-6 grid-rows-5  gap-x-[0.25rem] gap-y-7 ">
+            
+            
+            <div className="col-span-1">
+              <label htmlFor="name">Name</label>
             </div>
             <div className="col-span-2">
+              {errors.firstName && (
+                <div className="text-[#FC0000] text-sm">{errors.firstName}</div>
+              )}
               <TextField
-                name="id"
-                placeholder=""
+                id="firstName"
+                variant="outlined"
+                placeholder="First Name"
                 InputProps={{
                   className: "w-[300px] ",
-                  readOnly: true,
                 }}
-                value={profileInfo.userId}
+                value={user.firstName}
+                onChange={handleInputChange}
+                name="firstName"
                 size="small"
               />
             </div>
@@ -181,29 +188,11 @@ const EditProfile= () => {
                   onChange={handleImageChange}
                   className="hidden"
                 />
+                {errors.image && (
+                <div className="text-[#FC0000] text-sm pl-9">{errors.image}</div>
+              )}
               </div>
             </div>
-            <div className="col-span-1">
-              <label htmlFor="name">Name</label>
-            </div>
-            <div className="col-span-2">
-              {errors.firstName && (
-                <div className="text-[#FC0000] text-sm">{errors.firstName}</div>
-              )}
-              <TextField
-                id="firstName"
-                variant="outlined"
-                placeholder="First Name"
-                InputProps={{
-                  className: "w-[300px] ",
-                }}
-                value={user.firstName}
-                onChange={handleInputChange}
-                name="firstName"
-                size="small"
-              />
-            </div>
-            <div></div>
             <div className="col-span-1"> </div>
             <div className="col-span-2">
               {errors.lastName && (
@@ -224,54 +213,7 @@ const EditProfile= () => {
             </div>
             <div></div>
 
-            <div className="col-span-1 row-span-1">
-              <label htmlFor="2">Department</label>
-            </div>
-            <div className="col-span-2">
-              {errors.department && (
-                <div className="text-[#FC0000] text-sm">
-                  {errors.department}
-                </div>
-              )}
-              <Select
-                value={user.department}
-                onChange={handleInputChange}
-                name="department"
-                id="department"
-                className="w-[300px]"
-                size="small"
-              >
-                <MenuItem disabled value={user.department}></MenuItem>
-                <MenuItem value="Programming">Programming</MenuItem>
-                <MenuItem value="Cybersecurity">Cybersecurity</MenuItem>
-              </Select>
-            </div>
-            <div></div>
-            <div className="col-span-1 row-span-1">
-              <label htmlFor="3">Role</label>
-            </div>
-            <div className="col-span-2">
-              {errors.role && (
-                <div className="text-[#FC0000] text-sm">{errors.role}</div>
-              )}
-              <Select
-                value={user.role}
-                onChange={handleInputChange}
-                name="role"
-                id="role"
-                className="w-[300px]"
-                size="small"
-              >
-                <MenuItem disabled value={user.role}></MenuItem>
-
-                <MenuItem value="ADMIN">Admin</MenuItem>
-                <MenuItem value="REQUEST_HANDLER">Request Handler</MenuItem>
-                <MenuItem value="EMPLOYEE">Employee</MenuItem>
-              </Select>
-            </div>
-            <div></div>
-            <div></div>
-            <div></div>
+            
             <div className="col-span-1 row-span-1">
               <label htmlFor="3">Work Site</label>
             </div>
@@ -293,8 +235,7 @@ const EditProfile= () => {
                 <MenuItem value="NOT_ASSIGNED">Not assigned</MenuItem>
               </Select>{" "}
             </div>
-            <div></div>
-            <div></div>
+             
             <div></div>
             <div className="col-span-1 row-span-1">
               <label htmlFor="4">Date Of Birth</label>
@@ -307,6 +248,7 @@ const EditProfile= () => {
               )}
               <TextField
                 id="date"
+                type="date"
                 placeholder="dd/mm/yy"
                 name="dateOfBirth"
                 InputProps={{
@@ -319,8 +261,7 @@ const EditProfile= () => {
               />
             </div>
             <div></div>
-            <div></div>
-            <div></div>
+            
             <div className="col-span-1 row-span-1">
               <label htmlFor="5">Adress</label>
             </div>

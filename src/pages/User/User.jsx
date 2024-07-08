@@ -10,9 +10,9 @@ import LoginService from "../Login/LoginService";
 const getStatusClass = (status) => {
   switch (status) {
     case "ACTIVE":
-      return "bg-green-500 text-white w-[90px]";
+      return "bg-green-500 text-black w-[90px] font-bold";
     case "INACTIVE":
-      return "bg-red-500 text-white text-sm w-[90px]";  
+      return "bg-red-500 text-black text-sm w-[90px] font-bold";  
   }
 };
 
@@ -145,6 +145,21 @@ export default function User() {
         disableRowSelectionOnClick
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={handleRowSelectionModelChange}
+        sx={{
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: '#f5f5f5',
+            borderBottom: '2px solid #000',
+          },
+          '& .MuiDataGrid-cell': {
+            borderBottom: '1px solid #ddd',
+          },
+          '& .MuiDataGrid-row': {
+            borderBottom: '2px solid #000',
+          },
+          '& .MuiDataGrid-root': {
+            border: '2px solid #000',
+          },
+        }}
       />
     </Box>
   );
