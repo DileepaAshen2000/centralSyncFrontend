@@ -6,6 +6,8 @@ import {
   Select,
   Box,
   Typography,
+  CircularProgress,
+  Backdrop
 } from "@mui/material";
 import axios from "axios";
 import MenuItem from "@mui/material/MenuItem";
@@ -24,6 +26,7 @@ const Userupdate = () => {
   const [errors, setErrors] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const [user, setUser] = useState({
     firstName: "",
@@ -108,6 +111,7 @@ const Userupdate = () => {
 
   useEffect(() => {
     const fetchUserDetails = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           `http://localhost:8080/user/users/${ID}`
@@ -121,8 +125,11 @@ const Userupdate = () => {
       } catch (error) {
         console.log("Error fetching user:", error);
       }
+      finally{
+        setLoading(false);
+      };
     };
-
+   
     fetchUserDetails();
   }, [ID]);
 
@@ -173,6 +180,7 @@ const Userupdate = () => {
 
   const handleSave = async () => {
     const formData = new FormData();
+    setLoading(true);
     formData.append(
       "user",
       new Blob([JSON.stringify(user)], { type: "application/json" })
@@ -210,6 +218,9 @@ const Userupdate = () => {
       setErrors(backendErrors);
       
     }
+    finally{
+      setLoading(false);
+    };
   };
 
   
@@ -558,6 +569,12 @@ const Userupdate = () => {
               </Button>
             </div>
           </div>
+          <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
         </form>
       </Box>
     </>

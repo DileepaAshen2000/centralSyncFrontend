@@ -37,6 +37,8 @@ import image from "../../assests/cursor.png";
 import Avatar from "@mui/material/Avatar";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import Popover from "@mui/material/Popover";
+import {CircularProgress,Backdrop
+} from "@mui/material";
 
 const UserActivityHistory = () => {
   const [activityLogs, setActivityLogs] = useState([]);
@@ -48,6 +50,7 @@ const UserActivityHistory = () => {
   const [profileInfo, setProfileInfo] = useState({});
   const [anchorEl, setAnchorEl] = useState(null);
   const [popoverContent, setPopoverContent] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchProfileInfo();
@@ -71,6 +74,7 @@ const UserActivityHistory = () => {
 
   // Fetch user activity logs from the backend API
   const fetchActivityLogs = async (userId) => {
+    setLoading(true);
     try {
       const response = await axios.get(
         `http://localhost:8080/user-activity-log/${userId}`
@@ -81,6 +85,9 @@ const UserActivityHistory = () => {
     } catch (error) {
       console.error("Error fetching user activity logs:", error);
     }
+    finally{
+      setLoading(false);
+    };
   };
 
   useEffect(() => {
@@ -327,7 +334,13 @@ const UserActivityHistory = () => {
                 </Typography>
               </div>
             </div>
+            {loading ? (
+        <div className="flex justify-center mostRequestedItems-center">
+          <CircularProgress />
+        </div>
+      ):(<>
             <Timeline className="pt-12">
+            
               {filteredLogs.map((log) => (
                 <TimelineItem key={log.userId}>
                   <TimelineOppositeContent className="flex-none w-1/5">
@@ -408,7 +421,12 @@ const UserActivityHistory = () => {
                 </Typography>
               </div>
             </Popover>
+            </>
+          )}
           </div>
+          
+      
+      
         </div>
       </LocalizationProvider>
     </React.Fragment>

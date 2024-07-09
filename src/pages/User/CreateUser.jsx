@@ -7,6 +7,8 @@ import {
   Box,
   MenuItem,
   Typography,
+  CircularProgress,
+  Backdrop
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -36,6 +38,7 @@ const CreateUser = () => {
   const [src, setSrc] = useState(null);
   const [preview, setPreview] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const validateField = (name, value) => {
     const validationErrors = {};
@@ -134,6 +137,7 @@ const CreateUser = () => {
 
   const handleClick = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const formData = new FormData();
 
@@ -190,6 +194,9 @@ const CreateUser = () => {
       const backendErrors = error.response.data;
       setErrors(backendErrors);
     }
+    finally {
+      setLoading(false);
+    };
   };
 
   return (
@@ -540,6 +547,12 @@ const CreateUser = () => {
               </Button>
             </div>
           </div>
+          <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
         </form>
       </Box>
     </>

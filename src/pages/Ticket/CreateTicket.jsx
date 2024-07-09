@@ -7,6 +7,8 @@ import {
   MenuItem,
   Autocomplete,
   Box,
+  CircularProgress,
+  Backdrop
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
@@ -30,9 +32,11 @@ const CreateTicket = () => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [options, setOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           "http://localhost:8080/inventory-item/getAll"
