@@ -6,6 +6,8 @@ import {
   Select,
   Box,
   Typography,
+  CircularProgress,
+  Backdrop
 } from "@mui/material";
 import axios from "axios";
 import MenuItem from "@mui/material/MenuItem";
@@ -24,6 +26,7 @@ const Userupdate = () => {
   const [errors, setErrors] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const [user, setUser] = useState({
     firstName: "",
@@ -36,10 +39,79 @@ const Userupdate = () => {
     department: "",
     role: "",
     workSite: "",
+    imagePath: "",
   });
+
+  const validateField = (name, value) => {
+    const validationErrors = {};
+    if (name === "firstName") {
+      if (!value) {
+        validationErrors.firstName = "First name is required";
+      } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
+        validationErrors.firstName = "First name must contain only letters";
+      }
+    } else if (name === "lastName") {
+      if (!value) {
+        validationErrors.lastName = "Last name is required";
+      } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
+        validationErrors.lastName = "Last name must contain only letters";
+      }
+    } else if (name === "role" && !value) {
+      validationErrors.role = "Role is required";
+    } else if (name === "mobileNo") {
+      if (!value) {
+        validationErrors.mobileNo = "Mobile number is required";
+      } else if (!/^\d{10}$/.test(value)) {
+        validationErrors.mobileNo = "Mobile number must be 10 digits";
+      }
+    } else if (name === "telNo") {
+      if (!value) {
+        validationErrors.telNo = "Telephone number is required";
+      } else if (!/^\d{10}$/.test(value)) {
+        validationErrors.telNo = "Telephone number must be 10 digits";
+      }
+    } else if (name === "email") {
+      if (!value) {
+        validationErrors.email = "Email address is required";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        validationErrors.email = "Invalid email address";
+      }
+    } else if (name === "dateOfBirth") {
+      if (!value) {
+        validationErrors.dateOfBirth = "Date of birth is required";
+      } else if (new Date(value) >= new Date()) {
+        validationErrors.dateOfBirth = "Date should be past";
+      }
+    } else if (name === "address" && !value) {
+      validationErrors.address = "Address is required";
+    } else if (name === "department" && !value) {
+      validationErrors.department = "Department is required";
+    } else if (name === "workSite" && !value) {
+      validationErrors.workSite = "Worksite is required";
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validationErrors[name],
+    }));
+
+    if (!validationErrors[name]) {
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest;
+      });
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
+  };
+  
 
   useEffect(() => {
     const fetchUserDetails = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           `http://localhost:8080/user/users/${ID}`
@@ -53,14 +125,20 @@ const Userupdate = () => {
       } catch (error) {
         console.log("Error fetching user:", error);
       }
+      finally{
+        setLoading(false);
+      };
     };
-
+   
     fetchUserDetails();
   }, [ID]);
 
   const handleInputChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: value });
+    validateField(name, value);
   };
+  
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -71,16 +149,38 @@ const Userupdate = () => {
         setImageUrl(reader.result);
       };
       reader.readAsDataURL(file);
+      setErrors({ ...errors, image: null });
     }
+    
   };
 
-  const handleImageDelete = () => {
-    setSelectedImage(null);
-    setImageUrl(null);
+  const handleImageDelete = async () => {
+    if (!user.imagePath) {  
+      setSelectedImage(null);
+      setImageUrl(null);
+    }
+    else{ 
+    try {
+      const response = await axios.delete(`/user/deleteimage/${ID}`);
+
+      if (response.status === 200) {
+        setSelectedImage(null);
+        setImageUrl(null);
+        console.log('Image deleted successfully');
+      } else {
+        console.error('Failed to delete image');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
   };
+
+
 
   const handleSave = async () => {
     const formData = new FormData();
+    setLoading(true);
     formData.append(
       "user",
       new Blob([JSON.stringify(user)], { type: "application/json" })
@@ -113,11 +213,17 @@ const Userupdate = () => {
         title: "Error!",
         text: "Failed to edit user details. Please check your inputs.",
       });
-      if (error.response) {
-        setErrors(error.response.data);
-      }
+      
+      const backendErrors = error.response.data;
+      setErrors(backendErrors);
+      
     }
+    finally{
+      setLoading(false);
+    };
   };
+
+  
 
   return (
     <>
@@ -172,6 +278,9 @@ const Userupdate = () => {
                   className="hidden"
                 />
               </div>
+              {errors.image && (
+                <div className="text-[#FC0000] text-sm pl-9">{errors.image}</div>
+              )}
             </div>
             <div className="col-span-1">
               <label htmlFor="name">Name</label>
@@ -191,6 +300,9 @@ const Userupdate = () => {
                 onChange={handleInputChange}
                 name="firstName"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.firstName}
+                
               />
             </div>
             <div></div>
@@ -210,6 +322,9 @@ const Userupdate = () => {
                   className: "w-[300px] ",
                 }}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.lastName}
+                
               />
             </div>
             <div></div>
@@ -230,6 +345,9 @@ const Userupdate = () => {
                 id="department"
                 className="w-[300px]"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.department}
+                
               >
                 <MenuItem disabled value={user.department}></MenuItem>
                 <MenuItem value="Programming">Programming</MenuItem>
@@ -251,6 +369,9 @@ const Userupdate = () => {
                 id="role"
                 className="w-[300px]"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.role}
+                
               >
                 <MenuItem disabled value={user.role}></MenuItem>
 
@@ -277,6 +398,9 @@ const Userupdate = () => {
                 id="workSite"
                 className="w-[300px]"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.workSite}
+                
               >
                 <MenuItem disabled value={user.workSite}></MenuItem>
                 <MenuItem value="ONSITE">Onsite</MenuItem>
@@ -307,6 +431,9 @@ const Userupdate = () => {
                 value={user.dateOfBirth}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.dateOfBirth}
+                
               />
             </div>
             <div></div>
@@ -330,6 +457,9 @@ const Userupdate = () => {
                 value={user.address}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.address}
+                
               />
             </div>
             <div></div>
@@ -347,6 +477,9 @@ const Userupdate = () => {
               <label htmlFor="name">Mobile No </label>
             </div>
             <div className="col-span-2">
+            {errors.mobileNo && (
+                <div className="text-[#FC0000] text-sm">{errors.mobileNo}</div>
+              )}
               <TextField
                 type="text"
                 id="mno"
@@ -358,6 +491,9 @@ const Userupdate = () => {
                 onChange={handleInputChange}
                 name="mobileNo"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.mobileNo}
+                
               />
             </div>
             <div className="col-span-1">
@@ -366,6 +502,9 @@ const Userupdate = () => {
               </label>
             </div>
             <div className="col-span-2">
+            {errors.telNo && (
+                <div className="text-[#FC0000] text-sm">{errors.telNo}</div>
+              )}
               <TextField
                 type="text"
                 id="Tno"
@@ -377,12 +516,18 @@ const Userupdate = () => {
                 value={user.telNo}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.telNo}
+                
               />
             </div>
             <div className="col-span-1">
               <label htmlFor="name">Email Adress</label>
             </div>
             <div className="col-span-2">
+            {errors.email && (
+                <div className="text-[#FC0000] text-sm">{errors.email}</div>
+              )}
               <TextField
                 type="text"
                 id="email"
@@ -394,6 +539,9 @@ const Userupdate = () => {
                 value={user.email}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.email}
+                
               />
             </div>
             <div></div>
@@ -421,6 +569,12 @@ const Userupdate = () => {
               </Button>
             </div>
           </div>
+          <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
         </form>
       </Box>
     </>

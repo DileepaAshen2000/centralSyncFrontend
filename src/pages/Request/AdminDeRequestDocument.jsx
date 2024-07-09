@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Typography, Button, Alert, AlertTitle, CircularProgress, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Typography, Button, Alert, AlertTitle, CircularProgress, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,TextField } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import ReactToPrint from 'react-to-print';
@@ -43,24 +43,23 @@ const buttonColor = (reqStatus, updateDateTime) => {
         <div style={{ marginLeft: '67px' }}>Time {time}</div>
       </Alert>
     );
-  } else if (reqStatus === 'ACCEPTED') {
+  } else if (reqStatus === 'DISPATCHED') {
     return (
-      <Alert severity="success" sx={{ width: '300px', margin: 5 }}>
-        <AlertTitle>Accepted</AlertTitle>
+      <Alert severity="info" 
+      sx={{ width: '300px',
+         margin: 5, 
+        backgroundColor: '#FDBA74',
+        color: 'black' }}>
+        <AlertTitle>Dispatched</AlertTitle>
         <div>Updated: Date {date}</div>
         <div style={{ marginLeft: '67px' }}>Time {time}</div>
       </Alert>
     );
-  } else if (reqStatus === 'SENT_TO_ADMIN') {
+  }
+  else if (reqStatus === 'DELIVERED') {
     return (
-      <Alert severity="warning"
-        sx={{
-          width: '300px',
-          margin: 5,
-          backgroundColor: '#FFFFE0',
-          color: 'black'
-        }}>
-          <AlertTitle>Sent To Admin</AlertTitle>
+      <Alert severity="info" sx={{ width: '300px', margin: 5, backgroundColor: '#DFF2BF' }}>
+        <AlertTitle>Delivered</AlertTitle>
         <div>Updated: Date {date}</div>
         <div style={{ marginLeft: '67px' }}>Time {time}</div>
       </Alert>
@@ -95,7 +94,7 @@ const getInventoryRequestListLink = () => {
   if (isEmployee) return "/employee-in-request-list";
   return "/default-request-list";
 };
-const RequestDocument = () => {
+const AdminDeRequestDocument = () => {
   const { reqId } = useParams();
   const [inventoryRequest, setInventoryRequest] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
@@ -111,21 +110,31 @@ const RequestDocument = () => {
   const[openSA, setOpenSA] = useState(false);
   const[openRD, setOpenRD] = useState(false);
   const[openAD, setOpenAD] = useState(false);
+  const [email, setEmail] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleClickItemReturn = () => { 
     setOpenID(true); 
-  };
-
-  const handleClickSendToAdmin = () =>{
-setOpenSA(true);
   };
 
   const handleClickReject = () => {
     setOpenRD(true);
   };
 
-  const handleClickAccept = () => {
-    setOpenAD(true);
+  const handleOpenDialog = () => {
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
+
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const handleSubmitEmail = () => {
+    handleDispatch(email);
   };
   
 
@@ -176,18 +185,6 @@ setOpenSA(true);
       return null;
     }
   };
-  const handleDelete = () => {
-    axios
-      .patch(`http://localhost:8080/request/deleteRequest/${reqId}`)
-      .then(() => {
-        setInventoryRequest(!inventoryRequest);
-        navigate(getInventoryRequestListLink());
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
 
   const handleReject = () => {
     axios
@@ -201,31 +198,19 @@ setOpenSA(true);
       });
   };
 
-  const handleAccept = () => {
+  const handleDispatch = (email) => {
     axios
-      .patch(`http://localhost:8080/request/updateStatus/accept/${reqId}`)
+      .patch(`http://localhost:8080/request/updateStatus/dispatch/${reqId}?email=${email}`)
       .then(() => {
         setInventoryRequest(!inventoryRequest);
-        navigate(getInventoryRequestListLink());
+        setDialogOpen(false);
+        navigate(`/stockOut`);
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
-  const handleSendToAdmin = () => {
-    setOpenSA(true);
-    axios
-      .patch(`http://localhost:8080/request/updateStatus/sendToAdmin/${reqId}`)
-      .then(() => {
-        setInventoryRequest(!inventoryRequest);
-        navigate("/requestHandler/in-request-list");
-        handleClose();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
 
   const handleItemReturn = async () => {
     try {
@@ -362,14 +347,6 @@ setOpenSA(true);
               Edit
             </Button>
           )}
-           {(inventoryRequest.reqStatus === 'REJECTED' && role === 'ADMIN' && <Button
-              className="px-6 py-2 text-white bg-blue-600 rounded"
-              variant='contained'
-              type='submit'
-              onClick={handleDelete}
-            >
-              Delete
-            </Button>)}
           <ReactToPrint
             trigger={() => (
               <Button className="px-6 py-2 text-white bg-blue-600 rounded" variant='contained'>
@@ -387,8 +364,8 @@ setOpenSA(true);
               
                 
                
-                <div className="w-full  bg-blue-900 text-white text-center py-4">
-                  <header className="text-3xl font-bold">INVENTORY REQUEST</header>
+                <div className="w-full  bg-green-900 text-white text-center py-4">
+                  <header className="text-3xl font-bold">Delivery Request</header>
                 </div>
         
               {inventoryRequest && buttonColor(inventoryRequest.reqStatus, inventoryRequest.updateDateTime)}
@@ -460,11 +437,8 @@ setOpenSA(true);
 
         </div>
 
-        { (inventoryRequest?.reqStatus === 'PENDING' &&
-         role !== 'EMPLOYEE' && 
-         !(inventoryRequest.role === role)) || 
-         (role === 'ADMIN')  &&  
-         (inventoryRequest?.reqStatus === 'SENT_TO_ADMIN') &&
+        { (inventoryRequest?.reqStatus !== 'RECEIVED') &&
+      
          (
           <div className='flex gap-6 mt-6 ml-6'>
             <h4>Note :</h4>
@@ -488,39 +462,46 @@ setOpenSA(true);
         )}
 
         <div className='flex justify-end gap-4 ml-[50%] mt-6'>
-        {inventoryRequest.reqStatus === 'PENDING' &&
-        (
+        {(inventoryRequest.reqStatus === 'PENDING') &&
+       ( role !== 'EMPLOYEE') && 
+          (
             <>
               <Button
-                className="px-6 py-2 bg-green-500 text-white hover:bg-green-400"
+                className="px-6 py-2 bg-orange-500 text-white hover:bg-orange-400"
                 variant='contained'
                 type='submit'
-                onClick={handleClickAccept}
+                onClick={handleOpenDialog}
               >
-                Accept
+                Dispatch
               </Button>
             </>
           )}
-          <Dialog
-            open={openAD}
-            onClose={handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle>
-              {"Are you want to accept this inventory request?"}
-            </DialogTitle>
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                No
-              </Button>
-              <Button onClick={handleAccept} color="primary" autoFocus>
-                Yes
-              </Button>
-            </DialogActions>
-          </Dialog>
-          {inventoryRequest.reqStatus === 'PENDING' &&
-       (
+          <Dialog open={dialogOpen} onClose={handleCloseDialog}>
+          <DialogTitle>Enter Email Address</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Please enter the delivery service's email address to send a confirmation link.
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="email"
+              label="Email Address"
+              type="email"
+              fullWidth
+              variant="standard"
+              value={email}
+              onChange={handleEmailChange}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleSubmitEmail}>Submit</Button>
+            <Button onClick={handleCloseDialog}>Cancel</Button>
+          </DialogActions>
+        </Dialog>
+          
+      {(inventoryRequest.reqStatus === 'PENDING') &&
+         (
             <>
               <Button
                 className="px-6 py-2 bg-red-500 text-white hover:bg-red-400"
@@ -550,40 +531,7 @@ setOpenSA(true);
               </Button>
             </DialogActions>
           </Dialog>
-          {
-          inventoryRequest.reqStatus === 'PENDING' &&
-          role !== 'EMPLOYEE' && role !== 'ADMIN' &&  
-          !(inventoryRequest.role === role)  && (
-            <>
-              <Button
-                className="px-6 py-2 bg-yellow-500 text-white hover:bg-yellow-400"
-                variant='contained'
-                type='submit'
-                onClick={handleClickSendToAdmin}
-              >
-                Send to Admin
-              </Button>
-            </>
-          )}
-           <Dialog
-            open={openSA}
-            onClose={handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle>
-              {"Are you sure, you want to send this inventory request to admin review?"}
-            </DialogTitle>
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                No
-              </Button>
-              <Button onClick={handleSendToAdmin} color="primary" autoFocus>
-                Yes
-              </Button>
-            </DialogActions>
-          </Dialog>
-          {inventoryRequest && inventoryRequest.reqStatus === 'ACCEPTED' && role === 'EMPLOYEE' && (
+          {inventoryRequest.reqStatus === 'ACCEPTED' && role === 'EMPLOYEE' && (
             <>
               <Button
                 className="px-6 py-2 bg-purple-500 text-white hover:bg-purple-400"
@@ -622,7 +570,7 @@ setOpenSA(true);
             className="px-6 py-2 hover:bg-white-400"
             variant='outlined'
             type='submit'
-            onClick={() => navigate("/employee-in-request-list")}
+            onClick={() => navigate(getInventoryRequestListLink())}
           >
 
             Cancel
@@ -635,4 +583,4 @@ setOpenSA(true);
   );
 }
 
-export default RequestDocument;
+export default AdminDeRequestDocument;

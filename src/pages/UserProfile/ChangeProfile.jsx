@@ -38,7 +38,72 @@ const EditProfile= () => {
     role: "",
     workSite: "",
   });
+
+  const validateField = (name, value) => {
+    const validationErrors = {};
+    if (name === "firstName") {
+      if (!value) {
+        validationErrors.firstName = "First name is required";
+      } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
+        validationErrors.firstName = "First name must contain only letters";
+      }
+    } else if (name === "lastName") {
+      if (!value) {
+        validationErrors.lastName = "Last name is required";
+      } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
+        validationErrors.lastName = "Last name must contain only letters";
+      }
+    } else if (name === "role" && !value) {
+      validationErrors.role = "Role is required";
+    } else if (name === "mobileNo") {
+      if (!value) {
+        validationErrors.mobileNo = "Mobile number is required";
+      } else if (!/^\d{10}$/.test(value)) {
+        validationErrors.mobileNo = "Mobile number must be 10 digits";
+      }
+    } else if (name === "telNo") {
+      if (!value) {
+        validationErrors.telNo = "Telephone number is required";
+      } else if (!/^\d{10}$/.test(value)) {
+        validationErrors.telNo = "Telephone number must be 10 digits";
+      }
+    } else if (name === "email") {
+      if (!value) {
+        validationErrors.email = "Email address is required";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        validationErrors.email = "Invalid email address";
+      }
+    } else if (name === "dateOfBirth") {
+      if (!value) {
+        validationErrors.dateOfBirth = "Date of birth is required";
+      } else if (new Date(value) >= new Date()) {
+        validationErrors.dateOfBirth = "Date should be past";
+      }
+    } else if (name === "address" && !value) {
+      validationErrors.address = "Address is required";
+    } else if (name === "department" && !value) {
+      validationErrors.department = "Department is required";
+    } else if (name === "workSite" && !value) {
+      validationErrors.workSite = "Worksite is required";
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validationErrors[name],
+    }));
+
+    if (!validationErrors[name]) {
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest;
+      });
+    }
+  };
  
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
+  };
   
   useEffect(() => {
     console.log("Component mounted, fetching profile info");
@@ -73,11 +138,10 @@ const EditProfile= () => {
   };
 
 
- 
-
-  
   const handleInputChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: value });
+    validateField(name, value);
   };
 
   const handleImageChange = (e) => {
@@ -89,13 +153,34 @@ const EditProfile= () => {
         setImageUrl(reader.result);
       };
       reader.readAsDataURL(file);
+      setErrors({ ...errors, image: null });
     }
+    
   };
 
-  const handleImageDelete = () => {
-    setSelectedImage(null);
-    setImageUrl(null);
+  const handleImageDelete = async () => {
+    if (!profileInfo.imagePath) {  
+      setSelectedImage(null);
+      setImageUrl(null);
+    }
+    else{
+    try {
+      const response = await axios.delete(`/user/deleteimage/${profileInfo.userId}`);
+
+      if (response.status === 200) {
+        setSelectedImage(null);
+        setImageUrl(null);
+        console.log('Image deleted successfully');
+      } else {
+        console.error('Failed to delete image');
+      }
+    } catch (error) {
+      
+    }
+  }
+
   };
+
 
   const handleSave = async () => {
     const formData = new FormData();
@@ -124,9 +209,9 @@ const EditProfile= () => {
         title: "Error!",
         text: "Failed to update user profile. Please check your inputs.",
       });
-      if (error.response) {
-        setErrors(error.response.data);
-      }
+
+      const backendErrors = error.response.data;
+      setErrors(backendErrors);
     }
   };
 
@@ -137,20 +222,29 @@ const EditProfile= () => {
           <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit Profile</h1>
         </Box>
         <form noValidate>
-          <div className="grid grid-cols-6 grid-rows-7  gap-x-[0.25rem] gap-y-7 ">
-            <div className="col-span-1 row-span-1">
-              <label htmlFor="5">Id</label>
+          <div className="grid grid-cols-6 grid-rows-5  gap-x-[0.25rem] gap-y-7 ">
+            
+            
+            <div className="col-span-1">
+              <label htmlFor="name">Name</label>
             </div>
             <div className="col-span-2">
+              {errors.firstName && (
+                <div className="text-[#FC0000] text-sm">{errors.firstName}</div>
+              )}
               <TextField
-                name="id"
-                placeholder=""
+                id="firstName"
+                variant="outlined"
+                placeholder="First Name"
                 InputProps={{
                   className: "w-[300px] ",
-                  readOnly: true,
                 }}
-                value={profileInfo.userId}
+                value={user.firstName}
+                onChange={handleInputChange}
+                name="firstName"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.firstName}
               />
             </div>
             <div></div>
@@ -181,29 +275,11 @@ const EditProfile= () => {
                   onChange={handleImageChange}
                   className="hidden"
                 />
+                {errors.image && (
+                <div className="text-[#FC0000] text-sm pl-9">{errors.image}</div>
+              )}
               </div>
             </div>
-            <div className="col-span-1">
-              <label htmlFor="name">Name</label>
-            </div>
-            <div className="col-span-2">
-              {errors.firstName && (
-                <div className="text-[#FC0000] text-sm">{errors.firstName}</div>
-              )}
-              <TextField
-                id="firstName"
-                variant="outlined"
-                placeholder="First Name"
-                InputProps={{
-                  className: "w-[300px] ",
-                }}
-                value={user.firstName}
-                onChange={handleInputChange}
-                name="firstName"
-                size="small"
-              />
-            </div>
-            <div></div>
             <div className="col-span-1"> </div>
             <div className="col-span-2">
               {errors.lastName && (
@@ -220,58 +296,13 @@ const EditProfile= () => {
                   className: "w-[300px] ",
                 }}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.lastName}
               />
             </div>
             <div></div>
 
-            <div className="col-span-1 row-span-1">
-              <label htmlFor="2">Department</label>
-            </div>
-            <div className="col-span-2">
-              {errors.department && (
-                <div className="text-[#FC0000] text-sm">
-                  {errors.department}
-                </div>
-              )}
-              <Select
-                value={user.department}
-                onChange={handleInputChange}
-                name="department"
-                id="department"
-                className="w-[300px]"
-                size="small"
-              >
-                <MenuItem disabled value={user.department}></MenuItem>
-                <MenuItem value="Programming">Programming</MenuItem>
-                <MenuItem value="Cybersecurity">Cybersecurity</MenuItem>
-              </Select>
-            </div>
-            <div></div>
-            <div className="col-span-1 row-span-1">
-              <label htmlFor="3">Role</label>
-            </div>
-            <div className="col-span-2">
-              {errors.role && (
-                <div className="text-[#FC0000] text-sm">{errors.role}</div>
-              )}
-              <Select
-                value={user.role}
-                onChange={handleInputChange}
-                name="role"
-                id="role"
-                className="w-[300px]"
-                size="small"
-              >
-                <MenuItem disabled value={user.role}></MenuItem>
-
-                <MenuItem value="ADMIN">Admin</MenuItem>
-                <MenuItem value="REQUEST_HANDLER">Request Handler</MenuItem>
-                <MenuItem value="EMPLOYEE">Employee</MenuItem>
-              </Select>
-            </div>
-            <div></div>
-            <div></div>
-            <div></div>
+            
             <div className="col-span-1 row-span-1">
               <label htmlFor="3">Work Site</label>
             </div>
@@ -286,6 +317,7 @@ const EditProfile= () => {
                 id="workSite"
                 className="w-[300px]"
                 size="small"
+                
               >
                 <MenuItem disabled value={user.workSite}></MenuItem>
                 <MenuItem value="ONSITE">Onsite</MenuItem>
@@ -293,8 +325,7 @@ const EditProfile= () => {
                 <MenuItem value="NOT_ASSIGNED">Not assigned</MenuItem>
               </Select>{" "}
             </div>
-            <div></div>
-            <div></div>
+             
             <div></div>
             <div className="col-span-1 row-span-1">
               <label htmlFor="4">Date Of Birth</label>
@@ -307,6 +338,7 @@ const EditProfile= () => {
               )}
               <TextField
                 id="date"
+                type="date"
                 placeholder="dd/mm/yy"
                 name="dateOfBirth"
                 InputProps={{
@@ -316,11 +348,12 @@ const EditProfile= () => {
                 value={user.dateOfBirth}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.dateOfBirth}
               />
             </div>
             <div></div>
-            <div></div>
-            <div></div>
+            
             <div className="col-span-1 row-span-1">
               <label htmlFor="5">Adress</label>
             </div>
@@ -339,6 +372,8 @@ const EditProfile= () => {
                 value={user.address}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.address}
               />
             </div>
             <div></div>
@@ -356,6 +391,9 @@ const EditProfile= () => {
               <label htmlFor="name">Mobile No </label>
             </div>
             <div className="col-span-2">
+            {errors.mobileNo && (
+                <div className="text-[#FC0000] text-sm">{errors.mobileNo}</div>
+              )}
               <TextField
                 type="text"
                 id="mno"
@@ -367,6 +405,8 @@ const EditProfile= () => {
                 onChange={handleInputChange}
                 name="mobileNo"
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.mobileNo}
               />
             </div>
             <div className="col-span-1">
@@ -374,7 +414,11 @@ const EditProfile= () => {
                 Tel No
               </label>
             </div>
+           
             <div className="col-span-2">
+            {errors.telNo && (
+                <div className="text-[#FC0000] text-sm">{errors.telNo}</div>
+              )}
               <TextField
                 type="text"
                 id="Tno"
@@ -386,12 +430,17 @@ const EditProfile= () => {
                 value={user.telNo}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.telNo}
               />
             </div>
             <div className="col-span-1">
               <label htmlFor="name">Email Adress</label>
             </div>
             <div className="col-span-2">
+            {errors.email && (
+                <div className="text-[#FC0000] text-sm">{errors.email}</div>
+              )}
               <TextField
                 type="text"
                 id="email"
@@ -403,6 +452,8 @@ const EditProfile= () => {
                 value={user.email}
                 onChange={handleInputChange}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.email}
               />
             </div>
             <div></div>

@@ -1,276 +1,319 @@
-import React, { useEffect, useState } from "react";
-import {
-  TextField,
-  Button,
-  Autocomplete,
-  Box,
-  MenuItem,
-  Select,
-} from "@mui/material";
-import { useForm } from "react-hook-form";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import Swal from "sweetalert2";
+import React, { useEffect, useState } from 'react';
+import { InputLabel, Select, MenuItem, TextField, Typography, Button } from '@mui/material';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
-const EditTicket = () => {
-  const { ID } = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
+const EditAdjustment = () => {
 
-  const [topic, setTopic] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
-  const [itemId, setItemId] = useState("");
-  const [itemName, setItemName] = useState("");
-  const [brand, setBrand] = useState("");
-  const [errors, setErrors] = useState({});
-  const [options, setOptions] = useState([]);
-  const [fetchData, setFetchData] = useState(false);
-
-  // Fetch options for the Autocomplete
-  useEffect(() => {
-    const fetchOptions = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/inventory-item/getAll");
-        setOptions(response.data);
-        console.log("Options fetched: ", response.data);
-      } catch (error) {
-        console.error("Error fetching item data:", error);
-      }
-    };
-    fetchOptions();
-  }, []);
-
-  // Fetch ticket details
-  useEffect(() => {
-    const fetchTicketDetails = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8080/ticket/tickets/${ID}`);
-        const { topic, description, date, itemId } = response.data;
-        setTopic(topic);
-        setDescription(description);
-        setDate(date);
-        setItemId(itemId);
-      } catch (error) {
-        console.error("Error fetching ticket details:", error);
-      }
-    };
-
-    fetchTicketDetails();
-  }, [ID]);
-
-  // Update itemName and brand when itemId changes
-  useEffect(() => {
-    if (itemId) {
-      const selectedItem = options.find((option) => option.id === itemId);
-      if (selectedItem) {
-        setItemName(selectedItem.itemName);
-        setBrand(selectedItem.brand);
-      }
+  let navigate = useNavigate();
+  const {adjId} = useParams(); // To get the id from the url
+  const [adj,setAdj] = useState({  // create state for adjustment, initial state is empty with object.
+    reason:"",
+    date:new Date().toISOString().split("T")[0], // Set to today's date
+    description:"",
+    adjustedQuantity:0,
+    newQuantity:"",
+    itemId:"",
+    file:null
+  })
+  const{reason,date,description,newQuantity,adjustedQuantity,itemId,file} = adj;
+  
+  const [item,setItem] = useState({  // create state for item, initial state is empty with object.
+    itemName:"",
+    quantity:"",
+    itemGroup:""
+  })
+  const{itemName,quantity,itemGroup} = item;
+  const [errors, setErrors] = useState({}); // State to manage errors for input fields
+  const [flag,setFlag] = useState(0); // To check whether the input fields are changed or not
+  
+  const onInputChange = async (e) => {  //new new
+    const { name, value } = e.target;
+    let updatedAdj = { ...adj, [name]: value };
+    if (name === "newQuantity") {
+      updatedAdj.adjustedQuantity = value - item.quantity;
     }
-  }, [itemId, options]);
-
-  // Handle item selection
-  const handleItemChange = (event, value) => {
-    if (value) {
-      console.log("Selected item: ", value);
-      setItemId(value.id);
-      setItemName(value.itemName);
-      setBrand(value.brand);
-    } else {
-      setItemId("");
-      setItemName("");
-      setBrand("");
-    }
+    setAdj(updatedAdj);
+    setErrors({ ...errors, [name]: '' });
+    setFlag(1);
   };
 
-  // Handle form submission
-  const handleClick = async (e) => {
-    e.preventDefault();
-    const ticket = {
-      topic,
-      description,
-      date,
-      itemName,
-      brand,
-      itemId
-    };
+  useEffect(() => {
+    loadAdjustment();
+  },[]);
 
-    try {
-      const response = await axios.put(`http://localhost:8080/ticket/update/${ID}`, ticket);
-      if (response.status === 200) {
-        Swal.fire({
-          icon: "success",
-          title: "Success!",
-          text: "Ticket successfully updated!",
+  const onSubmit=async(e)=>{
+    if(flag === 1){
+      e.preventDefault(); // To remove unwanted url tail part
+      const validationErrors = validateInputs();
+      console.log(Object.keys(validationErrors).length)
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append('reason', reason);
+        formData.append('date', date);
+        formData.append('description', description);
+        formData.append('adjustedQuantity', adjustedQuantity);
+        formData.append('itemId', itemId);
+        formData.append('file', file); // Append the file to the formData
+
+        const result = await axios.put(`http://localhost:8080/adjustment/updateById/${adjId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         });
-        setFetchData(!fetchData);
-        navigate("/ticket", { fetchData });
+      
+        navigate('/adjustment');
+        Swal.fire({
+          title: "Done!",
+          text: "Adjustment Successfully Editted !",
+          icon: "success"
+        });
+      } catch (error) {
+        console.error("Error:", error);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to Edit Adjustment. Please try again later.",
+          icon: "error"
+        });
       }
-    } catch (error) {
+    }else{
+      navigate('/adjustment');
       Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: "Failed to update Ticket. Please check your inputs.",
+        title: "No Changes ?",
+        text: "No any changes Found.",
+        icon: "question"
       });
-      if (error.response) {
-        setErrors(error.response.data);
-      }
-    }
+    } 
   };
 
+  // Validate the input fields
+  const validateInputs = () => {
+    const errors = {};
+    if (!reason) {
+      errors.reason = 'Reason is required';
+    }
+    if (!date) {
+      errors.date = 'Date is required';
+    }
+    
+    if (!newQuantity) {
+      errors.newQuantity = 'New Quantity is required';
+    }
+    if (!itemId) {
+      errors.itemId = 'Item ID is required';
+    }
+    if (newQuantity<0){
+      errors.newQuantity = 'Quantity should be positive value'
+    }
+    
+    return errors;
+  };
+
+  const handleFileChange = (e) => {
+    setAdj({ ...adj, file: e.target.files[0] });
+    setFlag(1);
+  };
+
+  const loadAdjustment = async () => {
+    try {
+      const result = await axios.get(`http://localhost:8080/adjustment/getById/${adjId}`);
+      setAdj(result.data);  // Make sure the fetched data structure matches the structure of your state
+      
+      // Fetch item details based on itemId
+      const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${result.data.itemId}`);
+      setItem(result1.data);
+
+    } catch (error) {
+      console.error('Error loading adjustment:', error);
+    }
+  }
+  
   return (
-    <>
-      <Box className="p-5 bg-white rounded-2xl w-[1122.7px]">
-        <Box className="pb-4">
-          <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit Ticket</h1>
-        </Box>
-        <form>
-          <div className="grid grid-cols-6 grid-rows-6 gap-x-5 gap-y-5">
-            <div className="col-span-1">
-              <label htmlFor="name">Item Name</label>
-            </div>
-            <div className="col-span-2">
-              {errors.itemName && (
-                <div className="text-[#FC0000] text-sm">{errors.itemName}</div>
-              )}
-              <Autocomplete
-                options={options}
-                getOptionLabel={(option) => option?.itemName || ""}
-                onChange={handleItemChange}
-                value={options.find(option => option.id === itemId) || null}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Item name"
-                    variant="outlined"
-                    sx={{
-                      width: 300,
-                    }}
-                    size="small"
-                  />
-                )}
-              />
-            </div>
-            <div className="col-span-3"></div>
-            <div className="col-span-1">
-              <label htmlFor="name">Item Brand</label>
-            </div>
-            <div className="col-span-3">
-              {errors.brand && (
-                <div className="text-[#FC0000] text-sm">{errors.brand}</div>
-              )}
-              <Autocomplete
-                options={options}
-                getOptionLabel={(option) => option?.brand || ""}
-                onChange={handleItemChange}
-                value={options.find(option => option.id === itemId) || null}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Brand"
-                    variant="outlined"
-                    sx={{
-                      width: 300,
-                    }}
-                    size="small"
-                  />
-                )}
-              />
-            </div>
-            <div></div>
-            <div></div>
-            <div className="col-span-1 row-span-1">
-              <label htmlFor="topic">Topic for ticket</label>
-            </div>
-            <div className="col-span-2">
-              {errors.topic && (
-                <div className="text-[#FC0000] text-sm">{errors.topic}</div>
-              )}
-              <Select
-                id="topic"
-                className="w-[300px]"
-                onChange={(e) => setTopic(e.target.value)}
-                value={topic}
-                size="small"
-              >
-                <MenuItem disabled value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value="Network Issues">Network Issues</MenuItem>
-                <MenuItem value="Hardware Problems">Hardware Problems</MenuItem>
-                <MenuItem value="Other">Other</MenuItem>
-              </Select>
-            </div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div className="col-span-1 row-span-1">
-              <label htmlFor="description">Date</label>
-            </div>
-            <div className="col-span-2">
-              {errors.date && (
-                <div className="text-[#FC0000] text-sm">{errors.date}</div>
-              )}
-              <TextField
-                type="date"
-                variant="outlined"
-                InputProps={{
-                  className: "w-[300px]",
-                }}
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                size="small"
-              />
-            </div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div className="col-span-1">
-              <label htmlFor="description">Description</label>
-            </div>
-            <div className="col-span-2 row-span-2">
-              {errors.description && (
-                <div className="text-[#FC0000] text-sm">{errors.description}</div>
-              )}
-              <TextField
-                variant="outlined"
-                InputProps={{
-                  className: "w-[450px] h-[100px]",
-                }}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                size="small"
-              />
-            </div>
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-          <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] mt-12">
-            <div className="col-start-5">
-              <Button
-                variant="outlined"
-                className="bg-[#007EF2] w-[150px] rounded-md text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
-                onClick={handleClick}
-              >
-                Save
-              </Button>
-            </div>
-            <div className="col-start-6">
-              <Button
-                variant="outlined"
-                className="bg-white w-[150px] rounded-md text-[#007EF2] border-blue-[#007EF2] hover:text-white hover:bg-[#007EF2]"
-                onClick={() => navigate("/ticket")}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </form>
-      </Box>
-    </>
+    <form className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14" onSubmit={(e)=> onSubmit(e)}>
+      <h1 className="col-span-4 pt-2 text-3xl font-bold ">Edit Adjustment</h1>
+
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="adjId" className="flex-none w-32 text-black ">
+          Adjustment ID
+        </InputLabel>
+        <div>
+          <TextField
+              style={{ width: '300px' }}
+              name='id'
+              label='Adjustment ID'
+              size='small'
+              value={adjId}
+              onChange={(e)=>onInputChange(e)}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+        </div>
+      </div>
+      
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="itemId" className="flex-none w-32 text-black ">
+          Item ID
+        </InputLabel>
+        <div>
+          <TextField
+            style={{ width: '300px' }}
+            name='itemId'
+            label='Item ID'
+            size='small'
+            value={itemId}
+            onChange={(e)=>onInputChange(e)}
+            error={!!errors.itemId}
+            helperText={errors.itemId}
+            InputProps={{
+                readOnly: true,
+            }} 
+          />
+        </div>
+      </div>
+      
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="date" className="flex-none w-32 text-black ">
+          Item Name
+        </InputLabel>
+        <div>
+          <TextField
+            style={{ width: '300px' }}
+            name='name'
+            label='Item Name'
+            size='small'
+            value={itemName}
+            onChange={(e)=>onInputChange(e)}
+            InputProps={{
+                readOnly: true,
+            }}
+          />
+        </div>
+      </div>
+      
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="date" className="flex-none w-32 text-black ">
+          Date
+        </InputLabel>
+        <div>
+        <TextField
+          style={{ width: '300px' }}
+          label="Date"
+          name='date'
+          value={date}
+          size='small'
+          error={!!errors.date}
+          helperText={errors.date}
+          InputLabelProps={{ // To shrink the label
+            shrink: true,
+          }}
+        />
+        </div>
+      </div>
+
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="reason" className="flex-none w-32 text-black ">
+          Reason
+        </InputLabel>
+        <div className="flex-grow">
+          <Select value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason'
+            error={!!errors.reason}
+            helperText={errors.reason}
+            className="w-[300px] h-10 bg-white">
+            <MenuItem value="Damaged Item">Damaged Item</MenuItem>
+            <MenuItem value="Stolen Item">Stolen Item</MenuItem>
+            <MenuItem value="Others">Others</MenuItem>
+          </Select>
+        </div>
+      </div>
+
+      <div className="flex col-span-4 col-start-1 ">
+        <InputLabel
+          htmlFor="description"
+          className="flex-none w-32 mt-0 text-black"
+        >
+          Description
+        </InputLabel>
+        <div>
+          <TextField
+            label="Description"
+            name='description'
+            multiline
+            rows={6}
+            placeholder='Enter Description Here...'
+            style={{ width: '500px' }}
+            value={description}
+            onChange={(e)=>onInputChange(e)}
+          />
+        </div>
+      </div>
+
+      <div className="flex col-span-4 col-start-1 ">
+        <InputLabel
+          htmlFor="description"
+          className="flex-none w-32 mt-0 text-black"
+        >
+          Item Details
+        </InputLabel>
+        <div>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650, border:2 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Item Details</TableCell>
+                  <TableCell align="right">Quantity Available</TableCell>
+                  <TableCell align="right">New Quantity</TableCell>
+                  <TableCell align="right">Adjusted Quantity</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                    <TableCell component="th" scope="row">
+                      {itemName}
+                    </TableCell>
+                    <TableCell align="right">{quantity}</TableCell>
+                    <TableCell align="right"><TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={quantity + adjustedQuantity} onChange={(e)=>onInputChange(e)}
+                      error={!!errors.newQuantity}
+                      helperText={errors.newQuantity}></TextField></TableCell>
+                    <TableCell align="right">{adjustedQuantity}</TableCell>
+                  </TableRow>
+              </TableBody>  
+            </Table>
+          </TableContainer>
+        </div>
+      </div>
+
+      <div className="flex-row col-span-10 col-start-1 ">
+        <Typography display='block' gutterBottom>Attach File(s) to inventory adjustment </Typography>
+        <input type='file' onChange={handleFileChange} className="mt-4 mb-2"></input>
+        <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
+      </div>
+
+      <div className='flex col-start-7 gap-6'>
+        <Button className="col-start-6 text-white bg-blue-600 rounded row-start-10"
+            variant='contained'
+            type='submit'
+          >Edit</Button>
+          <Button className="col-start-8 rounded row-start-10"
+            variant='outlined'
+            onClick={() => navigate("/adjustment")}
+          >cancel</Button>
+      </div>
+    </form>
   );
 };
 
-export default EditTicket;
+export default EditAdjustment;

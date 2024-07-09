@@ -7,9 +7,11 @@ import Box from '@mui/material/Box';
 import MyTicketList from './Myticketlist';
 import Ticket from './Otherticketlist';
 import LoginService from '../Login/LoginService';
+import { useEffect, useState } from "react";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
+ 
 
   return (
     <div
@@ -44,6 +46,7 @@ export default function BasicTabs() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+ 
 
   return (
     <div>

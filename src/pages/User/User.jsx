@@ -1,7 +1,7 @@
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
-import { TextField, Button, Stack, Select } from "@mui/material";
+import { TextField, Button, Stack, Select,CircularProgress} from "@mui/material";
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import axios from "axios";
@@ -10,9 +10,9 @@ import LoginService from "../Login/LoginService";
 const getStatusClass = (status) => {
   switch (status) {
     case "ACTIVE":
-      return "bg-green-500 text-white w-[90px]";
+      return "bg-green-500 text-black w-[90px] font-bold";
     case "INACTIVE":
-      return "bg-red-500 text-white text-sm w-[90px]";  
+      return "bg-red-500 text-black text-sm w-[90px] font-bold";  
   }
 };
 
@@ -39,9 +39,11 @@ const columns = [
 export default function User() {
   const navigate = useNavigate();
   const isRequestHandler = LoginService.isReqHandler();
+  const [loading, setLoading] = useState(false);
   const [rows, setRows] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   useEffect(() => {
+    setLoading(true);
     axios
       .get("http://localhost:8080/user/getAll")
       .then((response) => {
@@ -56,9 +58,16 @@ export default function User() {
         }));
         setRows(data);
       })
+      
       .catch((error) => {
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
+      
+      
+      
   }, []);
 
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
@@ -130,6 +139,11 @@ export default function User() {
             </div>
           </div>
         )}
+        {loading ? (
+        <div className="flex justify-center mostRequestedItems-center">
+          <CircularProgress />
+        </div>
+      ):(
       
       <DataGrid
         rows={rows}
@@ -145,7 +159,23 @@ export default function User() {
         disableRowSelectionOnClick
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={handleRowSelectionModelChange}
+        sx={{
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: '#f5f5f5',
+            borderBottom: '2px solid #000',
+          },
+          '& .MuiDataGrid-cell': {
+            borderBottom: '1px solid #ddd',
+          },
+          '& .MuiDataGrid-row': {
+            borderBottom: '2px solid #000',
+          },
+          '& .MuiDataGrid-root': {
+            border: '2px solid #000',
+          },
+        }}
       />
+      )}
     </Box>
   );
 }

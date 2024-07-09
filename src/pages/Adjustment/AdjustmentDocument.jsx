@@ -245,12 +245,12 @@ const loadAdjustment = async () => {
               </div>
 
               <div className='flex gap-4 ml-[60%] mt-6'>
-                <Button className="px-6 py-2 text-white bg-blue-600 rounded"
+                <Button className="px-6 py-2  bg-green-300 text-green-800 hover:text-white hover:bg-green-600 font-bold rounded"
                       variant='contained'
                       type='submit'
                       onClick={handleAccept}
                         >approve & adjust</Button>
-                <Button className="px-6 py-2 text-white bg-blue-600 rounded"
+                <Button className="px-6 py-2  bg-red-300 text-red-800 hover:text-white hover:bg-red-600 font-bold rounded"
                       variant='contained'
                       type='submit'
                       onClick={handleReject}

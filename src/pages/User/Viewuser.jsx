@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Stack, Select, Box } from "@mui/material";
+import { TextField, Button, Stack, Select, Box,CircularProgress,Backdrop} from "@mui/material";
 // import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
 import axios from "axios";
@@ -29,19 +29,23 @@ const ViewUser = () => {
   });
   const [fetchData, setFetchData] = useState(false);
   const { ID } = useParams();
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch user details by ID on component mount
+    setLoading(true);
     axios
       .get(`http://localhost:8080/user/users/${ID}`)
       .then((response) => {
-        // Update user state with fetched data
+        
         setUser(response.data);
       })
       .catch((error) => {
         console.log("Error fetching user:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [ID]);
 
@@ -135,6 +139,7 @@ const ViewUser = () => {
             }
           </div>
         <form noValidate>
+        
           <div className="grid grid-cols-6 grid-rows-7  gap-x-[0.25rem] gap-y-7 ">
             <div className="col-span-1 row-span-1">
               <label htmlFor="5">Employee Id</label>
@@ -366,7 +371,7 @@ const ViewUser = () => {
             <div></div>
             <div></div>
           </div>
-
+           
             
        
 
@@ -383,6 +388,12 @@ const ViewUser = () => {
               </Button>
             </div>
           </div>
+          <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
         </form>
       </Box>
     </>
