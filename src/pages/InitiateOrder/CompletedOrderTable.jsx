@@ -23,8 +23,8 @@ const columns = [
     flex: 1,
   },
   {
-    field: "date",
-    headerName: "Date",
+    field: "date_completed",
+    headerName: "Date Completed",
     type: "number",
     minwidth: 150,
     editable: true,
@@ -59,7 +59,7 @@ const CompleteOrders = () => {
             id: order.orderId,
             email_address: order.vendorEmail,
             vendor_name: order.vendorName,
-            date: order.date,
+            date_completed: order.dateCompleted,
             status: order.status,
           }));
         setRows(data);

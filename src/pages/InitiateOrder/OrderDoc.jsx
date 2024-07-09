@@ -33,7 +33,8 @@ const ViewOrderDetails = () => {
     companyName: "",
     vendorEmail: "",
     mobile: "",
-    date: "",
+    dateInitiated: "",
+    dateCompleted: "",
     itemName: "",
     brandName: "",
     quantity: "",
@@ -46,7 +47,8 @@ const ViewOrderDetails = () => {
     companyName,
     vendorEmail,
     mobile,
-    date,
+    dateInitiated,
+    dateCompleted,
     itemName,
     brandName,
     quantity,
@@ -164,7 +166,10 @@ const ViewOrderDetails = () => {
                 <li className="font-bold">Company Name</li>
                 <li className="font-bold">Email Address</li>
                 <li className="font-bold"> Mobile</li>
-                <li className="font-bold">Date</li>
+                <li className="font-bold">Date Initiated</li>
+                {status === "COMPLETED" && (
+                  <li className="font-bold">Date Completed</li>
+                )}
               </ul>
               <ul className="flex flex-col gap-2">
                 <li>{orderID}</li>
@@ -172,7 +177,10 @@ const ViewOrderDetails = () => {
                 <li>{companyName}</li>
                 <li>{vendorEmail}</li>
                 <li>{mobile}</li>
-                <li>{date}</li>
+                <li>{dateInitiated}</li>
+                {status === "COMPLETED" && (
+                  <li >{dateCompleted}</li>
+                )}
               </ul>
             </section>
 
@@ -207,7 +215,7 @@ const ViewOrderDetails = () => {
                 Description :{" "}
               </Typography>
               <div className="w-2/3">
-                <Typography variant="subtitle1" className="text-red-500">
+                <Typography variant="subtitle1" className="text-gray-500">
                   {description}
                 </Typography>
               </div>
@@ -263,7 +271,10 @@ const ViewOrderDetails = () => {
                 <li className="font-bold">Company Name</li>
                 <li className="font-bold">Email Address</li>
                 <li className="font-bold"> Mobile</li>
-                <li className="font-bold">Date</li>
+                <li className="font-bold">Date Initiated</li>
+                {status === "COMPLETED" && (
+                  <li className="font-bold">Date Completed</li>
+                )}
               </ul>
               <ul className="flex flex-col gap-2">
                 <li>{orderID}</li>
@@ -271,7 +282,10 @@ const ViewOrderDetails = () => {
                 <li>{companyName}</li>
                 <li>{vendorEmail}</li>
                 <li>{mobile}</li>
-                <li>{date}</li>
+                <li>{dateInitiated}</li>
+                {status === "COMPLETED" && (
+                  <li >{dateCompleted}</li>
+                )}
               </ul>
             </section>
 
@@ -306,7 +320,7 @@ const ViewOrderDetails = () => {
                 Description :{" "}
               </Typography>
               <div className="w-2/3">
-                <Typography variant="subtitle1" className="text-red-500">
+                <Typography variant="subtitle1" className="text-gray-500">
                   {description}
                 </Typography>
               </div>

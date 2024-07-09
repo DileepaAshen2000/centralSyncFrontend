@@ -28,11 +28,13 @@ const EditItem = () => {
   const [inventoryItem, setInventoryItem] = useState({
     itemName: "",
     itemGroup: "",
-    specification: "",
+    model: "",
     unit: "",
     brand: "",
     dimension: "",
+    dimensionUnit: "",
     weight: "",
+    weightUnit: "",
     description: "",
     quantity: "",
     status: "",
@@ -42,16 +44,17 @@ const EditItem = () => {
   const {
     itemName,
     itemGroup,
-    specification,
+    model,
     unit,
     brand,
     dimension,
+    dimensionUnit,
     weight,
+    weightUnit,
     description,
     quantity,
     status,
-    image
-
+    image,
   } = inventoryItem;
 
   const validateField = (name, value) => {
@@ -65,26 +68,29 @@ const EditItem = () => {
       }
     } else if (name === "itemGroup" && !value) {
       validationErrors.itemGroup = "Item Group is required";
-    } else if (
-      [
-        "COMPUTERS_AND_LAPTOPS",
-        "COMPUTER_ACCESSORIES",
-        "COMPUTER_HARDWARE",
-        "PRINTERS_AND_SCANNERS",
-      ].includes(itemGroup) &&
-      name === "specification" &&
-      !value
-    ) {
-      validationErrors.specification =
-        "Specification is required for the selected item group";
+    } else if (name === "model" && !value) {
+      validationErrors.model = "Model is required ";
     } else if (name === "brand" && !value) {
       validationErrors.brand = "Brand Name is required";
     } else if (name === "unit" && !value) {
       validationErrors.unit = "Unit is required";
-    } else if (name === "dimension" && !value) {
-      validationErrors.dimension = "Dimension is required";
-    } else if (name === "weight" && !value) {
-      validationErrors.weight = "Weight is required";
+    } else if (name === "dimension") {
+      if (!value) {
+        validationErrors.dimension = "Dimension is required";
+      } else if (!/^(\d+\*\d+(\*\d+)?|\d+\*\d+)$/.test(value)) {
+        validationErrors.dimension =
+          "Enter dimension in the format a*b*c or a*b";
+      }
+    } else if (name === "dimensionUnit" && !value) {
+      validationErrors.dimensionUnit = "Dimension Unit is required";
+    } else if (name === "weight") {
+      if (!value) {
+        validationErrors.weight = "Weight is required";
+      } else if (!/^[1-9]\d*$/.test(value)) {
+        validationErrors.weight = "Weight must be a positive number";
+      }
+    } else if (name === "weightUnit" && !value) {
+      validationErrors.weightUnit = "Weight Unit is required";
     } else if (name === "quantity") {
       if (!value) {
         validationErrors.quantity = "Quantity is required";
@@ -108,19 +114,15 @@ const EditItem = () => {
     setInventoryItem({ ...inventoryItem, [e.target.name]: e.target.value });
   };
 
-  const onItemGroupChange = (e) => {
-    validateField(e.target.name, e.target.value);
-    setInventoryItem({ ...inventoryItem, itemGroup: e.target.value });
-  };
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-  
+
     // Reset error messages
     setErrors({
       ...errors,
-      image: ""
+      image: "",
     });
-  
+
     if (file) {
       const validTypes = ["image/jpeg", "image/jpg", "image/png"];
       if (!validTypes.includes(file.type)) {
@@ -132,9 +134,9 @@ const EditItem = () => {
         setImagePreview(null);
         return;
       }
-  
+
       setSelectedImage(file);
-  
+
       // Create a preview URL for the selected image
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -146,7 +148,6 @@ const EditItem = () => {
       setImagePreview(null);
     }
   };
-  
 
   useEffect(() => {
     const fetchItemDetails = async () => {
@@ -155,21 +156,29 @@ const EditItem = () => {
         const response = await axios.get(
           `http://localhost:8080/inventory-item/getById/${itemID}`
         );
+        const weightParts = response.data.weight.match(
+          /^(\d+(?:\.\d+)?)\s*(\w+)$/
+        );
+        const dimensionParts = response.data.dimension.split(" ");
         const item = {
           itemName: response.data.itemName,
           itemGroup: response.data.itemGroup,
-          specification: response.data.specification,
+          model: response.data.model,
           unit: response.data.unit,
           brand: response.data.brand,
-          dimension: response.data.dimension,
-          weight: response.data.weight,
+          dimension: dimensionParts[0],
+          dimensionUnit: dimensionParts[1],
+          weight: weightParts[1],
+          weightUnit: weightParts[2],
           description: response.data.description,
           quantity: response.data.quantity,
           status: response.data.status,
           image: response.data.image,
         };
+
         setInventoryItem(item);
         setImagePreview(`data:image/*;base64,${item.image}`);
+        console.log(inventoryItem);
       } catch (error) {
         console.log(error);
       } finally {
@@ -183,6 +192,8 @@ const EditItem = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     setLoading(true);
+    const weightWithUnit = `${weight} ${weightUnit}`;
+    const dimensionWithUnit = `${dimension} ${dimensionUnit}`;
 
     const formData = new FormData();
     formData.append(
@@ -194,8 +205,9 @@ const EditItem = () => {
             itemGroup,
             unit,
             brand,
-            dimension,
-            weight,
+            model,
+            dimension: dimensionWithUnit,
+            weight: weightWithUnit,
             description,
             quantity,
             status,
@@ -229,13 +241,20 @@ const EditItem = () => {
       }
     } catch (error) {
       console.log(error);
-      Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: "Failed to edit item details. Please check your inputs.",
-      });
-      if (error.response) {
+      if (error.response.status === 400) {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Failed to edit item details. Please check your inputs.",
+        });
         setErrors(error.response.data);
+      } else if (error.response.status === 409) {
+        Swal.fire({
+          icon: "error",
+          title: "Conflict!",
+          text: `Similar item is already present in the inventory with an id : ${error.response.data.itemId}`,
+        });
+        navigate("/item");
       }
     } finally {
       setLoading(false);
@@ -328,7 +347,7 @@ const EditItem = () => {
             />
           )}
           <p className="text-sm text-gray-500 mt-2">
-            Click the image to change it
+            Click the image to update
           </p>
           <input
             type="file"
@@ -396,7 +415,7 @@ const EditItem = () => {
             <Select
               name="itemGroup"
               value={itemGroup}
-              onChange={onItemGroupChange}
+              onChange={onInputChange}
               className="w-[300px]  ml-3 bg-white  "
               error={errors.itemGroup}
               onBlur={handleBlur}
@@ -418,41 +437,55 @@ const EditItem = () => {
             </Select>
           </div>
         </div>
-        {[
-          "COMPUTERS_AND_LAPTOPS",
-          "COMPUTER_ACCESSORIES",
-          "COMPUTER_HARDWARE",
-          "PRINTERS_AND_SCANNERS",
-        ].includes(itemGroup) && (
-          <div className="flex  col-span-4 col-start-1">
-            <InputLabel
-              htmlFor="specification"
-              className="flex-none w-32 text-black "
-            >
-              Specification
-            </InputLabel>
-            <div>
-              {errors.specification && (
-                <div className="text-[#d32f2f] text-xs ml-4 my-1">
-                  {errors.specification}
-                </div>
-              )}
-              <TextField
-                name="specification"
-                value={specification}
-                onChange={onInputChange}
-                variant="outlined"
-                error={errors.specification}
-                onBlur={handleBlur}
-                InputProps={{
-                  className: "w-[300px] ml-3",
-                }}
-                size="small"
-              />
-            </div>
-          </div>
-        )}
 
+        <div className="col-start-1 col-span-4 flex items-center">
+          <InputLabel htmlFor="brand" className="flex-none text-black w-32 ">
+            Brand
+          </InputLabel>
+          <div>
+            {errors.brand && (
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
+                {errors.brand}
+              </div>
+            )}
+            <TextField
+              value={brand}
+              onChange={onInputChange}
+              name="brand"
+              variant="outlined"
+              error={errors.brand}
+              onBlur={handleBlur}
+              InputProps={{
+                className: "w-[300px]  ml-3   ",
+              }}
+              size="small"
+            />
+          </div>
+        </div>
+        <div className="col-start-1 col-span-4 flex ">
+          <InputLabel htmlFor="unit" className="flex-none text-black w-32 ">
+            Model
+          </InputLabel>
+          <div>
+            {errors.model && (
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
+                {errors.model}
+              </div>
+            )}
+            <TextField
+              value={model}
+              onChange={onInputChange}
+              name="model"
+              variant="outlined"
+              error={errors.model}
+              onBlur={handleBlur}
+              InputProps={{
+                className: "w-[300px]  ml-3   ",
+              }}
+              size="small"
+            />
+          </div>
+        </div>
         <div className="col-start-1 col-span-4 flex ">
           <InputLabel htmlFor="unit" className="flex-none text-black w-32 ">
             Unit
@@ -478,68 +511,88 @@ const EditItem = () => {
             />
           </div>
         </div>
-        <div className="col-start-1 col-span-4 flex items-center">
-          <InputLabel htmlFor="brand" className="flex-none text-black w-32 ">
-            Brand
-          </InputLabel>
-          <div>
-            {errors.brand && (
-              <div className="text-[#d32f2f] text-xs ml-4 my-1">
-                {errors.brand}
-              </div>
-            )}
-            <TextField
-              value={brand}
-              onChange={onInputChange}
-              name="brand"
-              variant="outlined"
-              error={errors.brand}
-              onBlur={handleBlur}
-              InputProps={{
-                className: "w-[300px]  ml-3   ",
-              }}
-              size="small"
-            />
-          </div>
-        </div>
-        <div className="col-start-1 col-span-4 flex items-center">
+        <div className="col-start-1 col-span-6 flex items-center">
           <InputLabel
             htmlFor="dimension"
             className="flex-none text-black  w-32"
           >
             Dimension
           </InputLabel>
-          <TextField
-            value={dimension}
-            onChange={onInputChange}
-            name="dimension"
-            variant="outlined"
-            error={errors.dimension}
-            onBlur={handleBlur}
-            InputProps={{
-              className: "w-[300px]  ml-3   ",
-              readOnly: false,
-            }}
-            size="small"
-          />
+          <div className="col-span-2">
+            {(errors.dimension || errors.dimensionUnit) && (
+              <div className="flex-row text-[#d32f2f] text-xs ml-4 my-1">
+                {errors.dimension || errors.dimensionUnit}
+              </div>
+            )}
+            <TextField
+              value={dimension}
+              onChange={onInputChange}
+              name="dimension"
+              variant="outlined"
+              error={errors.dimension}
+              onBlur={handleBlur}
+              InputProps={{
+                className: "w-[200px]  ml-3   ",
+                readOnly: false,
+              }}
+              size="small"
+              placeholder="H*W*D"
+            />
+            <Select
+              name="dimensionUnit"
+              value={dimensionUnit}
+              onChange={onInputChange}
+              error={errors.dimensionUnit}
+              onBlur={handleBlur}
+              className="col-start-3  col-span-2 w-[80] ml-1 "
+              size="small"
+            >
+              <MenuItem value="mm">mm</MenuItem>
+              <MenuItem value="cm">cm</MenuItem>
+              <MenuItem value="m">m</MenuItem>
+              <MenuItem value="in">in</MenuItem>
+              <MenuItem value="ft">ft</MenuItem>
+            </Select>
+          </div>
         </div>
-        <div className="col-start-1 col-span-4 flex items-center">
+        <div className="col-start-1 col-span-6 flex items-center">
           <InputLabel htmlFor="weight" className="flex-none text-black  w-32">
             Weight
           </InputLabel>
-          <TextField
-            value={weight}
-            onChange={onInputChange}
-            name="weight"
-            variant="outlined"
-            error={errors.weight}
-            onBlur={handleBlur}
-            InputProps={{
-              className: "w-[300px]  ml-3   ",
-              readOnly: false,
-            }}
-            size="small"
-          />
+          <div className="col-span-2">
+            {(errors.weight || errors.weightUnit) && (
+              <div className="flex-row text-[#d32f2f] text-xs ml-4 my-1">
+                {errors.weight || errors.weightUnit}
+              </div>
+            )}
+            <TextField
+              value={weight}
+              onChange={onInputChange}
+              name="weight"
+              variant="outlined"
+              error={errors.weight}
+              onBlur={handleBlur}
+              InputProps={{
+                className: "w-[115px]  ml-3   ",
+                readOnly: false,
+              }}
+              size="small"
+            />
+            <Select
+              name="weightUnit"
+              value={weightUnit}
+              onChange={onInputChange}
+              error={errors.weightUnit}
+              onBlur={handleBlur}
+              className="col-start-3 col-span-2 w-[80] ml-1 "
+              size="small"
+            >
+              <MenuItem value="kg">Kg</MenuItem>
+              <MenuItem value="g">g</MenuItem>
+              <MenuItem value="lb">lb</MenuItem>
+              <MenuItem value="oz">oz</MenuItem>
+            </Select>
+          </div>
         </div>
         <div className="col-start-1 col-span-4 flex">
           <InputLabel
@@ -626,7 +679,7 @@ const EditItem = () => {
                 <MenuItem>
                   <Button
                     variant="contained"
-                    className="col-start-6 rounded-sm  bg-blue-500 ml-10 w-[180px]"
+                    className="mr-4 rounded bg-blue-300 text-blue-800 hover:text-white hover:bg-blue-600 font-bold w-[165px]"
                     onClick={handleMarkAsInactiveButton}
                   >
                     Mark as Inactive
@@ -636,7 +689,7 @@ const EditItem = () => {
                 <MenuItem>
                   <Button
                     variant="contained"
-                    className="col-start-6 rounded-sm  bg-blue-500 ml-10 w-[180px]"
+                    className="mr-4 rounded bg-green-300 text-green-800 hover:text-white hover:bg-green-600 font-bold w-[165px]"
                     onClick={handleMarkAsActiveButton}
                   >
                     Mark as Active
@@ -646,7 +699,7 @@ const EditItem = () => {
               <MenuItem>
                 <Button
                   variant="contained"
-                  className="col-start-6 rounded-sm bg-red-500 ml-10 w-[180px]"
+                  className="mr-4 rounded bg-red-300 text-red-800 hover:text-white hover:bg-red-600 font-bold w-[165px]"
                   onClick={handleDelete}
                 >
                   Delete

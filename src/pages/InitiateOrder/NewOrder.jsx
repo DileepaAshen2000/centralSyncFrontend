@@ -21,7 +21,7 @@ const NewOrderForm = () => {
     companyName: "",
     vendorEmail: "",
     mobile: "",
-    date: new Date().toISOString().split("T")[0], // Set to today's date
+    dateInitiated: new Date().toISOString().split("T")[0], // Set to today's date
     itemName: "",
     bandName: "",
     quantity: "",
@@ -34,7 +34,7 @@ const NewOrderForm = () => {
     companyName,
     vendorEmail,
     mobile,
-    date,
+    dateInitiated,
     itemName,
     brandName,
     quantity,
@@ -110,7 +110,7 @@ const NewOrderForm = () => {
             companyName,
             vendorEmail,
             mobile,
-            date,
+            dateInitiated,
             itemName,
             brandName,
             quantity,
@@ -284,9 +284,14 @@ const NewOrderForm = () => {
             Date
           </InputLabel>
           <div>
+          {errors.dateInitiated && (
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
+                {errors.dateInitiated}
+              </div>
+            )}
             <TextField
-              name="date"
-              value={date}
+              name="dateInitiated"
+              value={dateInitiated}
               type="date"
               variant="outlined"
               InputProps={{

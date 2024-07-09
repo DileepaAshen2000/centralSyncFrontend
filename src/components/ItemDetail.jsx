@@ -57,6 +57,13 @@ const ItemDetail = () => {
             color="textSecondary"
             className="text-gray-700 mb-2"
           >
+            Model: {item.model}
+          </Typography>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            className="text-gray-700 mb-2"
+          >
             Quantity: {item.quantity}
           </Typography>
 
