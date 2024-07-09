@@ -7,6 +7,8 @@ import {
   MenuItem,
   Autocomplete,
   Box,
+  CircularProgress,
+  Backdrop
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
@@ -19,7 +21,7 @@ import Swal from "sweetalert2";
 
 const CreateTicket = () => {
   const form = useForm();
-  const location=useLocation();
+  const location = useLocation();
   const [topic, settopic] = useState("");
   const [description, setdescription] = useState("");
   const [date, setdate] = useState(new Date().toISOString().split("T")[0]);
@@ -30,9 +32,11 @@ const CreateTicket = () => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [options, setOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           "http://localhost:8080/inventory-item/getAll"
@@ -54,24 +58,64 @@ const CreateTicket = () => {
     }
   }, [location.state]);
 
-  //function for respond changes in the selected item in item name
+  const validateField = (name, value) => {
+    const validationErrors = {};
+
+    if (name === "itemName" && !value) {
+      validationErrors.itemName = "Item name is required";
+    } else if (name === "brand" && !value) {
+      validationErrors.brand = "Item brand is required";
+    } else if (name === "topic" && !value) {
+      validationErrors.topic = "Topic is required";
+    } else if (name === "date" && !value) {
+      validationErrors.date = "Date is required";
+    } else if (name === "description") {
+      if (!value) {
+        validationErrors.description = "Description is required";
+      } else if (value.length < 10 || value.length > 200) {
+        validationErrors.description =
+          "Description must be between 10 and 200 characters";
+      }
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validationErrors[name],
+    }));
+
+    // Remove the error if there is no validation error for the field
+    if (!validationErrors[name]) {
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest;
+      });
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
+  };
+
   const handleItemChange = (event, value) => {
     if (value) {
       setItemName(value.itemName);
+      validateField("itemName", value.itemName);
     } else {
       setItemName("");
+      validateField("itemName", "");
     }
   };
 
-  //function for respond changes in the selected item in item brand
   const handleItembrandChange = (event, value) => {
     if (value) {
       setBrand(value.brand);
+      validateField("brand", value.brand);
     } else {
       setBrand("");
+      validateField("brand", "");
     }
   };
-
   const handleClick = (e) => {
     e.preventDefault();
     const ticket = {
@@ -101,9 +145,8 @@ const CreateTicket = () => {
           title: "Error!",
           text: "Failed to add new Ticket. Please check your inputs.",
         });
-        if (error.response) {
-          setErrors(error.response.data);
-        }
+        const backendErrors = error.response.data;
+        setErrors(backendErrors);
       });
   };
 
@@ -138,7 +181,10 @@ const CreateTicket = () => {
                       width: 300,
                     }}
                     size="small"
-                  /> //define input field apperance
+                    onBlur={handleBlur}
+                    error={!!errors.itemName}
+                    name="itemName"
+                  />
                 )}
               />
             </div>{" "}
@@ -166,6 +212,9 @@ const CreateTicket = () => {
                       width: 300,
                     }}
                     size="small"
+                    onBlur={handleBlur}
+                    error={!!errors.brand}
+                    name="brand"
                   />
                 )}
               />
@@ -180,10 +229,16 @@ const CreateTicket = () => {
                 <div className="text-[#FC0000] text-sm">{errors.topic}</div>
               )}
               <Select
-                id="topic"
+                name="topic"
                 className=" w-[300px] "
-                onChange={(e) => settopic(e.target.value)}
+                onChange={(e) => {
+                  settopic(e.target.value);
+                  validateField("topic", e.target.value);
+                }}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.topic}
+                value={topic}
               >
                 <MenuItem disabled value={topic}></MenuItem>
                 <MenuItem value="Network Issues">Network Issues</MenuItem>
@@ -198,7 +253,7 @@ const CreateTicket = () => {
             <div></div>
             <div></div>
             <div className="col-span-1 row-span-1">
-              <label htmlFor="description">Date</label>
+              <label htmlFor="date">Date</label>
             </div>
             <div className="col-span-2">
               {errors.date && (
@@ -206,14 +261,17 @@ const CreateTicket = () => {
               )}
               <TextField
                 type="date"
+                name="date"
                 variant="outlined"
                 InputProps={{
                   className: " w-[300px] ",
-                  readOnly: true
+                  readOnly: true,
                 }}
                 value={date}
                 //onChange={(e) => setdate(e.target.value)}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.date}
               />
             </div>
             <div></div>
@@ -234,8 +292,14 @@ const CreateTicket = () => {
                   className: "w-[450px] h-[100px]",
                 }}
                 value={description}
-                onChange={(e) => setdescription(e.target.value)}
+                name="description"
+                onChange={(e) => {
+                  setdescription(e.target.value);
+                  validateField("description", e.target.value);
+                }}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.description}
               />
             </div>
             <div></div>

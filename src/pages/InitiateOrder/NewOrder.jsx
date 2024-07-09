@@ -143,8 +143,9 @@ const NewOrderForm = () => {
               onChange={onInputChange}
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5   ",
               }}
+               size="small"
             />
           </div>
         </div>
@@ -168,8 +169,9 @@ const NewOrderForm = () => {
               onChange={onInputChange}
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5  ",
               }}
+               size="small"
             />
           </div>
         </div>
@@ -190,8 +192,9 @@ const NewOrderForm = () => {
               onChange={onInputChange}
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px]  ml-5  ",
               }}
+               size="small"
             />
           </div>
         </div>
@@ -212,8 +215,9 @@ const NewOrderForm = () => {
               onChange={onInputChange}
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5   ",
               }}
+               size="small"
             />
           </div>
         </div>
@@ -228,9 +232,10 @@ const NewOrderForm = () => {
               type="date"
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5   ",
                 readOnly: true,
               }}
+               size="small"
             />
           </div>
         </div>
@@ -250,8 +255,9 @@ const NewOrderForm = () => {
               onChange={onInputChange}
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5   ",
               }}
+               size="small"
             />
           </div>
         </div>
@@ -274,8 +280,9 @@ const NewOrderForm = () => {
               onChange={onInputChange}
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5   ",
               }}
+               size="small"
             />
           </div>
         </div>
@@ -295,8 +302,9 @@ const NewOrderForm = () => {
               onChange={onInputChange}
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5 bg-white  ",
               }}
+               size="small"
             />
           </div>
         </div>
@@ -315,7 +323,7 @@ const NewOrderForm = () => {
             multiline
             rows={6}
             InputProps={{
-              className: "w-[500px]  ml-5 bg-white  ",
+              className: "w-[500px]  ml-5   ",
             }}
           />
         </div>

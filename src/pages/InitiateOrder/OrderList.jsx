@@ -1,113 +1,58 @@
 import * as React from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import { Button, CircularProgress } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { Button } from "@mui/material";
+import InProgressOrders from "./InProgressOrderTable";
+import CompleteOrders from "./CompletedOrderTable";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
-const columns = [
-  { field: "id", headerName: "Order ID", width: 150 },
-  {
-    field: "email_address",
-    headerName: "Email Address",
-    minwidth: 200,
-    editable: false,
-    flex: 1,
-  },
-  {
-    field: "vendor_name",
-    headerName: "Vendor Name",
-    minwidth: 200,
-    editable: false,
-    flex: 1,
-  },
-  {
-    field: "date",
-    headerName: "Date",
-    type: "number",
-    minwidth: 150,
-    editable: true,
-    flex: 1,
-  },
-  {
-    field: "status",
-    headerName: "Status",
-    description: "This column has a value getter and is not sortable.",
-    sortable: false,
-    minwidth: 200,
-    flex: 1,
-  },
-];
+function CustomTabPanel(props) {
+  const { children, value, index, ...other } = props;
 
-const OrderDataGrid = () => {
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
+}
+
+CustomTabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
+
+export default function OrderTab() {
+  const [value, setValue] = useState(0);
   const navigate = useNavigate();
-  const [loading, setLoading] = useState();
-  const [rows, setRows] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get("http://localhost:8080/orders/getAll");
-        const data = response.data.map((order) => ({
-          id: order.orderId,
-          email_address: order.vendorEmail,
-          vendor_name: order.vendorName,
-          date: order.date,
-          status: order.status,
-        }));
-        setRows(data);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const [rowSelectionModel, setRowSelectionModel] = useState([]);
-
-  const handleRowSelectionModelChange = (newSelectedRow) => {
-    setRowSelectionModel(newSelectedRow);
-  };
-
-  const handleView = () => {
-    const selectedItemId = rowSelectionModel[0];
-    navigate("/order/view-order/" + selectedItemId);
-  };
-
-  const handleEdit = () => {
-    const selectedItemId = rowSelectionModel[0];
-    navigate("/order/edit-order/" + selectedItemId);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
   };
 
   return (
-    <Box className="h-[400px] w-full">
-      <Box className="py-4">
-        <h1 className="block text-3xl font-bold">Orders</h1>
-        <p className="inline-block">Here are all orders!!</p>
-        {rowSelectionModel > 0 ? (
-          <>
-            {/* <Button
-              variant="contained"
-              className="bg-blue-600 px-6 py-2 text-white rounded left-[45%] w-[145px]"
-              onClick={handleEdit}
-            >
-              Edit
-            </Button> */}
-
-            <Button
-              variant="contained"
-              className="bg-blue-600  py-2 text-white rounded left-[55%] w-[145px]"
-              onClick={handleView}
-            >
-              View
-            </Button>
-          </>
-        ) : (
+    <div>
+      <Box sx={{ width: "100%" }}>
+        <div className="pb-5">
+          <h1 className="block text-3xl font-bold">Orders</h1>
+          <p className="inline-block">Here are all orders!!</p>
+        </div>
+        <div>
           <Button
             variant="contained"
             className="bg-blue-600 px-6 py-2 text-white rounded left-[70%] w-[145px]"
@@ -115,34 +60,24 @@ const OrderDataGrid = () => {
           >
             New Order
           </Button>
-        )}
-      </Box>
-
-      {/* Data grid component */}
-      {loading ? (
-        <div className="flex justify-center mostRequestedItems-center">
-          <CircularProgress />
         </div>
-      ) : (
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
-            },
-          }}
-          autoHeight
-          pageSizeOptions={[5]}
-          checkboxSelection
-          rowSelectionModel={rowSelectionModel}
-          onRowSelectionModelChange={handleRowSelectionModelChange}
-        />
-      )}
-    </Box>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="basic tabs example"
+          >
+            <Tab label="In Progress Orders" {...a11yProps(0)} />
+            <Tab label="Completed Orders" {...a11yProps(1)} />
+          </Tabs>
+        </Box>
+        <CustomTabPanel value={value} index={0}>
+          <InProgressOrders />
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={1}>
+          <CompleteOrders />
+        </CustomTabPanel>
+      </Box>
+    </div>
   );
-};
-
-export default OrderDataGrid;
+}

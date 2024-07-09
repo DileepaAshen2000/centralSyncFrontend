@@ -139,7 +139,7 @@ const SideBar = () => {
 
           <a href="/ticket">
             <ListItem button className="pl-8 rounded-lg">
-              <ListItemText primary="Maintain Ticket" />
+              <ListItemText primary="Issue Ticket" />
             </ListItem>
           </a>
         </List>

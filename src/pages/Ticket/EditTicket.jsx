@@ -7,6 +7,8 @@ import {
   MenuItem,
   Autocomplete,
   Box,
+  CircularProgress,
+  Backdrop
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
@@ -67,34 +69,75 @@ const EditTicket = () => {
     fetchItemData();
   }, [id]);
 
-   
   const handleItemChange = (event, value) => {
     if (value) {
       setTicket((prevTicket) => ({
         ...prevTicket,
         itemName: value.itemName,
       }));
+      validateField("itemName", value.itemName);
     } else {
       setTicket((prevTicket) => ({
         ...prevTicket,
         itemName: "",
       }));
+      validateField("itemName", "");
     }
   };
 
-   
   const handleItembrandChange = (event, value) => {
     if (value) {
       setTicket((prevTicket) => ({
         ...prevTicket,
         brand: value.brand,
       }));
+      validateField("brand", value.brand);
     } else {
       setTicket((prevTicket) => ({
         ...prevTicket,
         brand: "",
       }));
+      validateField("brand", "");
     }
+  };
+
+  const validateField = (name, value) => {
+    const validationErrors = {};
+
+    if (name === "itemName" && !value) {
+      validationErrors.itemName = "Item name is required";
+    } else if (name === "brand" && !value) {
+      validationErrors.brand = "Item brand is required";
+    } else if (name === "topic" && !value) {
+      validationErrors.topic = "Topic is required";
+    } else if (name === "date" && !value) {
+      validationErrors.date = "Date is required";
+    } else if (name === "description") {
+      if (!value) {
+        validationErrors.description = "Description is required";
+      } else if (value.length < 10 || value.length > 200) {
+        validationErrors.description =
+          "Description must be between 10 and 200 characters";
+      }
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validationErrors[name],
+    }));
+
+    // Remove the error if there is no validation error for the field
+    if (!validationErrors[name]) {
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest;
+      });
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
   };
 
   const handleClick = (e) => {
@@ -117,9 +160,8 @@ const EditTicket = () => {
           title: "Error!",
           text: "Failed to update Ticket. Please check your inputs.",
         });
-        if (error.response) {
-          setErrors(error.response.data);
-        }
+        const backendErrors = error.response.data;
+        setErrors(backendErrors);
       });
   };
 
@@ -156,6 +198,9 @@ const EditTicket = () => {
                     }}
                     size="small"
                     value={ticket.itemId.itemName}
+                    onBlur={handleBlur}
+                    error={!!errors.itemName}
+                    name="itemName"
                   />
                 )}
               />
@@ -188,6 +233,9 @@ const EditTicket = () => {
                     }}
                     size="small"
                     value={ticket.itemId.brand}
+                    onBlur={handleBlur}
+                    error={!!errors.brand}
+                    name="brand"
                   />
                 )}
               />
@@ -202,17 +250,23 @@ const EditTicket = () => {
                 <div className="text-[#FC0000] text-sm">{errors.topic}</div>
               )}
               <Select
-                id="topic"
                 className=" w-[300px] "
-                onChange={(e) =>
-                  setTicket({ ...ticket, topic: e.target.value })
-                }
+                onChange={(e) => {
+                  setTicket({ ...ticket, topic: e.target.value });
+                  validateField("topic", e.target.value);
+                }}
                 value={ticket.topic}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.topic}
+                name="topic"
               >
                 <MenuItem disabled value={ticket.topic}></MenuItem>
                 <MenuItem value="Network Issues">Network Issues</MenuItem>
-                <MenuItem value="Hardware Problems">Hardware Problems</MenuItem>
+                <MenuItem value="Hardware Issues">Hardware Issues</MenuItem>
+                <MenuItem value="Software Issues">Software Issues</MenuItem>
+                <MenuItem value="Security Issues">Security Issues</MenuItem>
+                <MenuItem value="Delivery Issues">Delivery Issues</MenuItem>
                 <MenuItem value="Other">Other</MenuItem>
               </Select>
             </div>
@@ -233,8 +287,14 @@ const EditTicket = () => {
                   className: " w-[300px] ",
                 }}
                 value={ticket.date}
-                onChange={(e) => setTicket({ ...ticket, date: e.target.value })}
+                onChange={(e) => {
+                  setTicket({ ...ticket, date: e.target.value });
+                  validateField("date", e.target.value);
+                }}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.date}
+                name="date"
               />
             </div>
             <div></div>
@@ -255,10 +315,14 @@ const EditTicket = () => {
                   className: "w-[450px] h-[100px]",
                 }}
                 value={ticket.description}
-                onChange={(e) =>
-                  setTicket({ ...ticket, description: e.target.value })
-                }
+                onChange={(e) => {
+                  setTicket({ ...ticket, description: e.target.value });
+                  validateField("description", e.target.value);
+                }}
                 size="small"
+                onBlur={handleBlur}
+                error={!!errors.description}
+                name="description"
               />
             </div>
             <div></div>

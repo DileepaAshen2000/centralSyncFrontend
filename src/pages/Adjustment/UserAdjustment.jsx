@@ -7,13 +7,36 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoginService from "../Login/LoginService";
 
+const getStatusClass = (status) => {
+    switch (status) {
+      case "ACCEPTED":
+        return "bg-green-500 text-black w-[90px] font-bold";
+      case "REJECTED":
+        return "bg-red-500 text-black text-sm w-[90px] font-bold"; 
+      case "PENDING":
+        return "bg-blue-500 text-black text-sm w-[90px] font-bold";  
+    }
+  };
+  
+
 const columns = [
     { field: 'id', headerName: 'Adjustment ID', width: 150 },
     { field: 'reason', headerName: 'Reason', width: 180 },
     { field: 'description', headerName: 'Description', width: 280 },
     { field: 'adjusted_Qty', headerName: 'Adjusted_Qty', width: 150 },
     { field: 'date', headerName: 'Date', width: 150 },
-    { field: 'status', headerName: 'Status', width: 100 },
+    {
+        field: "status",
+        headerName: "Status",
+        width: 200,
+        renderCell: (params) => (
+          <div
+            className={`p-2 rounded text-center ${getStatusClass(params.value)}`}
+          >
+            {params.value}
+          </div>
+        ),
+      },
 ];
 
 const UserAdjustment = () => {
@@ -125,6 +148,21 @@ const UserAdjustment = () => {
                 disableMultipleSelection={true} // Prevent multiple row selection
                 rowSelectionModel={rowSelectionModel}
                 onRowSelectionModelChange={handlerowSelectionModelChange}
+                sx={{
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: '#f5f5f5',
+            borderBottom: '2px solid #000',
+          },
+          '& .MuiDataGrid-cell': {
+            borderBottom: '1px solid #ddd',
+          },
+          '& .MuiDataGrid-row': {
+            borderBottom: '2px solid #000',
+          },
+          '& .MuiDataGrid-root': {
+            border: '2px solid #000',
+          },
+        }}
             />
         </Box>
     );
