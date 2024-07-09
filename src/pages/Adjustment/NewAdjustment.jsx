@@ -85,9 +85,11 @@ const NewAdjustment = () => {
       setSelectedItemId(value.itemId);
       setAdj({ ...adj, itemId: value.itemId }); // Update the itemId in the adj state
       fetchItemDetails(value.itemId);
+      validateField("itemName", value.itemName);
     } else {
       setSelectedItemId(null);
       setAdj({ ...adj, itemId: "" });
+      validateField("itemName", "");
     }
   };
 
@@ -135,14 +137,7 @@ const NewAdjustment = () => {
     }
   };
 
-  const validateAllFields = () => {
-    validateField("itemName", adj.itemName);
-    validateField("reason", adj.reason);
-    validateField("date", adj.date);
-    validateField("newQuantity", adj.newQuantity);
-
-    return Object.keys(errors).length === 0;
-  };
+   
 
   const onInputChange = async (e) => {
     const { name, value } = e.target;
@@ -212,10 +207,9 @@ const NewAdjustment = () => {
           title: "Error!",
           text: "Failed to submit adjustment. Please check your inputs.",
         });
-        if (!validateAllFields()) {
-          return;
-        }
-        //setErrors(error.response.data);
+        const backendErrors = error.response.data;
+      setErrors(backendErrors);
+         
       }
     }
   };

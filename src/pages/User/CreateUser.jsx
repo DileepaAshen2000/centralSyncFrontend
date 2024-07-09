@@ -7,6 +7,8 @@ import {
   Box,
   MenuItem,
   Typography,
+  CircularProgress,
+  Backdrop
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -23,7 +25,7 @@ const CreateUser = () => {
   const [lastName, setlName] = useState("");
   const [dateOfBirth, setDOb] = useState("");
   const [mobileNo, setMNumber] = useState("");
-  const [telNo, setTelNUmber] = useState("");
+  const [telNo, setTelNumber] = useState("");
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
   const [department, setDepartment] = useState("");
@@ -36,6 +38,7 @@ const CreateUser = () => {
   const [src, setSrc] = useState(null);
   const [preview, setPreview] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const validateField = (name, value) => {
     const validationErrors = {};
@@ -134,14 +137,7 @@ const CreateUser = () => {
 
   const handleClick = async (e) => {
     e.preventDefault();
-
-    if (!image) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        image: "Profile picture is required",
-      }));
-      return;
-    }
+    setLoading(true);
 
     const formData = new FormData();
 
@@ -190,31 +186,17 @@ const CreateUser = () => {
         navigate("/user", { fetchData });
       }
     } catch (error) {
-      // Handle error case
       Swal.fire({
         icon: "error",
         title: "Error!",
         text: "Failed to add new user. Please check your inputs.",
       });
-      if (!validateAllFields()) {
-        return;
-      }
+      const backendErrors = error.response.data;
+      setErrors(backendErrors);
     }
-  };
-
-  const validateAllFields = () => {
-    validateField("firstName", firstName);
-    validateField("lastName", lastName);
-    validateField("role", role);
-    validateField("department", department);
-    validateField("workSite", workSite);
-    validateField("dateOfBirth", dateOfBirth);
-    validateField("mobileNo", role);
-    validateField("telNo", telNo);
-    validateField("address", address);
-    validateField("email", email);
-
-    return Object.keys(errors).length === 0;
+    finally {
+      setLoading(false);
+    };
   };
 
   return (
@@ -234,18 +216,22 @@ const CreateUser = () => {
                 <div className="text-[#FC0000] text-sm">{errors.firstName}</div>
               )}
               <TextField
-                id="name"
+                id="firstame"
                 variant="outlined"
                 //placeholder="First Name"
                 InputProps={{
                   className: "w-[300px]",
                 }}
                 value={firstName}
-                onChange={(e) => setfName(e.target.value)}
+                src={imageUrl}
+                onChange={(e) => {
+                  setfName(e.target.value);
+                  validateField("firstName", e.target.value);
+                }}
                 size="small"
+                name="firstName"
                 onBlur={handleBlur}
                 error={!!errors.firstName}
-                name="firstName"
               />
             </div>{" "}
             <div></div>
@@ -295,7 +281,10 @@ const CreateUser = () => {
                   className: " w-[300px]",
                 }}
                 value={lastName}
-                onChange={(e) => setlName(e.target.value)}
+                onChange={(e) => {
+                  setlName(e.target.value);
+                  validateField("lastName", e.target.value);
+                }}
                 size="small"
                 onBlur={handleBlur}
                 error={!!errors.lastName}
@@ -307,13 +296,18 @@ const CreateUser = () => {
               <label htmlFor="2">Department</label>
             </div>
             <div className="col-span-2">
-             {errors.department && (
-                <div className="text-[#FC0000] text-sm">{errors.department}</div>
+              {errors.department && (
+                <div className="text-[#FC0000] text-sm">
+                  {errors.department}
+                </div>
               )}
 
               <Select
                 value={department}
-                onChange={(e) => setDepartment(e.target.value)}
+                onChange={(e) => {
+                  setDepartment(e.target.value);
+                  validateField("department", e.target.value);
+                }}
                 name="department"
                 id="department"
                 className="w-[300px]"
@@ -332,12 +326,15 @@ const CreateUser = () => {
               <label htmlFor="3">Role</label>
             </div>
             <div className="col-span-2">
-               {errors.role && (
+              {errors.role && (
                 <div className="text-[#FC0000] text-sm">{errors.role}</div>
               )}{" "}
               <Select
                 value={role}
-                onChange={(e) => setRole(e.target.value)}
+                onChange={(e) => {
+                  setRole(e.target.value);
+                  validateField("role", e.target.value);
+                }}
                 name="role"
                 id="role"
                 className="w-[300px]"
@@ -356,12 +353,15 @@ const CreateUser = () => {
               <label htmlFor="3">Work Site</label>
             </div>
             <div className="col-span-2">
-               {errors.workSite && (
+              {errors.workSite && (
                 <div className="text-[#FC0000] text-sm">{errors.workSite}</div>
               )}{" "}
               <Select
                 value={workSite}
-                onChange={(e) => setWorkSite(e.target.value)}
+                onChange={(e) => {
+                  setWorkSite(e.target.value);
+                  validateField("workSite", e.target.value);
+                }}
                 name="workSite"
                 id="workSite"
                 className="w-[300px]"
@@ -395,7 +395,10 @@ const CreateUser = () => {
                 }}
                 InputLabelProps={{ shrink: true }}
                 value={dateOfBirth}
-                onChange={(e) => setDOb(e.target.value)}
+                onChange={(e) => {
+                  setDOb(e.target.value);
+                  validateField("dateOfBirth", e.target.value);
+                }}
                 size="small"
                 onBlur={handleBlur}
                 error={!!errors.dateOfBirth}
@@ -420,7 +423,10 @@ const CreateUser = () => {
                   className: " w-[300px]",
                 }}
                 value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                onChange={(e) => {
+                  setAddress(e.target.value);
+                  validateField("address", e.target.value);
+                }}
                 size="small"
                 onBlur={handleBlur}
                 error={!!errors.address}
@@ -453,7 +459,10 @@ const CreateUser = () => {
                   className: " w-[300px] ",
                 }}
                 value={mobileNo}
-                onChange={(e) => setMNumber(e.target.value)}
+                onChange={(e) => {
+                  setMNumber(e.target.value);
+                  validateField("mobileNo", e.target.value);
+                }}
                 size="small"
                 onBlur={handleBlur}
                 error={!!errors.mobileNo}
@@ -477,7 +486,10 @@ const CreateUser = () => {
                   className: " w-[300px] ",
                 }}
                 value={telNo}
-                onChange={(e) => setTelNUmber(e.target.value)}
+                onChange={(e) => {
+                  setTelNumber(e.target.value);
+                  validateField("telNo", e.target.value);
+                }}
                 size="small"
                 onBlur={handleBlur}
                 error={!!errors.telNo}
@@ -499,7 +511,10 @@ const CreateUser = () => {
                   className: " w-[300px]",
                 }}
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  validateField("email", e.target.value);
+                }}
                 size="small"
                 onBlur={handleBlur}
                 error={!!errors.email}
@@ -532,6 +547,12 @@ const CreateUser = () => {
               </Button>
             </div>
           </div>
+          <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
         </form>
       </Box>
     </>
