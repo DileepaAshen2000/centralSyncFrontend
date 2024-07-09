@@ -106,7 +106,7 @@ const NewAdjustment = () => {
   const validateField = (name, value) => {
     const validationErrors = {};
     if (name === "itemName" && !value) {
-      validationErrors.itemName = "Itemname is required";
+      validationErrors.itemName = "Item Name is required";
     } else if (name === "reason" && !value) {
       validationErrors.reason = "Reason is required";
     } else if (name === "date" && !value) {
