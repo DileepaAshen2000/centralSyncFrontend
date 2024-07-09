@@ -1,7 +1,7 @@
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
-import { TextField, Button, Stack, Select } from "@mui/material";
+import { TextField, Button, Stack, Select,CircularProgress} from "@mui/material";
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import axios from "axios";
@@ -39,9 +39,11 @@ const columns = [
 export default function User() {
   const navigate = useNavigate();
   const isRequestHandler = LoginService.isReqHandler();
+  const [loading, setLoading] = useState(false);
   const [rows, setRows] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   useEffect(() => {
+    setLoading(true);
     axios
       .get("http://localhost:8080/user/getAll")
       .then((response) => {
@@ -56,9 +58,16 @@ export default function User() {
         }));
         setRows(data);
       })
+      
       .catch((error) => {
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
+      
+      
+      
   }, []);
 
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
@@ -130,6 +139,11 @@ export default function User() {
             </div>
           </div>
         )}
+        {loading ? (
+        <div className="flex justify-center mostRequestedItems-center">
+          <CircularProgress />
+        </div>
+      ):(
       
       <DataGrid
         rows={rows}
@@ -161,6 +175,7 @@ export default function User() {
           },
         }}
       />
+      )}
     </Box>
   );
 }

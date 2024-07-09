@@ -7,6 +7,8 @@ import {
   MenuItem,
   Autocomplete,
   Box,
+  CircularProgress,
+  Backdrop
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
@@ -30,9 +32,11 @@ const CreateTicket = () => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [options, setOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           "http://localhost:8080/inventory-item/getAll"
@@ -54,23 +58,6 @@ const CreateTicket = () => {
     }
   }, [location.state]);
 
-  //function for respond changes in the selected item in item name
-  const handleItemChange = (event, value) => {
-    if (value) {
-      setItemName(value.itemName);
-    } else {
-      setItemName("");
-    }
-  };
-
-  //function for respond changes in the selected item in item brand
-  const handleItembrandChange = (event, value) => {
-    if (value) {
-      setBrand(value.brand);
-    } else {
-      setBrand("");
-    }
-  };
   const validateField = (name, value) => {
     const validationErrors = {};
 
@@ -109,6 +96,26 @@ const CreateTicket = () => {
     const { name, value } = e.target;
     validateField(name, value);
   };
+
+  const handleItemChange = (event, value) => {
+    if (value) {
+      setItemName(value.itemName);
+      validateField("itemName", value.itemName);
+    } else {
+      setItemName("");
+      validateField("itemName", "");
+    }
+  };
+
+  const handleItembrandChange = (event, value) => {
+    if (value) {
+      setBrand(value.brand);
+      validateField("brand", value.brand);
+    } else {
+      setBrand("");
+      validateField("brand", "");
+    }
+  };
   const handleClick = (e) => {
     e.preventDefault();
     const ticket = {
@@ -138,21 +145,9 @@ const CreateTicket = () => {
           title: "Error!",
           text: "Failed to add new Ticket. Please check your inputs.",
         });
-
-        if (!validateAllFields()) {
-          return;
-        }
+        const backendErrors = error.response.data;
+        setErrors(backendErrors);
       });
-  };
-
-  const validateAllFields = () => {
-    validateField("itemName", itemName);
-    validateField("brand", brand);
-    validateField("topic", topic);
-    validateField("date", date);
-    validateField("description", description);
-
-    return Object.keys(errors).length === 0;
   };
 
   return (
@@ -236,7 +231,10 @@ const CreateTicket = () => {
               <Select
                 name="topic"
                 className=" w-[300px] "
-                onChange={(e) => settopic(e.target.value)}
+                onChange={(e) => {
+                  settopic(e.target.value);
+                  validateField("topic", e.target.value);
+                }}
                 size="small"
                 onBlur={handleBlur}
                 error={!!errors.topic}
@@ -295,7 +293,10 @@ const CreateTicket = () => {
                 }}
                 value={description}
                 name="description"
-                onChange={(e) => setdescription(e.target.value)}
+                onChange={(e) => {
+                  setdescription(e.target.value);
+                  validateField("description", e.target.value);
+                }}
                 size="small"
                 onBlur={handleBlur}
                 error={!!errors.description}

@@ -6,6 +6,8 @@ import {
   Select,
   Box,
   Typography,
+  CircularProgress,
+  Backdrop
 } from "@mui/material";
 import axios from "axios";
 import MenuItem from "@mui/material/MenuItem";
@@ -24,6 +26,7 @@ const Userupdate = () => {
   const [errors, setErrors] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const [user, setUser] = useState({
     firstName: "",
@@ -36,6 +39,7 @@ const Userupdate = () => {
     department: "",
     role: "",
     workSite: "",
+    imagePath: "",
   });
 
   const validateField = (name, value) => {
@@ -107,6 +111,7 @@ const Userupdate = () => {
 
   useEffect(() => {
     const fetchUserDetails = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           `http://localhost:8080/user/users/${ID}`
@@ -120,14 +125,20 @@ const Userupdate = () => {
       } catch (error) {
         console.log("Error fetching user:", error);
       }
+      finally{
+        setLoading(false);
+      };
     };
-
+   
     fetchUserDetails();
   }, [ID]);
 
   const handleInputChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: value });
+    validateField(name, value);
   };
+  
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -138,16 +149,38 @@ const Userupdate = () => {
         setImageUrl(reader.result);
       };
       reader.readAsDataURL(file);
+      setErrors({ ...errors, image: null });
     }
+    
   };
 
-  const handleImageDelete = () => {
-    setSelectedImage(null);
-    setImageUrl(null);
+  const handleImageDelete = async () => {
+    if (!user.imagePath) {  
+      setSelectedImage(null);
+      setImageUrl(null);
+    }
+    else{ 
+    try {
+      const response = await axios.delete(`/user/deleteimage/${ID}`);
+
+      if (response.status === 200) {
+        setSelectedImage(null);
+        setImageUrl(null);
+        console.log('Image deleted successfully');
+      } else {
+        console.error('Failed to delete image');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
   };
+
+
 
   const handleSave = async () => {
     const formData = new FormData();
+    setLoading(true);
     formData.append(
       "user",
       new Blob([JSON.stringify(user)], { type: "application/json" })
@@ -181,27 +214,16 @@ const Userupdate = () => {
         text: "Failed to edit user details. Please check your inputs.",
       });
       
-      if (!validateAllFields()) {
-        return;
-      }
+      const backendErrors = error.response.data;
+      setErrors(backendErrors);
       
     }
+    finally{
+      setLoading(false);
+    };
   };
 
-  const validateAllFields = () => {
-    validateField("firstName", user.firstName);
-    validateField("lastName", user.lastName);
-    validateField("role", user.role);
-    validateField("department",user. department);
-    validateField("workSite", user.workSite);
-    validateField("dateOfBirth", user.dateOfBirth);
-    validateField("mobileNo", user.role);
-    validateField("telNo", user.telNo);
-    validateField("address", user.address);
-    validateField("email", user.email);
-
-    return Object.keys(errors).length === 0;
-  };
+  
 
   return (
     <>
@@ -455,6 +477,9 @@ const Userupdate = () => {
               <label htmlFor="name">Mobile No </label>
             </div>
             <div className="col-span-2">
+            {errors.mobileNo && (
+                <div className="text-[#FC0000] text-sm">{errors.mobileNo}</div>
+              )}
               <TextField
                 type="text"
                 id="mno"
@@ -477,6 +502,9 @@ const Userupdate = () => {
               </label>
             </div>
             <div className="col-span-2">
+            {errors.telNo && (
+                <div className="text-[#FC0000] text-sm">{errors.telNo}</div>
+              )}
               <TextField
                 type="text"
                 id="Tno"
@@ -497,6 +525,9 @@ const Userupdate = () => {
               <label htmlFor="name">Email Adress</label>
             </div>
             <div className="col-span-2">
+            {errors.email && (
+                <div className="text-[#FC0000] text-sm">{errors.email}</div>
+              )}
               <TextField
                 type="text"
                 id="email"
@@ -538,6 +569,12 @@ const Userupdate = () => {
               </Button>
             </div>
           </div>
+          <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
         </form>
       </Box>
     </>
