@@ -95,7 +95,7 @@ const getInventoryRequestListLink = () => {
   if (isEmployee) return "/employee-in-request-list";
   return "/default-request-list";
 };
-const RequestDocument = () => {
+const ReqHandlerRequestDocument = () => {
   const { reqId } = useParams();
   const [inventoryRequest, setInventoryRequest] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
@@ -460,11 +460,8 @@ setOpenSA(true);
 
         </div>
 
-        { (inventoryRequest?.reqStatus === 'PENDING' &&
-         role !== 'EMPLOYEE' && 
-         !(inventoryRequest.role === role)) || 
-         (role === 'ADMIN')  &&  
-         (inventoryRequest?.reqStatus === 'SENT_TO_ADMIN') &&
+        {inventoryRequest.reqStatus === 'PENDING' && 
+     
          (
           <div className='flex gap-6 mt-6 ml-6'>
             <h4>Note :</h4>
@@ -552,8 +549,7 @@ setOpenSA(true);
           </Dialog>
           {
           inventoryRequest.reqStatus === 'PENDING' &&
-          role !== 'EMPLOYEE' && role !== 'ADMIN' &&  
-          !(inventoryRequest.role === role)  && (
+          (
             <>
               <Button
                 className="px-6 py-2 bg-yellow-500 text-white hover:bg-yellow-400"
@@ -622,7 +618,7 @@ setOpenSA(true);
             className="px-6 py-2 hover:bg-white-400"
             variant='outlined'
             type='submit'
-            onClick={() => navigate("/employee-in-request-list")}
+            onClick={() => navigate("/requestHandler/in-request-list")}
           >
 
             Cancel
@@ -635,4 +631,4 @@ setOpenSA(true);
   );
 }
 
-export default RequestDocument;
+export default ReqHandlerRequestDocument;

@@ -1,158 +1,303 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
+import axios from 'axios';
+import { DataGrid } from '@mui/x-data-grid';
+import { useNavigate } from 'react-router-dom';
+import { Button, CircularProgress, Tab } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
-import { useNavigate } from 'react-router-dom';
+import LoginService from '../Login/LoginService'; // Ensure the path is correct
 
-// Define columns for the DataGrid component
-const columns = [
-  { field: 'id', headerName: 'Inventory Request No:', width: 200 },
-  { field: 'date', headerName: 'Date', width: 200 },
-  { field: 'time', headerName: 'Time', width: 200 },
-  { field: 'reason', headerName: 'Reason', width: 200 },
-  { field: 'status', headerName: 'Status', width: 200 },
-];
-
-// Fetch data function
-const fetchData = async (setInventoryRows, setDeliveryRows) => {
-  try {
-    const response = await axios.get('http://localhost:8080/request/getAll');
-    const requests = response.data;
-    console.log(requests);
-
-    const data = await Promise.all(
-      requests.map(async (request, index) => {
-        try {
-          const userResponse = await axios.get(`http://localhost:8080/user/users/${request.userId}`);
-          const userData = userResponse.data;
-          console.log(userData);
-
-          return {
-            id: index + 1,
-            date: new Date(request.dateTime).toLocaleDateString('en-US'),
-            time: new Date(request.dateTime).toLocaleTimeString('en-US'),
-            reason: request.reason,
-            status: request.reqStatus,
-            workSite: userData.workSite, // Include work site status
-          };
-        } catch (userError) {
-          console.error(`Failed to fetch user details for userId ${request.userId}:`, userError);
-          return null; // Return null if fetching user details fails
-        }
-      })
+// Table component to display data with a loading state
+const Table = ({ rows, columns, loading, onRowClick }) => {
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
     );
-
-    // Filter out null values (failed fetches)
-    const filteredData = data.filter((item) => item !== null);
-
-    // Sort data by date and time
-    filteredData.sort((a, b) => new Date(`${b.date} ${b.time}`) - new Date(`${a.date} ${a.time}`));
-
-    // Update IDs after sorting
-    // const sortedData = filteredData.map((item, index) => ({
-    //   ...item,
-    //   id: index + 1,
-    // }));
-
-    // Split data into inventory and delivery requests based on work site status
-    const inventoryRequests = filteredData.filter((item) => item.workSite === 'ONSITE');
-    const deliveryRequests = filteredData.filter((item) => item.workSite === 'ONLINE');
-
-    setInventoryRows(inventoryRequests);
-    setDeliveryRows(deliveryRequests);
-  } catch (error) {
-    console.error('Failed to fetch inventory requests:', error);
   }
+
+  return (
+    <div>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        onRowClick={onRowClick}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: 5 },
+          },
+        }}
+        pageSizeOptions={[5, 10]}
+        sx={{
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: '#f5f5f5',
+            borderBottom: '2px solid #000',
+          },
+          '& .MuiDataGrid-cell': {
+            borderBottom: '1px solid #ddd',
+          },
+          '& .MuiDataGrid-row': {
+            borderBottom: '2px solid #000',
+          },
+          '& .MuiDataGrid-root': {
+            border: '2px solid #000',
+          },
+        }}
+      />
+    </div>
+  );
 };
 
-// Define a functional component named InventoryRequestTable
-function InventoryRequestTable({ rows }) {
+// SectionHeader component for displaying section headers
+const SectionHeader = ({ title, color }) => (
+  <Box sx={{ backgroundColor: color, padding: '16px', textAlign: 'center', color: 'white' }}>
+    <h2>{title}</h2>
+  </Box>
+);
+
+// Main component for displaying employee requests and items
+const AdminInRequestList = () => {
   const navigate = useNavigate();
-
-  return (
-    <div>
-      {/* Render DataGrid with fetched data */}
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        onRowClick={(params) => {
-          navigate(`/employee/in-request-document/${params.id}`);
-        }}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
-          },
-        }}
-        pageSizeOptions={[5, 10]}
-      />
-    </div>
-  );
-}
-
-// Component to display employee inventory request list
-function DeliveryRequestTable({ rows }) {
-  const navigate = useNavigate();
-
-  return (
-    <div>
-      {/* Render DataGrid with fetched data */}
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        onRowClick={(params) => {
-          navigate(`/employee/delivery-request-document/${params.id}`);
-        }}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
-          },
-        }}
-        pageSizeOptions={[5, 10]}
-      />
-    </div>
-  );
-}
-
-// Main component rendering tabs and respective tables
-export default function LabTabs() {
-  const [value, setValue] = React.useState('1'); // State for currently selected tab
-  const [inventoryRows, setInventoryRows] = useState([]);
-  const [deliveryRows, setDeliveryRows] = useState([]);
+  const [isReqHandler, setIsReqHandler] = useState(false);
+  const [value, setValue] = useState('1');
+  const [reviewingRequestRows, setReviewingRequestRows] = useState([]);
+  const [myRequestRows, setMyRequestRows] = useState([]);
+  const [itemsOnHandRows, setItemsOnHandRows] = useState([]); // New state for items on hand
+  const [loadingRequests, setLoadingRequests] = useState(true);
 
   useEffect(() => {
-    fetchData(setInventoryRows, setDeliveryRows);
+    checkEmployeeStatus();
+    fetchRequestsData();
   }, []);
 
-  // Handle tab change event
+  const checkEmployeeStatus = () => {
+    setIsReqHandler(LoginService.isReqHandler());
+  };
+
+  const fetchRequestsData = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/request/getAll');
+      let data = formatRequestsData(response.data);
+
+      // Filtering requests based on role
+      const reviewingRequests = data.filter(item => (item.status === 'SENT_TO_ADMIN' && item.workSite !== 'ONLINE'));
+      console.log('Reviewing Requests:', reviewingRequests);
+      const myRequests = data.filter(item => (item.workSite === 'ONLINE')&& (item.status === 'PENDING'));
+      const itemsOnHand = data.filter(item =>item.status === 'WANT_TO_RETURN_ITEM'); // Filter for items on hand
+      
+
+      // Add sequential IDs
+      setReviewingRequestRows(reviewingRequests.map((item, index) => ({ ...item, id: index + 1 })));
+      setMyRequestRows(myRequests.map((item, index) => ({ ...item, id: index + 1 })));
+      setItemsOnHandRows(itemsOnHand.map((item, index) => ({ ...item, id: index + 1 })));
+      
+      setLoadingRequests(false);
+    } catch (error) {
+      console.error('Failed to fetch inventory requests:', error);
+      setLoadingRequests(false);
+    }
+  };
+  useEffect(() => {
+    checkEmployeeStatus();
+    fetchRequestsData();
+  }, []);
+  
+  useEffect(() => {
+    console.log('ReviewingRequestRows State:', reviewingRequestRows);
+    
+  }, [reviewingRequestRows]);
+
+  const formatRequestsData = (data) => {
+    return data
+      .map((inventoryRequest, index) => {
+        const createdDate = new Date(
+          ...inventoryRequest.creationDateTime.slice(0, 6)
+        );
+        return {
+          id: index + 1, // Temporary ID, will be reassigned later
+          date: createdDate.toLocaleDateString('en-US'),
+          time: createdDate.toLocaleTimeString('en-US'),
+          reason: inventoryRequest.reason,
+          status: inventoryRequest.reqStatus,
+          quantity: inventoryRequest.quantity,
+          createdDateTime: createdDate,
+          receivedDate: inventoryRequest.updateDateTime ? new Date(...inventoryRequest.updateDateTime.slice(0, 6)).toLocaleDateString('en-US') : '',
+          itemId: inventoryRequest.itemId,
+          itemName: inventoryRequest.itemName,  // Assuming the itemName field exists in your data
+          workSite: inventoryRequest.workSite,
+          reqId: inventoryRequest.reqId,
+          role: inventoryRequest.role,  // Adding role field
+        };
+      })
+      .sort((a, b) => b.createdDateTime - a.createdDateTime);
+  };
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
+  const columns = [
+    { field: 'id', headerName: 'Inventory Request No:', width: 200 },
+    { field: 'date', headerName: 'Date', width: 200 },
+    { field: 'time', headerName: 'Time', width: 200 },
+    { field: 'itemName', headerName: 'Item Name', width: 200 },
+    { 
+      field: 'status', 
+      headerName: 'Status', 
+      width: 200,
+      renderCell: (params) => {
+        const status = params.value;
+        let backgroundColor;
+        switch (status) {
+          case 'PENDING':
+            backgroundColor = '#ADD8E6';
+            break;
+          case 'ACCEPTED':
+            backgroundColor = '#90EE90';
+            break;
+          case 'REJECTED':
+            backgroundColor = '#F08080';
+            break;
+          case 'SENT_TO_ADMIN':
+            backgroundColor = '#F59E0B';
+            break;
+          case 'WANT_TO_RETURN_ITEM':
+            backgroundColor = '#af5c9b';
+            break;
+          default:
+            backgroundColor = '#FFFFFF';
+        }
+        return (
+          <Box 
+            sx={{ 
+              padding: '4px 8px', 
+              borderRadius: '4px', 
+              textAlign: 'center', 
+              fontWeight: 'bold',
+              backgroundColor 
+            }}
+          >
+            {status}
+          </Box>
+        );
+      }
+    },
+  ];
+
+  // New columns for "Items On My Hand"
+  const itemsOnHandColumns = [
+    { field: 'id', headerName: 'Inventory Request No:', width: 180 },
+    { field: 'itemName', headerName: 'Item Name', width: 180 },
+    { field: 'date', headerName: 'Received Date', width: 180 },
+    { field: 'quantity', headerName: 'Requested Quantity', width: 180 },
+    { 
+      field: 'status', 
+      headerName: 'Status', 
+      width: 220,
+      renderCell: (params) => {
+        const status = params.value;
+        let backgroundColor;
+        switch (status) {
+          case 'PENDING':
+            backgroundColor = '#ADD8E6';
+            break;
+          case 'ACCEPTED':
+            backgroundColor = '#90EE90';
+            break;
+          case 'REJECTED':
+            backgroundColor = '#F08080';
+            break;
+          case 'SENT_TO_ADMIN':
+            backgroundColor = '#F59E0B';
+            break;
+          case 'WANT_TO_RETURN_ITEM':
+            backgroundColor = '#FFCC00';
+            break;
+          default:
+            backgroundColor = '#FFFFFF';
+        }
+        return (
+          <Box 
+            sx={{ 
+              padding: '4px 8px', 
+              borderRadius: '4px', 
+              textAlign: 'center', 
+              fontWeight: 'bold',
+              backgroundColor 
+            }}
+          >
+            {status}
+          </Box>
+        );
+      }
+    },
+  ];
+
+  const filteredReviewingRequestRows = reviewingRequestRows
+  .filter(row => row.status !== 'WANT_TO_RETURN_ITEM')
+  .sort((a, b) => {
+    // *** Sorting logic to move 'PENDING' status rows to the top ***
+    if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
+    if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
+    return 0;
+  });
+  const role = localStorage.getItem('role');
+
   return (
-    <Box sx={{ width: '100%', typography: 'body1' }}>
-      {/* Render tabs */}
-      <h1 className="pt-2 pb-3 text-3xl font-bold">&nbsp;&nbsp;Inventory Request Lists</h1>
+    <Box sx={{ width: '100%' }}>
+     {(role === 'EMPLOYEE' || role === 'REQUEST_HANDLER') && (
+      <div className="flex justify-end">
+        <Button
+          className="text-white bg-blue-600 rounded hover:bg-blue-400"
+          onClick={() => navigate('/in-request/create-new-in-request')}
+        >
+          Create New Inventory Request
+        </Button>
+      </div>
+)}
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <TabList onChange={handleChange}>
-            <Tab label="Delivery Request Table" value="1" />
-            <Tab label="Inventory Request Table" value="2" />
+          <TabList onChange={handleChange} aria-label="lab API tabs example">
+            <Tab label="Need Admin Review" value="1"/>
+            <Tab label="Delivery Requests" value="2" />
+            <Tab label="Return Pending" value="3" /> {/* New tab for Items On My Hand */}
           </TabList>
         </Box>
-
-        {/* Render tab panels */}
         <TabPanel value="1">
-          <DeliveryRequestTable rows={deliveryRows} />
+          <SectionHeader title="Inventory Requests List" color="#3f51b5" />
+          <Table 
+            rows={filteredReviewingRequestRows} 
+            columns={columns} 
+            loading={loadingRequests} 
+            onRowClick={(params) => navigate(`/admin/in-request-document/${params.row.reqId}`)} 
+          />
         </TabPanel>
+
         <TabPanel value="2">
-          <InventoryRequestTable rows={inventoryRows} />
+          <SectionHeader title="Work From Home Employee's Delivery Requests List" color="#006400" />
+          <Table 
+            rows={myRequestRows} 
+            columns={columns} 
+            loading={loadingRequests} 
+            onRowClick={(params) => navigate(`/admin/de-request-document/${params.row.reqId}`)} 
+          />
+        </TabPanel>
+
+        <TabPanel value="3"> {/* New TabPanel for Items On My Hand */}
+          <SectionHeader title="Want To Return Item List" color="#800080" />
+          <Table 
+            rows={itemsOnHandRows} 
+            columns={itemsOnHandColumns} 
+            loading={loadingRequests} 
+            onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
+          />
         </TabPanel>
       </TabContext>
     </Box>
   );
-}
+};
+
+export default AdminInRequestList;

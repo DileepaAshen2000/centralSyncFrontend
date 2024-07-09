@@ -24,8 +24,6 @@ import SearchBar from "./SearchBar";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import Avatar from "@mui/material/Avatar";
-import CheckIcon from '@mui/icons-material/Check';
-
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -74,17 +72,28 @@ export default function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false); // State to control notifications visibility
   const stompClientRef = useRef(null);
 
   useEffect(() => {
-    fetchProfileInfo();
-    connectWebSocket();
-    return () => {
-      disconnectWebSocket();
-    };
-  }, []);
+    if (isAuthenticated) {
+      fetchProfileInfo();
+    }
+    }, [isAuthenticated]);
 
+
+    useEffect(() => {
+      if (profileInfo.userId) {
+        console.log("Profile info available:", profileInfo.userId);
+        connectWebSocket(profileInfo.userId); // Connect WebSocket when userId is available
+        
+      }
+      
+      return () => {
+        disconnectWebSocket();
+      };
+    }, [profileInfo.userId]);
+    
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -93,18 +102,13 @@ export default function NavBar() {
     setMenuOpen(!menuOpen);
   };
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     const confirmDelete = window.confirm(
       "Are you sure you want to logout this user?"
     );
     if (confirmDelete) {
-      try {
-        await LoginService.logout();
-        navigate("/");
-      } catch (error) {
-        console.error("Logout failed:", error);
-        window.alert("Logout failed. Please try again.");
-      }
+      LoginService.logout();
+      navigate("/");
     }
   };
 
@@ -118,11 +122,9 @@ export default function NavBar() {
     }
   };
 
-  const connectWebSocket = () => {
-    const userId = LoginService.getUserId();
-
-    const socket = new SockJS("http://localhost:8080/our-websocket");
-
+  const connectWebSocket = (userId) => {
+    console.log(`Attempting to connect WebSocket for user: ${userId}`);
+    const socket = new SockJS("http://localhost:8080/ws");
     const stompClient = new Client({
       webSocketFactory: () => socket,
       debug: (str) => console.log(str),
@@ -133,35 +135,42 @@ export default function NavBar() {
       reconnectDelay: 5000,
     });
 
-    stompClient.onConnect = () => {
-      stompClient.subscribe("/topic/messages", (message) => {
-        handleNotification(message);
+    stompClient.onConnect = (frame) => {
+      console.log("Connected to WebSocket");
+      const subscription = stompClient.subscribe(`/user/${userId}/topic/notifications`, (message) => {
+        console.log("Received message:", message);
+        try {
+          const notification = JSON.parse(message.body);
+          console.log("Parsed notification:", notification);
+          setNotificationCount((prevCount) => prevCount + 1);
+          setNotifications((prevNotifications) => [
+            ...prevNotifications,
+            notification,
+          ]);
+        } catch (error) {
+          console.error("Error parsing notification message:", error);
+        }
       });
-      stompClient.subscribe("/user/topic/private-messages", (message) => {
-        handleNotification(message);
-      });
+
+      console.log("Subscription:", subscription);
+    };
+
+    stompClient.onWebSocketClose = (frame) => {
+      console.warn(`WebSocket closed: ${frame}`);
+    };
+
+    stompClient.onWebSocketError = (error) => {
+      console.error(`WebSocket error: ${error}`);
     };
 
     stompClient.activate();
     stompClientRef.current = stompClient;
   };
-
-  const handleNotification = (message) => {
-    try {
-      const notification = JSON.parse(message.body);
-      console.log("Received notification:", notification); // Log the entire notification object
-      setNotificationCount((prevCount) => prevCount + 1);
-      setNotifications((prevNotifications) => [
-        ...prevNotifications,
-        notification,
-      ]);
-    } catch (error) {
-      console.error("Error parsing notification message:", error);
-    }
-  };
+  
 
   const disconnectWebSocket = () => {
     if (stompClientRef.current) {
+      console.log("Disconnecting WebSocket");
       stompClientRef.current.deactivate();
     }
   };
@@ -169,15 +178,10 @@ export default function NavBar() {
   const toggleNotifications = () => {
     setNotificationsOpen(!notificationsOpen);
   };
-  const handleClearNotification = (index) => {
-    const newNotifications = notifications.filter((_, i) => i !== index);
-    setNotifications(newNotifications);
-    setNotificationCount((prevCount) => prevCount - 1);
-  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" className="bg-white z-50">
+      <AppBar position="static" className="bg-white">
         <Toolbar>
           <img src={myLogo} alt="Inventory Logo" className="w-32 h-auto " />
           <h4 className="hidden text-xl font-bold text-blue-800 md:block">
@@ -191,7 +195,7 @@ export default function NavBar() {
               aria-label="show new notifications"
               color="inherit"
               className="hidden md:block"
-              onClick={toggleNotifications}
+              onClick={toggleNotifications} // Add onClick handler to toggle notifications
             >
               <Badge badgeContent={notificationCount} color="error">
                 <NotificationsIcon className="text-black" />
@@ -199,7 +203,7 @@ export default function NavBar() {
             </IconButton>
             <div className="flex items-center">
               {profileInfo ? (
-                <h4 className="text-black text-bold ">
+                <h4 className="text-black ">
                   {profileInfo.firstName} {profileInfo.lastName}
                 </h4>
               ) : (
@@ -233,23 +237,17 @@ export default function NavBar() {
         </Toolbar>
       </AppBar>
 
+      {/* Notifications list */}
       {notificationsOpen && (
-        <Box className="absolute right-0 mt-2 w-80 bg-white border border-gray-300 z-40 rounded-md shadow-lg">
+        <Box className="absolute right-0 mt-2 w-80 bg-white border border-gray-300 z-50 rounded-md shadow-lg">
           <Box className="p-2">
             {notifications.length > 0 ? (
               notifications.map((notification, index) => (
                 <Card key={index} sx={{ mb: 2 }}>
-                  <CardContent className="p-4 flex justify-between items-center bg-blue-100">
-                    <Typography variant="body2"className="text-black-600">
-                      {notification.content}
+                  <CardContent>
+                    <Typography variant="body2" color="textSecondary">
+                      {notification.message}
                     </Typography>
-                    <IconButton
-                      aria-label="clear notification"
-                      onClick={() => handleClearNotification(index)}
-                    >
-                      <CheckIcon className="bg-green-300" />
-                    </IconButton>
-                  
                   </CardContent>
                 </Card>
               ))
@@ -264,23 +262,18 @@ export default function NavBar() {
         </Box>
       )}
 
-      <div className="relative">
-    
-      {sidebarOpen && <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-30"  style={{ top: "75px" }}></div>}
-
       <div
-        className={`w-80 absolute right-0 h-screen z-50 bg-[#D0D0D0] text-black ${
+        className={`w-80 absolute right-0 h-screen z-50 bg-[#9eaab2] text-black ${
           sidebarOpen ? "block" : "hidden"
         }`}
       >
         <div className="flex flex-col gap-10 p-6">
           <div className="flex gap-4">
-            
-            <div className="font-bold text-sm">
-              
+            <div>Profile Picture</div>
+            <div>
+              <h2>{profileInfo ? profileInfo.userId : "Loading..."}</h2>
               <h2>{profileInfo ? profileInfo.username : "Loading..."}</h2>
               <h4>{profileInfo ? profileInfo.role : "Loading..."}</h4>
-              <h2>{profileInfo ? profileInfo.userId : "Loading..."}</h2>
             </div>
           </div>
           <div>
@@ -288,8 +281,7 @@ export default function NavBar() {
               <Link to="/userprofile/editprofile">
                 <Button
                   variant="outlined"
-                  className="bg-white w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5 "
-                  onClick={() => setSidebarOpen(false)}
+                  className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5 "
                 >
                   <AccountCircleOutlinedIcon />
                   <span>Edit Profile</span>
@@ -300,8 +292,7 @@ export default function NavBar() {
               <Link to="/history/:userId">
                 <Button
                   variant="outlined"
-                  className="bg-white w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
-                  onClick={() => setSidebarOpen(false)}
+                  className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
                 >
                   <HistoryIcon />
                   <span>View History</span>
@@ -312,8 +303,7 @@ export default function NavBar() {
               <Link to="/userprofile/changepassword">
                 <Button
                   variant="outlined"
-                  className="bg-white w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
-                  onClick={() => setSidebarOpen(false)}
+                  className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
                 >
                   <KeyOutlinedIcon />
                   <span>Change Password</span>
@@ -325,7 +315,7 @@ export default function NavBar() {
                 <Link to="/" onClick={handleLogout}>
                   <Button
                     variant="outlined"
-                    className="bg-white w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
+                    className="bg-[#D9D9D9] w-[100%] h-[45px] text-black hover:text-[#D9D9D9] hover:bg-black border-none rounded-none justify-start space-x-5"
                   >
                     <LogoutOutlinedIcon />
                     <span>Logout</span>
@@ -336,7 +326,6 @@ export default function NavBar() {
           </div>
         </div>
       </div>
-    </div>
 
       <div
         className={`${menuOpen ? "block" : "hidden"} md:hidden bg-slate-300 `}
