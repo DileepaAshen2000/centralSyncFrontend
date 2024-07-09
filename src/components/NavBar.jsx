@@ -24,6 +24,8 @@ import SearchBar from "./SearchBar";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import Avatar from "@mui/material/Avatar";
+import CheckIcon from '@mui/icons-material/Check';
+
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -72,23 +74,16 @@ export default function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
-  const [notificationsOpen, setNotificationsOpen] = useState(false); // State to control notifications visibility
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const stompClientRef = useRef(null);
 
   useEffect(() => {
-    fetchProfileInfo().then(() => {
-      connectWebSocket();
-    });
+    fetchProfileInfo();
+    connectWebSocket();
     return () => {
       disconnectWebSocket();
     };
   }, []);
-
-  useEffect(() => {
-    if (notifications.length > 0) {
-      console.log("New notification added: ", notifications);
-    }
-  }, [notifications]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -98,13 +93,18 @@ export default function NavBar() {
     setMenuOpen(!menuOpen);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     const confirmDelete = window.confirm(
       "Are you sure you want to logout this user?"
     );
     if (confirmDelete) {
-      LoginService.logout();
-      navigate("/");
+      try {
+        await LoginService.logout();
+        navigate("/");
+      } catch (error) {
+        console.error("Logout failed:", error);
+        window.alert("Logout failed. Please try again.");
+      }
     }
   };
 
@@ -119,7 +119,10 @@ export default function NavBar() {
   };
 
   const connectWebSocket = () => {
-    const socket = new SockJS("http://localhost:8080/ws");
+    const userId = LoginService.getUserId();
+
+    const socket = new SockJS("http://localhost:8080/our-websocket");
+
     const stompClient = new Client({
       webSocketFactory: () => socket,
       debug: (str) => console.log(str),
@@ -131,45 +134,30 @@ export default function NavBar() {
     });
 
     stompClient.onConnect = () => {
-      const userId = localStorage.userId;
-      console.log(`Subscribing to /user/${userId}/topic/notifications`);
-      stompClient.subscribe(`/user/${userId}/topic/notifications`, (message) => {
-        console.log("Received user-specific notification:", message);
-        try {
-          const notification = JSON.parse(message.body);
-          console.log("Received user-specific notification:", notification);
-
-          if (notification.type === "warnings") { // Mama
-            notification.data.forEach((warning) => { // Mama
-              setNotifications((prevNotifications) => [ // Mama
-                ...prevNotifications,
-                { message: warning.message, type: "warning" }, // Mama
-              ]); // Mama
-            }); // Mama
-          } else {
-            setNotifications((prevNotifications) => [
-              ...prevNotifications,
-              notification,
-            ]);
-          }
-
-          setNotificationCount((prevCount) => prevCount + 1);
-        } catch (error) {
-          console.error("Error parsing notification message:", error);
-        }
+      stompClient.subscribe("/topic/messages", (message) => {
+        handleNotification(message);
       });
-    };
-
-    stompClient.onWebSocketError = (error) => {
-      console.error("WebSocket error: ", error);
-    };
-
-    stompClient.onWebSocketClose = (event) => {
-      console.log("WebSocket closed: ", event);
+      stompClient.subscribe("/user/topic/private-messages", (message) => {
+        handleNotification(message);
+      });
     };
 
     stompClient.activate();
     stompClientRef.current = stompClient;
+  };
+
+  const handleNotification = (message) => {
+    try {
+      const notification = JSON.parse(message.body);
+      console.log("Received notification:", notification); // Log the entire notification object
+      setNotificationCount((prevCount) => prevCount + 1);
+      setNotifications((prevNotifications) => [
+        ...prevNotifications,
+        notification,
+      ]);
+    } catch (error) {
+      console.error("Error parsing notification message:", error);
+    }
   };
 
   const disconnectWebSocket = () => {
@@ -180,6 +168,11 @@ export default function NavBar() {
 
   const toggleNotifications = () => {
     setNotificationsOpen(!notificationsOpen);
+  };
+  const handleClearNotification = (index) => {
+    const newNotifications = notifications.filter((_, i) => i !== index);
+    setNotifications(newNotifications);
+    setNotificationCount((prevCount) => prevCount - 1);
   };
 
   return (
@@ -198,7 +191,7 @@ export default function NavBar() {
               aria-label="show new notifications"
               color="inherit"
               className="hidden md:block"
-              onClick={toggleNotifications} // Add onClick handler to toggle notifications
+              onClick={toggleNotifications}
             >
               <Badge badgeContent={notificationCount} color="error">
                 <NotificationsIcon className="text-black" />
@@ -240,17 +233,23 @@ export default function NavBar() {
         </Toolbar>
       </AppBar>
 
-      {/* Notifications list */}
       {notificationsOpen && (
         <Box className="absolute right-0 mt-2 w-80 bg-white border border-gray-300 z-50 rounded-md shadow-lg">
           <Box className="p-2">
             {notifications.length > 0 ? (
               notifications.map((notification, index) => (
                 <Card key={index} sx={{ mb: 2 }}>
-                  <CardContent>
-                    <Typography variant="body2" color="textSecondary">
-                      {notification.message}
+                  <CardContent className="p-4 flex justify-between items-center bg-blue-100">
+                    <Typography variant="body2"className="text-black-600">
+                      {notification.content}
                     </Typography>
+                    <IconButton
+                      aria-label="clear notification"
+                      onClick={() => handleClearNotification(index)}
+                    >
+                      <CheckIcon className="bg-green-300" />
+                    </IconButton>
+                  
                   </CardContent>
                 </Card>
               ))

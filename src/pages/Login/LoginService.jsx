@@ -3,12 +3,16 @@ import axios from "axios";
 class LoginService{
     static BASE_URL = "http://localhost:8080"
 
-    static async login(email, password){
-        try{
-            const response = await axios.post(`${LoginService.BASE_URL}/user/auth/login`, {email, password})
+    static async login(email, password) {
+        try {
+            const response = await axios.post(`${LoginService.BASE_URL}/user/auth/login`, { email, password });
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('role', response.data.role);
+            localStorage.setItem('userId', response.data.userId);
+            localStorage.setItem('email', email);
+            localStorage.setItem('workSite', response.data.workSite);
             return response.data;
-
-        }catch(err){
+        } catch (err) {
             throw err;
         }
     }
@@ -16,7 +20,16 @@ class LoginService{
     static getAuthToken() {
         return localStorage.getItem('token');
     }
+static getUserId(){
+    return localStorage.getItem('userId');
+}
 
+static getEmail() {
+    return localStorage.getItem('email');
+}
+static getAuthToken() {
+    return localStorage.getItem('token');
+}
 
     // static async register (userData, token){
     //     try{
@@ -104,10 +117,30 @@ class LoginService{
     /**AUTHENTICATION CHECKER */
 
 
-    static logout(){
-        localStorage.removeItem('token')
-        localStorage.removeItem('role')
+    static async logout() {
+        const token = LoginService.getAuthToken();
+        const email = LoginService.getEmail();
+        if (!token || !email) {
+            throw new Error("User is not logged in.");
+        }
+
+        try {
+            const response = await axios.post(`${LoginService.BASE_URL}/user/auth/logout`, { email }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.status === 200) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('role');
+                localStorage.removeItem('userId');
+                localStorage.removeItem('workSite');
+            }
+            return response.data;
+        } catch (err) {
+            console.error("Logout failed:", err);
+            throw err;
+        }
     }
+
 
     static isAuthenticated(){
         const token = localStorage.getItem('token')
