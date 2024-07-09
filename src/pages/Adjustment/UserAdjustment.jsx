@@ -143,7 +143,6 @@ const UserAdjustment = () => {
                 autoHeight
                 pageSizeOptions={[5]}
                 checkboxSelection
-                disableRowSelectionOnClick
                 disableMultipleSelection={true} // Prevent multiple row selection
                 rowSelectionModel={rowSelectionModel}
                 onRowSelectionModelChange={handlerowSelectionModelChange}

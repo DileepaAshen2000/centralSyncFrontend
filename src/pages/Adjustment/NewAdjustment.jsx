@@ -41,7 +41,7 @@ const NewAdjustment = () => {
   });
   const [errors, setErrors] = useState({}); // State to manage errors for input fields
   const [options, setOptions] = useState([]);
-  const [selectedItemId, setSelectedItemId] = useState("Select an Item");
+  const [selectedItemId, setSelectedItemId] = useState("");
 
   const {
     reason,
@@ -73,12 +73,12 @@ const NewAdjustment = () => {
     fetchData();
   }, []);
 
-  const clearItemNameError = () => {
-    setErrors((prevErrors) => {
-      const { itemName, ...rest } = prevErrors;
-      return rest;
-    });
-  };
+  // const clearItemNameError = () => {
+  //   setErrors((prevErrors) => {
+  //     const { itemName, ...rest } = prevErrors;
+  //     return rest;
+  //   });
+  // };
 
   const handleItemChange = (event, value) => {
     if (value) {
@@ -108,19 +108,19 @@ const NewAdjustment = () => {
   const validateField = (name, value) => {
     const validationErrors = {};
     if (name === "itemName" && !value) {
-      validationErrors.itemName = "Item Name is required";
+      validationErrors.itemName = "Item Name is required.";
     } else if (name === "reason" && !value) {
-      validationErrors.reason = "Reason is required";
+      validationErrors.reason = "Reason is required.";
     } else if (name === "date" && !value) {
-      validationErrors.date = "Date is required";
+      validationErrors.date = "Date is required.";
     } else if (name === "newQuantity") {
       if (!value) {
-        validationErrors.newQuantity = "New Quantity is required";
+        validationErrors.newQuantity = "New Quantity is required.";
       } else if (isNaN(value) || value <= 0) {
-        validationErrors.newQuantity = "New Quantity must be a positive number";
+        validationErrors.newQuantity = "New Quantity must be a positive number.";
       }
     } else if (name === "itemId" && !value) {
-      validationErrors.itemId = "Item ID is required";
+      validationErrors.itemId = "Item ID is required.";
     }
 
     setErrors((prevErrors) => ({
@@ -192,7 +192,6 @@ const NewAdjustment = () => {
       );
 
       if (response.status === 201) {
-        console.log(response.data);
         Swal.fire({
           icon: "success",
           title: "Success!",
@@ -208,7 +207,8 @@ const NewAdjustment = () => {
           text: "Failed to submit adjustment. Please check your inputs.",
         });
         const backendErrors = error.response.data;
-      setErrors(backendErrors);
+        console.log(backendErrors);
+        setErrors(backendErrors);
          
       }
     }
@@ -270,7 +270,6 @@ const NewAdjustment = () => {
                 {...params}
                 label="Item ID"
                 error={!!errors.itemId}
-                helperText={errors.itemId}
                 onBlur={handleBlur}
               />
             )}
@@ -323,7 +322,7 @@ const NewAdjustment = () => {
             <MenuItem value="Stolen Item">Stolen Item</MenuItem>
             <MenuItem value="Others">Others</MenuItem>
           </Select>
-          <Typography variant='caption' className='text-red-600'>{errors.reason}</Typography>
+          <Typography variant='caption' className='text-xs text-[#FC0000]'>{errors.reason}</Typography>
         </div>
       </div>
 
@@ -393,7 +392,8 @@ const NewAdjustment = () => {
                   </TableCell>
                   {/* adjusted Qty */}
                   <TableCell align="right">
-                    {adj.newQuantity - item.quantity}
+                    {/* {adj.newQuantity - item.quantity} */}
+                    {adjustedQuantity}
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -413,7 +413,7 @@ const NewAdjustment = () => {
           onChange={handleFileChange}
         ></input>
         <Typography variant="caption" display="block" gutterBottom>
-          You can upload a maximum of 1 file, 5MB each
+          You can upload a maximum of 10MB file.
         </Typography>
       </div>
 

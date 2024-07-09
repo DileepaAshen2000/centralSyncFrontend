@@ -71,7 +71,7 @@ const NewStockIn = () => {
     console.log(Object.keys(validationErrors).length)
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      // return;
+      return;
     }
 
     try {
