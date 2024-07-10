@@ -67,7 +67,11 @@ const AddItemForm = () => {
     } else if (name === "model" && !value) {
       validationErrors.model = "Model Number is required";
     } else if (name === "unit" && !value) {
-      validationErrors.unit = "Unit is required";
+      if (!value) {
+        validationErrors.unit = "Unit is required";
+      } else if (!/^[a-zA-Z][a-zA-Z\s]*$/.test(value)) {
+        validationErrors.dimension = "Unit must contain only letters";
+      }
     } else if (name === "dimension") {
       if (!value) {
         validationErrors.dimension = "Dimension is required";
@@ -76,7 +80,7 @@ const AddItemForm = () => {
           "Enter dimension in the format a*b*c or a*b";
       }
     } else if (name === "dimensionUnit" && !value) {
-      validationErrors.dimensionUnit = "Dimension unit is required";
+      validationErrors.dimensionUnit = "Dimension is required with the MEASURING UNIT";
     } else if (name === "weight") {
       if (!value) {
         validationErrors.weight = "Weight is required";
@@ -84,7 +88,9 @@ const AddItemForm = () => {
         validationErrors.weight = "Weight must be a positive number";
       }
     } else if (name === "weightUnit" && !value) {
-      validationErrors.weightUnit = "Weight Unit is required";
+      validationErrors.weightUnit = "Weight is required with the MEASURING UNIT";
+    } else if (name === "description" && !value) {
+      validationErrors.description = "Description is required";
     } else if (name === "quantity") {
       if (!value) {
         validationErrors.quantity = "Quantity is required";
@@ -101,7 +107,7 @@ const AddItemForm = () => {
   const handleBlur = (e) => {
     const { name, value } = e.target;
     validateField(name, value);
-    if (name === "weight" || "dimension") {
+    if (name === "weight" || name === "dimension") {
       validateField(name + "Unit", inventoryItem[name + "Unit"]);
     }
   };
@@ -374,7 +380,7 @@ const AddItemForm = () => {
               value={dimension}
               onChange={onInputChange}
               variant="outlined"
-              error={errors.dimension}
+              error={errors.dimension || errors.dimensionUnit}
               onBlur={handleBlur}
               InputProps={{
                 className: "w-[220px] ml-3  ",
@@ -414,7 +420,7 @@ const AddItemForm = () => {
               value={weight}
               onChange={onInputChange}
               variant="outlined"
-              error={errors.weight}
+              error={errors.weight || errors.weightUnit}
               onBlur={handleBlur}
               InputProps={{
                 className: "w-[220px] ml-3   ",
@@ -446,11 +452,18 @@ const AddItemForm = () => {
             Description
           </InputLabel>
           <div>
+            {errors.description && (
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
+                {errors.description}
+              </div>
+            )}
             <TextField
               name="description"
               value={description}
               placeholder="Here you can enter specifications and other details about the item"
               onChange={onInputChange}
+              error={errors.description}
+              onBlur={handleBlur}
               variant="outlined"
               multiline
               rows={6}
