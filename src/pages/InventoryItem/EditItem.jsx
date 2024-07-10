@@ -54,7 +54,6 @@ const EditItem = () => {
     description,
     quantity,
     status,
-    image,
   } = inventoryItem;
 
   const validateField = (name, value) => {
@@ -86,9 +85,10 @@ const EditItem = () => {
     } else if (name === "weight") {
       if (!value) {
         validationErrors.weight = "Weight is required";
-      } else if (!/^[1-9]\d*$/.test(value)) {
+      } else if (!/^(?!0$)(?!0\.\d*$)\d+(\.\d+)?$/.test(value)) {
         validationErrors.weight = "Weight must be a positive number";
-      }
+    }
+    
     } else if (name === "weightUnit" && !value) {
       validationErrors.weightUnit = "Weight Unit is required";
     } else if (name === "quantity") {
@@ -107,6 +107,9 @@ const EditItem = () => {
   const handleBlur = (e) => {
     const { name, value } = e.target;
     validateField(name, value);
+    if (name === "weight" || "dimension") {
+      validateField(name + "Unit", inventoryItem[name + "Unit"]);
+    }
   };
 
   const onInputChange = (e) => {
@@ -329,7 +332,8 @@ const EditItem = () => {
         console.log(error);
       });
   };
-
+ // Disable Save button if there are any errors
+ const isSaveDisabled = Object.keys(errors).some((key) => errors[key]);
   return (
     <>
       <form
@@ -363,6 +367,7 @@ const EditItem = () => {
             Item Id
           </InputLabel>
           <TextField
+            disabled
             value={itemID}
             name="itemId"
             variant="outlined"
@@ -532,7 +537,7 @@ const EditItem = () => {
               error={errors.dimension}
               onBlur={handleBlur}
               InputProps={{
-                className: "w-[200px]  ml-3   ",
+                className: "w-[220px]  ml-3   ",
                 readOnly: false,
               }}
               size="small"
@@ -573,7 +578,7 @@ const EditItem = () => {
               error={errors.weight}
               onBlur={handleBlur}
               InputProps={{
-                className: "w-[115px]  ml-3   ",
+                className: "w-[220px]  ml-3   ",
                 readOnly: false,
               }}
               size="small"
@@ -644,10 +649,10 @@ const EditItem = () => {
           <Button
             variant="contained"
             type="submit"
+            disabled={isSaveDisabled||loading}
             className="row-start-13 col-start-5 col-span-2 rounded-sm bg-blue-600 ml-10"
           >
-            Save changes
-          </Button>
+  {loading ? <CircularProgress size={24} color="inherit" /> : "Save Changes"}          </Button>
           <Button
             variant="outlined"
             className="row-start-13 col-start-8 rounded-sm bg-white text-blue-60blue-600"

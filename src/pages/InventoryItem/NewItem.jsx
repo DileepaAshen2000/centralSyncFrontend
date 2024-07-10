@@ -80,7 +80,7 @@ const AddItemForm = () => {
     } else if (name === "weight") {
       if (!value) {
         validationErrors.weight = "Weight is required";
-      } else if (!/^[1-9]\d*$/.test(value)) {
+      } else if (!/^(?!0$)(?!0\.\d*$)\d+(\.\d+)?$/.test(value)) {
         validationErrors.weight = "Weight must be a positive number";
       }
     } else if (name === "weightUnit" && !value) {
@@ -101,6 +101,9 @@ const AddItemForm = () => {
   const handleBlur = (e) => {
     const { name, value } = e.target;
     validateField(name, value);
+    if (name === "weight" || "dimension") {
+      validateField(name + "Unit", inventoryItem[name + "Unit"]);
+    }
   };
 
   const onInputChange = (e) => {
@@ -202,13 +205,13 @@ const AddItemForm = () => {
           title: "Conflict!",
           text: `Similar item is already present in the inventory with an id : ${error.response.data.itemId}`,
         });
-        navigate("/item");
       }
     } finally {
       setLoading(false);
     }
   };
-
+  // Disable Save button if there are any errors
+  const isSaveDisabled = Object.keys(errors).some((key) => errors[key]);
   return (
     <>
       <form
@@ -374,7 +377,7 @@ const AddItemForm = () => {
               error={errors.dimension}
               onBlur={handleBlur}
               InputProps={{
-                className: "w-[200px] ml-3  ",
+                className: "w-[220px] ml-3  ",
               }}
               placeholder="W*H*D"
               size="small"
@@ -414,7 +417,7 @@ const AddItemForm = () => {
               error={errors.weight}
               onBlur={handleBlur}
               InputProps={{
-                className: "w-[115px] ml-3   ",
+                className: "w-[220px] ml-3   ",
               }}
               size="small"
             />
@@ -509,9 +512,10 @@ const AddItemForm = () => {
         <Button
           variant="contained"
           type="submit"
+          disabled={isSaveDisabled || loading}
           className="col-start-6 bg-blue-600 rounded-sm row-start-12 "
         >
-          Save
+          {loading ? <CircularProgress size={24} color="inherit" /> : "Save"}
         </Button>
         <Button
           variant="outlined"
