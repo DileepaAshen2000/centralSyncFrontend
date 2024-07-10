@@ -13,12 +13,13 @@ const StockOutDocument = () => {
     description: "",
     outQty: "",
     department: "",
+    filePath: null,
     itemId: {} , // Initialize itemId as an empty object
     userId:{},
     generatedBy:""
   });
 
-  const { date, description, outQty, department, itemId,userId,generatedBy} = stockOut;
+  const { date, description, outQty, department, itemId,userId,generatedBy,filePath} = stockOut;
   const printRef = useRef();
 
   useEffect(() => {
@@ -141,10 +142,12 @@ const StockOutDocument = () => {
               <Typography variant="body2">{description}</Typography>
             </div>
           </div>
-          <div className='mt-8'>
-            <h1>Download File :</h1>
-            <button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download</span></u></button>
-          </div>
+          {filePath && (
+            <div className='mt-8'>
+              <h1>Download File :</h1>
+              <button onClick={handleFileDownload}><u><span className="text-blue-800">Click to download</span></u></button>
+            </div>
+          )}
           <div className='mt-16'>
             <Typography variant="caption" gutterBottom>Generated Date/Time : </Typography>
             <Typography variant="caption" gutterBottom>{formattedDateTime}</Typography>

@@ -14,8 +14,8 @@ import Swal from "sweetalert2";
 
 const NewOrderForm = () => {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState({
     vendorName: "",
     companyName: "",
@@ -41,9 +41,6 @@ const NewOrderForm = () => {
     description,
     file,
   } = order;
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const onInputChange = (e) => {
     setOrder({ ...order, [e.target.id]: e.target.value });
@@ -51,7 +48,8 @@ const NewOrderForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setOpen(true);
+    setLoading(true);
+
     const formData = new FormData();
     formData.append(
       "order",
@@ -74,7 +72,7 @@ const NewOrderForm = () => {
     );
     if (file) {
       formData.append("file", file);
-    } 
+    }
     try {
       const response = await axios.post(
         "http://localhost:8080/orders/add",
@@ -87,7 +85,6 @@ const NewOrderForm = () => {
       );
 
       if (response.status === 201) {
-        setOpen(false);
         console.log(response.data);
         Swal.fire({
           icon: "success",
@@ -98,7 +95,6 @@ const NewOrderForm = () => {
       }
     } catch (error) {
       if (error.response) {
-        setOpen(false);
         Swal.fire({
           icon: "error",
           title: "Error!",
@@ -106,7 +102,6 @@ const NewOrderForm = () => {
         });
         setErrors(error.response.data);
       } else {
-        setOpen(false);
         console.log("Network error:", error.message);
         Swal.fire({
           icon: "error",
@@ -114,6 +109,8 @@ const NewOrderForm = () => {
           text: "Failed to submit order due to network issues.",
         });
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -146,8 +143,9 @@ const NewOrderForm = () => {
               onChange={onInputChange}
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5   ",
               }}
+               size="small"
             />
           </div>
         </div>
@@ -171,8 +169,9 @@ const NewOrderForm = () => {
               onChange={onInputChange}
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5  ",
               }}
+               size="small"
             />
           </div>
         </div>
@@ -193,8 +192,9 @@ const NewOrderForm = () => {
               onChange={onInputChange}
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px]  ml-5  ",
               }}
+               size="small"
             />
           </div>
         </div>
@@ -215,8 +215,9 @@ const NewOrderForm = () => {
               onChange={onInputChange}
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5   ",
               }}
+               size="small"
             />
           </div>
         </div>
@@ -231,9 +232,10 @@ const NewOrderForm = () => {
               type="date"
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5   ",
                 readOnly: true,
               }}
+               size="small"
             />
           </div>
         </div>
@@ -253,8 +255,9 @@ const NewOrderForm = () => {
               onChange={onInputChange}
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5   ",
               }}
+               size="small"
             />
           </div>
         </div>
@@ -277,8 +280,9 @@ const NewOrderForm = () => {
               onChange={onInputChange}
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5   ",
               }}
+               size="small"
             />
           </div>
         </div>
@@ -298,8 +302,9 @@ const NewOrderForm = () => {
               onChange={onInputChange}
               variant="outlined"
               InputProps={{
-                className: "w-[300px]   h-10 ml-5 bg-white  ",
+                className: "w-[300px] ml-5 bg-white  ",
               }}
+               size="small"
             />
           </div>
         </div>
@@ -318,7 +323,7 @@ const NewOrderForm = () => {
             multiline
             rows={6}
             InputProps={{
-              className: "w-[500px]  ml-5 bg-white  ",
+              className: "w-[500px]  ml-5   ",
             }}
           />
         </div>
@@ -353,8 +358,7 @@ const NewOrderForm = () => {
       </form>
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={open}
-        onClick={handleClose}
+        open={loading}
       >
         <CircularProgress color="inherit" />
       </Backdrop>

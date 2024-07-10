@@ -10,9 +10,11 @@ import InventoryStatistic from "../components/InventoryStatistic";
 import RecentlyUsedItem from "../components/RecentlyUsedItem";
 import ItemGroupPieChart from "../components/ItemGroupPieChart";
 import PendingActivities from "../components/PendingActivities";
+import LoginService from "./Login/LoginService";
 
 
 export default function AdminDashboard() {
+  const isEmployee = LoginService.isEmployee();
   return(
     <div>
       <div className="flex items-center justify-start p-2 text-3xl">Admin Dashboard</div>
@@ -27,8 +29,6 @@ export default function AdminDashboard() {
           <ItemPieChart />
         </div>
         <div className="flex flex-col items-center justify-center col-span-8 row-span-4 p-4 text-5xl text-center text-black bg-blue-200 rounded-lg">
-          {/* <div className="text-xl">Inventory-Statistic</div> */}
-          {/* <InventoryStatistic /> */}
           <PendingActivities/>
         </div>
       </div>
@@ -40,13 +40,18 @@ export default function AdminDashboard() {
         <div className="flex flex-col items-center justify-center col-span-6 row-span-5 p-4 text-2xl text-center text-black bg-white rounded-lg">
           <RecentlyUsedItem/>
         </div>
-        <div className="col-span-8 p-4 text-5xl text-center text-black bg-white rounded-lg row-span-7">
-          <InventoryStatistic />
+        {!isEmployee &&(
+          <div className="col-span-8 p-4 text-5xl text-center text-black bg-white rounded-lg row-span-7">
+            <InventoryStatistic />
+          </div>
+        )}
+        {!isEmployee &&(
+          <div className="items-center justify-center col-span-4 p-4 text-xl text-center text-black bg-white rounded-lg row-span-7">
+            <h1>Item Categories</h1>
+            <ItemGroupPieChart/>
         </div>
-        <div className="items-center justify-center col-span-4 p-4 text-xl text-center text-black bg-white rounded-lg row-span-7">
-          <h1>Item Categories</h1>
-          <ItemGroupPieChart/>
-        </div>
+        )}
+        
       </div>
     </div>
   );

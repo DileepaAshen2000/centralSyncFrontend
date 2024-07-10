@@ -31,7 +31,14 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ReviewIcon from "@mui/icons-material/RateReview";
 import InventoryIcon from "@mui/icons-material/Inventory";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import LockIcon from "@mui/icons-material/Lock";
 import image from "../../assests/cursor.png";
+import Avatar from "@mui/material/Avatar";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import Popover from "@mui/material/Popover";
+import {CircularProgress,Backdrop
+} from "@mui/material";
 
 const UserActivityHistory = () => {
   const [activityLogs, setActivityLogs] = useState([]);
@@ -41,6 +48,9 @@ const UserActivityHistory = () => {
   const [noActivitiesFound, setNoActivitiesFound] = useState(false);
   const navigate = useNavigate();
   const [profileInfo, setProfileInfo] = useState({});
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [popoverContent, setPopoverContent] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchProfileInfo();
@@ -54,7 +64,7 @@ const UserActivityHistory = () => {
 
   const fetchProfileInfo = async () => {
     try {
-      const token = localStorage.getItem("token"); // Retrieve the token from localStorage
+      const token = localStorage.getItem("token");
       const response = await LoginService.getYourProfile(token);
       setProfileInfo(response.users);
     } catch (error) {
@@ -64,6 +74,7 @@ const UserActivityHistory = () => {
 
   // Fetch user activity logs from the backend API
   const fetchActivityLogs = async (userId) => {
+    setLoading(true);
     try {
       const response = await axios.get(
         `http://localhost:8080/user-activity-log/${userId}`
@@ -74,6 +85,9 @@ const UserActivityHistory = () => {
     } catch (error) {
       console.error("Error fetching user activity logs:", error);
     }
+    finally{
+      setLoading(false);
+    };
   };
 
   useEffect(() => {
@@ -82,7 +96,7 @@ const UserActivityHistory = () => {
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
-    filterLogs(date, selectedWord);
+    filterLogs(date === null ? null : date, selectedWord);
   };
 
   const handleWordChange = (word) => {
@@ -121,51 +135,107 @@ const UserActivityHistory = () => {
     setFilteredLogs(filtered);
   };
 
+  const handlePopoverOpen = async (event, entityId, action) => {
+    setAnchorEl(event.currentTarget);
+    const content = await handleActionClick(entityId, action);
+    setPopoverContent(content);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+    setPopoverContent("");
+  };
+
+  const open = Boolean(anchorEl);
+
   // Function to handle action click
-  const handleActionClick = (entityId, action) => {
-    let path = "";
-    if (action.includes("User")) {
-      path = `/user/users/${entityId}`;
-    } else if (action.includes("ticket")) {
-      path = `/ticket/ticketdoc/${entityId}`;
-    } else if (action.includes("Stock In")) {
-      path = `/stockIn/${entityId}`;
-    } else if (action.includes("Stock Out")) {
-      path = `/stockOut/${entityId}`;
-    } else if (action.includes("Request")) {
-      path = `/item/view-item/${entityId}`;
-    } else if (action.includes("Reservation")) {
-      path = `/stockOut/${entityId}`;
-    } else if (action.includes("Item")) {
-      path = `/item/view-item/${entityId}`;
-    } else if (action.includes("Order")) {
-      path = `/order/view-order/${entityId}`;
-    } else if (action.includes("Adjustment")) {
-      path = `/adjustment/${entityId}`;
-    } else {
+  const handleActionClick = async (entityId, action) => {
+    let popoverContent = "";
+
+    try {
+      if (action.includes("User") || action.includes("user")) {
+        const response = await axios.get(
+          `http://localhost:8080/user/users/${entityId}`
+        );
+        popoverContent = `User Id: ${entityId}\n Name: ${response.data.firstName} ${response.data.lastName}\n
+                               Role: ${response.data.role}\n
+                               Status: ${response.data.status}`;
+      } else if (action.includes("ticket")) {
+        const response = await axios.get(
+          `http://localhost:8080/ticket/tickets/${entityId}`
+        );
+        popoverContent = `Ticket ID:${entityId}\n Status:${response.data.ticketStatus}\n Item Name:${response.data.itemId.itemName}\nItem Brand:${response.data.itemId.brand}\n`;
+      } else if (action.includes("Stock In")) {
+        const response = await axios.get(
+          `http://localhost:8080/stock-in/getById/${entityId}`
+        );
+        popoverContent = `StockIn ID:${entityId}\n Location:${response.data.location}\n Item Name:${response.data.itemId.itemName}`;
+      } else if (action.includes("Stock Out")) {
+        const response = await axios.get(
+          `http://localhost:8080/stock-out/getById/${entityId}`
+        );
+        popoverContent = `Stock Out ID: ${entityId}\n Department:${response.data.department}\nItem Name:${response.data.itemId.itemName}\n`;
+      } else if (action.includes("Reservation")) {
+        const response = await axios.get(
+          `http://localhost:8080/ticket/tickets/${entityId}`
+        );
+        popoverContent = `Ticket ID ${entityId}\n Status:${response.data.ticketStatus}\n Topic:${response.data.itemName}\nTopic:${response.data.itemBrand}\n`;
+      } else if (action.includes("Request")) {
+        const response = await axios.get(
+          `http://localhost:8080/reuest/getById/${entityId}`
+        );
+        popoverContent = `Request ID ${entityId}\n Status:${response.data.reqStatus}\n Reason:${response.data.reason}\nTopic:${response.data.itemId.itemName}\n`;
+      } else if (action.includes("Item")) {
+        const response = await axios.get(
+          `http://localhost:8080/inventory-item/getById/${entityId}`
+        );
+        popoverContent = `item Id ${entityId}\n Status:${response.data.status}\n Item Name:${response.data.itemName}\nItem Brand:${response.data.brand}\n`;
+      } else if (action.includes("Order") || action.includes("order")) {
+        const response = await axios.get(
+          `http://localhost:8080/orders/getById/${entityId}`
+        );
+        popoverContent = `Order Id ${entityId}\n Status:${response.data.status}\n Item Name:${response.data.itemName}\nBrand Name:${response.data.brandname}\nVendor Name:${response.data.vendorName}\n`;
+      } else if (
+        action.includes("Adjustment") ||
+        action.includes("adjustment")
+      ) {
+        const response = await axios.get(
+          `http://localhost:8080/adjustment/getById/${entityId}`
+        );
+        popoverContent = `Adjustment Id: ${entityId}\n Status:${response.data.status}\n Topic:${response.data.reason}\nitemId:${response.data.itemId}\n`;
+      } else if (action.includes("Password")) {
+        popoverContent = `Password succesfully changed`;
+      } else if (action.includes("Profile")) {
+        popoverContent = `Profile updated succesfully`;
+      } else {
+        popoverContent = `Details for action: ${action}`;
+      }
+    } catch (error) {
+      popoverContent = "Data not found for this action";
     }
 
-    // Navigate to the appropriate path
-    if (path) {
-      navigate(path);
-    }
+    return popoverContent;
   };
 
   const getIcon = (action) => {
     switch (true) {
       case action.includes("inactive"):
         return <BlockIcon className="bg-red-500 rounded-full h-7 w-7" />;
-      case action.includes("Delete"):
+      case action.includes("deleted"):
         return <DeleteIcon className="bg-red-500 rounded-full h-7 w-7" />;
-      case action.includes("approved"):
+      case action.includes("approved") ||
+        action.includes("accepted") ||
+        action.includes("Completed"):
         return (
           <CheckCircleIcon className="bg-green-800 rounded-full h-7 w-7" />
         );
       case action.includes("rejected"):
         return <CancelIcon className="bg-red-500 rounded-full h-7 w-7" />;
+      case action.includes("password") || action.includes("Password"):
+        return <LockIcon className="bg-red-500 rounded-full h-7 w-7" />;
       case action.includes("reviewed"):
         return <ReviewIcon className="bg-blue-500 rounded-full h-7 w-7" />;
-      case action.includes("User"):
+      case action.includes("User") || action.includes("user"):
         return <UserIcon className="bg-green-500 rounded-full h-7 w-7" />;
       case action.includes("ticket"):
         return <TicketIcon className="bg-yellow-500 rounded-full h-7 w-7" />;
@@ -178,12 +248,22 @@ const UserActivityHistory = () => {
         return (
           <ReservationIcon className="bg-yellow-500 rounded-full h-7 w-7" />
         );
-      case action.includes("Item"):
+      case action.includes("delivered"):
+        return (
+          <LocalShippingIcon className="bg-blue-600 rounded-full h-7 w-7" />
+        );
+      case action.includes("item") || action.includes("Item"):
         return <ItemIcon className="bg-blue-700 rounded-full h-7 w-7" />;
-      case action.includes("Order"):
+      case action.includes("Order") || action.includes("order"):
         return <OrderIcon className="bg-green-700 rounded-full h-7 w-7" />;
-      case action.includes("Adjustment"):
+      case action.includes("Adjustment") || action.includes("adjustment"):
         return <AdjustmentIcon className="bg-blue-800 rounded-full h-7 w-7" />;
+
+      case action.includes("Profile"):
+        return (
+          <ManageAccountsIcon className="bg-purple-600 rounded-full h-7 w-7" />
+        );
+
       default:
         return <TimelineDot className="bg-red-500 rounded-full h-7 w-7" />;
     }
@@ -197,8 +277,14 @@ const UserActivityHistory = () => {
             <div className="bg-blue-300">
               <h1 className="p-4 text-4xl font-bold">Recent Activities</h1>
               <div className="grid grid-cols-8 grid-rows-1  gap-x-[0.25rem] pt-5 ">
-                <div className="col-span-1 px-11">
-                  <AccountCircleOutlinedIcon className="text-[70px]" />
+                <div className="pl-5 col-span-1 px-11 pb-2">
+                  {profileInfo.imagePath && (
+                    <Avatar
+                      alt="Profile pic"
+                      src={`http://localhost:8080/user/display/${profileInfo.userId}`}
+                      sx={{ width: 100, height: 100 }}
+                    />
+                  )}
                 </div>
                 <div className="col-span-2">
                   <Typography variant="h6" className="font-semibold">
@@ -218,6 +304,7 @@ const UserActivityHistory = () => {
                     onChange={handleDateChange}
                     className="w-[250px] bg-slate-200 border"
                     renderInput={(params) => <TextField {...params} />}
+                    clearable={true}
                   />
                 </div>
                 <div className="col-start-7 col-span-1 gap-2">
@@ -247,7 +334,13 @@ const UserActivityHistory = () => {
                 </Typography>
               </div>
             </div>
+            {loading ? (
+        <div className="flex justify-center mostRequestedItems-center">
+          <CircularProgress />
+        </div>
+      ):(<>
             <Timeline className="pt-12">
+            
               {filteredLogs.map((log) => (
                 <TimelineItem key={log.userId}>
                   <TimelineOppositeContent className="flex-none w-1/5">
@@ -287,8 +380,8 @@ const UserActivityHistory = () => {
                       data-aos="zoom-in"
                       className="w-[310px] h-[50px] rounded-lg border-black font-semibold text-black  space-x-5 shadow-xl hover:bg-blue-500"
                       clickable
-                      onClick={() =>
-                        handleActionClick(log.entityId, log.action)
+                      onClick={(e) =>
+                        handlePopoverOpen(e, log.entityId, log.action)
                       }
                     />
                   </TimelineContent>
@@ -307,7 +400,33 @@ const UserActivityHistory = () => {
                 </div>
               )}
             </div>
+            <Popover
+              open={open}
+              anchorEl={anchorEl}
+              onClose={handlePopoverClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+            >
+              <div className="p-5">
+                <Typography variant="subtitle2" className="">
+                  {popoverContent.split("\n").map((line, index) => (
+                    <div key={index}>{line}</div>
+                  ))}
+                </Typography>
+              </div>
+            </Popover>
+            </>
+          )}
           </div>
+          
+      
+      
         </div>
       </LocalizationProvider>
     </React.Fragment>

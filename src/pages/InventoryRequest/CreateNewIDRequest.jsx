@@ -1,8 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Autocomplete, TextField, Grid, Box, Typography, Button } from '@mui/material';
-import LoginService from '../Login/LoginService';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+  Autocomplete,
+  TextField,
+  Grid,
+  Box,
+  Typography,
+  Button,
+} from "@mui/material";
+import LoginService from "../Login/LoginService";
+import axios from "axios";
 
 const NewRequest = () => {
   const [itemName, setItemName] = useState("");
@@ -16,6 +23,7 @@ const NewRequest = () => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [workSite, setWorkSite] = useState("");
+  const location = useLocation();
 
   const isEmployee = LoginService.isEmployee();
   const isReqHandler = LoginService.isReqHandler();
@@ -29,10 +37,12 @@ const NewRequest = () => {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/inventory-item/getAll');
+        const response = await axios.get(
+          "http://localhost:8080/inventory-item/getAll"
+        );
         setOptions(response.data);
       } catch (error) {
-        console.error('Error fetching item details:', error);
+        console.error("Error fetching item details:", error);
       }
     };
 
@@ -48,7 +58,8 @@ const NewRequest = () => {
     const newErrors = {};
     if (!itemId) newErrors.itemId = "Item selection is required";
     if (!quantity) newErrors.quantity = "Quantity is required";
-    if (quantity > availableQuantity) newErrors.quantity = "Quantity exceeds available stock";
+    if (quantity > availableQuantity)
+      newErrors.quantity = "Quantity exceeds available stock";
     if (!reason) newErrors.reason = "Reason is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -108,12 +119,20 @@ const NewRequest = () => {
       setAvailableQuantity(0);
     }
   };
-
+  useEffect(() => {
+    if (location.state?.item) {
+      const { itemId, itemName } = location.state.item;
+      setItemId(itemId);
+      setItemName(itemName);
+    }
+  }, [location.state]);
   return (
     <Box className="p-10 bg-white rounded-2xl ml-14 mr-14">
       <Box className="pb-4">
         <h1 className="pt-2 pb-3 text-3xl font-bold">
-          {workSite === "ONLINE" ? "New Delivery Request" : "New Inventory Request"}
+          {workSite === "ONLINE"
+            ? "New Delivery Request"
+            : "New Inventory Request"}
         </h1>
       </Box>
       <form>
@@ -124,12 +143,18 @@ const NewRequest = () => {
             </Grid>
             <Grid item sm={4.5}>
               <Autocomplete
+                value={itemId ? { itemName, itemId } : null}
                 disablePortal
                 options={options}
                 getOptionLabel={(option) => option.itemName}
                 onChange={handleItemChange}
                 renderInput={(params) => (
-                  <TextField {...params} label="Item Name" helperText="Please select the item name." error={!!errors.itemId} />
+                  <TextField
+                    {...params}
+                    label="Item Name"
+                    helperText="Please select the item name."
+                    error={!!errors.itemId}
+                  />
                 )}
                 size="small"
               />
@@ -146,12 +171,14 @@ const NewRequest = () => {
               <TextField
                 id="quan"
                 value={quantity}
-                style={{ width: '300px' }}
+                style={{ width: "300px" }}
                 onChange={(e) => setQuantity(e.target.value)}
                 name="quantity"
                 size="small"
                 error={!!errors.quantity}
-                helperText={errors.quantity || `Available quantity: ${availableQuantity}`}
+                helperText={
+                  errors.quantity || `Available quantity: ${availableQuantity}`
+                }
               />
             </Grid>
           </Grid>
@@ -164,7 +191,7 @@ const NewRequest = () => {
               <TextField
                 id="reason"
                 value={reason}
-                style={{ width: '300px' }}
+                style={{ width: "300px" }}
                 onChange={(e) => setReason(e.target.value)}
                 name="reason"
                 size="small"
@@ -185,7 +212,7 @@ const NewRequest = () => {
                 multiline
                 rows={6}
                 placeholder="Enter Description Here..."
-                style={{ width: '500px' }}
+                style={{ width: "500px" }}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 error={!!errors.description}
@@ -199,7 +226,12 @@ const NewRequest = () => {
           <Typography display="block" gutterBottom>
             Attach File(s) to inventory request
           </Typography>
-          <input type="file" className="mt-4 mb-2" onChange={handleFileChange} multiple />
+          <input
+            type="file"
+            className="mt-4 mb-2"
+            onChange={handleFileChange}
+            multiple
+          />
           <Typography variant="caption" display="block" gutterBottom>
             You can upload a maximum of 5 files, 5MB each
           </Typography>
@@ -218,7 +250,7 @@ const NewRequest = () => {
           <Button
             className="px-6 py-2 rounded"
             variant="outlined"
-            onClick={() => navigate("/employee-in-request-list")}
+            onClick={() => navigate(-1)}
           >
             Cancel
           </Button>
@@ -229,3 +261,4 @@ const NewRequest = () => {
 };
 
 export default NewRequest;
+

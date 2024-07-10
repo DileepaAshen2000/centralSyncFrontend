@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Stack, Select, Box } from "@mui/material";
+import { TextField, Button, Stack, Select, Box,CircularProgress,Backdrop} from "@mui/material";
 // import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
 import axios from "axios";
 import MenuItem from "@mui/material/MenuItem";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import Avatar from "@mui/material/Avatar";
+import Swal from 'sweetalert2';
 //import DragDrop from "./Drag&Drop";
 //import { DropzoneArea } from 'material-ui-dropzone';
 //import Dropzone from "./Dropzone";
@@ -22,45 +24,80 @@ const ViewUser = () => {
     department: "",
     role: "",
     workSite: "",
+    imagePath: "",
+    status:"",
   });
   const [fetchData, setFetchData] = useState(false);
   const { ID } = useParams();
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch user details by ID on component mount
+    setLoading(true);
     axios
       .get(`http://localhost:8080/user/users/${ID}`)
       .then((response) => {
-        // Update user state with fetched data
+        
         setUser(response.data);
       })
       .catch((error) => {
         console.log("Error fetching user:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [ID]);
 
-  const handleDelete = () => {
-    try {
-      axios.delete(`http://localhost:8080/user/delete/${ID}`).then(() => {
-        setFetchData(!fetchData);
-        navigate("/user", { fetchData });
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+   
 
     // Handle marking the item as inactive
     const handleMarkAsInactive = () => {
       axios
         .patch(`http://localhost:8080/user/updateStatus/${ID}`)
-        .then(() => {
+        .then((response) => {
   
+          if (response.status === 200) {
+            Swal.fire({
+              icon: "success",
+              title: "Success!",
+              text: "User marked as inactive!",
+            });
           navigate("/user");
+          }
         })
         .catch((error) => {
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: "Failed to update status",
+          });
+          console.log(error);
+        });
+    };
+
+    // Handle marking the item as inactive
+    const handleMarkAsActive = () => {
+      axios
+        .patch(`http://localhost:8080/user/updateStatusActive/${ID}`)
+        .then((response) => {
+          
+          if (response.status === 200) {
+            Swal.fire({
+              icon: "success",
+              title: "Success!",
+              text: "User succesfully marked as active!",
+            });
+  
+          navigate("/user");
+          }
+        })
+        .catch((error) => {
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: "Failed to update status"
+          });
           console.log(error);
         });
     };
@@ -76,18 +113,33 @@ const ViewUser = () => {
         
         </div>
             
-
+            {user.status==="ACTIVE" &&(
             <div className="col-start-6">
               <Button
                 variant="contained"
-                className="bg-blue-600 w-[170px] h-[40px] rounded text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
+                className="bg-red-600 w-[170px] h-[40px] rounded text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
                 onClick={handleMarkAsInactive}
               >
                 Mark as Inactive
               </Button>
             </div>
+            )
+            }
+            {user.status==="INACTIVE" &&(
+            <div className="col-start-6">
+              <Button
+                variant="contained"
+                className="bg-green-600 w-[170px] h-[40px] rounded text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
+                onClick={handleMarkAsActive}
+              >
+                Mark as Active
+              </Button>
+            </div>
+            )
+            }
           </div>
         <form noValidate>
+        
           <div className="grid grid-cols-6 grid-rows-7  gap-x-[0.25rem] gap-y-7 ">
             <div className="col-span-1 row-span-1">
               <label htmlFor="5">Employee Id</label>
@@ -105,9 +157,18 @@ const ViewUser = () => {
               />
             </div>
             <div></div>
-            <div></div>
-            <div></div>
-            <div className="col-span-1 row-span-2">
+            <div className="row-span-4 col-span-2">
+            {user.imagePath && (
+          
+            <Avatar
+              src={`http://localhost:8080/user/display/${ID}`}
+              alt="Profile"
+              sx={{ width: 220, height: 220 }}
+            />
+           
+        )}
+            </div>
+            <div className="col-span-1">
               <label htmlFor="name">Name</label>
             </div>
             <div className="col-span-2">
@@ -124,7 +185,10 @@ const ViewUser = () => {
                 size="small"
               />
             </div>
-            <div className="col-span-3"> </div>
+            <div></div>
+
+            
+            <div className="col-span-1"> </div>
             <div className="col-span-2">
               <TextField
                 variant="outlined"
@@ -140,8 +204,9 @@ const ViewUser = () => {
               />
             </div>
             <div></div>
-            <div></div>
-            <div></div>
+
+             
+            
             <div className="col-span-1 row-span-1">
               <label htmlFor="2">Department</label>
             </div>
@@ -159,8 +224,9 @@ const ViewUser = () => {
                
             </div>
             <div></div>
-            <div></div>
-            <div></div>
+
+            
+            
             <div className="col-span-1 row-span-1">
               <label htmlFor="3">Role</label>
             </div>
@@ -180,6 +246,7 @@ const ViewUser = () => {
             <div></div>
             <div></div>
             <div></div>
+ 
             <div className="col-span-1 row-span-1">
               <label htmlFor="3">Work Site</label>
             </div>
@@ -304,17 +371,13 @@ const ViewUser = () => {
             <div></div>
             <div></div>
           </div>
+           
+            
+       
+
+
 
           <div className="grid grid-cols-6 grid-rows-2 gap-y-7 gap-x-[0.25rem] mt-12 ">
-            <div className="col-start-5">
-              <Button
-                variant="contained"
-                className="bg-blue-600 w-[150px] rounded text-white border-blue-[#007EF2] hover:text-[#007EF2] hover:bg-white"
-                onClick={handleDelete}
-              >
-                Delete
-              </Button>
-            </div>
             <div className="col-start-6">
               <Button
                 variant="outlined"
@@ -325,6 +388,12 @@ const ViewUser = () => {
               </Button>
             </div>
           </div>
+          <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
         </form>
       </Box>
     </>

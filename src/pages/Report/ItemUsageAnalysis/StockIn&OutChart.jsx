@@ -3,72 +3,57 @@ import { LineChart } from "@mui/x-charts/LineChart";
 import { CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import { useResizeDetector } from "react-resize-detector";
 
 const palette = ["#357a38", "#ff1744"];
 
-
-const StockLineChart = ({category, year} ) => {
- 
-
+const StockLineChart = ({ category, year }) => {
   const [stockIn, setStockIn] = useState([]);
-  const [stockOut, setStockOut] = useState();
-  const [loadingStockIn,setLoadingStockIn]=useState(true);
-  const [loadingStockOut,setLoadingStockOut]=useState(true);
+  const [stockOut, setStockOut] = useState([]);
+  const [loading, setLoading] = useState();
+  const { width=800, height = 400, ref } = useResizeDetector();
 
+  useEffect(() => {
+    const fetchStockData = async () => {
+      setLoading(true);
+      try {
+        const [stockInResponse, stockOutResponse] = await Promise.all([
+          axios.get(
+            `http://localhost:8080/stock-in/getAll?itemGroup=${category}&year=${year}`
+          ),
+          axios.get(
+            `http://localhost:8080/stock-out/getAll?itemGroup=${category}&year=${year}`
+          ),
+        ]);
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8080/stock-in/getAll?itemGroup=${category}&year=${year}`);
-      console.log(response.data)
-      setStockIn(Array.isArray(response.data)?response.data:[]);
-    } catch (error) {
-      console.log(error);
-      setStockIn([]);
-    }finally{
-      setLoadingStockIn(false);
-    }
-  };
+        setStockIn(
+          Array.isArray(stockInResponse.data) ? stockInResponse.data : []
+        );
+        setStockOut(
+          Array.isArray(stockOutResponse.data) ? stockOutResponse.data : []
+        );
+      } catch (error) {
+        console.log(error);
+        setStockIn([]);
+        setStockOut([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchData();
-}, [category, year]);
+    fetchStockData();
+  }, [category, year]);
 
-
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8080/stock-out/getAll?itemGroup=${category}&year=${year}`);
-      console.log(response.data)
-      setStockOut(Array.isArray(response.data)?response.data:[]);
-    } catch (error) {
-      console.log(error);
-      setStockOut([])
-    }finally{
-      setLoadingStockOut(false);
-    }
-  };
-
-  fetchData();
-}, [category, year]);
-
-if (loadingStockIn || loadingStockOut) {
-  return (
-    <div className="flex justify-center items-center">
-      <CircularProgress />
-    </div>
-  );
-}
-
-
-
-  if (stockIn.length === 0 && stockOut.length === 0) {
+  if (loading) {
     return (
-      <div className="text-center m-10">
-        No records found
-        
+      <div className="flex justify-center items-center">
+        <CircularProgress />
       </div>
     );
+  }
+
+  if (stockIn.length === 0 && stockOut.length === 0) {
+    return <div className="text-center m-10">No records found</div>;
   }
 
   const stockInByMonth = stockIn
@@ -84,7 +69,6 @@ if (loadingStockIn || loadingStockOut) {
       return acc;
     }, {});
 
-
   const stockOutByMonth = stockOut
     .map((stock) => ({
       date: stock.date,
@@ -98,9 +82,7 @@ if (loadingStockIn || loadingStockOut) {
       return acc;
     }, {});
 
-
- 
- const sumByMonthSI = {};
+  const sumByMonthSI = {};
   for (const month in stockInByMonth) {
     if (stockInByMonth.hasOwnProperty(month)) {
       const sum = stockInByMonth[month].reduce(
@@ -110,7 +92,6 @@ if (loadingStockIn || loadingStockOut) {
       sumByMonthSI[month] = sum;
     }
   }
-
 
   const sumByMonthSO = {};
   for (const month in stockOutByMonth) {
@@ -122,7 +103,6 @@ if (loadingStockIn || loadingStockOut) {
       sumByMonthSO[month] = sum;
     }
   }
-
 
   const xLabels = [
     "January",
@@ -139,34 +119,36 @@ if (loadingStockIn || loadingStockOut) {
     "December",
   ];
 
-
-   // Ensure that there is a value for each month, even if it is 0
+  // Ensure that there is a value for each month, even if it is 0
   xLabels.forEach((label) => {
     sumByMonthSI[label] = sumByMonthSI[label] || 0;
     sumByMonthSO[label] = sumByMonthSO[label] || 0;
   });
 
-
   const stockInData = xLabels.map((label) => sumByMonthSI[label] || 0);
   const stockOutData = xLabels.map((label) => sumByMonthSO[label] || 0);
-
+  console.log("ref",ref);
   return (
-
-    <LineChart
-      colors={palette}
-      width={1000}
-      height={300}
-      series={[
-        { data: stockInData, label: "Stock In" },
-        { data: stockOutData, label: "Stock Out" },
-      ]}
-      xAxis={[
-        {
-          scaleType: "point",
-          data: xLabels,
-        },
-      ]}
-    />
+    <div ref={ref} className="w-full h-full">
+      {width && height && (
+        <LineChart
+          colors={palette}
+          width={width}
+          height={height-50}
+          series={[
+            { data: stockInData, label: "Stock In" },
+            { data: stockOutData, label: "Stock Out" },
+          ]}
+          xAxis={[
+            {
+              scaleType: "point",
+              data: xLabels,
+            },
+          ]}
+          grid={{ vertical: true, horizontal: true }}
+        />
+      )}
+    </div>
   );
 };
 

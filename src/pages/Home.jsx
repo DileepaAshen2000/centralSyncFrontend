@@ -14,26 +14,27 @@ import ItemDataGrid from "./InventoryItem/ItemList";
 import AddItemForm from "./InventoryItem/NewItem";
 import ViewItemDetails from "./InventoryItem/ViewDetails";
 import EditItem from "./InventoryItem/EditItem";
-
-import AdminInRequestList from "./InventoryRequest/AdminInRequestList";
-import AdminInRequestDocument from "./InventoryRequest/AdminInRequestDocument";
-import InRequestHandlerRequestList from "./InventoryRequest/InRequestHandlerInRequestList";
-import InRequestHandlerInRequestDocument from "./InventoryRequest/InRequestHandlerInRequestDocument";
-import EmployeeInRequestList from "./InventoryRequest/EmployeeInRequestList";
-import InRequestDocument from "./InventoryRequest/InRequestDocument";
-import DeliveryRequestDocument from "./InventoryRequest/DeliveryRequestDocument";
-import CreateNewIDRequest from "./InventoryRequest/CreateNewIDRequest";
-import EditRequest from "./InventoryRequest/EditInRequest";
-
+import AdminInRequestList from "./Request/AdminInRequestList";
+import AdminInRequestDocument from "./Request/AdminInRequestDocument";
+import RequestHandlerRequestList from "./Request/RequestHandlerInRequestList";
+import ReqHandlerInRequestDocument from "./Request/ReqHandlerInRequestDocument";
+import EmployeeDeRequestList from "./Request/EmployeeDeRequestList";
+import EmployeeInRequestList from "./Request/EmployeeInRequestList";
+import EmployeeInRequestDocument from "./Request/EmployeeInRequestDocument";
+import EmployeeDeRequestDocument from "./Request/EmployeeDeRequestDocument";
+import InRequestDocument from "./Request/InRequestDocument";
+import AdminDeRequestDocument from "./Request/AdminDeRequestDocument";
+import CreateNewIDRequest from "./Request/CreateNewIDRequest";
+import EditRequest from "./Request/EditInRequest";
 import UserActivityHistory from "./User/History";
 import EditAdjustment from "./Adjustment/EditAdjustment";
 import StockInList from "./StockIn/StockInList";
 import StockOutList from "./StockOut/StockOutList";
 import AdjustmentList from "./Adjustment/AdjustmentList";
-import OrderDataGrid from "./InitiateOrder/OrderList";
+import OrderTab from "./InitiateOrder/OrderList";
 import CreateTicket from "./Ticket/CreateTicket";
 import NewOrderForm from "./InitiateOrder/NewOrder";
-import ViewOrderDetails from "./InitiateOrder/ViewOrder";
+import ViewOrderDetails from "./InitiateOrder/OrderDoc";
 import EditOrderDetails from "./InitiateOrder/EditOrder";
 import Usage from "./Report/ItemUsageAnalysis/UsageReport";
 import LowStockReport from "./Report/LowStockReport";
@@ -54,10 +55,14 @@ import InventorySummary from "./Report/InventorySummary";
 import LoginPage from "./Login/LoginPage";
 import LoginService from "./Login/LoginService";
 import CreatePassword from "./User/CreatePassword";
+import MyTicketList from "./Ticket/Myticketlist";
 import SearchResult from "../components/SearchResult";
 import ItemDetail from "../components/ItemDetail";
 import ForgotPassword from "./Login/ForgotPassword";
 import ResetPassword from "./Login/ResetPassword";
+import EditTicket from "./Ticket/EditTicket";
+import ChangePassword from "./UserProfile/ChangePasword";
+import EditProfile from "./UserProfile/ChangeProfile";
 
 const Home = () => {
   const isAuthenticated = LoginService.isAuthenticated();
@@ -67,8 +72,8 @@ const Home = () => {
       <Routes>
         <Route path="/user/:id/password" element={<CreatePassword />}></Route>
         <Route path="/" element={<LoginPage />}></Route>
-        <Route path="/forgot-password" element={<ForgotPassword/>}></Route>
-        <Route path="/resetPassword" element={<ResetPassword/>}></Route>
+        <Route path="/forgot-password" element={<ForgotPassword />}></Route>
+        <Route path="/resetPassword" element={<ResetPassword />}></Route>
       </Routes>
       {isAuthenticated && (
         <div>
@@ -90,8 +95,6 @@ const Home = () => {
               style={{ backgroundColor: "#eeeeee" }}
               className="w-screen p-10"
             >
-
-
               <Routes>
                 {/* Enter components here, that you want to insert. */}
 
@@ -100,11 +103,11 @@ const Home = () => {
                   path="/admin-dashboard"
                   element={<AdminDashboard />}
                 ></Route>
-                   <Route
+                <Route
                   path="/request-handler-dashboard"
                   element={<AdminDashboard />}
                 ></Route>
-                  <Route
+                <Route
                   path="/employee-dashboard"
                   element={<AdminDashboard />}
                 ></Route>
@@ -141,13 +144,29 @@ const Home = () => {
                   element={<UserActivityHistory />}
                 ></Route>
                 <Route path="/user/users/:ID" element={<ViewUser />}></Route>
-
+                {/* User Profile routing */}
+                <Route
+                  path="/userprofile/changepassword"
+                  element={<ChangePassword />}
+                ></Route>
+                <Route
+                  path="/userprofile/editprofile"
+                  element={<EditProfile />}
+                ></Route>
                 {/* Ticket routing */}
                 <Route path="/newTicket" element={<CreateTicket />}></Route>
                 <Route path="/ticket" element={<Ticket />}></Route>
                 <Route
                   path="ticket/ticketdoc/:id"
                   element={<TicketDocument />}
+                ></Route>
+                <Route
+                  path="/ticket/myticketlist/:userId"
+                  element={<MyTicketList />}
+                ></Route>
+                <Route
+                  path="/ticket/editticket/:id"
+                  element={<EditTicket />}
                 ></Route>
 
                 {/* Inventory Item routing */}
@@ -173,15 +192,23 @@ const Home = () => {
                   path="/admin/in-request-document/:reqId"
                   element={<AdminInRequestDocument />}
                 ></Route>
+                   <Route
+                  path="/admin/de-request-document/:reqId"
+                  element={<AdminDeRequestDocument/>}
+                ></Route>
                 {/*InRequest Handler view routing */}
                 <Route
-                  path="/in-requestHandler-in-request-list"
-                  element={<InRequestHandlerRequestList />}
+                  path="/requestHandler/in-request-list"
+                  element={<RequestHandlerRequestList />}
                 ></Route>
+
                 <Route
-                  path="/in-request-handlerlist/in-request-document/:reqId"
-                  element={<InRequestHandlerInRequestDocument />}
+                  path="/requestHandler/in-request-document/:reqId"
+                  element={<ReqHandlerInRequestDocument />}
                 ></Route>
+               
+
+
                 {/*Employee view routing */}
                 <Route
                   path="/employee-in-request-list"
@@ -189,13 +216,21 @@ const Home = () => {
                 ></Route>
                 <Route
                   path="/employee/in-request-document/:reqId"
+                  element={<EmployeeInRequestDocument />}
+                ></Route>
+                <Route
+                  path="/employee/request-document/:reqId"
                   element={<InRequestDocument />}
                 ></Route>
                 <Route
-                  path="/employee/delivery-request-document/:reqId"
-                  element={<DeliveryRequestDocument />}
+                  path="/employee-de-request-list"
+                  element={<EmployeeDeRequestList/>}
                 ></Route>
-                {/*Common views for three actors rounting*/}
+                <Route
+                  path="/employee/de-request-document/:reqId"
+                  element={<EmployeeDeRequestDocument />}
+                ></Route>
+                {/*Common views for three actors routing*/}
                 <Route
                   path="/in-request/create-new-in-request"
                   element={<CreateNewIDRequest />}
@@ -221,8 +256,8 @@ const Home = () => {
                   element={<StockOutDocument />}
                 ></Route>
 
-                {/*Initiate order routing*/}
-                <Route path="/order" element={<OrderDataGrid />}></Route>
+                {/*Item order routing*/}
+                <Route path="/order" element={<OrderTab />}></Route>
                 <Route
                   path="/order/new-order"
                   element={<NewOrderForm />}
@@ -274,7 +309,6 @@ const Home = () => {
                 <Route path="/search-result" element={<SearchResult />}></Route>
                 <Route path="/item-detail" element={<ItemDetail />} />
               </Routes>
-
             </Grid>
           </Grid>
         </div>
