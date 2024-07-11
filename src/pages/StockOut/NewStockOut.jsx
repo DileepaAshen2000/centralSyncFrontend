@@ -111,7 +111,7 @@ const NewStockOut = () => {
       console.error("Error:", error);
       Swal.fire({
         title: "Error!",
-        text: "Failed to submit Stock-Out. Please try again.",
+        text: `Failed to submit Stock-Out. Error: ${error.response.data}`,
         icon: "error"
       });
     }

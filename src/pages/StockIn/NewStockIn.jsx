@@ -94,7 +94,7 @@ const NewStockIn = () => {
       
       navigate('/stockIn') // To navigate to the stockin page
       Swal.fire({
-        title: "Done !",
+        title: "Done!",
         text: "Stock-In Successfully Submitted.!",
         icon: "success"
       });
@@ -108,65 +108,13 @@ const NewStockIn = () => {
         console.log(error.response.data);
         Swal.fire({
           title: "Error!",
-          text: "Failed to submit Stock-In. Please try again.",
+          text: `Failed to submit Stock-In. Error: ${error.response.data}`,
           icon: "error"
         });
       }
     }
   }
 
-  // const onSubmit = async (e) => {
-  //   e.preventDefault();
-  //   const formData = new FormData();
-  //   formData.append(
-  //     "stockIn",
-  //     new Blob(
-  //       [
-  //         JSON.stringify({
-  //           location,
-  //           date,
-  //           description,
-  //           inQty,
-  //           itemId,
-  //           userId,
-  //         }),
-  //       ],
-  //       { type: "application/json" }
-  //     )
-  //   );
-  //   if (file) {
-  //     formData.append("file", file);
-  //   }
-  //   try {
-  //     const response = await axios.post(
-  //       "http://localhost:8080/stock-in/add",
-  //       formData,
-  //       {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       }
-  //     );
-  //     if (response.status === 201) {
-  //       Swal.fire({
-  //         icon: "success",
-  //         title: "Success!",
-  //         text: "Item successfully added!",
-  //       });
-  //       // setFetchData(!fetchData);
-  //       navigate("/item");
-  //     }
-  //   } catch (error) {
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: "Error!",
-  //       text: "Failed to add new item. Please check your inputs.",
-  //     });
-  //     if (error.response && error.response.status === 400) {
-  //       setErrors(error.response.data);
-  //     }
-  //   }
-  // }
 
   const validateInputs = () => {
     const errors = {};
