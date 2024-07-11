@@ -18,7 +18,7 @@ const getStatusClass = (status) => {
 };
 
 const columns = [
-  { field: "id", headerName: "Item ID", width: 150 },
+
   {
     field: "item_name",
     headerName: "Item Name",
@@ -26,6 +26,11 @@ const columns = [
     editable: false,
     flex: 1,
   },
+  { field: "model",
+    headerName: "Model",
+    minwidth: 200,
+    editable: false,
+    flex: 1,},
   {
     field: "group",
     headerName: "Group",
@@ -87,6 +92,7 @@ const ItemDataGrid = () => {
         const data = response.data.map((item) => ({
           id: item.itemId,
           item_name: item.itemName,
+          model:item.model,
           group: categoryMapping[item.itemGroup],
           quantity: item.quantity,
           status: item.status,

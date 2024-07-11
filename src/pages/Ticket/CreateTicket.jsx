@@ -50,6 +50,7 @@ const CreateTicket = () => {
   }, []);
 
   console.log("Options:", options);
+  //fetch data when navigate through search
   useEffect(() => {
     if (location.state?.item) {
       const { itemName, brand } = location.state.item;

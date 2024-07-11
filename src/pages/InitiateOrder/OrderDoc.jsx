@@ -20,6 +20,7 @@ import Print from "@mui/icons-material/Print";
 import ReactToPrint from "react-to-print";
 import axios from "axios";
 import ArrowBack from "@mui/icons-material/ArrowBack";
+import Swal from "sweetalert2";
 
 const ViewOrderDetails = () => {
   const navigate = useNavigate();
@@ -32,7 +33,8 @@ const ViewOrderDetails = () => {
     companyName: "",
     vendorEmail: "",
     mobile: "",
-    date: "",
+    dateInitiated: "",
+    dateCompleted: "",
     itemName: "",
     brandName: "",
     quantity: "",
@@ -45,7 +47,8 @@ const ViewOrderDetails = () => {
     companyName,
     vendorEmail,
     mobile,
-    date,
+    dateInitiated,
+    dateCompleted,
     itemName,
     brandName,
     quantity,
@@ -72,17 +75,45 @@ const ViewOrderDetails = () => {
 
   const handleMarkAsReviewed = async () => {
     try {
-      await axios.patch(`http://localhost:8080/orders/review/${orderID}`);
+      const response = await axios.patch(
+        `http://localhost:8080/orders/review/${orderID}`
+      );
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Order marked as reviewed",
+        });
+      }
       navigate(-1);
     } catch (error) {
       console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Cannot perform the action",
+      });
     }
   };
   const handleMarkAsCompleted = async () => {
     try {
-      await axios.patch(`http://localhost:8080/orders/complete/${orderID}`);
+      const response = await axios.patch(
+        `http://localhost:8080/orders/complete/${orderID}`
+      );
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Order marked as completed",
+        });
+      }
       navigate(-1);
     } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Cannot perform the action",
+      });
       console.log(error);
     }
   };
@@ -135,7 +166,10 @@ const ViewOrderDetails = () => {
                 <li className="font-bold">Company Name</li>
                 <li className="font-bold">Email Address</li>
                 <li className="font-bold"> Mobile</li>
-                <li className="font-bold">Date</li>
+                <li className="font-bold">Date Initiated</li>
+                {status === "COMPLETED" && (
+                  <li className="font-bold">Date Completed</li>
+                )}
               </ul>
               <ul className="flex flex-col gap-2">
                 <li>{orderID}</li>
@@ -143,7 +177,10 @@ const ViewOrderDetails = () => {
                 <li>{companyName}</li>
                 <li>{vendorEmail}</li>
                 <li>{mobile}</li>
-                <li>{date}</li>
+                <li>{dateInitiated}</li>
+                {status === "COMPLETED" && (
+                  <li >{dateCompleted}</li>
+                )}
               </ul>
             </section>
 
@@ -178,7 +215,7 @@ const ViewOrderDetails = () => {
                 Description :{" "}
               </Typography>
               <div className="w-2/3">
-                <Typography variant="subtitle1" className="text-red-500">
+                <Typography variant="subtitle1" className="text-gray-500">
                   {description}
                 </Typography>
               </div>
@@ -234,7 +271,10 @@ const ViewOrderDetails = () => {
                 <li className="font-bold">Company Name</li>
                 <li className="font-bold">Email Address</li>
                 <li className="font-bold"> Mobile</li>
-                <li className="font-bold">Date</li>
+                <li className="font-bold">Date Initiated</li>
+                {status === "COMPLETED" && (
+                  <li className="font-bold">Date Completed</li>
+                )}
               </ul>
               <ul className="flex flex-col gap-2">
                 <li>{orderID}</li>
@@ -242,7 +282,10 @@ const ViewOrderDetails = () => {
                 <li>{companyName}</li>
                 <li>{vendorEmail}</li>
                 <li>{mobile}</li>
-                <li>{date}</li>
+                <li>{dateInitiated}</li>
+                {status === "COMPLETED" && (
+                  <li >{dateCompleted}</li>
+                )}
               </ul>
             </section>
 
@@ -277,7 +320,7 @@ const ViewOrderDetails = () => {
                 Description :{" "}
               </Typography>
               <div className="w-2/3">
-                <Typography variant="subtitle1" className="text-red-500">
+                <Typography variant="subtitle1" className="text-gray-500">
                   {description}
                 </Typography>
               </div>

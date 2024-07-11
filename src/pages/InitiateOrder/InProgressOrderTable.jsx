@@ -32,8 +32,8 @@ const columns = [
     flex: 1,
   },
   {
-    field: "date",
-    headerName: "Date",
+    field: "date_initiated",
+    headerName: "Date Initiated",
     type: "number",
     minwidth: 150,
     editable: true,
@@ -70,7 +70,7 @@ const InProgressOrders = () => {
             id: order.orderId,
             email_address: order.vendorEmail,
             vendor_name: order.vendorName,
-            date: order.date,
+            date_initiated: order.dateInitiated,
             status: order.status,
           }));
         setRows(data);
