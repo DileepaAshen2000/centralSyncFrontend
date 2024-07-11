@@ -1,13 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { FormControl, Select, MenuItem, TextField, InputLabel, Typography, Button, Autocomplete } from '@mui/material';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import LoginService from '../Login/LoginService';
+import React, { useState, useEffect } from "react";
+import {
+  FormControl,
+  Select,
+  MenuItem,
+  TextField,
+  InputLabel,
+  Typography,
+  Button,
+  Autocomplete,
+} from "@mui/material";
+import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import LoginService from "../Login/LoginService";
 
 const NewStockOut = () => {
-
   let navigate = useNavigate();
+  const location = useLocation();
   const [profileInfo, setProfileInfo] = useState();
   const [stockOut, setStockOut] = useState({
     department: "",
@@ -16,10 +25,11 @@ const NewStockOut = () => {
     outQty: "",
     itemId: "",
     userId: "",
-    file: null
+    file: null,
   });
 
-  const { department, date, description, outQty, itemId, userId, file } = stockOut;
+  const { department, date, description, outQty, itemId, userId, file } =
+    stockOut;
 
   const [options, setOptions] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState(null);
@@ -29,21 +39,35 @@ const NewStockOut = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/inventory-item/getAll');
+        const response = await axios.get(
+          "http://localhost:8080/inventory-item/getAll"
+        );
         setOptions(response.data);
 
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         const profile = await LoginService.getYourProfile(token);
         setProfileInfo(profile.users);
-        setStockOut(preStockOut => ({ ...preStockOut, userId: profile.users.userId }));
-
+        setStockOut((preStockOut) => ({
+          ...preStockOut,
+          userId: profile.users.userId,
+        }));
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
   }, []);
+
+  //fetch data when navigate through search
+  useEffect(() => {
+    if (location.state?.item) {
+      const { itemId, quantity } = location.state.item;
+      setSelectedItemId(itemId);
+      setAvailableQuantity(quantity);
+      setStockOut({ ...stockOut, itemId: itemId });
+    }
+  }, [location.state]);
 
   const handleItemChange = async (event, value) => {
     if (value) {
@@ -52,10 +76,12 @@ const NewStockOut = () => {
 
       // Fetch available quantity for the selected item
       try {
-        const response = await axios.get(`http://localhost:8080/inventory-item/getById/${value.itemId}`);
+        const response = await axios.get(
+          `http://localhost:8080/inventory-item/getById/${value.itemId}`
+        );
         setAvailableQuantity(response.data.quantity);
       } catch (error) {
-        console.error('Error fetching item details:', error);
+        console.error("Error fetching item details:", error);
       }
     } else {
       setSelectedItemId(null);
@@ -66,7 +92,7 @@ const NewStockOut = () => {
 
   const onInputChange = (e) => {
     setStockOut({ ...stockOut, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: '' });
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
   const onSubmit = async (e) => {
@@ -80,32 +106,38 @@ const NewStockOut = () => {
     if (parseInt(outQty) >= availableQuantity) {
       Swal.fire({
         title: "Error!",
-        text: "Quantity Out should be less than the available quantity in the inventory. Available Quantity : "+ availableQuantity,
-        icon: "error"
+        text:
+          "Quantity Out should be less than the available quantity in the inventory. Available Quantity : " +
+          availableQuantity,
+        icon: "error",
       });
       return;
     }
 
     try {
       const formData = new FormData();
-      formData.append('department', department);
-      formData.append('date', date);
-      formData.append('description', description);
-      formData.append('outQty', outQty);
-      formData.append('itemId', itemId);
-      formData.append('userId', userId);
-      formData.append('file', file);
+      formData.append("department", department);
+      formData.append("date", date);
+      formData.append("description", description);
+      formData.append("outQty", outQty);
+      formData.append("itemId", itemId);
+      formData.append("userId", userId);
+      formData.append("file", file);
 
-      const result = await axios.post("http://localhost:8080/stock-out/add", formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      const result = await axios.post(
+        "http://localhost:8080/stock-out/add",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-      });
-      navigate('/stockOut');
+      );
+      navigate("/stockOut");
       Swal.fire({
         title: "Done !",
         text: "Stock-Out Successfully Submitted !",
-        icon: "success"
+        icon: "success",
       });
     } catch (error) {
       console.error("Error:", error);
@@ -120,19 +152,19 @@ const NewStockOut = () => {
   const validateInputs = () => {
     const errors = {};
     if (!department) {
-      errors.department = 'Department is required';
+      errors.department = "Department is required";
     }
     if (!date) {
-      errors.date = 'Date is required';
+      errors.date = "Date is required";
     }
     if (!outQty) {
-      errors.outQty = 'Quantity out is required';
+      errors.outQty = "Quantity out is required";
     }
     if (!itemId) {
-      errors.itemId = 'Item ID is required';
+      errors.itemId = "Item ID is required";
     }
     if (outQty < 0) {
-      errors.outQty = 'Quantity should be positive value';
+      errors.outQty = "Quantity should be positive value";
     }
     return errors;
   };
@@ -142,7 +174,10 @@ const NewStockOut = () => {
   };
 
   return (
-    <form className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14" onSubmit={(e) => onSubmit(e)}>
+    <form
+      className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14"
+      onSubmit={(e) => onSubmit(e)}
+    >
       <h1 className="col-span-4 pt-2 text-3xl font-bold ">New Stock-Out</h1>
 
       <div className="flex items-center col-span-4 col-start-1">
@@ -152,12 +187,23 @@ const NewStockOut = () => {
         <div>
           <Autocomplete
             disablePortal
+            value={
+              selectedItemId
+                ? options.find((option) => option.itemId === selectedItemId)
+                : null
+            }
             options={options}
             getOptionLabel={(option) => option.itemName}
             onChange={handleItemChange}
             sx={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="Item Name" helperText='Please select the Item Name.' />}
-            size='small'
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Item Name"
+                helperText="Please select the Item Name."
+              />
+            )}
+            size="small"
           />
         </div>
       </div>
@@ -171,13 +217,18 @@ const NewStockOut = () => {
             disabled
             options={[{ itemId: selectedItemId }]}
             getOptionLabel={(option) => option.itemId}
-            name='itemId'
+            name="itemId"
             value={{ itemId: selectedItemId }}
             sx={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="Item ID"
-              error={!!errors.itemId}
-              helperText={errors.itemId} />}
-            size='small'
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Item ID"
+                error={!!errors.itemId}
+                helperText={errors.itemId}
+              />
+            )}
+            size="small"
           />
         </div>
       </div>
@@ -187,20 +238,33 @@ const NewStockOut = () => {
           Department
         </InputLabel>
         <div>
-          <FormControl style={{ width: '300px' }}>
-            <Select value={department} onChange={(e) => onInputChange(e)} size='small' name='department'
+          <FormControl style={{ width: "300px" }}>
+            <Select
+              value={department}
+              onChange={(e) => onInputChange(e)}
+              size="small"
+              name="department"
               error={!!errors.department}
-              helperText={errors.department}>
-              <MenuItem value="Software Engineering">Software Engineering</MenuItem>
+              helperText={errors.department}
+            >
+              <MenuItem value="Software Engineering">
+                Software Engineering
+              </MenuItem>
               <MenuItem value="Product Management">Product Management</MenuItem>
               <MenuItem value="UI/UX Department">UI/UX Department</MenuItem>
               <MenuItem value="Quality Assurance">Quality Assurance</MenuItem>
               <MenuItem value="Customer Service">Customer Service</MenuItem>
               <MenuItem value="Human Resource">Human Resource</MenuItem>
-              <MenuItem value="Finance & Administration">Finance & Administration</MenuItem>
-              <MenuItem value="Research & Development">Research & Development</MenuItem>
+              <MenuItem value="Finance & Administration">
+                Finance & Administration
+              </MenuItem>
+              <MenuItem value="Research & Development">
+                Research & Development
+              </MenuItem>
             </Select>
-            <Typography variant='caption' className='text-red-600'>{errors.department}</Typography>
+            <Typography variant="caption" className="text-red-600">
+              {errors.department}
+            </Typography>
           </FormControl>
         </div>
       </div>
@@ -211,11 +275,11 @@ const NewStockOut = () => {
         </InputLabel>
         <div>
           <TextField
-            style={{ width: '300px' }}
+            style={{ width: "300px" }}
             label="Date"
-            name='date'
+            name="date"
             value={date}
-            size='small'
+            size="small"
             error={!!errors.date}
             helperText={errors.date}
             InputLabelProps={{
@@ -231,14 +295,15 @@ const NewStockOut = () => {
         </InputLabel>
         <div>
           <TextField
-            size='small'
-            placeholder='Enter Quantity Out'
-            type='Number'
-            name='outQty'
+            size="small"
+            placeholder="Enter Quantity Out"
+            type="Number"
+            name="outQty"
             value={outQty}
             error={!!errors.outQty}
             helperText={errors.outQty}
-            onChange={(e) => onInputChange(e)} />
+            onChange={(e) => onInputChange(e)}
+          />
         </div>
       </div>
 
@@ -249,11 +314,11 @@ const NewStockOut = () => {
         <div>
           <TextField
             label="Description"
-            name='description'
+            name="description"
             multiline
             rows={6}
-            placeholder='Enter Description Here...'
-            style={{ width: '500px' }}
+            placeholder="Enter Description Here..."
+            style={{ width: "500px" }}
             value={description}
             onChange={(e) => onInputChange(e)}
           />
@@ -261,20 +326,26 @@ const NewStockOut = () => {
       </div>
 
       <div className="flex-row col-span-10 col-start-1 ">
-        <Typography display='block' gutterBottom>Attach File(s) to inventory stock-out </Typography>
+        <Typography display='block' gutterBottom>Attach File(s) to inventory stock-in </Typography>
         <input type='file' onChange={handleFileChange} className="mt-4 mb-2"></input>
-        <Typography variant='caption' display='block' gutterBottom>You can upload a maximum 10MB file.</Typography>
+        <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
       </div>
 
-      <div className='flex col-start-7 gap-6'>
-        <Button className="text-white bg-blue-600 rounded "
-          variant='contained'
-          type='submit'
-        >Submit</Button>
-        <Button className="rounded"
-          variant='outlined'
-          onClick={() => navigate("/stockOut")}
-        >Cancel</Button>
+      <div className="flex col-start-7 gap-6">
+        <Button
+          className="text-white bg-blue-600 rounded "
+          variant="contained"
+          type="submit"
+        >
+          Submit
+        </Button>
+        <Button
+          className="rounded"
+          variant="outlined"
+          onClick={() => navigate(-1)}
+        >
+          Cancel
+        </Button>
       </div>
     </form>
   );

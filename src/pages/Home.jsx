@@ -17,10 +17,13 @@ import EditItem from "./InventoryItem/EditItem";
 import AdminInRequestList from "./Request/AdminInRequestList";
 import AdminInRequestDocument from "./Request/AdminInRequestDocument";
 import RequestHandlerRequestList from "./Request/RequestHandlerInRequestList";
-
+import ReqHandlerInRequestDocument from "./Request/ReqHandlerInRequestDocument";
+import EmployeeDeRequestList from "./Request/EmployeeDeRequestList";
 import EmployeeInRequestList from "./Request/EmployeeInRequestList";
+import EmployeeInRequestDocument from "./Request/EmployeeInRequestDocument";
+import EmployeeDeRequestDocument from "./Request/EmployeeDeRequestDocument";
 import InRequestDocument from "./Request/InRequestDocument";
-import DeliveryRequestDocument from "./Request/DeliveryRequestDocument";
+import AdminDeRequestDocument from "./Request/AdminDeRequestDocument";
 import CreateNewIDRequest from "./Request/CreateNewIDRequest";
 import EditRequest from "./Request/EditInRequest";
 import UserActivityHistory from "./User/History";
@@ -42,7 +45,10 @@ import Ticket from "./Ticket/Ticketlist";
 import ViewUser from "./User/Viewuser";
 import NewStockOut from "./StockOut/NewStockOut";
 import StockOutDocument from "./StockOut/StockOutDocument";
-import R_admin from "./Reservation/R_admin";
+import AdminReservation from "./Reservation/AdminReservation";
+import EditReservation from "./Reservation/EditReservation";
+import ReservationDocument from "./Reservation/ReservationDocument";
+import ReservationList from "./Reservation/ReservationList";
 import NewReservation from "./Reservation/NewReservation";
 import TicketDocument from "./Ticket/Ticketdoc";
 import InventorySummary from "./Report/InventorySummary";
@@ -186,11 +192,22 @@ const Home = () => {
                   path="/admin/in-request-document/:reqId"
                   element={<AdminInRequestDocument />}
                 ></Route>
+                   <Route
+                  path="/admin/de-request-document/:reqId"
+                  element={<AdminDeRequestDocument/>}
+                ></Route>
                 {/*InRequest Handler view routing */}
                 <Route
                   path="/requestHandler/in-request-list"
                   element={<RequestHandlerRequestList />}
                 ></Route>
+
+                <Route
+                  path="/requestHandler/in-request-document/:reqId"
+                  element={<ReqHandlerInRequestDocument />}
+                ></Route>
+               
+
 
                 {/*Employee view routing */}
                 <Route
@@ -199,11 +216,19 @@ const Home = () => {
                 ></Route>
                 <Route
                   path="/employee/in-request-document/:reqId"
+                  element={<EmployeeInRequestDocument />}
+                ></Route>
+                <Route
+                  path="/employee/request-document/:reqId"
                   element={<InRequestDocument />}
                 ></Route>
                 <Route
-                  path="/employee/delivery-request-document/:reqId"
-                  element={<DeliveryRequestDocument />}
+                  path="/employee-de-request-list"
+                  element={<EmployeeDeRequestList/>}
+                ></Route>
+                <Route
+                  path="/employee/de-request-document/:reqId"
+                  element={<EmployeeDeRequestDocument />}
                 ></Route>
                 {/*Common views for three actors routing*/}
                 <Route
@@ -260,11 +285,26 @@ const Home = () => {
                 ></Route>
 
                 {/* Reservations routing */}
-                <Route path="/reservation" element={<R_admin />}></Route>
-                <Route
+                <Route path="/reservation"
+                 element={<AdminReservation/>}>
+                 </Route>
+                 <Route
                   path="/newreservation"
                   element={<NewReservation />}
                 ></Route>
+                <Route
+                  path="/editreservation"
+                  element={<EditReservation />}
+                ></Route>
+                <Route
+                  path="/reservationlist"
+                  element={<ReservationList/>}
+                ></Route>
+                <Route
+                  path="/reservationdocument"
+                  element={<ReservationDocument />}
+                ></Route>
+
                 {/* SearchBar routing */}
                 <Route path="/search-result" element={<SearchResult />}></Route>
                 <Route path="/item-detail" element={<ItemDetail />} />

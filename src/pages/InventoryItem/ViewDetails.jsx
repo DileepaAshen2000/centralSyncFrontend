@@ -20,7 +20,7 @@ const ViewItemDetails = () => {
     itemName: "",
     itemGroup: "",
     unit: "",
-    specification: "",
+    model: "",
     brand: "",
     dimension: "",
     weight: "",
@@ -34,7 +34,7 @@ const ViewItemDetails = () => {
     itemName,
     itemGroup,
     unit,
-    specification,
+    model,
     brand,
     dimension,
     weight,
@@ -55,7 +55,7 @@ const ViewItemDetails = () => {
           itemName: response.data.itemName,
           itemGroup: response.data.itemGroup,
           brand: response.data.brand,
-          specification: response.data.specification,
+          model: response.data.model,
           unit: response.data.unit,
           dimension: response.data.dimension,
           weight: response.data.weight,
@@ -113,29 +113,32 @@ const ViewItemDetails = () => {
           </div>
           <div className=" flex flex-col  justify-end  ">
             <section className="flex flex-row gap-10">
-              <ul className="flex flex-col col-span-2 gap-2 ">
+              <ul className="flex flex-col gap-2 ">
                 <li className="font-bold">Item Id</li>
                 <li className="font-bold">Item Name</li>
                 <li className="font-bold">Item Group</li>
-                {specification && <li className="font-bold">Specification</li>}
                 <li className="font-bold">Brand</li>
+                <li className="font-bold">Model </li>
                 <li className="font-bold"> Unit</li>
                 <li className="font-bold">Dimension</li>
                 <li className="font-bold">Weight</li>
-                <li className="font-bold">Description</li>
                 <li className="font-bold">Quantity</li>
+                <li className="font-bold">Description</li>
+           
               </ul>
               <ul className="flex flex-col gap-2">
                 <li>{itemID}</li>
                 <li>{itemName}</li>
                 <li>{itemGroup.replaceAll("_", " ")}</li>
-                {specification && <li>{specification}</li>}
+
                 <li>{brand}</li>
+                <li>{model}</li>
                 <li>{unit}</li>
                 <li>{dimension}</li>
                 <li>{weight}</li>
-                <li>{description}</li>
                 <li>{quantity}</li>
+                <li>{description}</li>
+              
               </ul>
             </section>
           </div>
