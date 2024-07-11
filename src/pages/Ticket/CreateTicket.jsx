@@ -27,6 +27,7 @@ const CreateTicket = () => {
   const [date, setdate] = useState(new Date().toISOString().split("T")[0]);
   const [itemName, setItemName] = useState("");
   const [brand, setBrand] = useState("");
+  const [model, setModel] = useState("");
   const [fetchData, setFetchData] = useState(false);
 
   const navigate = useNavigate();
@@ -52,9 +53,10 @@ const CreateTicket = () => {
   console.log("Options:", options);
   useEffect(() => {
     if (location.state?.item) {
-      const { itemName, brand } = location.state.item;
+      const { itemName, brand,model } = location.state.item;
       setItemName(itemName);
       setBrand(brand);
+      setModel(model);
     }
   }, [location.state]);
 
@@ -65,6 +67,9 @@ const CreateTicket = () => {
       validationErrors.itemName = "Item name is required";
     } else if (name === "brand" && !value) {
       validationErrors.brand = "Item brand is required";
+    }
+    else if (name === "model" && !value) {
+      validationErrors.model = "Item model is required";
     } else if (name === "topic" && !value) {
       validationErrors.topic = "Topic is required";
     } else if (name === "date" && !value) {
@@ -116,6 +121,17 @@ const CreateTicket = () => {
       validateField("brand", "");
     }
   };
+
+  const handleItemmodelChange = (event, value) => {
+    if (value) {
+      setModel(value.model);
+      validateField("model", value.model);
+    } else {
+      setModel("");
+      validateField("model", "");
+    }
+  };
+
   const handleClick = (e) => {
     e.preventDefault();
     const ticket = {
@@ -124,6 +140,7 @@ const CreateTicket = () => {
       date,
       itemName,
       brand,
+      model,
     };
     console.log(ticket);
     axios
@@ -157,7 +174,7 @@ const CreateTicket = () => {
           <h1 className="pt-2 pb-3 text-3xl font-bold ">New Ticket</h1>
         </Box>
         <form>
-          <div className="grid grid-cols-6 grid-rows-6  gap-x-5 gap-y-5">
+          <div className="grid grid-cols-6 grid-rows-7  gap-x-5 gap-y-5">
             <div className="col-span-1">
               <label htmlFor="name">Item Name</label>
             </div>
@@ -221,6 +238,38 @@ const CreateTicket = () => {
             </div>
             <div></div>
             <div></div>
+
+            <div className="col-span-1">
+              <label htmlFor="name">Item Model</label>
+            </div>
+            <div className="col-span-2">
+              {errors.model && (
+                <div className="text-[#FC0000] text-sm">{errors.model}</div>
+              )}
+              <Autocomplete
+                options={options}
+                getOptionLabel={(option) => option.model}
+                onChange={handleItemmodelChange}
+                value={
+                  options.find((option) => option.model === model) || null
+                } //setting initial seleted value
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Item model"
+                    variant="outlined"
+                    sx={{
+                      width: 300,
+                    }}
+                    size="small"
+                    onBlur={handleBlur}
+                    error={!!errors.model}
+                    name="model"
+                  />
+                )}
+              />
+            </div>{" "}
+            <div className="col-span-3"></div>
             <div className="col-span-1 row-span-1">
               <label htmlFor="topic">Topic for ticket</label>
             </div>

@@ -24,7 +24,7 @@ const EditTicket = () => {
     topic: "",
     description: "",
     date: "",
-    itemId: { itemName: "", brand: "" },
+    itemId: { itemName: "", brand: "", model:"" },
   });
   const [errors, setErrors] = useState({});
   const [options, setOptions] = useState([]);
@@ -39,7 +39,7 @@ const EditTicket = () => {
         const itemResponse = await axios.get(
           `http://localhost:8080/inventory-item/getById/${itemId.itemId}`
         );
-        const { itemName, brand } = itemResponse.data;
+        const { itemName, brand,model} = itemResponse.data;
 
         setTicket({
           topic,
@@ -48,6 +48,7 @@ const EditTicket = () => {
           itemId,
           itemName,
           brand,
+          model,
         });
       } catch (error) {
         console.error("Error fetching ticket data:", error);
@@ -101,6 +102,22 @@ const EditTicket = () => {
     }
   };
 
+  const handleItemmodelChange = (event, value) => {
+    if (value) {
+      setTicket((prevTicket) => ({
+        ...prevTicket,
+        model: value.model,
+      }));
+      validateField("model", value.model);
+    } else {
+      setTicket((prevTicket) => ({
+        ...prevTicket,
+        model: "",
+      }));
+      validateField("model", "");
+    }
+  };
+
   const validateField = (name, value) => {
     const validationErrors = {};
 
@@ -108,6 +125,9 @@ const EditTicket = () => {
       validationErrors.itemName = "Item name is required";
     } else if (name === "brand" && !value) {
       validationErrors.brand = "Item brand is required";
+    }
+    else if (name === "model" && !value) {
+      validationErrors.model = "Item model is required";
     } else if (name === "topic" && !value) {
       validationErrors.topic = "Topic is required";
     } else if (name === "date" && !value) {
@@ -172,7 +192,7 @@ const EditTicket = () => {
           <h1 className="pt-2 pb-3 text-3xl font-bold">Edit Ticket</h1>
         </Box>
         <form>
-          <div className="grid grid-cols-6 grid-rows-6 gap-x-5 gap-y-5">
+          <div className="grid grid-cols-7 grid-rows-7 gap-x-5 gap-y-5">
             <div className="col-span-1">
               <label htmlFor="name">Item Name</label>
             </div>
@@ -205,7 +225,7 @@ const EditTicket = () => {
                 )}
               />
             </div>{" "}
-            <div className="col-span-3"></div>
+            <div className="col-span-4"></div>
             <div className="col-span-1">
               <label htmlFor="name">Item Brand</label>
             </div>
@@ -242,6 +262,44 @@ const EditTicket = () => {
             </div>
             <div></div>
             <div></div>
+            <div></div>
+            <div className="col-span-1">
+              <label htmlFor="name">Item Model</label>
+            </div>
+            <div className="col-span-3">
+              {errors.model && (
+                <div className="text-[#FC0000] text-sm">{errors.model}</div>
+              )}
+
+              <Autocomplete
+                options={options}
+                getOptionLabel={(option) => option.model}
+                onChange={handleItemmodelChange}
+                value={
+                  options.find((option) => option.model=== ticket.model) ||
+                  null
+                }
+                variant="outlined"
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Model"
+                    variant="outlined"
+                    sx={{
+                      width: 300,
+                    }}
+                    size="small"
+                    value={ticket.itemId.model}
+                    onBlur={handleBlur}
+                    error={!!errors.model}
+                    name="model"
+                  />
+                )}
+              />
+             </div>{" "}
+             <div className="col-span-3"></div>
+            
+            
             <div className="col-span-1 row-span-1">
               <label htmlFor="topic">Topic for ticket</label>
             </div>
@@ -273,6 +331,7 @@ const EditTicket = () => {
             <div></div>
             <div></div>
             <div></div>
+            <div></div>
             <div className="col-span-1 row-span-1">
               <label htmlFor="description">Date</label>
             </div>
@@ -297,6 +356,7 @@ const EditTicket = () => {
                 name="date"
               />
             </div>
+            <div></div>
             <div></div>
             <div></div>
             <div></div>
