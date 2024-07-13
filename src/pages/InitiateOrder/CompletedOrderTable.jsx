@@ -9,9 +9,9 @@ import axios from "axios";
 const getStatusClass = (status) => {
   switch (status) {
     case "COMPLETED":
-      return "bg-green-500 text-black w-[100px]";
+      return "bg-green-500 text-black font-bold w-[100px]";
     case "CANCELLED":
-      return "bg-red-400 text-black text-sm w-[100px]";
+      return "bg-red-400 text-black  font-bold w-[100px]";
   }
 };
 
@@ -117,7 +117,6 @@ const CompleteOrders = () => {
           }}
           autoHeight
           pageSizeOptions={[5]}
-          checkboxSelection
           onRowClick={handleRowClick}
           sx={{
             "& .MuiDataGrid-columnHeaders": {

@@ -24,6 +24,7 @@ const ItemDetail = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const isAdmin = LoginService.isAdmin();
+  const isEmployee=LoginService.isEmployee();
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -84,7 +85,7 @@ const ItemDetail = () => {
               <MenuItem onClick={() => handleAction("/newTicket")}>
                 <TicketIcon className="mr-2" /> Submit Ticket
               </MenuItem>
-              {isAdmin && (
+              {!isEmployee && (
                 <>
                   <MenuItem onClick={() => handleAction("/new-stockin")}>
                     <StockInIcon className="mr-2" /> Stock In

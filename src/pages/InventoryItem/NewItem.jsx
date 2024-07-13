@@ -95,7 +95,7 @@ const AddItemForm = () => {
     } else if (name === "weight") {
       if (!value) {
         validationErrors.weight = "Weight is required";
-      } else if (!/^(?!0$)(?!0\.\d*$)\d+(\.\d+)?$/.test(value)) {
+      } else if(!/^\d+(\.\d+)?$/.test(value)) {
         validationErrors.weight = "Weight must be a positive number";
       } else if (!/^\S*$/.test(value)) {
         validationErrors.weight = "Spaces are not allowed";

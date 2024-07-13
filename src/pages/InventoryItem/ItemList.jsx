@@ -10,9 +10,9 @@ import LoginService from "../Login/LoginService";
 const getStatusClass = (status) => {
   switch (status) {
     case "ACTIVE":
-      return "bg-green-500 text-black w-[90px]";
+      return "bg-green-500 text-black font-bold w-[90px]";
     case "INACTIVE":
-      return "bg-red-500 text-black text-sm w-[90px]";
+      return "bg-red-500 text-black font-bold w-[90px]";
   }
 };
 
@@ -20,9 +20,9 @@ const columns = [
   {
     field: "item_name",
     headerName: "Item Name",
-    minwidth: 200,
+    minwidth: 250,
     editable: false,
-    flex: 1,
+    flex: 1.5,
   },
   {
     field: "model",
@@ -34,9 +34,9 @@ const columns = [
   {
     field: "group",
     headerName: "Group",
-    minwidth: 200,
+    minwidth: 300,
     editable: false,
-    flex: 1,
+    flex: 1.5,
   },
   {
     field: "brand",
@@ -51,7 +51,7 @@ const columns = [
     type: "number",
     minwidth: 100,
     editable: false,
-    flex: 1,
+    flex: 0.5,
   },
   {
     field: "status",

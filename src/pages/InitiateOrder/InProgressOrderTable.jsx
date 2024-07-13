@@ -9,13 +9,13 @@ import axios from "axios";
 const getStatusClass = (status) => {
   switch (status) {
     case "REVIEWED":
-      return "bg-blue-500 text-black w-[150px]";
+      return "bg-blue-500 text-black font-bold w-[150px]";
     case "PENDING":
-      return "bg-yellow-400 text-black text-sm w-[150px]";
+      return "bg-yellow-400 text-black font-bold w-[150px]";
     case "PROBLEM_REPORTED":
-      return "bg-red-400 text-black text-sm w-[150px]";
+      return "bg-red-400 text-black font-bold w-[150px]";
     case "RESOLVED":
-      return "bg-purple-400 text-black text-sm w-[150px]";
+      return "bg-purple-400 text-black font-bold w-[150px]";
   }
 };
 

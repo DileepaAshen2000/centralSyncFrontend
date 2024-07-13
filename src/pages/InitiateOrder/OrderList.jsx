@@ -52,7 +52,7 @@ export default function OrderTab() {
         <div>
           <Button
             variant="contained"
-            className="bg-blue-600 px-6 py-2 text-white rounded left-[80%] w-[145px]"
+            className="bg-blue-600 px-6 py-2 text-white rounded left-[85%] w-[145px]"
             onClick={() => navigate("/order/new-order")}
           >
             New Order
