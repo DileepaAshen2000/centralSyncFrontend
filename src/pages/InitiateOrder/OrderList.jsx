@@ -48,14 +48,11 @@ export default function OrderTab() {
   return (
     <div>
       <Box sx={{ width: "100%" }}>
-        <div className="pb-5">
-          <h1 className="block text-3xl font-bold">Orders</h1>
-          <p className="inline-block">Here are all orders!!</p>
-        </div>
+      
         <div>
           <Button
             variant="contained"
-            className="bg-blue-600 px-6 py-2 text-white rounded left-[70%] w-[145px]"
+            className="bg-blue-600 px-6 py-2 text-white rounded left-[80%] w-[145px]"
             onClick={() => navigate("/order/new-order")}
           >
             New Order

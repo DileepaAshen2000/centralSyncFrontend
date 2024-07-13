@@ -51,48 +51,51 @@ const ItemDetail = () => {
       </IconButton>
 
       <Card className="max-w-4xl w-full shadow-lg relative">
-        <IconButton
-          aria-controls="actions-menu"
-          aria-haspopup="true"
-          onClick={handleMenuOpen}
-          className="absolute top-2 right-2"
-        >
-          <MoreVertIcon fontSize="large" />
-        </IconButton>
         {item.status === "ACTIVE" && (
-          <Menu
-            id="actions-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
-            {!isAdmin && (
-              <MenuItem
-                onClick={() =>
-                  handleAction("/in-request/create-new-in-request")
-                }
-              >
-                <RequestIcon className="mr-2" /> Request Item
+          <>
+            <IconButton
+              aria-controls="actions-menu"
+              aria-haspopup="true"
+              onClick={handleMenuOpen}
+              className="absolute top-2 right-2"
+            >
+              <MoreVertIcon fontSize="large" />
+            </IconButton>
+
+            <Menu
+              id="actions-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+            >
+              {!isAdmin && (
+                <MenuItem
+                  onClick={() =>
+                    handleAction("/in-request/create-new-in-request")
+                  }
+                >
+                  <RequestIcon className="mr-2" /> Request Item
+                </MenuItem>
+              )}
+              <MenuItem onClick={() => handleAction("/newreservation")}>
+                <ReserveIcon className="mr-2" /> Reserve Item
               </MenuItem>
-            )}
-            <MenuItem onClick={() => handleAction("/newreservation")}>
-              <ReserveIcon className="mr-2" /> Reserve Item
-            </MenuItem>
-            <MenuItem onClick={() => handleAction("/newTicket")}>
-              <TicketIcon className="mr-2" /> Submit Ticket
-            </MenuItem>
-            {isAdmin && (
-              <>
-                <MenuItem onClick={() => handleAction("/new-stockin")}>
-                  <StockInIcon className="mr-2" /> Stock In
-                </MenuItem>
-                <MenuItem onClick={() => handleAction("/new-stockout")}>
-                  <StockOutIcon className="mr-2" /> Stock Out
-                </MenuItem>
-              </>
-            )}
-          </Menu>
+              <MenuItem onClick={() => handleAction("/newTicket")}>
+                <TicketIcon className="mr-2" /> Submit Ticket
+              </MenuItem>
+              {isAdmin && (
+                <>
+                  <MenuItem onClick={() => handleAction("/new-stockin")}>
+                    <StockInIcon className="mr-2" /> Stock In
+                  </MenuItem>
+                  <MenuItem onClick={() => handleAction("/new-stockout")}>
+                    <StockOutIcon className="mr-2" /> Stock Out
+                  </MenuItem>
+                </>
+              )}
+            </Menu>
+          </>
         )}
 
         <CardMedia

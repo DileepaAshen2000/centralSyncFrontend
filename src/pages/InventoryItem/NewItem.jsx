@@ -64,8 +64,12 @@ const AddItemForm = () => {
       validationErrors.itemGroup = "Item Group is required";
     } else if (name === "brand" && !value) {
       validationErrors.brand = "Brand Name is required";
-    } else if (name === "model" && !value) {
-      validationErrors.model = "Model Number is required";
+    } else if (name === "model") {
+      if (!value) {
+        validationErrors.model = "Model  is required";
+      } else if (!/^\S*$/.test(value)) {
+        validationErrors.model = "Spaces are not allowed";
+      }
     } else if (name === "unit" && !value) {
       if (!value) {
         validationErrors.unit = "Unit is required";
@@ -75,20 +79,30 @@ const AddItemForm = () => {
     } else if (name === "dimension") {
       if (!value) {
         validationErrors.dimension = "Dimension is required";
-      } else if (!/^(\d+\*\d+(\*\d+)?|\d+\*\d+)$/.test(value)) {
+      } else if (
+        !/^(\d+(\.\d+)?\*\d+(\.\d+)?(\*\d+(\.\d+)?)?|\d+(\.\d+)?\*\d+(\.\d+)?)$/.test(
+          value
+        )
+      ) {
         validationErrors.dimension =
           "Enter dimension in the format a*b*c or a*b";
+      } else if (!/^\S*$/.test(value)) {
+        validationErrors.dimension = "Spaces are not allowed";
       }
     } else if (name === "dimensionUnit" && !value) {
-      validationErrors.dimensionUnit = "Dimension is required with the MEASURING UNIT";
+      validationErrors.dimensionUnit =
+        "Dimension is required with the MEASURING UNIT";
     } else if (name === "weight") {
       if (!value) {
         validationErrors.weight = "Weight is required";
       } else if (!/^(?!0$)(?!0\.\d*$)\d+(\.\d+)?$/.test(value)) {
         validationErrors.weight = "Weight must be a positive number";
+      } else if (!/^\S*$/.test(value)) {
+        validationErrors.weight = "Spaces are not allowed";
       }
     } else if (name === "weightUnit" && !value) {
-      validationErrors.weightUnit = "Weight is required with the MEASURING UNIT";
+      validationErrors.weightUnit =
+        "Weight is required with the MEASURING UNIT";
     } else if (name === "description" && !value) {
       validationErrors.description = "Description is required";
     } else if (name === "quantity") {

@@ -6,6 +6,15 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const getStatusClass = (status) => {
+  switch (status) {
+    case "COMPLETED":
+      return "bg-green-500 text-black w-[100px]";
+    case "CANCELLED":
+      return "bg-red-400 text-black text-sm w-[100px]";
+  }
+};
+
 const columns = [
   { field: "id", headerName: "Order ID", width: 150 },
   {
@@ -36,7 +45,9 @@ const columns = [
     minwidth: 200,
     flex: 1,
     renderCell: (params) => (
-      <div className="p-2 rounded text-center bg-green-400 text-black text-sm w-[95px]">
+      <div
+        className={`p-2 rounded text-center  ${getStatusClass(params.value)}`}
+      >
         {params.value}
       </div>
     ),
@@ -54,7 +65,7 @@ const CompleteOrders = () => {
       try {
         const response = await axios.get("http://localhost:8080/orders/getAll");
         const data = response.data
-          .filter((order) => order.status === "COMPLETED")
+          .filter((order) => (order.status === "COMPLETED"||order.status==="CANCELLED"))
           .map((order) => ({
             id: order.orderId,
             email_address: order.vendorEmail,
@@ -62,7 +73,11 @@ const CompleteOrders = () => {
             date_completed: order.dateCompleted,
             status: order.status,
           }));
-        setRows(data);
+        const sortedData = data.sort(
+          (a, b) => new Date(b.date_completed) - new Date(a.date_completed)
+        );
+
+        setRows(sortedData);
       } catch (error) {
         console.log(error);
       } finally {
@@ -73,8 +88,6 @@ const CompleteOrders = () => {
     fetchData();
   }, []);
 
- 
-
   const handleRowClick = (params) => {
     const selectedItemId = params.row.id;
     console.log("ID", selectedItemId);
@@ -83,6 +96,9 @@ const CompleteOrders = () => {
 
   return (
     <Box className="h-[400px] w-full">
+    <Box className="bg-[#126619] text-white font-medium p-4  mb-0 mt-4 flex items-center justify-center">
+        <p>Completed Order List</p>
+      </Box>
       {/* Data grid component */}
       {loading ? (
         <div className="flex justify-center mostRequestedItems-center">
