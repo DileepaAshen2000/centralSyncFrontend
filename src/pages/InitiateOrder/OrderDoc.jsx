@@ -13,6 +13,12 @@ import {
   IconButton,
   Alert,
   AlertTitle,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -27,6 +33,10 @@ const ViewOrderDetails = () => {
   const [loading, setLoading] = useState(true);
   const printRef = useRef();
   const { orderID } = useParams();
+  const [note, setNote] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogTitle, setDialogTitle] = useState("");
+  const [dialogAction, setDialogAction] = useState(null);
 
   const [order, setOrder] = useState({
     vendorName: "",
@@ -73,11 +83,32 @@ const ViewOrderDetails = () => {
     fetchOrderDetails();
   }, [orderID]);
 
+  const handleOpenDialog = (title, action) => {
+    setDialogTitle(title);
+    setDialogAction(() => action);
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setNote("");
+  };
+
+  const handleConfirmAction = async () => {
+    try {
+      await dialogAction();
+      handleCloseDialog();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const handleMarkAsReviewed = async () => {
+    setLoading(true);
     try {
       const response = await axios.patch(
         `http://localhost:8080/orders/review/${orderID}`
       );
+
       if (response.status === 200) {
         Swal.fire({
           icon: "success",
@@ -93,13 +124,17 @@ const ViewOrderDetails = () => {
         title: "Error!",
         text: "Cannot perform the action",
       });
+    } finally {
+      setLoading(true);
     }
   };
   const handleMarkAsCompleted = async () => {
+    setLoading(true);
     try {
       const response = await axios.patch(
         `http://localhost:8080/orders/complete/${orderID}`
       );
+
       if (response.status === 200) {
         Swal.fire({
           icon: "success",
@@ -115,9 +150,93 @@ const ViewOrderDetails = () => {
         text: "Cannot perform the action",
       });
       console.log(error);
+    } finally {
+      setLoading(true);
+    }
+  };
+  const handleMarkAsCancelled = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.patch(
+        `http://localhost:8080/orders/cancel/${orderID}`
+      );
+
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Order marked as cancelled",
+        });
+      }
+      navigate(-1);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Cannot perform the action",
+      });
+      console.log(error);
+    } finally {
+      setLoading(true);
     }
   };
 
+  const handleMarkAsProblemReported = async () => {
+    setLoading(true);
+    console.log(note);
+    try {
+      const response = await axios.patch(
+        `http://localhost:8080/orders/problemReported/${orderID}`,
+        { note: note }
+      );
+
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Order marked as problem reported",
+        });
+      }
+      navigate(-1);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Cannot perform the action",
+      });
+      console.log(error);
+    } finally {
+      setLoading(true);
+    }
+  };
+
+  const handleMarkAsResolved = async () => {
+    setLoading(true);
+
+    try {
+      const response = await axios.patch(
+        `http://localhost:8080/orders/resolve/${orderID}`
+      );
+
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Order marked as resolved",
+        });
+      }
+      navigate(-1);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Cannot perform the action",
+      });
+      console.log(error);
+    } finally {
+      setLoading(true);
+    }
+  };
   const getOrderStatus = (status) => {
     if (status === "COMPLETED") {
       return (
@@ -135,6 +254,24 @@ const ViewOrderDetails = () => {
       return (
         <Alert severity="warning" sx={{ width: "300px" }}>
           <AlertTitle>Pending</AlertTitle>
+        </Alert>
+      );
+    } else if (status === "CANCELLED") {
+      return (
+        <Alert severity="error" sx={{ width: "300px" }}>
+          <AlertTitle>Cancelled</AlertTitle>
+        </Alert>
+      );
+    } else if (status === "PROBLEM_REPORTED") {
+      return (
+        <Alert severity="error" sx={{ width: "300px" }}>
+          <AlertTitle>Problem Reported</AlertTitle>
+        </Alert>
+      );
+    } else if (status === "RESOLVED") {
+      return (
+        <Alert severity="info" sx={{ width: "300px" }}>
+          <AlertTitle>Resolved</AlertTitle>
         </Alert>
       );
     }
@@ -178,9 +315,7 @@ const ViewOrderDetails = () => {
                 <li>{vendorEmail}</li>
                 <li>{mobile}</li>
                 <li>{dateInitiated}</li>
-                {status === "COMPLETED" && (
-                  <li >{dateCompleted}</li>
-                )}
+                {status === "COMPLETED" && <li>{dateCompleted}</li>}
               </ul>
             </section>
 
@@ -221,28 +356,103 @@ const ViewOrderDetails = () => {
               </div>
             </div>
           )}
+
           {/* buttons */}
           <div className="mt-6 flex items-center justify-between">
-            {status !== "COMPLETED" && (
+            {status !== "COMPLETED" && status !== "CANCELLED" && (
               <Button
                 variant="contained"
                 color="primary"
                 className="mr-4 rounded bg-green-300 text-green-800 hover:text-white hover:bg-green-600 font-bold"
-                onClick={handleMarkAsCompleted}
+                onClick={() =>
+                  handleOpenDialog("Mark as Completed", handleMarkAsCompleted)
+                }
               >
                 Mark as Completed
               </Button>
             )}
-            {status === "PENDING" && (
+            {status !== "REVIEWED" && status !== "CANCELLED" && status !== "COMPLETED" && (
               <Button
                 variant="contained"
                 color="primary"
                 className="mr-4 rounded   bg-blue-300 text-blue-800 hover:text-white hover:bg-blue-600 font-bold"
-                onClick={handleMarkAsReviewed}
+                onClick={() =>
+                  handleOpenDialog("Mark as Reviewed", handleMarkAsReviewed)
+                }
               >
                 Mark as Reviewed
               </Button>
             )}
+            {status === "PROBLEM_REPORTED" && status !== "RESOLVED" && (
+              <Button
+                variant="contained"
+                color="primary"
+                className="mr-4 rounded bg-blue-300 text-blue-800 hover:text-white hover:bg-blue-600 font-bold"
+                onClick={() =>
+                  handleOpenDialog("Mark as Resolved", handleMarkAsResolved)
+                }
+              >
+                Mark as Resolved
+              </Button>
+            )}
+            {status !== "COMPLETED" &&
+              (status !== "CANCELLED" && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className="mr-4 rounded bg-red-300 text-red-800 hover:text-white hover:bg-red-600 font-bold"
+                  onClick={() =>
+                    handleOpenDialog("Mark as Cancelled", handleMarkAsCancelled)
+                  }
+                >
+                  Mark as Cancelled
+                </Button>
+              ))}
+            {status !== "PROBLEM_REPORTED" && status !== "CANCELLED" && (
+              <Button
+                variant="contained"
+                color="primary"
+                className="mr-4 rounded bg-yellow-300 text-yellow-800 hover:text-white hover:bg-yellow-600 font-bold"
+                onClick={() =>
+                  handleOpenDialog(
+                    "Mark as Problem Reported",
+                    handleMarkAsProblemReported
+                  )
+                }
+              >
+                Mark as Problem Reported
+              </Button>
+            )}
+            {/* Confirmation Dialog */}
+            <Dialog open={dialogOpen} onClose={handleCloseDialog}>
+              <DialogTitle>{dialogTitle}</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Are you sure you want to {dialogTitle.toLowerCase()}?
+                </DialogContentText>
+                {dialogTitle.includes("Problem Reported") && (
+                  <TextField
+                    label="Enter note"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    multiline
+                    rows={4}
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                  />
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseDialog} color="primary">
+                  No
+                </Button>
+                <Button onClick={handleConfirmAction} color="primary">
+                  Yes
+                </Button>
+              </DialogActions>
+            </Dialog>
+
             <ReactToPrint
               trigger={() => (
                 <Button variant="outlined" className=" rounded-sm ml-auto">
@@ -258,10 +468,13 @@ const ViewOrderDetails = () => {
 
       {/* Print view of the doc */}
       <div className="hidden">
-        <div ref={printRef} className="p-10 bg-white rounded-2xl ml-14 mr-14">
-          <Typography variant="h4" className="font-bold mb-6">
-            Order Details
-          </Typography>
+        <div ref={printRef} className="p-10 bg-white rounded-2xl  mx-auto">
+          <div className="flex items-center mb-6">
+            <Typography variant="h4" className="font-bold mb-6">
+              Order Details
+            </Typography>
+            <div className="ml-auto">{getOrderStatus(order.status)}</div>
+          </div>
 
           <div className=" flex flex-col items-end justify-end  ">
             <section className="flex flex-row gap-10">
@@ -283,9 +496,7 @@ const ViewOrderDetails = () => {
                 <li>{vendorEmail}</li>
                 <li>{mobile}</li>
                 <li>{dateInitiated}</li>
-                {status === "COMPLETED" && (
-                  <li >{dateCompleted}</li>
-                )}
+                {status === "COMPLETED" && <li>{dateCompleted}</li>}
               </ul>
             </section>
 

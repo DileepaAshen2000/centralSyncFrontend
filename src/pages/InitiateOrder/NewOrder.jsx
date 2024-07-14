@@ -72,6 +72,8 @@ const NewOrderForm = () => {
       }
     } else if (name === "brandName" && !value) {
       validationErrors.brandName = "Brand name is required";
+    } else if (name === "description" && !value) {
+      validationErrors.description = "Description is required";
     } else if (name === "quantity") {
       if (!value) {
         validationErrors.quantity = "Quantity is required";
@@ -284,7 +286,7 @@ const NewOrderForm = () => {
             Date
           </InputLabel>
           <div>
-          {errors.dateInitiated && (
+            {errors.dateInitiated && (
               <div className="text-[#d32f2f] text-xs ml-4 my-1">
                 {errors.dateInitiated}
               </div>
@@ -384,17 +386,27 @@ const NewOrderForm = () => {
           >
             Description
           </InputLabel>
-          <TextField
-            name="description"
-            value={description}
-            onChange={onInputChange}
-            variant="outlined"
-            multiline
-            rows={6}
-            InputProps={{
-              className: "w-[500px]  ml-3   ",
-            }}
-          />
+          <div>
+            {" "}
+            {errors.description && (
+              <div className="text-[#d32f2f] text-xs ml-4 my-1">
+                {errors.description}
+              </div>
+            )}
+            <TextField
+              name="description"
+              value={description}
+              onChange={onInputChange}
+              error={errors.description}
+              onBlur={handleBlur}
+              variant="outlined"
+              multiline
+              rows={6}
+              InputProps={{
+                className: "w-[500px]  ml-3   ",
+              }}
+            />
+          </div>
         </div>
         <div className="flex-row col-span-10 col-start-1 ">
           <Typography display="block" gutterBottom>
