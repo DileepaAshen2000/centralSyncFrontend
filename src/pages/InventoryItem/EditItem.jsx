@@ -67,8 +67,12 @@ const EditItem = () => {
       }
     } else if (name === "itemGroup" && !value) {
       validationErrors.itemGroup = "Item Group is required";
-    } else if (name === "model" && !value) {
-      validationErrors.model = "Model is required ";
+    } else if (name === "model") {
+      if (!value) {
+        validationErrors.model = "Model  is required";
+      } else if (!/^\S*$/.test(value)) {
+        validationErrors.model = "Spaces are not allowed";
+      }
     } else if (name === "brand" && !value) {
       validationErrors.brand = "Brand Name is required";
     } else if (name === "unit" && !value) {
@@ -76,19 +80,26 @@ const EditItem = () => {
     } else if (name === "dimension") {
       if (!value) {
         validationErrors.dimension = "Dimension is required";
-      } else if (!/^(\d+\*\d+(\*\d+)?|\d+\*\d+)$/.test(value)) {
+      } else if (
+        !/^(\d+(\.\d+)?\*\d+(\.\d+)?(\*\d+(\.\d+)?)?|\d+(\.\d+)?\*\d+(\.\d+)?)$/.test(
+          value
+        )
+      ) {
         validationErrors.dimension =
           "Enter dimension in the format a*b*c or a*b";
+      } else if (!/^\S*$/.test(value)) {
+        validationErrors.dimension = "Spaces are not allowed";
       }
     } else if (name === "dimensionUnit" && !value) {
       validationErrors.dimensionUnit = "Dimension Unit is required";
     } else if (name === "weight") {
       if (!value) {
         validationErrors.weight = "Weight is required";
-      } else if (!/^(?!0$)(?!0\.\d*$)\d+(\.\d+)?$/.test(value)) {
+      } else if (!/^\d+(\.\d+)?$/.test(value)) {
         validationErrors.weight = "Weight must be a positive number";
-    }
-    
+      } else if (!/^\S*$/.test(value)) {
+        validationErrors.weight = "Spaces are not allowed";
+      }
     } else if (name === "weightUnit" && !value) {
       validationErrors.weightUnit = "Weight Unit is required";
     } else if (name === "quantity") {
@@ -332,8 +343,8 @@ const EditItem = () => {
         console.log(error);
       });
   };
- // Disable Save button if there are any errors
- const isSaveDisabled = Object.keys(errors).some((key) => errors[key]);
+  // Disable Save button if there are any errors
+  const isSaveDisabled = Object.keys(errors).some((key) => errors[key]);
   return (
     <>
       <form
@@ -649,10 +660,15 @@ const EditItem = () => {
           <Button
             variant="contained"
             type="submit"
-            disabled={isSaveDisabled||loading}
+            disabled={isSaveDisabled || loading}
             className="row-start-13 col-start-5 col-span-2 rounded-sm bg-blue-600 ml-10"
           >
-  {loading ? <CircularProgress size={24} color="inherit" /> : "Save Changes"}          </Button>
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Save Changes"
+            )}{" "}
+          </Button>
           <Button
             variant="outlined"
             className="row-start-13 col-start-8 rounded-sm bg-white text-blue-60blue-600"

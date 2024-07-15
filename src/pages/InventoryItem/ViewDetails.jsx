@@ -1,21 +1,24 @@
 import {
-Typography,
+  Typography,
   Backdrop,
   CircularProgress,
   Paper,
   IconButton,
   Alert,
   AlertTitle,
+  Button,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import LoginService from "../Login/LoginService";
 
 const ViewItemDetails = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { itemID } = useParams();
+  const isAdmin = LoginService.isAdmin();
   const [inventoryItem, setInventoryItem] = useState({
     itemName: "",
     itemGroup: "",
@@ -79,13 +82,26 @@ const ViewItemDetails = () => {
   return (
     <>
       <div className="p-6 bg-white rounded-xl mx-4">
-        <div className="flex items-center mb-4">
-          <IconButton onClick={() => navigate(-1)}>
-            <ArrowBackIcon />
-          </IconButton>
-          <Typography variant="h4" className="font-bold flex-1">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
+            <IconButton onClick={() => navigate(-1)}>
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant="h4" className="font-bold flex-1">
               Item Details
-            </Typography>        </div>
+            </Typography>
+          </div>
+          {isAdmin && (
+            <Button
+              variant="contained"
+              color="primary"
+              className="mr-4 rounded bg-blue-300 text-blue-800 hover:text-white hover:bg-blue-600 font-bold"
+              onClick={() => navigate("/item/edit-item/" + itemID)}
+            >
+              Edit Item
+            </Button>
+          )}
+        </div>
 
         {status && (
           <Alert
@@ -124,13 +140,11 @@ const ViewItemDetails = () => {
                 <li className="font-bold">Weight</li>
                 <li className="font-bold">Quantity</li>
                 <li className="font-bold">Description</li>
-           
               </ul>
               <ul className="flex flex-col gap-2">
                 <li>{itemID}</li>
                 <li>{itemName}</li>
                 <li>{itemGroup.replaceAll("_", " ")}</li>
-
                 <li>{brand}</li>
                 <li>{model}</li>
                 <li>{unit}</li>
@@ -138,7 +152,6 @@ const ViewItemDetails = () => {
                 <li>{weight}</li>
                 <li>{quantity}</li>
                 <li>{description}</li>
-              
               </ul>
             </section>
           </div>

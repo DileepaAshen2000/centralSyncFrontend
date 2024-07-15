@@ -109,11 +109,15 @@ const EditInventoryRequest = () => {
     }else if (quantity > availableQuantity)
       tempErrors.quantity = "Quantity exceeds available stock.";
     if (!reason) tempErrors.reason = "Reason is required.";
-    if (!description) tempErrors.description = "Description is required.";
+   
     if (files.length > 5) tempErrors.files = "You can upload a maximum of 5 files.";
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
+
+  useEffect(() => {
+    validate();
+  }, [quantity, reason, description, files]);
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -329,7 +333,10 @@ const EditInventoryRequest = () => {
                 </Grid>
                 <Grid item sm={4.5}>
                   <TextField
-                    size='small'
+                   label="Description"
+                   name="description"
+                   multiline
+                   rows={6}
                     style={{ width: '300px' }}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}

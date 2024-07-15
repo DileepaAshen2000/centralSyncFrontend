@@ -9,9 +9,13 @@ import axios from "axios";
 const getStatusClass = (status) => {
   switch (status) {
     case "REVIEWED":
-      return "bg-blue-500 text-black w-[90px]";
+      return "bg-blue-500 text-black font-bold w-[150px]";
     case "PENDING":
-      return "bg-yellow-400 text-black text-sm w-[90px]";
+      return "bg-yellow-400 text-black font-bold w-[150px]";
+    case "PROBLEM_REPORTED":
+      return "bg-red-400 text-black font-bold w-[150px]";
+    case "RESOLVED":
+      return "bg-purple-400 text-black font-bold w-[150px]";
   }
 };
 
@@ -65,7 +69,10 @@ const InProgressOrders = () => {
       try {
         const response = await axios.get("http://localhost:8080/orders/getAll");
         const data = response.data
-          .filter((order) => order.status !== "COMPLETED")
+          .filter(
+            (order) =>
+              order.status !== "COMPLETED" && order.status !== "CANCELLED"
+          )
           .map((order) => ({
             id: order.orderId,
             email_address: order.vendorEmail,
@@ -73,7 +80,11 @@ const InProgressOrders = () => {
             date_initiated: order.dateInitiated,
             status: order.status,
           }));
-        setRows(data);
+        const sortedData = data.sort(
+          (a, b) => new Date(b.date_initiated) - new Date(a.date_initiated)
+        );
+
+        setRows(sortedData);
       } catch (error) {
         console.log(error);
       } finally {
@@ -92,6 +103,9 @@ const InProgressOrders = () => {
 
   return (
     <Box className="h-[400px] w-full">
+    <Box className="bg-[#3f51b5] text-white font-medium p-4  mb-0 mt-4 flex items-center justify-center">
+        <p>In Progress Orders List</p>
+      </Box>
       {/* Data grid component */}
       {loading ? (
         <div className="flex justify-center mostRequestedItems-center">
