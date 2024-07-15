@@ -21,6 +21,10 @@ const EditInventoryRequest = () => {
   const [items, setItems] = useState([]); 
   const [files, setFiles] = useState([]);
   const [workSite, setWorkSite] = useState("");
+  const [brand, setBrand] = useState("");
+  const [model, setModel] = useState("");
+  const [brands, setBrands] = useState([]);
+const [models, setModels] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true); // Loading state
 
@@ -49,13 +53,48 @@ const EditInventoryRequest = () => {
     axios
       .get(`http://localhost:8080/inventory-item/getAll`)
       .then((response) => {
-        setItems(response.data);
+        const uniqueItems = response.data.filter(
+          (item, index, self) => index === self.findIndex((i) => i.itemName === item.itemName)
+        );
+        setItems(uniqueItems);
       })
       .catch((error) => {
         console.log(error);
       });
       fetchWorkSite();
   }, []);
+
+  useEffect(() => {
+    if (itemName) {
+        axios.get(`http://localhost:8080/inventory-item/getBrandsByItemName?itemName=${itemName}`)
+            .then(response => {
+                setBrands(response.data);
+                setBrand(""); // Reset brand and model when item name changes
+                setModels([]);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }else {
+      setBrands([]);
+      setModels([]);
+      setBrand("");
+      setModel("");
+    }
+}, [itemName]);
+
+useEffect(() => {
+  if (itemName && brand) {
+      axios.get(`http://localhost:8080/inventory-item/getModelsByItemNameAndBrand?itemName=${itemName}&brand=${brand}`)
+          .then(response => {
+            setModels(Array.isArray(response.data) ? response.data : []);
+              setModel(""); // Reset model when brand changes
+          })
+          .catch(error => {
+              console.log(error);
+          });
+  }
+}, [itemName, brand]);
 
   useEffect(() => {
     axios
@@ -85,6 +124,8 @@ const EditInventoryRequest = () => {
         if (item) {
           setItemName(item.itemName);
           setAvailableQuantity(item.quantity);
+          setBrand(item.brand);
+          setModel(item.model);
         }
 
         setLoading(false); // Set loading to false once data is fetched
@@ -122,6 +163,10 @@ const EditInventoryRequest = () => {
   const handleSave = (e) => {
     e.preventDefault();
     if (!validate()) return;
+
+    const selectedItem = items.find(item => 
+        item.itemName === itemName && item.brand === brand && item.model === model
+    );
 
     const formData = new FormData();
     formData.append("quantity", quantity);
@@ -194,6 +239,83 @@ const EditInventoryRequest = () => {
               </Grid>
               <Grid container display='flex' mt={4}>
                 <Grid item sm={1.5}>
+                  <Typography>Item Name</Typography>
+                </Grid>
+                <Grid item sm={4.5}>
+                  <FormControl size="small" style={{ width: '300px' }}>
+                    <InputLabel id="itemName-label">Item Name</InputLabel>
+                    <Select
+                      labelId="itemName-label"
+                      value={itemName}
+                      onChange={(e) => setItemName(e.target.value)}
+                    >
+                      {items.map((item) => (
+                        <MenuItem key={item.itemId} value={item.itemName}>
+                          {item.itemName}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item sm={1.5}>
+                  <Typography>Brand</Typography>
+                </Grid>
+                <Grid item sm={4.5}>
+                <FormControl size="small" style={{ width: '300px' }} disabled={!itemName}>
+            <InputLabel id="brand-label">Brand</InputLabel>
+            <Select
+                labelId="brand-label"
+                value={brand}
+                onChange={(e) => setBrand(e.target.value)}
+            >
+                {brands.map((brand) => (
+                    <MenuItem key={brand} value={brand}>
+                        {brand}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>
+                </Grid>
+              </Grid>
+              <Grid container display="flex" mt={4}style={{ height: "80px" }}>
+              <Grid item sm={1.5}>
+                  <Typography>Model</Typography>
+                </Grid>
+                <Grid item sm={4.5}>
+                <FormControl size="small" style={{ width: '300px' }} disabled={!brand}>
+            <InputLabel id="model-label">Model</InputLabel>
+            <Select
+                labelId="model-label"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+            >
+                {models.map((model) => (
+                    <MenuItem key={model} value={model}>
+                        {model}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>
+                </Grid>
+
+                <Grid item sm={1.5}>
+                  <Typography>Quantity</Typography>
+                </Grid>
+                <Grid item sm={4.5}>
+                  <TextField
+                    size='small'
+                    style={{ width: '300px' }}
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    error={!!errors.quantity}
+                    helperText={errors.quantity ||
+                      `Available quantity: ${availableQuantity}`}
+                  />
+                </Grid>
+              </Grid>
+            
+              <Grid container display='flex' mt={4}>
+                <Grid item sm={1.5}>
                   <Typography>Created Date</Typography>
                 </Grid>
                 <Grid item sm={4.5}>
@@ -225,35 +347,6 @@ const EditInventoryRequest = () => {
                 </Grid>
               </Grid>
 
-              <Grid container display='flex' mt={4}>
-                <Grid item sm={1.5}>
-                  <Typography>Reason</Typography>
-                </Grid>
-                <Grid item sm={4.5}>
-                  <TextField
-                    size='small'
-                    style={{ width: '300px' }}
-                    value={reason}
-                    onChange={(e) => setReason(e.target.value)}
-                    error={!!errors.reason}
-                    helperText={errors.reason}
-                  />
-                </Grid>
-                <Grid item sm={1.5}>
-                  <Typography>Department</Typography>
-                </Grid>
-                <Grid item sm={4.5}>
-                  <TextField
-                    size='small'
-                    style={{ width: '300px' }}
-                    inputProps={{
-                      readOnly: true,
-                      style: { color: 'gray' },
-                    }}
-                    value={department}
-                  />
-                </Grid>
-              </Grid>
 
               <Grid container display='flex' mt={4}>
                 <Grid item sm={1.5}>
@@ -286,45 +379,42 @@ const EditInventoryRequest = () => {
                 </Grid>
               </Grid>
 
-              <Grid container display='flex' mt={4}></Grid>
-              
+
               <Grid container display='flex' mt={4}>
+
                 <Grid item sm={1.5}>
-                  <Typography>Item Name</Typography>
-                </Grid>
-                <Grid item sm={4.5}>
-                  <FormControl size="small" style={{ width: '300px' }}>
-                    <InputLabel id="itemName-label">Item Name</InputLabel>
-                    <Select
-                      labelId="itemName-label"
-                      value={itemName}
-                      onChange={(e) => setItemName(e.target.value)}
-                    >
-                      {items.map((item) => (
-                        <MenuItem key={item.itemId} value={item.itemName}>
-                          {item.itemName}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </Grid>
-              
-              <Grid container display='flex' mt={4}>
-                <Grid item sm={1.5}>
-                  <Typography>Quantity</Typography>
+                  <Typography>Department</Typography>
                 </Grid>
                 <Grid item sm={4.5}>
                   <TextField
                     size='small'
                     style={{ width: '300px' }}
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    error={!!errors.quantity}
-                    helperText={errors.quantity ||
-                      `Available quantity: ${availableQuantity}`}
+                    inputProps={{
+                      readOnly: true,
+                      style: { color: 'gray' },
+                    }}
+                    value={department}
                   />
                 </Grid>
+              </Grid>
+              
+              <Grid container display='flex' mt={4}>
+              <Grid item sm={1.5}>
+                  <Typography>Reason</Typography>
+                </Grid>
+                <Grid item sm={4.5}>
+                  <TextField
+                    size='small'
+                    style={{ width: '300px' }}
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    error={!!errors.reason}
+                    helperText={errors.reason}
+                  />
+                </Grid>
+                </Grid>
+              <Grid container display='flex' mt={4}>
+              
               </Grid>
 
               <Grid container display='flex' mt={4}>
