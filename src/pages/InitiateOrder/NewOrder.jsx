@@ -408,30 +408,18 @@ const NewOrderForm = () => {
             />
           </div>
         </div>
-        <div className="flex-row col-span-10 col-start-1 ">
-          <Typography display="block" gutterBottom>
-            Attach File(s) to initiate the order{" "}
-          </Typography>
-          <input
-            type="file"
-            onChange={handleFileChange}
-            className="mt-4 mb-2"
-          ></input>
-          <Typography variant="caption" display="block" gutterBottom>
-            You can upload a maximum of 1 file, 5MB each
-          </Typography>
-        </div>
+    
 
         <Button
           variant="contained"
-          className="row-start-13 col-start-6 col-span-3 w-[60%]  rounded-sm bg-blue-600  m-5"
+          className="row-start-12 col-start-6 col-span-3 w-[60%]  rounded-sm bg-blue-600  m-5"
           onClick={handleSubmit}
         >
           Initiate the Order
         </Button>
         <Button
           variant="outlined"
-          className="row-start-13 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600 m-5"
+          className="row-start-12 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600 m-5"
           onClick={() => navigate("/order")}
         >
           Cancel

@@ -1,6 +1,6 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import { Button, CircularProgress } from "@mui/material";
+import {  CircularProgress } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +16,10 @@ const getStatusClass = (status) => {
 };
 
 const columns = [
-  { field: "id", headerName: "Order ID", width: 150 },
+  { field: "id", headerName: "Order ID",
+    minwidth: 100,
+    editable: false,
+    flex: 0.5, },
   {
     field: "email_address",
     headerName: "Email Address",
@@ -32,8 +35,8 @@ const columns = [
     flex: 1,
   },
   {
-    field: "date_completed",
-    headerName: "Date Completed",
+    field: "date_last_update",
+    headerName: "Date Completed/Cancelled",
     type: "number",
     minwidth: 150,
     editable: true,
@@ -70,11 +73,11 @@ const CompleteOrders = () => {
             id: order.orderId,
             email_address: order.vendorEmail,
             vendor_name: order.vendorName,
-            date_completed: order.dateCompleted,
+            date_last_update: order.lastStatusUpdate,
             status: order.status,
           }));
         const sortedData = data.sort(
-          (a, b) => new Date(b.date_completed) - new Date(a.date_completed)
+          (a, b) => new Date(b.date_last_update) - new Date(a.date_last_update)
         );
 
         setRows(sortedData);
@@ -96,8 +99,8 @@ const CompleteOrders = () => {
 
   return (
     <Box className="h-[400px] w-full">
-    <Box className="bg-[#126619] text-white font-medium p-4  mb-0 mt-4 flex items-center justify-center">
-        <p>Completed Order List</p>
+    <Box className="bg-[#3f51b5] text-white font-medium p-4  mb-0 mt-4 flex items-center justify-center">
+        <p>Processed Order List</p>
       </Box>
       {/* Data grid component */}
       {loading ? (

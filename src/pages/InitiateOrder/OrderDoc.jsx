@@ -44,7 +44,7 @@ const ViewOrderDetails = () => {
     vendorEmail: "",
     mobile: "",
     dateInitiated: "",
-    dateCompleted: "",
+    lastStatusUpdate: "",
     itemName: "",
     brandName: "",
     quantity: "",
@@ -58,7 +58,7 @@ const ViewOrderDetails = () => {
     vendorEmail,
     mobile,
     dateInitiated,
-    dateCompleted,
+    lastStatusUpdate,
     itemName,
     brandName,
     quantity,
@@ -95,8 +95,15 @@ const ViewOrderDetails = () => {
   };
 
   const handleConfirmAction = async () => {
+    console.log("Note at confirmation:", note); // Debugging line
+
     try {
-      await dialogAction();
+      if (dialogAction) {
+        await dialogAction(note); // Pass the note to the dialog action
+      } else {
+        await dialogAction();
+      }
+
       handleCloseDialog();
     } catch (error) {
       console.log(error);
@@ -181,13 +188,18 @@ const ViewOrderDetails = () => {
     }
   };
 
-  const handleMarkAsProblemReported = async () => {
+  const handleMarkAsProblemReported = async (note) => {
     setLoading(true);
-    console.log(note);
+    console.log("Note at confirmation:", note); // Debugging line
     try {
       const response = await axios.patch(
         `http://localhost:8080/orders/problemReported/${orderID}`,
-        { note: note }
+        { note: note }, // Send note as a JSON object
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
 
       if (response.status === 200) {
@@ -304,8 +316,11 @@ const ViewOrderDetails = () => {
                 <li className="font-bold">Email Address</li>
                 <li className="font-bold"> Mobile</li>
                 <li className="font-bold">Date Initiated</li>
-                {status === "COMPLETED" && (
-                  <li className="font-bold">Date Completed</li>
+                {status !== "PENDING" && (
+                  <li className="font-bold">
+                    Last Status Update to <br />
+                    {status}{" "}
+                  </li>
                 )}
               </ul>
               <ul className="flex flex-col gap-2">
@@ -315,7 +330,7 @@ const ViewOrderDetails = () => {
                 <li>{vendorEmail}</li>
                 <li>{mobile}</li>
                 <li>{dateInitiated}</li>
-                {status === "COMPLETED" && <li>{dateCompleted}</li>}
+                {status !== "PENDING" && <li>{lastStatusUpdate}</li>}
               </ul>
             </section>
 
@@ -371,23 +386,25 @@ const ViewOrderDetails = () => {
                 Mark as Completed
               </Button>
             )}
-            {status !== "REVIEWED" && status !== "CANCELLED" && status !== "COMPLETED" && (
-              <Button
-                variant="contained"
-                color="primary"
-                className="mr-4 rounded   bg-blue-300 text-blue-800 hover:text-white hover:bg-blue-600 font-bold"
-                onClick={() =>
-                  handleOpenDialog("Mark as Reviewed", handleMarkAsReviewed)
-                }
-              >
-                Mark as Reviewed
-              </Button>
-            )}
+            {status !== "REVIEWED" &&
+              status !== "CANCELLED" &&
+              status !== "COMPLETED" && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className="mr-4 rounded   bg-blue-300 text-blue-800 hover:text-white hover:bg-blue-600 font-bold"
+                  onClick={() =>
+                    handleOpenDialog("Mark as Reviewed", handleMarkAsReviewed)
+                  }
+                >
+                  Mark as Reviewed
+                </Button>
+              )}
             {status === "PROBLEM_REPORTED" && status !== "RESOLVED" && (
               <Button
                 variant="contained"
                 color="primary"
-                className="mr-4 rounded bg-blue-300 text-blue-800 hover:text-white hover:bg-blue-600 font-bold"
+                className="mr-4 rounded bg-purple-300 text-purple-800 hover:text-white hover:bg-purple-600 font-bold"
                 onClick={() =>
                   handleOpenDialog("Mark as Resolved", handleMarkAsResolved)
                 }
@@ -395,19 +412,18 @@ const ViewOrderDetails = () => {
                 Mark as Resolved
               </Button>
             )}
-            {status !== "COMPLETED" &&
-              (status !== "CANCELLED" && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className="mr-4 rounded bg-red-300 text-red-800 hover:text-white hover:bg-red-600 font-bold"
-                  onClick={() =>
-                    handleOpenDialog("Mark as Cancelled", handleMarkAsCancelled)
-                  }
-                >
-                  Mark as Cancelled
-                </Button>
-              ))}
+            {status !== "COMPLETED" && status !== "CANCELLED" && (
+              <Button
+                variant="contained"
+                color="primary"
+                className="mr-4 rounded bg-red-300 text-red-800 hover:text-white hover:bg-red-600 font-bold"
+                onClick={() =>
+                  handleOpenDialog("Mark as Cancelled", handleMarkAsCancelled)
+                }
+              >
+                Mark as Cancelled
+              </Button>
+            )}
             {status !== "PROBLEM_REPORTED" && status !== "CANCELLED" && (
               <Button
                 variant="contained"
@@ -485,8 +501,8 @@ const ViewOrderDetails = () => {
                 <li className="font-bold">Email Address</li>
                 <li className="font-bold"> Mobile</li>
                 <li className="font-bold">Date Initiated</li>
-                {status === "COMPLETED" && (
-                  <li className="font-bold">Date Completed</li>
+                {status !== "PENDING" && (
+                  <li className="font-bold">Last Status Update to {status} </li>
                 )}
               </ul>
               <ul className="flex flex-col gap-2">
@@ -496,7 +512,7 @@ const ViewOrderDetails = () => {
                 <li>{vendorEmail}</li>
                 <li>{mobile}</li>
                 <li>{dateInitiated}</li>
-                {status === "COMPLETED" && <li>{dateCompleted}</li>}
+                {status !== "PENDING" && <li>{lastStatusUpdate}</li>}
               </ul>
             </section>
 
