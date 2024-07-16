@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from "react";
 import {
-  FormControl,
   Select,
   MenuItem,
   TextField,
-  InputLabel,
   Typography,
   Button,
   Autocomplete,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import axios from "axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import LoginService from "../Login/LoginService";
 
 const NewStockOut = () => {
   let navigate = useNavigate();
-  const location = useLocation();
-  const [profileInfo, setProfileInfo] = useState();
+  const [profileInfo, setProfileInfo] = useState({});
   const [stockOut, setStockOut] = useState({
     department: "",
     date: new Date().toISOString().split("T")[0],
@@ -27,14 +26,24 @@ const NewStockOut = () => {
     userId: "",
     file: null,
   });
-
-  const { department, date, description, outQty, itemId, userId, file } =
-    stockOut;
-
-  const [options, setOptions] = useState([]);
-  const [selectedItemId, setSelectedItemId] = useState(null);
-  const [availableQuantity, setAvailableQuantity] = useState(0); // To store available quantity
+ 
   const [errors, setErrors] = useState({});
+  const [options, setOptions] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [models, setModels] = useState([]);
+  const [selectedItemName, setSelectedItemName] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedModel, setSelectedModel] = useState("");
+
+  const {
+    department,
+    date,
+    description,
+    outQty,
+    itemId,
+    userId,
+    file,
+  } = stockOut;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,126 +56,221 @@ const NewStockOut = () => {
         const token = localStorage.getItem("token");
         const profile = await LoginService.getYourProfile(token);
         setProfileInfo(profile.users);
-        setStockOut((preStockOut) => ({
-          ...preStockOut,
-          userId: profile.users.userId,
-        }));
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  //fetch data when navigate through search
-  useEffect(() => {
-    if (location.state?.item) {
-      const { itemId, quantity } = location.state.item;
-      setSelectedItemId(itemId);
-      setAvailableQuantity(quantity);
-      setStockOut({ ...stockOut, itemId: itemId });
-    }
-  }, [location.state]);
-
-  const handleItemChange = async (event, value) => {
-    if (value) {
-      setSelectedItemId(value.itemId);
-      setStockOut({ ...stockOut, itemId: value.itemId });
-
-      // Fetch available quantity for the selected item
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/inventory-item/getById/${value.itemId}`
-        );
-        setAvailableQuantity(response.data.quantity);
+        setStockOut((prevStockOut) => ({ ...prevStockOut, userId: profile.users.userId }));
       } catch (error) {
         console.error("Error fetching item details:", error);
       }
+    };
+    fetchData();
+  }, []);
+
+  const handleItemChange = async (event, value) => {
+    if (value) {
+      setSelectedItemName(value.itemName);
+      validateField("itemName", value.itemName);
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/inventory-item/getBrandsByItemName?itemName=${value.itemName}`
+        );
+        setBrands(response.data);
+        setSelectedBrand("");
+        setModels([]);
+        setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: "" }));
+      } catch (error) {
+        console.error("Error fetching brands:", error);
+      }
     } else {
-      setSelectedItemId(null);
-      setStockOut({ ...stockOut, itemId: "" });
-      setAvailableQuantity(0);
+      setSelectedItemName("");
+      setBrands([]);
+      setModels([]);
+      validateField("itemName", "");
+    }
+  };
+
+  const handleBrandChange = async (event, value) => {
+    if (value) {
+      setSelectedBrand(value);
+      validateField("brand", value);
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/inventory-item/getModelsByItemNameAndBrand?itemName=${selectedItemName}&brand=${value}`
+        );
+        setModels(response.data);
+        setSelectedModel("");
+        setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: "" }));
+      } catch (error) {
+        console.error("Error fetching models:", error);
+      }
+    } else {
+      setSelectedBrand("");
+      setModels([]);
+      validateField("brand", "");
+    }
+  };
+
+  const handleModelChange = async (event, value) => {
+    if (value) {
+      setSelectedModel(value);
+      validateField("model", value);
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/inventory-item/getItemByDetails`,
+          {
+            params: {
+              itemName: selectedItemName,
+              brand: selectedBrand,
+              model: value,
+            },
+          }
+        );
+        if (response.status === 200) {
+          const item = response.data;
+          setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: item.itemId }));
+        } else {
+          setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: "" }));
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: "Item not found.",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching item details:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Failed to fetch item details.",
+        });
+      }
+    } else {
+      setSelectedModel("");
+      validateField("model", "");
+      setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: "" }));
+    }
+  };
+
+  const validateField = (name, value) => {
+    const validationErrors = {};
+    if (name === "itemName" && !value) {
+      validationErrors.itemName = "Item Name is required.";
+    } else if (name === "department" && !value) {
+      validationErrors.department = "Department is required.";
+    } else if (name === "date" && !value) {
+      validationErrors.date = "Date is required.";
+    } else if (name === "outQty") {
+      if (!value) {
+        validationErrors.outQty = "Out Quantity is required.";
+      } else if (isNaN(value) || value <= 0) {
+        validationErrors.outQty = "Out Quantity must be a positive number.";
+      }
+    } else if (name === "brand" && !value) {
+      validationErrors.brand = "Brand is required.";
+    } else if (name === "model" && !value) {
+      validationErrors.model = "Model is required.";
+    }else if (name === "itemId" && !value) {
+      validationErrors.itemId = "Item ID is required.";
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validationErrors[name],
+    }));
+
+    // Remove the error if there is no validation error for the field
+    if (!validationErrors[name]) {
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest;
+      });
     }
   };
 
   const onInputChange = (e) => {
-    setStockOut({ ...stockOut, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" });
+    const { name, value } = e.target;
+    let updatedStockOut = { ...stockOut, [name]: value };
+    setStockOut(updatedStockOut);
+    if (errors[name]) {
+      validateField(name, value);
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const validationErrors = validateInputs();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
-    if (parseInt(outQty) >= availableQuantity) {
-      Swal.fire({
-        title: "Error!",
-        text:
-          "Quantity Out should be less than the available quantity in the inventory. Available Quantity : " +
-          availableQuantity,
-        icon: "error",
-      });
-      return;
-    }
 
     try {
-      const formData = new FormData();
-      formData.append("department", department);
-      formData.append("date", date);
-      formData.append("description", description);
-      formData.append("outQty", outQty);
-      formData.append("itemId", itemId);
-      formData.append("userId", userId);
-      formData.append("file", file);
 
-      const result = await axios.post(
-        "http://localhost:8080/stock-out/add",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      navigate("/stockOut");
-      Swal.fire({
-        title: "Done !",
-        text: "Stock-Out Successfully Submitted !",
-        icon: "success",
-      });
-    } catch (error) {
-      console.error("Error:", error);
-      Swal.fire({
-        title: "Error!",
-        text: `Failed to submit Stock-Out. Error: ${error.response.data}`,
-        icon: "error"
-      });
-    }
-  };
+      const validationErrors = {};
 
-  const validateInputs = () => {
-    const errors = {};
-    if (!department) {
-      errors.department = "Department is required";
-    }
-    if (!date) {
-      errors.date = "Date is required";
-    }
-    if (!outQty) {
-      errors.outQty = "Quantity out is required";
-    }
-    if (!itemId) {
-      errors.itemId = "Item ID is required";
-    }
-    if (outQty < 0) {
-      errors.outQty = "Quantity should be positive value";
-    }
-    return errors;
+      // Validate all fields
+      validateField("itemName", selectedItemName);
+      validateField("department", department);
+      validateField("date", date);
+      validateField("outQty", outQty);
+      validateField("brand", selectedBrand);
+      validateField("model", selectedModel);
+
+      // Check if there are any errors
+      const hasErrors = Object.keys(errors).some((key) => !!errors[key]);
+
+      if (hasErrors) {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Please correct the errors in the form.",
+        });
+        return;
+      }
+            const formData = new FormData();
+            formData.append("department", department);
+            formData.append("date", date);
+            formData.append("description", description);
+            formData.append("outQty", outQty);
+            formData.append("itemId", itemId);
+            formData.append("userId", userId);
+            formData.append("file", file);
+      
+            const result = await axios.post(
+              "http://localhost:8080/stock-out/add",
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+      
+            navigate("/stockOut");
+            Swal.fire({
+              title: "Done!",
+              text: "Stock-Out Successfully Submitted.!",
+              icon: "success",
+            });
+          } catch (error) {
+            if (error.response && error.response.status === 400) {
+              console.log(error.response.data);
+            } else if (error.response.status === 403) {
+              console.error("Error:", error);
+              console.log(error.response.data);
+              Swal.fire({
+                title: "Error!",
+                text: "The item is currently inactive",
+                icon: "error",
+              });
+            } else {
+              console.error("Error:", error);
+              console.log(error.response.data);
+              Swal.fire({
+                title: "Error!",
+                text: `Failed to submit Stock-In. Error: ${error.response.data}`,
+                icon: "error"
+              });
+            }
+          }
   };
 
   const handleFileChange = (e) => {
@@ -175,23 +279,18 @@ const NewStockOut = () => {
 
   return (
     <form
-      className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14"
-      onSubmit={(e) => onSubmit(e)}
+      className="grid grid-cols-12 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14"
+      onSubmit={onSubmit}
     >
       <h1 className="col-span-4 pt-2 text-3xl font-bold ">New Stock-Out</h1>
 
       <div className="flex items-center col-span-4 col-start-1">
-        <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
+        <InputLabel htmlFor="itemName" className="flex-none w-32 text-black ">
           Item Name
         </InputLabel>
         <div>
           <Autocomplete
             disablePortal
-            value={
-              selectedItemId
-                ? options.find((option) => option.itemId === selectedItemId)
-                : null
-            }
             options={options}
             getOptionLabel={(option) => option.itemName}
             onChange={handleItemChange}
@@ -200,36 +299,118 @@ const NewStockOut = () => {
               <TextField
                 {...params}
                 label="Item Name"
-                helperText="Please select the Item Name."
+                helperText={errors.itemName || "Please select the item name."}
+                error={!!errors.itemName}
+                onBlur={handleBlur}
+                name="itemName"
               />
             )}
             size="small"
+            type="search"
           />
         </div>
       </div>
 
       <div className="flex items-center col-span-4 col-start-1">
-        <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
-          Item ID
+        <InputLabel htmlFor="brand" className="flex-none w-32 text-black ">
+          Brand
         </InputLabel>
         <div>
           <Autocomplete
-            disabled
-            options={[{ itemId: selectedItemId }]}
-            getOptionLabel={(option) => option.itemId}
-            name="itemId"
-            value={{ itemId: selectedItemId }}
+            disablePortal
+            options={brands}
+            getOptionLabel={(option) => option}
+            onChange={handleBrandChange}
+            value={selectedBrand}
+            disabled={!selectedItemName}
             sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Item ID"
-                error={!!errors.itemId}
-                helperText={errors.itemId}
+                label="Brand"
+                helperText={errors.brand || "Please select the brand."}
+                error={!!errors.brand}
+                onBlur={handleBlur}
+                name="brand"
               />
             )}
             size="small"
+            type="search"
           />
+        </div>
+      </div>
+
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="model" className="flex-none w-32 text-black ">
+          Model
+        </InputLabel>
+        <div>
+          <Autocomplete
+            disablePortal
+            options={models}
+            getOptionLabel={(option) => option}
+            onChange={handleModelChange}
+            value={selectedModel}
+            disabled={!selectedItemName || !selectedBrand}
+            sx={{ width: 300 }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Model"
+                helperText={errors.model || "Please select the model."}
+                error={!!errors.model}
+                onBlur={handleBlur}
+                name="model"
+              />
+            )}
+            size="small"
+            type="search"
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="itemId" className="flex-none w-32 text-black ">
+          Item ID
+        </InputLabel>
+        <div>
+          <TextField
+            value={stockOut.itemId}
+            disabled
+            sx={{ width: 300 }}
+            name="itemId"
+            error={!!errors.itemId}
+            onBlur={handleBlur}
+            label="Item ID"
+            helperText={errors.itemId || "Item ID is Required."}
+          />
+          <Typography variant="caption" className="text-xs text-[#FC0000]">
+            {errors.itemId}
+          </Typography>
+        </div>
+      </div>
+
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="date" className="flex-none w-32 text-black ">
+          Date
+        </InputLabel>
+        <div>
+          <TextField
+            style={{ width: "300px" }}
+            label="Date"
+            name="date"
+            value={date}
+            onBlur={handleBlur}
+            size="small"
+            error={!!errors.date}
+            helperText={errors.date}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <Typography variant="caption" className="text-xs text-[#FC0000]">
+            {errors.date}
+          </Typography>
         </div>
       </div>
 
@@ -255,12 +436,8 @@ const NewStockOut = () => {
               <MenuItem value="Quality Assurance">Quality Assurance</MenuItem>
               <MenuItem value="Customer Service">Customer Service</MenuItem>
               <MenuItem value="Human Resource">Human Resource</MenuItem>
-              <MenuItem value="Finance & Administration">
-                Finance & Administration
-              </MenuItem>
-              <MenuItem value="Research & Development">
-                Research & Development
-              </MenuItem>
+              <MenuItem value="Finance & Administration">Finance & Administration</MenuItem>
+              <MenuItem value="Research & Development">Research & Development</MenuItem>
             </Select>
             <Typography variant="caption" className="text-red-600">
               {errors.department}
@@ -270,45 +447,27 @@ const NewStockOut = () => {
       </div>
 
       <div className="flex items-center col-span-4 col-start-1">
-        <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
-          Date
-        </InputLabel>
-        <div>
-          <TextField
-            style={{ width: "300px" }}
-            label="Date"
-            name="date"
-            value={date}
-            size="small"
-            error={!!errors.date}
-            helperText={errors.date}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-        </div>
-      </div>
+            <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
+              Quantity Out
+            </InputLabel>
+            <div>
+                <TextField 
+                  size='small' 
+                  placeholder='Enter Quantity In' 
+                  type='Number' 
+                  name='outQty' 
+                  value={outQty} 
+                  error={!!errors.outQty}
+                  helperText={errors.outQty}
+                  onChange={onInputChange}/>      
+            </div>
+          </div>
 
-      <div className="flex items-center col-span-4 col-start-1">
-        <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
-          Quantity Out
-        </InputLabel>
-        <div>
-          <TextField
-            size="small"
-            placeholder="Enter Quantity Out"
-            type="Number"
-            name="outQty"
-            value={outQty}
-            error={!!errors.outQty}
-            helperText={errors.outQty}
-            onChange={(e) => onInputChange(e)}
-          />
-        </div>
-      </div>
-
-      <div className="flex items-center col-span-4 col-start-1">
-        <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
+      <div className="flex col-span-4 col-start-1 ">
+        <InputLabel
+          htmlFor="description"
+          className="flex-none w-32 mt-0 text-black"
+        >
           Description
         </InputLabel>
         <div>
@@ -320,33 +479,39 @@ const NewStockOut = () => {
             placeholder="Enter Description Here..."
             style={{ width: "500px" }}
             value={description}
-            onChange={(e) => onInputChange(e)}
+            onChange={onInputChange}
           />
         </div>
       </div>
 
       <div className="flex-row col-span-10 col-start-1 ">
-        <Typography display='block' gutterBottom>Attach File(s) to inventory stock-in </Typography>
-        <input type='file' onChange={handleFileChange} className="mt-4 mb-2"></input>
-        <Typography variant='caption' display='block' gutterBottom>You can upload a maximum of 5 files, 5MB each</Typography>
+        <Typography display="block" gutterBottom>
+          Attach File(s) to inventory Stock-In{" "}
+        </Typography>
+        <input
+          type="file"
+          className="mt-4 mb-2"
+          onChange={handleFileChange}
+        ></input>
+        <Typography variant="caption" display="block" gutterBottom>
+          You can upload a maximum of 10MB file.
+        </Typography>
       </div>
 
-      <div className="flex col-start-7 gap-6">
-        <Button
-          className="text-white bg-blue-600 rounded "
-          variant="contained"
-          type="submit"
-        >
-          Submit
-        </Button>
-        <Button
-          className="rounded"
-          variant="outlined"
-          onClick={() => navigate(-1)}
-        >
-          Cancel
-        </Button>
-      </div>
+      <Button
+        className="col-start-10 text-white bg-blue-600 rounded"
+        variant="contained"
+        type="submit"
+      >
+        submit
+      </Button>
+      <Button
+        className="col-start-12 rounded"
+        variant="outlined"
+        onClick={() => navigate("/stockIn")}
+      >
+        cancel
+      </Button>
     </form>
   );
 };
