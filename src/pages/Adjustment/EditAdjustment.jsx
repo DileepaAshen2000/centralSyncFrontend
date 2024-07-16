@@ -42,9 +42,19 @@ const EditAdjustment = () => {
       updatedAdj.adjustedQuantity = value - item.quantity;
     }
     setAdj(updatedAdj);
-    setErrors({ ...errors, [name]: '' });
+    // setErrors({ ...errors, [name]: '' });
+    if (errors[name]) {
+      validateField(name, value);
+    }
     setFlag(1);
   };
+
+  // new
+
+  
+
+
+  // end of new
 
   useEffect(() => {
     loadAdjustment();
@@ -53,42 +63,94 @@ const EditAdjustment = () => {
   const onSubmit=async(e)=>{
     if(flag === 1){
       e.preventDefault(); // To remove unwanted url tail part
-      const validationErrors = validateInputs();
-      console.log(Object.keys(validationErrors).length)
-      if (Object.keys(validationErrors).length > 0) {
-        setErrors(validationErrors);
-        return;
-      }
+      // const validationErrors = validateInputs();
+      // console.log(Object.keys(validationErrors).length)
+      // if (Object.keys(validationErrors).length > 0) {
+      //   setErrors(validationErrors);
+      //   return;
+      // }
 
-      try {
-        const formData = new FormData();
-        formData.append('reason', reason);
-        formData.append('date', date);
-        formData.append('description', description);
-        formData.append('adjustedQuantity', adjustedQuantity);
-        formData.append('itemId', itemId);
-        formData.append('file', file); // Append the file to the formData
+      // try {
+      //   const formData = new FormData();
+      //   formData.append('reason', reason);
+      //   formData.append('date', date);
+      //   formData.append('description', description);
+      //   formData.append('adjustedQuantity', adjustedQuantity);
+      //   formData.append('itemId', itemId);
+      //   formData.append('file', file); // Append the file to the formData
 
-        const result = await axios.put(`http://localhost:8080/adjustment/updateById/${adjId}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
+      //   const result = await axios.put(`http://localhost:8080/adjustment/updateById/${adjId}`, formData, {
+      //     headers: {
+      //       'Content-Type': 'multipart/form-data'
+      //     }
+      //   });
       
-        navigate('/adjustment');
+      //   navigate('/adjustment');
+      //   Swal.fire({
+      //     title: "Done!",
+      //     text: "Adjustment Successfully Editted !",
+      //     icon: "success"
+      //   });
+      // } catch (error) {
+      //   console.error("Error:", error);
+      //   Swal.fire({
+      //     title: "Error!",
+      //     text: "Failed to Edit Adjustment. Please try again later.",
+      //     icon: "error"
+      //   });
+      // }
+
+      const formData = new FormData();
+    formData.append(
+      "adjustment",
+      new Blob(
+        [
+          JSON.stringify({
+            reason,
+            date,
+            description,
+            adjustedQuantity,
+            itemId,
+          }),
+        ],
+        { type: "application/json" }
+      )
+    );
+    if (file) {
+      formData.append("file", file);
+    }
+    try {
+      const response = await axios.put(
+        `http://localhost:8080/adjustment/updateById/${adjId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(response.data);
         Swal.fire({
-          title: "Done!",
-          text: "Adjustment Successfully Editted !",
-          icon: "success"
+          icon: "success",
+          title: "Success!",
+          text: "Adjustment successfully Editted.!",
         });
-      } catch (error) {
-        console.error("Error:", error);
-        Swal.fire({
-          title: "Error!",
-          text: "Failed to Edit Adjustment. Please try again later.",
-          icon: "error"
-        });
+        navigate("/adjustment");
       }
+    } catch (error) {
+      if (error.response) {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Failed to submit adjustment. Please check your inputs.",
+        });
+        const backendErrors = error.response.data;
+        console.log(backendErrors);
+        setErrors(backendErrors);
+      }
+    }
     }else{
       navigate('/adjustment');
       Swal.fire({
@@ -100,27 +162,27 @@ const EditAdjustment = () => {
   };
 
   // Validate the input fields
-  const validateInputs = () => {
-    const errors = {};
-    if (!reason) {
-      errors.reason = 'Reason is required';
-    }
-    if (!date) {
-      errors.date = 'Date is required';
-    }
+  // const validateInputs = () => {
+  //   const errors = {};
+  //   if (!reason) {
+  //     errors.reason = 'Reason is required';
+  //   }
+  //   if (!date) {
+  //     errors.date = 'Date is required';
+  //   }
     
-    if (!newQuantity) {
-      errors.newQuantity = 'New Quantity is required';
-    }
-    if (!itemId) {
-      errors.itemId = 'Item ID is required';
-    }
-    if (newQuantity<0){
-      errors.newQuantity = 'Quantity should be positive value'
-    }
+  //   if (!newQuantity) {
+  //     errors.newQuantity = 'New Quantity is required';
+  //   }
+  //   if (!itemId) {
+  //     errors.itemId = 'Item ID is required';
+  //   }
+  //   if (newQuantity<0){
+  //     errors.newQuantity = 'Quantity should be positive value'
+  //   }
     
-    return errors;
-  };
+  //   return errors;
+  // };
 
   const handleFileChange = (e) => {
     setAdj({ ...adj, file: e.target.files[0] });
@@ -140,6 +202,48 @@ const EditAdjustment = () => {
       console.error('Error loading adjustment:', error);
     }
   }
+
+  // new validation feilds
+
+  const validateField = (name, value) => {
+    const validationErrors = {};
+    if (name === "itemName" && !value) {
+      validationErrors.itemName = "Item Name is required.";
+    } else if (name === "reason" && !value) {
+      validationErrors.reason = "Reason is required.";
+    } else if (name === "date" && !value) {
+      validationErrors.date = "Date is required.";
+    } else if (name === "newQuantity") {
+      if (!value) {
+        validationErrors.newQuantity = "New Quantity is required.";
+      } else if (isNaN(value) || value <= 0) {
+        validationErrors.newQuantity = "New Quantity must be a positive number.";
+      }
+    } else if (name === "itemId" && !value) {
+      validationErrors.itemId = "Item ID is required.";
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validationErrors[name],
+    }));
+
+    // Remove the error if there is no validation error for the field
+    if (!validationErrors[name]) {
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest;
+      });
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
+  };
+
+
+  //////
   
   return (
     <form className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14" onSubmit={(e)=> onSubmit(e)}>
@@ -156,6 +260,7 @@ const EditAdjustment = () => {
               label='Adjustment ID'
               size='small'
               value={adjId}
+              onBlur={handleBlur}
               onChange={(e)=>onInputChange(e)}
               InputProps={{
                 readOnly: true,
@@ -175,6 +280,7 @@ const EditAdjustment = () => {
             label='Item ID'
             size='small'
             value={itemId}
+            onBlur={handleBlur}
             onChange={(e)=>onInputChange(e)}
             error={!!errors.itemId}
             helperText={errors.itemId}
@@ -196,6 +302,7 @@ const EditAdjustment = () => {
             label='Item Name'
             size='small'
             value={itemName}
+            onBlur={handleBlur}
             onChange={(e)=>onInputChange(e)}
             InputProps={{
                 readOnly: true,
@@ -215,6 +322,7 @@ const EditAdjustment = () => {
           name='date'
           value={date}
           size='small'
+          onBlur={handleBlur}
           error={!!errors.date}
           helperText={errors.date}
           InputLabelProps={{ // To shrink the label
@@ -232,6 +340,7 @@ const EditAdjustment = () => {
           <Select value={reason} onChange={(e)=>onInputChange(e)} size='small' name='reason'
             error={!!errors.reason}
             helperText={errors.reason}
+            onBlur={handleBlur}
             className="w-[300px] h-10 bg-white">
             <MenuItem value="Damaged Item">Damaged Item</MenuItem>
             <MenuItem value="Stolen Item">Stolen Item</MenuItem>
@@ -252,6 +361,7 @@ const EditAdjustment = () => {
             label="Description"
             name='description'
             multiline
+            onBlur={handleBlur}
             rows={6}
             placeholder='Enter Description Here...'
             style={{ width: '500px' }}
@@ -287,12 +397,14 @@ const EditAdjustment = () => {
                     <TableCell align="right">{quantity}</TableCell>
                     <TableCell align="right"><TextField size='small' placeholder='Enter New Qty' type='Number' name='newQuantity' value={quantity + adjustedQuantity} onChange={(e)=>onInputChange(e)}
                       error={!!errors.newQuantity}
+                      onBlur={handleBlur}
                       helperText={errors.newQuantity}></TextField></TableCell>
                     <TableCell align="right">{adjustedQuantity}</TableCell>
                   </TableRow>
               </TableBody>  
             </Table>
           </TableContainer>
+          <Typography variant='caption' className='text-xs text-[#FC0000]'>{errors.adjustedQuantity}</Typography>
         </div>
       </div>
 

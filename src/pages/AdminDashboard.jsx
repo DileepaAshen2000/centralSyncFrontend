@@ -15,9 +15,20 @@ import LoginService from "./Login/LoginService";
 
 export default function AdminDashboard() {
   const isEmployee = LoginService.isEmployee();
+  const isRequestHandler = LoginService.isReqHandler();
+  const isAdmin = LoginService.isAdmin();
   return(
     <div>
-      <div className="flex items-center justify-start p-2 text-3xl">Admin Dashboard</div>
+      {isAdmin && (
+        <div className="flex items-center justify-start p-2 text-2xl">Admin Dashboard</div>
+      )}
+      {isRequestHandler && (
+        <div className="flex items-center justify-start p-2 text-2xl">Request-Handler Dashboard</div>
+      )}
+      {isEmployee &&(
+        <div className="flex items-center justify-start p-2 text-2xl">Employee Dashboard</div>
+      )}
+      
       <div className="grid grid-cols-12 gap-4 h-[400px] grid-rows-7">
         <div className="flex justify-around col-span-8 row-span-3 p-4 text-5xl text-center rounded-lg ">
           <TotalEmpCard />
