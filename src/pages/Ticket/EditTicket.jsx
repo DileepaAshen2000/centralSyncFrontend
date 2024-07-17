@@ -8,7 +8,7 @@ import {
   Autocomplete,
   Box,
   CircularProgress,
-  Backdrop
+  Backdrop,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
@@ -24,7 +24,7 @@ const EditTicket = () => {
     topic: "",
     description: "",
     date: "",
-    itemId: { itemName: "", brand: "", model:"" },
+    itemId: { itemName: "", brand: "", model: "" },
   });
   const [errors, setErrors] = useState({});
   const [options, setOptions] = useState([]);
@@ -42,7 +42,7 @@ const EditTicket = () => {
         const itemResponse = await axios.get(
           `http://localhost:8080/inventory-item/getById/${itemId.itemId}`
         );
-        const { itemName, brand,model} = itemResponse.data;
+        const { itemName, brand, model } = itemResponse.data;
 
         setTicket({
           topic,
@@ -63,9 +63,15 @@ const EditTicket = () => {
         const response = await axios.get(
           "http://localhost:8080/inventory-item/getAll"
         );
-        const uniqueItemNames = [...new Set(response.data.map(item => item.itemName))];
-        const uniqueBrands = [...new Set(response.data.map(item => item.brand))];
-        const uniqueModels = [...new Set(response.data.map(item => item.model))];
+        const uniqueItemNames = [
+          ...new Set(response.data.map((item) => item.itemName)),
+        ];
+        const uniqueBrands = [
+          ...new Set(response.data.map((item) => item.brand)),
+        ];
+        const uniqueModels = [
+          ...new Set(response.data.map((item) => item.model)),
+        ];
 
         setOptions(response.data);
         setItemNameOptions(uniqueItemNames);
@@ -135,8 +141,7 @@ const EditTicket = () => {
       validationErrors.itemName = "Item name is required";
     } else if (name === "brand" && !value) {
       validationErrors.brand = "Item brand is required";
-    }
-    else if (name === "model" && !value) {
+    } else if (name === "model" && !value) {
       validationErrors.model = "Item model is required";
     } else if (name === "topic" && !value) {
       validationErrors.topic = "Topic is required";
@@ -198,9 +203,11 @@ const EditTicket = () => {
   return (
     <>
       <Box className="p-5 bg-white rounded-2xl w-[1122.7px]">
-        <Box className="pb-4">
-          <h1 className="pt-2 pb-3 text-3xl font-bold">Edit Ticket</h1>
+      <div className="pb-12">
+        <Box className="w-[1100.7px]  bg-blue-900 text-white text-center p-3">
+          <header className="text-3xl font-bold">Edit Ticket</header>
         </Box>
+      </div>
         <form>
           <div className="grid grid-cols-7 grid-rows-7 gap-x-5 gap-y-5">
             <div className="col-span-1">
@@ -296,10 +303,8 @@ const EditTicket = () => {
                   />
                 )}
               />
-             </div>{" "}
-             <div className="col-span-3"></div>
-            
-            
+            </div>{" "}
+            <div className="col-span-3"></div>
             <div className="col-span-1 row-span-1">
               <label htmlFor="topic">Topic for ticket</label>
             </div>

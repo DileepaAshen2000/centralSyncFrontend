@@ -49,12 +49,7 @@ export default function BasicTabs() {
     <div>
       {!isEmployee && (
         <Box sx={{ width: "100%" }}>
-          <div className="pb-5">
-            <h1 className="inline-block text-3xl font-bold">
-              All Issue Tickets
-            </h1>
-            <p>Here are all tickets</p>
-          </div>
+           
           
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <Tabs

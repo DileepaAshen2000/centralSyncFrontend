@@ -201,7 +201,7 @@ const MyTicketList = () => {
           </div>
         )}
       </Box>
-      <h1 className="text-white bg-[#00008B] p-3 text-center text-xl">My Issue Tickets</h1>
+      <h1 className="text-white bg-[#3f51b5] p-3 text-center text-xl">My Issue Tickets</h1>
       <DataGrid
         rows={rows}
         columns={columns}

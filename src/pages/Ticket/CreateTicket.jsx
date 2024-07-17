@@ -8,7 +8,7 @@ import {
   Autocomplete,
   Box,
   CircularProgress,
-  Backdrop
+  Backdrop,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
@@ -39,7 +39,6 @@ const CreateTicket = () => {
   const [filteredBrandOptions, setFilteredBrandOptions] = useState([]);
   const [filteredModelOptions, setFilteredModelOptions] = useState([]);
 
-
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -49,13 +48,21 @@ const CreateTicket = () => {
         const response = await axios.get(
           "http://localhost:8080/inventory-item/getAll"
         );
-        const uniqueItemNames = [...new Set(response.data.map(item => item.itemName))];
-        const uniqueBrands = [...new Set(response.data.map(item => item.brand))];
-        const uniqueModels = [...new Set(response.data.map(item => item.model))];
+        const uniqueItemNames = [
+          ...new Set(response.data.map((item) => item.itemName)),
+        ];
+        const uniqueBrands = [
+          ...new Set(response.data.map((item) => item.brand)),
+        ];
+        const uniqueModels = [
+          ...new Set(response.data.map((item) => item.model)),
+        ];
 
-        const brandOptions = uniqueBrands.map(brand => ({ brand }));
-        const itemNameOptions = uniqueItemNames.map(itemName => ({ itemName }));
-        const modelOptions = uniqueModels.map(model => ({ model }));
+        const brandOptions = uniqueBrands.map((brand) => ({ brand }));
+        const itemNameOptions = uniqueItemNames.map((itemName) => ({
+          itemName,
+        }));
+        const modelOptions = uniqueModels.map((model) => ({ model }));
 
         setOptions(response.data);
         setItemNameOptions(itemNameOptions);
@@ -71,7 +78,7 @@ const CreateTicket = () => {
   console.log("Options:", options);
   useEffect(() => {
     if (location.state?.item) {
-      const { itemName, brand,model } = location.state.item;
+      const { itemName, brand, model } = location.state.item;
       setItemName(itemName);
       setBrand(brand);
       setModel(model);
@@ -85,8 +92,7 @@ const CreateTicket = () => {
       validationErrors.itemName = "Item name is required";
     } else if (name === "brand" && !value) {
       validationErrors.brand = "Item brand is required";
-    }
-    else if (name === "model" && !value) {
+    } else if (name === "model" && !value) {
       validationErrors.model = "Item model is required";
     } else if (name === "topic" && !value) {
       validationErrors.topic = "Topic is required";
@@ -125,8 +131,8 @@ const CreateTicket = () => {
       setItemName(value.itemName);
       validateField("itemName", value.itemName);
       const filteredBrands = options
-        .filter(option => option.itemName === value.itemName)
-        .map(option => option.brand);
+        .filter((option) => option.itemName === value.itemName)
+        .map((option) => option.brand);
       setFilteredBrandOptions([...new Set(filteredBrands)]);
       setBrand("");
       setFilteredModelOptions([]);
@@ -137,15 +143,17 @@ const CreateTicket = () => {
       setFilteredModelOptions([]);
     }
   };
-  
 
   const handleItembrandChange = (event, value) => {
     if (value) {
       setBrand(value.brand);
       validateField("brand", value.brand);
       const filteredModels = options
-        .filter(option => option.itemName === itemName && option.brand === value.brand)
-        .map(option => option.model);
+        .filter(
+          (option) =>
+            option.itemName === itemName && option.brand === value.brand
+        )
+        .map((option) => option.model);
       setFilteredModelOptions([...new Set(filteredModels)]);
       setModel("");
     } else {
@@ -154,7 +162,6 @@ const CreateTicket = () => {
       setFilteredModelOptions([]);
     }
   };
-  
 
   const handleItemmodelChange = (event, value) => {
     if (value) {
@@ -167,9 +174,8 @@ const CreateTicket = () => {
   };
 
   const findOptionByLabel = (options, label, key) => {
-    return options.find(option => option[key] === label) || null;
+    return options.find((option) => option[key] === label) || null;
   };
-  
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -209,9 +215,11 @@ const CreateTicket = () => {
   return (
     <>
       <Box className="p-5 bg-white rounded-2xl w-[1122.7px]">
-        <Box className="pb-4">
-          <h1 className="pt-2 pb-3 text-3xl font-bold ">New Ticket</h1>
+      <div className="pb-12">
+        <Box className="w-[1100.7px]  bg-blue-900 text-white text-center p-3">
+          <header className="text-3xl font-bold">New Ticket</header>
         </Box>
+      </div>
         <form>
           <div className="grid grid-cols-6 grid-rows-7  gap-x-5 gap-y-5">
             <div className="col-span-1">
@@ -225,7 +233,11 @@ const CreateTicket = () => {
                 options={itemNameOptions}
                 getOptionLabel={(option) => option.itemName}
                 onChange={handleItemChange}
-                value={itemNameOptions.find(option => option.itemName === itemName) || null}
+                value={
+                  itemNameOptions.find(
+                    (option) => option.itemName === itemName
+                  ) || null
+                }
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -252,7 +264,7 @@ const CreateTicket = () => {
               )}
 
               <Autocomplete
-                options={filteredBrandOptions.map(brand => ({ brand }))}
+                options={filteredBrandOptions.map((brand) => ({ brand }))}
                 getOptionLabel={(option) => option.brand}
                 onChange={handleItembrandChange}
                 value={brand ? { brand } : null}
@@ -275,7 +287,6 @@ const CreateTicket = () => {
             </div>
             <div></div>
             <div></div>
-
             <div className="col-span-1">
               <label htmlFor="name">Item Model</label>
             </div>
@@ -284,7 +295,7 @@ const CreateTicket = () => {
                 <div className="text-[#FC0000] text-sm">{errors.model}</div>
               )}
               <Autocomplete
-                options={filteredModelOptions.map(model => ({ model }))}
+                options={filteredModelOptions.map((model) => ({ model }))}
                 getOptionLabel={(option) => option.model}
                 onChange={handleItemmodelChange}
                 value={model ? { model } : null}

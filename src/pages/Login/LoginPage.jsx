@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import inventory from "../../assests/inventory.jpg";
 import { useNavigate } from "react-router-dom";
 import LoginService from "./LoginService";
+import Swal from 'sweetalert2';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -15,6 +16,14 @@ export default function LoginPage() {
       const userData = await LoginService.login(email, password);
       console.log(userData);
       if (userData.token) {
+        if (userData.status === "INACTIVE") {
+          Swal.fire({
+            icon: 'error',
+            title: 'Account Inactive',
+            text: "Sorry, you can't log into centralSync",
+          });
+          return;
+        }
 
         localStorage.setItem('token', userData.token);
         localStorage.setItem('role', userData.role);
