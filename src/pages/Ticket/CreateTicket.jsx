@@ -33,6 +33,13 @@ const CreateTicket = () => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [options, setOptions] = useState([]);
+  const [itemNameOptions, setItemNameOptions] = useState([]);
+  const [brandOptions, setBrandOptions] = useState([]);
+  const [modelOptions, setModelOptions] = useState([]);
+  const [filteredBrandOptions, setFilteredBrandOptions] = useState([]);
+  const [filteredModelOptions, setFilteredModelOptions] = useState([]);
+
+
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -42,7 +49,18 @@ const CreateTicket = () => {
         const response = await axios.get(
           "http://localhost:8080/inventory-item/getAll"
         );
+        const uniqueItemNames = [...new Set(response.data.map(item => item.itemName))];
+        const uniqueBrands = [...new Set(response.data.map(item => item.brand))];
+        const uniqueModels = [...new Set(response.data.map(item => item.model))];
+
+        const brandOptions = uniqueBrands.map(brand => ({ brand }));
+        const itemNameOptions = uniqueItemNames.map(itemName => ({ itemName }));
+        const modelOptions = uniqueModels.map(model => ({ model }));
+
         setOptions(response.data);
+        setItemNameOptions(itemNameOptions);
+        setBrandOptions(brandOptions);
+        setModelOptions(modelOptions);
       } catch (error) {
         console.error("Error fetching item data:", error);
       }
@@ -106,21 +124,37 @@ const CreateTicket = () => {
     if (value) {
       setItemName(value.itemName);
       validateField("itemName", value.itemName);
+      const filteredBrands = options
+        .filter(option => option.itemName === value.itemName)
+        .map(option => option.brand);
+      setFilteredBrandOptions([...new Set(filteredBrands)]);
+      setBrand("");
+      setFilteredModelOptions([]);
     } else {
       setItemName("");
       validateField("itemName", "");
+      setFilteredBrandOptions([]);
+      setFilteredModelOptions([]);
     }
   };
+  
 
   const handleItembrandChange = (event, value) => {
     if (value) {
       setBrand(value.brand);
       validateField("brand", value.brand);
+      const filteredModels = options
+        .filter(option => option.itemName === itemName && option.brand === value.brand)
+        .map(option => option.model);
+      setFilteredModelOptions([...new Set(filteredModels)]);
+      setModel("");
     } else {
       setBrand("");
       validateField("brand", "");
+      setFilteredModelOptions([]);
     }
   };
+  
 
   const handleItemmodelChange = (event, value) => {
     if (value) {
@@ -131,6 +165,11 @@ const CreateTicket = () => {
       validateField("model", "");
     }
   };
+
+  const findOptionByLabel = (options, label, key) => {
+    return options.find(option => option[key] === label) || null;
+  };
+  
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -183,12 +222,10 @@ const CreateTicket = () => {
                 <div className="text-[#FC0000] text-sm">{errors.itemName}</div>
               )}
               <Autocomplete
-                options={options}
+                options={itemNameOptions}
                 getOptionLabel={(option) => option.itemName}
                 onChange={handleItemChange}
-                value={
-                  options.find((option) => option.itemName === itemName) || null
-                } //setting initial seleted value
+                value={itemNameOptions.find(option => option.itemName === itemName) || null}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -215,10 +252,10 @@ const CreateTicket = () => {
               )}
 
               <Autocomplete
-                options={options}
+                options={filteredBrandOptions.map(brand => ({ brand }))}
                 getOptionLabel={(option) => option.brand}
                 onChange={handleItembrandChange}
-                value={options.find((option) => option.brand === brand) || null}
+                value={brand ? { brand } : null}
                 variant="outlined"
                 renderInput={(params) => (
                   <TextField
@@ -247,12 +284,10 @@ const CreateTicket = () => {
                 <div className="text-[#FC0000] text-sm">{errors.model}</div>
               )}
               <Autocomplete
-                options={options}
+                options={filteredModelOptions.map(model => ({ model }))}
                 getOptionLabel={(option) => option.model}
                 onChange={handleItemmodelChange}
-                value={
-                  options.find((option) => option.model === model) || null
-                } //setting initial seleted value
+                value={model ? { model } : null}
                 renderInput={(params) => (
                   <TextField
                     {...params}

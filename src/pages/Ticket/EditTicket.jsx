@@ -28,6 +28,9 @@ const EditTicket = () => {
   });
   const [errors, setErrors] = useState({});
   const [options, setOptions] = useState([]);
+  const [itemNameOptions, setItemNameOptions] = useState([]);
+  const [brandOptions, setBrandOptions] = useState([]);
+  const [modelOptions, setModelOptions] = useState([]);
 
   useEffect(() => {
     const fetchTicketData = async () => {
@@ -60,7 +63,14 @@ const EditTicket = () => {
         const response = await axios.get(
           "http://localhost:8080/inventory-item/getAll"
         );
+        const uniqueItemNames = [...new Set(response.data.map(item => item.itemName))];
+        const uniqueBrands = [...new Set(response.data.map(item => item.brand))];
+        const uniqueModels = [...new Set(response.data.map(item => item.model))];
+
         setOptions(response.data);
+        setItemNameOptions(uniqueItemNames);
+        setBrandOptions(uniqueBrands);
+        setModelOptions(uniqueModels);
       } catch (error) {
         console.error("Error fetching item data:", error);
       }
@@ -201,14 +211,10 @@ const EditTicket = () => {
                 <div className="text-[#FC0000] text-sm">{errors.itemName}</div>
               )}
               <Autocomplete
-                options={options}
-                getOptionLabel={(option) => option.itemName}
+                options={itemNameOptions}
+                getOptionLabel={(option) => option}
                 onChange={handleItemChange}
-                value={
-                  options.find(
-                    (option) => option.itemName === ticket.itemName
-                  ) || null
-                }
+                value={ticket.itemName || null}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -235,13 +241,10 @@ const EditTicket = () => {
               )}
 
               <Autocomplete
-                options={options}
-                getOptionLabel={(option) => option.brand}
+                options={brandOptions}
+                getOptionLabel={(option) => option}
                 onChange={handleItembrandChange}
-                value={
-                  options.find((option) => option.brand === ticket.brand) ||
-                  null
-                }
+                value={ticket.brand || null}
                 variant="outlined"
                 renderInput={(params) => (
                   <TextField
@@ -272,13 +275,10 @@ const EditTicket = () => {
               )}
 
               <Autocomplete
-                options={options}
-                getOptionLabel={(option) => option.model}
+                options={modelOptions}
+                getOptionLabel={(option) => option}
                 onChange={handleItemmodelChange}
-                value={
-                  options.find((option) => option.model=== ticket.model) ||
-                  null
-                }
+                value={ticket.model || null}
                 variant="outlined"
                 renderInput={(params) => (
                   <TextField

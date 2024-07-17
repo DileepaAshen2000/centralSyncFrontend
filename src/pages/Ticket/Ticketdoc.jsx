@@ -53,6 +53,7 @@ const TicketDocument = () => {
   const [item, setItem] = useState({
     itemName: "",
     brand: "",
+    model: "",
   });
   const isAdmin = LoginService.isAdmin();
   const isRequestHandler = LoginService.isReqHandler();
@@ -126,8 +127,35 @@ const TicketDocument = () => {
       setDateError("Please add completion date.");
       return;
     }
+
+    const completionDateObj = new Date(completionDate);
+    const currentDate = new Date();
+
+    if (completionDateObj <= currentDate) {
+      setDateError("Completion date must not be in the past.");
+      return;
+    }
+
     setDateError("");
     setOpenSP(true);
+  };
+  
+  const handleCompletionDateChange = (e) => {
+    const newCompletionDate = e.target.value;
+    setCompletionDate(newCompletionDate);
+
+    if (!newCompletionDate.trim()) {
+      setDateError("Please add completion date.");
+    } else {
+      const completionDateObj = new Date(newCompletionDate);
+      const currentDate = new Date();
+
+      if (completionDateObj <= currentDate) {
+        setDateError("Completion date should not be in the past.");
+      } else {
+        setDateError("");
+      }
+    }
   };
 
   const handleClickAccept = () => {
@@ -761,7 +789,7 @@ const TicketDocument = () => {
                           type="date"
                           className="w-[220px] mt-2 border-2 border-gray-300 bg-white"
                           value={completionDate}
-                          onChange={(e) => setCompletionDate(e.target.value)}
+                          onChange={handleCompletionDateChange}
                         />
                       </div>
                     </div>
