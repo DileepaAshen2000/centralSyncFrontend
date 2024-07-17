@@ -235,7 +235,7 @@ const CreateUser = () => {
               />
             </div>{" "}
             <div></div>
-            <div className="row-span-4 col-span-2">
+            <div className="col-span-2 row-span-4">
               <div className="w-[200px] h-[200px] border-2 border-gray-300 rounded-full flex items-center justify-center">
                 {imageUrl ? (
                   <>

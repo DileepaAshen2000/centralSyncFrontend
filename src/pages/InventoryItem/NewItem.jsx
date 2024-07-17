@@ -353,8 +353,8 @@ const AddItemForm = () => {
           </div>
         </div>
 
-        <div className="col-start-1 col-span-4 flex ">
-          <InputLabel htmlFor="unit" className="flex-none text-black w-32 ">
+        <div className="flex col-span-4 col-start-1 ">
+          <InputLabel htmlFor="unit" className="flex-none w-32 text-black ">
             Unit
           </InputLabel>
           <div>
@@ -419,8 +419,8 @@ const AddItemForm = () => {
             </Select>
           </div>
         </div>
-        <div className="col-start-1 col-span-6 flex items-center">
-          <InputLabel htmlFor="weight" className="flex-none text-black  w-32">
+        <div className="flex items-center col-span-4 col-start-1">
+          <InputLabel htmlFor="weight" className="flex-none w-32 text-black">
             Weight
           </InputLabel>
           <div className="col-span-2">
@@ -457,8 +457,7 @@ const AddItemForm = () => {
             </Select>
           </div>
         </div>
-
-        <div className="col-start-1 col-span-4 flex ">
+        <div className="flex col-span-4 col-start-1 ">
           <InputLabel
             htmlFor="description"
             className="flex-none w-32 mt-0 text-black"
@@ -511,7 +510,7 @@ const AddItemForm = () => {
             />
           </div>
         </div>
-        <div className="col-start-1  col-span-5 flex-row ">
+        <div className="flex-row col-span-5 col-start-1 ">
           {errors.image && (
             <div className="text-[#d32f2f] text-xs  my-1">{errors.image}</div>
           )}

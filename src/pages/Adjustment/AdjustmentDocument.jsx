@@ -14,6 +14,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import LoginService from '../Login/LoginService';
 import { useReactToPrint } from 'react-to-print';
+import Swal from 'sweetalert2';
 
 const AdjustmentDocument = () => {
   const [fetchData, setFetchData] = useState(false);
@@ -73,11 +74,21 @@ const loadAdjustment = async () => {
     axios
       .patch("http://localhost:8080/adjustment/updateStatus/accept/" + adjId , { note })
       .then(() => {
-        setFetchData(!fetchData); 
+        setFetchData(!fetchData);
+        Swal.fire({
+          title: "Success",
+          text: "Adjustment Accepted Successfully!",
+          icon: "success",
+        }) 
         navigate("/adjustment", { fetchData });
       })
       .catch((error) => {
         console.log(error);
+        Swal.fire({
+          title: "Error!",
+          text: `${error.response.data}`,
+          icon: "error",
+        })
       });
      
   };
@@ -245,12 +256,12 @@ const loadAdjustment = async () => {
               </div>
 
               <div className='flex gap-4 ml-[60%] mt-6'>
-                <Button className="px-6 py-2  bg-green-300 text-green-800 hover:text-white hover:bg-green-600 font-bold rounded"
+                <Button className="px-6 py-2 font-bold text-green-800 bg-green-300 rounded hover:text-white hover:bg-green-600"
                       variant='contained'
                       type='submit'
                       onClick={handleAccept}
                         >approve & adjust</Button>
-                <Button className="px-6 py-2  bg-red-300 text-red-800 hover:text-white hover:bg-red-600 font-bold rounded"
+                <Button className="px-6 py-2 font-bold text-red-800 bg-red-300 rounded hover:text-white hover:bg-red-600"
                       variant='contained'
                       type='submit'
                       onClick={handleReject}

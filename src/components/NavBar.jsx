@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
-import { styled, alpha } from "@mui/material/styles";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Badge from "@mui/material/Badge";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import myLogo from "../assests/logo1.png";
-import MenuIcon from "@mui/icons-material/Menu";
-import SideBar from "./SideBar";
-import { Button, InputBase } from "@mui/material";
+import React, { useState, useEffect, useRef } from 'react';
+import { styled, alpha } from '@mui/material/styles';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import myLogo from '../assests/logo1.png';
+import MenuIcon from '@mui/icons-material/Menu';
+import SideBar from './SideBar';
+import { Button, InputBase, Tooltip } from "@mui/material";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import HistoryIcon from "@mui/icons-material/History";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
@@ -177,7 +177,7 @@ export default function NavBar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" className="bg-white z-50">
+      <AppBar position="static" className="z-50 bg-white">
         <Toolbar>
           <img src={myLogo} alt="Inventory Logo" className="w-32 h-auto " />
           <h4 className="hidden text-xl font-bold text-blue-800 md:block">
@@ -185,19 +185,22 @@ export default function NavBar() {
           </h4>
           <SearchBar />
           <Box sx={{ flexGrow: 2 }} />
-          <Box sx={{ display: { xs: "none", md: "flex" }, gap: "20px" }}>
-            <IconButton
-              size="large"
-              aria-label="show new notifications"
-              color="inherit"
-              className="hidden md:block"
-              onClick={toggleNotifications}
-            >
-              <Badge badgeContent={notificationCount} color="error">
-                <NotificationsIcon className="text-black" />
-              </Badge>
-            </IconButton>
-            <div className="flex items-center">
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: '20px' }}>
+            <Tooltip title="Notification">
+              <IconButton 
+                size="large" 
+                aria-label="show new notifications" 
+                color="inherit" 
+                className="hidden md:block"
+                onClick={toggleNotifications} // Add onClick handler to toggle notifications
+              >
+                <Badge badgeContent={notificationCount} color="error">
+                  <NotificationsIcon className='text-black' />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            
+            <div className='flex items-center'>
               {profileInfo ? (
                 <h4 className="text-black text-bold ">
                   {profileInfo.firstName} {profileInfo.lastName}
@@ -206,23 +209,19 @@ export default function NavBar() {
                 <h4 className="text-black ">Loading...</h4>
               )}
             </div>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-haspopup="true"
-              onClick={toggleSidebar}
-              color="inherit"
-              className="hidden md:block"
-            >
-              {profileInfo.imagePath && (
-                <Avatar
-                  alt="Profile pic"
-                  src={`http://localhost:8080/user/display/${profileInfo.userId}`}
-                  sx={{ width: 50, height: 50 }}
-                />
-              )}
-            </IconButton>
+            <Tooltip title="Account">
+              <IconButton
+                size="large"
+                edge="end"
+                aria-label="account of current user"
+                aria-haspopup="true"
+                onClick={toggleSidebar}
+                color="inherit"
+                className="hidden md:block"
+              >
+                <AccountCircle className='text-3xl text-black' />
+              </IconButton>
+            </Tooltip>
           </Box>
           <div
             className="text-black cursor-pointer text- md:hidden"
@@ -234,12 +233,12 @@ export default function NavBar() {
       </AppBar>
 
       {notificationsOpen && (
-        <Box className="absolute right-0 mt-2 w-80 bg-white border border-gray-300 z-40 rounded-md shadow-lg">
+        <Box className="absolute right-0 z-50 mt-2 bg-white border border-gray-300 rounded-md shadow-lg w-80">
           <Box className="p-2">
             {notifications.length > 0 ? (
               notifications.map((notification, index) => (
                 <Card key={index} sx={{ mb: 2 }}>
-                  <CardContent className="p-4 flex justify-between items-center bg-blue-100">
+                  <CardContent className="flex items-center justify-between p-4 bg-blue-100">
                     <Typography variant="body2"className="text-black-600">
                       {notification.content}
                     </Typography>
@@ -266,7 +265,7 @@ export default function NavBar() {
 
       <div className="relative">
     
-      {sidebarOpen && <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-30"  style={{ top: "75px" }}></div>}
+      {sidebarOpen && <div className="fixed inset-0 z-30 bg-black bg-opacity-30 backdrop-blur-sm"  style={{ top: "75px" }}></div>}
 
       <div
         className={`w-80 absolute right-0 h-screen z-50 bg-[#D0D0D0] text-black ${
@@ -276,7 +275,7 @@ export default function NavBar() {
         <div className="flex flex-col gap-10 p-6">
           <div className="flex gap-4">
             
-            <div className="font-bold text-sm">
+            <div className="text-sm font-bold">
               
               <h2>{profileInfo ? profileInfo.username : "Loading..."}</h2>
               <h4>{profileInfo ? profileInfo.role : "Loading..."}</h4>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Select,
   MenuItem,
@@ -7,6 +7,7 @@ import {
   Button,
   Autocomplete,
   InputLabel,
+  FormControl,
 } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -18,7 +19,6 @@ import Paper from "@mui/material/Paper";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { useEffect } from "react";
 import LoginService from "../Login/LoginService";
 
 const NewAdjustment = () => {
@@ -26,7 +26,7 @@ const NewAdjustment = () => {
   const [profileInfo, setProfileInfo] = useState({});
   const [adj, setAdj] = useState({
     reason: "",
-    date: new Date().toISOString().split("T")[0], // Set to today's date
+    date: new Date().toISOString().split("T")[0], 
     description: "",
     newQuantity: "",
     adjustedQuantity: "",
@@ -35,13 +35,16 @@ const NewAdjustment = () => {
     file: null,
   });
   const [item, setItem] = useState({
-    // create state for item, initial state is empty with object.
     itemName: "",
     quantity: "",
   });
-  const [errors, setErrors] = useState({}); // State to manage errors for input fields
+  const [errors, setErrors] = useState({});
   const [options, setOptions] = useState([]);
-  const [selectedItemId, setSelectedItemId] = useState("Select an Item");
+  const [brands, setBrands] = useState([]);
+  const [models, setModels] = useState([]);
+  const [selectedItemName, setSelectedItemName] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedModel, setSelectedModel] = useState("");
 
   const {
     reason,
@@ -73,54 +76,112 @@ const NewAdjustment = () => {
     fetchData();
   }, []);
 
-  const clearItemNameError = () => {
-    setErrors((prevErrors) => {
-      const { itemName, ...rest } = prevErrors;
-      return rest;
-    });
-  };
-
-  const handleItemChange = (event, value) => {
+  const handleItemChange = async (event, value) => {
     if (value) {
-      setSelectedItemId(value.itemId);
-      setAdj({ ...adj, itemId: value.itemId }); // Update the itemId in the adj state
-      fetchItemDetails(value.itemId);
+      setSelectedItemName(value.itemName);
+      setItem({ itemName: value.itemName});
       validateField("itemName", value.itemName);
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/inventory-item/getBrandsByItemName?itemName=${value.itemName}`
+        );
+        setBrands(response.data);
+        setSelectedBrand("");
+        setModels([]);
+        setAdj((prevAdj) => ({ ...prevAdj, itemId: "" })); // Reset itemId
+      } catch (error) {
+        console.error("Error fetching brands:", error);
+      }
     } else {
-      setSelectedItemId(null);
-      setAdj({ ...adj, itemId: "" });
+      setSelectedItemName("");
+      setBrands([]);
+      setModels([]);
       validateField("itemName", "");
     }
   };
 
-  // Fetch the item details
-  const fetchItemDetails = async (itemId) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:8080/inventory-item/getById/${itemId}`
-      );
-      setItem({ ...item, quantity: response.data.quantity });
-    } catch (error) {
-      console.error("Error fetching item details:", error);
+  const handleBrandChange = async (event, value) => {
+    if (value) {
+      setSelectedBrand(value);
+      validateField("brand", value);
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/inventory-item/getModelsByItemNameAndBrand?itemName=${selectedItemName}&brand=${value}`
+        );
+        setModels(response.data);
+        setSelectedModel("");
+        setAdj((prevAdj) => ({ ...prevAdj, itemId: "" })); // Reset itemId
+      } catch (error) {
+        console.error("Error fetching models:", error);
+      }
+    } else {
+      setSelectedBrand("");
+      setModels([]);
+      validateField("brand", "");
+    }
+  };
+
+  const handleModelChange = async (event, value) => {
+    if (value) {
+      setSelectedModel(value);
+      validateField("model", value);
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/inventory-item/getItemByDetails`,
+          {
+            params: {
+              itemName: selectedItemName,
+              brand: selectedBrand,
+              model: value,
+            },
+          }
+        );
+        if (response.status === 200) {
+          const item = response.data;
+          setAdj((prevAdj) => ({ ...prevAdj, itemId: item.itemId }));
+          setItem({ quantity: item.quantity });
+          validateField("itemId", item.itemId);
+        } else {
+          setAdj((prevAdj) => ({ ...prevAdj, itemId: "" }));
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: "Item not found.",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching item details:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Failed to fetch item details.",
+        });
+      }
+    } else {
+      setSelectedModel("");
+      validateField("model", "");
+      setAdj((prevAdj) => ({ ...prevAdj, itemId: "" })); // Reset itemId
     }
   };
 
   const validateField = (name, value) => {
     const validationErrors = {};
     if (name === "itemName" && !value) {
-      validationErrors.itemName = "Itemname is required";
+      validationErrors.itemName = "Item Name is required.";
     } else if (name === "reason" && !value) {
-      validationErrors.reason = "Reason is required";
+      validationErrors.reason = "Reason is required.";
     } else if (name === "date" && !value) {
-      validationErrors.date = "Date is required";
+      validationErrors.date = "Date is required.";
     } else if (name === "newQuantity") {
       if (!value) {
-        validationErrors.newQuantity = "New Quantity is required";
+        validationErrors.newQuantity = "New Quantity is required.";
       } else if (isNaN(value) || value <= 0) {
-        validationErrors.newQuantity = "New Quantity must be a positive number";
+        validationErrors.newQuantity = "New Quantity must be a positive number.";
       }
-    } else if (name === "itemId" && !value) {
-      validationErrors.itemId = "Item ID is required";
+    } else if (name === "brand" && !value) {
+      validationErrors.brand = "Brand is required.";
+    } else if (name === "model" && !value) {
+      validationErrors.model = "Model is required.";
     }
 
     setErrors((prevErrors) => ({
@@ -137,9 +198,7 @@ const NewAdjustment = () => {
     }
   };
 
-   
-
-  const onInputChange = async (e) => {
+  const onInputChange = (e) => {
     const { name, value } = e.target;
     let updatedAdj = { ...adj, [name]: value };
     if (name === "newQuantity") {
@@ -159,6 +218,27 @@ const NewAdjustment = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
 
+    const validationErrors = {};
+
+      validateField("itemName", selectedItemName);
+      validateField("reason", reason);
+      validateField("date", date);
+      validateField("newQuantity", newQuantity);
+      validateField("brand", selectedBrand);
+      validateField("model", selectedModel);
+
+      // Check if there are any errors
+      const hasErrors = Object.keys(errors).some((key) => !!errors[key]);
+
+      if (hasErrors) {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Failed to submit adjustment. Please check your inputs.",
+        });
+        return;
+      }
+
     const formData = new FormData();
     formData.append(
       "adjustment",
@@ -170,8 +250,8 @@ const NewAdjustment = () => {
             description,
             newQuantity,
             adjustedQuantity,
-            itemId,
             userId,
+            itemId,
           }),
         ],
         { type: "application/json" }
@@ -192,7 +272,6 @@ const NewAdjustment = () => {
       );
 
       if (response.status === 201) {
-        console.log(response.data);
         Swal.fire({
           icon: "success",
           title: "Success!",
@@ -201,15 +280,23 @@ const NewAdjustment = () => {
         navigate("/adjustment");
       }
     } catch (error) {
+      if(error.response.status === 403){
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: `${error.response.data}`,
+        });
+        return;
+      }
       if (error.response) {
+        console.log(error.response.data);
         Swal.fire({
           icon: "error",
           title: "Error!",
           text: "Failed to submit adjustment. Please check your inputs.",
         });
         const backendErrors = error.response.data;
-      setErrors(backendErrors);
-         
+        setErrors(backendErrors);
       }
     }
   };
@@ -221,7 +308,7 @@ const NewAdjustment = () => {
   return (
     <form
       className="grid grid-cols-12 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14"
-      onSubmit={(e) => onSubmit(e)}
+      onSubmit={onSubmit}
     >
       <h1 className="col-span-4 pt-2 text-3xl font-bold ">New Adjustment</h1>
 
@@ -229,7 +316,6 @@ const NewAdjustment = () => {
         <InputLabel htmlFor="itemName" className="flex-none w-32 text-black ">
           Item Name
         </InputLabel>
-
         <div>
           <Autocomplete
             disablePortal
@@ -254,27 +340,76 @@ const NewAdjustment = () => {
       </div>
 
       <div className="flex items-center col-span-4 col-start-1">
-        <InputLabel htmlFor="itemId" className="flex-none w-32 text-black ">
-          Item ID
+        <InputLabel htmlFor="brand" className="flex-none w-32 text-black ">
+          Brand
         </InputLabel>
         <div>
           <Autocomplete
-            disabled
-            options={[{ itemId: selectedItemId }]} // Provide the selected itemId as an option
-            getOptionLabel={(option) => option.itemId} // Display itemId in the Autocomplete
-            name="itemId"
-            value={{ itemId: selectedItemId }} // Set the value to the selected itemId
+            disablePortal
+            options={brands}
+            getOptionLabel={(option) => option}
+            onChange={handleBrandChange}
+            value={selectedBrand}
+            disabled={!selectedItemName}
             sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Item ID"
-                error={!!errors.itemId}
-                helperText={errors.itemId}
+                label="Brand"
+                helperText={errors.brand || "Please select the brand."}
+                error={!!errors.brand}
                 onBlur={handleBlur}
+                name="brand"
               />
             )}
             size="small"
+            type="search"
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="model" className="flex-none w-32 text-black ">
+          Model
+        </InputLabel>
+        <div>
+          <Autocomplete
+            disablePortal
+            options={models}
+            getOptionLabel={(option) => option}
+            onChange={handleModelChange}
+            value={selectedModel}
+            disabled={!selectedItemName || !selectedBrand}
+            sx={{ width: 300 }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Model"
+                helperText={errors.model || "Please select the model."}
+                error={!!errors.model}
+                onBlur={handleBlur}
+                name="model"
+              />
+            )}
+            size="small"
+            type="search"
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center col-span-4 col-start-1">
+        <InputLabel htmlFor="itemId" className="flex-none w-32 text-black ">
+          Item ID
+        </InputLabel>
+        <div>
+          <TextField
+            value={adj.itemId}
+            disabled
+            sx={{ width: 300 }}
+            error={!!errors.itemId}
+            onBlur={handleBlur}
+            label="Item ID"
+            helperText={errors.itemId}
           />
         </div>
       </div>
@@ -283,7 +418,6 @@ const NewAdjustment = () => {
         <InputLabel htmlFor="date" className="flex-none w-32 text-black ">
           Date
         </InputLabel>
-
         <div>
           <TextField
             style={{ width: "300px" }}
@@ -298,6 +432,9 @@ const NewAdjustment = () => {
               shrink: true,
             }}
           />
+          <Typography variant="caption" className="text-xs text-[#FC0000]">
+            {errors.date}
+          </Typography>
         </div>
       </div>
 
@@ -305,23 +442,22 @@ const NewAdjustment = () => {
         <InputLabel htmlFor="reason" className="flex-none w-32 text-black ">
           Reason
         </InputLabel>
-
         <div className="flex-grow">
           <Select
             value={reason}
-            onChange={(e) => onInputChange(e)}
+            onChange={onInputChange}
             size="small"
             name="reason"
             onBlur={handleBlur}
             error={!!errors.reason}
             helperText={errors.reason}
-            className="w-[300px] h-10  bg-white"
+            className="w-[300px] h-10 bg-white"
           >
             <MenuItem value="Damaged Item">Damaged Item</MenuItem>
             <MenuItem value="Stolen Item">Stolen Item</MenuItem>
             <MenuItem value="Others">Others</MenuItem>
           </Select>
-          <Typography variant="caption" className="text-red-600">
+          <Typography variant="caption" className="text-xs text-[#FC0000]">
             {errors.reason}
           </Typography>
         </div>
@@ -334,7 +470,6 @@ const NewAdjustment = () => {
         >
           Description
         </InputLabel>
-
         <div>
           <TextField
             label="Description"
@@ -344,11 +479,11 @@ const NewAdjustment = () => {
             placeholder="Enter Description Here..."
             style={{ width: "500px" }}
             value={description}
-            onChange={(e) => onInputChange(e)}
+            onChange={onInputChange}
           />
         </div>
       </div>
-
+      
       <div className="flex col-span-4 col-start-1 ">
         <InputLabel
           htmlFor="itemDetails"
@@ -369,15 +504,10 @@ const NewAdjustment = () => {
               </TableHead>
               <TableBody>
                 <TableRow>
-                  {/* item name */}
                   <TableCell component="th" scope="row">
-                    {options.find((option) => option.itemId === selectedItemId)
-                      ?.itemName || "Loading..."}
+                    {selectedItemName || "Loading..."}
                   </TableCell>
-                  {/* available Qty */}
                   <TableCell align="right">{item.quantity}</TableCell>
-                  {/* new Qty */}
-
                   <TableCell align="right">
                     <TextField
                       size="small"
@@ -385,20 +515,20 @@ const NewAdjustment = () => {
                       type="Number"
                       name="newQuantity"
                       value={newQuantity}
-                      onChange={(e) => onInputChange(e)}
+                      onChange={onInputChange}
                       error={!!errors.newQuantity}
                       helperText={errors.newQuantity}
                       onBlur={handleBlur}
                     ></TextField>
                   </TableCell>
-                  {/* adjusted Qty */}
-                  <TableCell align="right">
-                    {adj.newQuantity - item.quantity}
-                  </TableCell>
+                  <TableCell align="right">{adjustedQuantity}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
           </TableContainer>
+          <Typography variant="caption" className="text-xs text-[#FC0000]">
+            {errors.adjustedQuantity}
+          </Typography>
         </div>
       </div>
 
@@ -412,7 +542,7 @@ const NewAdjustment = () => {
           onChange={handleFileChange}
         ></input>
         <Typography variant="caption" display="block" gutterBottom>
-          You can upload a maximum of 1 file, 5MB each
+          You can upload a maximum of 10MB file.
         </Typography>
       </div>
 
