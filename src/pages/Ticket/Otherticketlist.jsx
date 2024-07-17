@@ -1,7 +1,7 @@
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate, useParams } from "react-router-dom";
-import { TextField, Button, Stack, Select } from "@mui/material";
+import { TextField, Button, Stack, Select,CircularProgress} from "@mui/material";
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import axios from "axios";
@@ -56,6 +56,7 @@ const Ticket = () => {
   const [rows, setRows] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState({});
   const [profileInfo, setProfileInfo] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const isAdmin = LoginService.isAdmin();
   const isRequestHandler = LoginService.isReqHandler();
@@ -63,6 +64,7 @@ const Ticket = () => {
   useEffect(() => {
     const fetchProfileInfo = async () => {
       try {
+        
         const token = localStorage.getItem("token");
         const response = await LoginService.getYourProfile(token);
         console.log("Profile Info Response:", response);
@@ -83,6 +85,7 @@ const Ticket = () => {
   }, [profileInfo]);
 
   const fetchTickets = () => {
+    setLoading(true);
     axios
       .get("http://localhost:8080/ticket/getAll")
       .then((response) => {
@@ -125,6 +128,9 @@ const Ticket = () => {
       })
       .catch((error) => {
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -219,6 +225,11 @@ const Ticket = () => {
       </Box>
 
       <h1 className="text-white bg-[#3f51b5] p-3 text-center text-xl">Others' Issue Tickets</h1>
+      {loading ? (
+        <div className="flex justify-center mostRequestedItems-center">
+          <CircularProgress />
+        </div>
+      ):(
       <DataGrid
         rows={rows}
         columns={columns}
@@ -249,6 +260,7 @@ const Ticket = () => {
           },
         }}
       />
+      )}
     </Box>
   );
 };

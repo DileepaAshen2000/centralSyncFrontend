@@ -39,6 +39,8 @@ const TicketDocument = () => {
   const [openSP, setOpenSP] = useState(false);
   const [openA, setOpenA] = useState(false);
   const [openC, setOpenC] = useState(false);
+  const [loading, setLoading] = useState(false);
+ 
 
   const [ticket, setTicket] = useState({
     date: "",
@@ -78,6 +80,7 @@ const TicketDocument = () => {
 
   const loadTicket = async () => {
     try {
+      setLoading(true);
       const result = await axios.get(
         `http://localhost:8080/ticket/tickets/${id}`
       );
@@ -94,6 +97,9 @@ const TicketDocument = () => {
     } catch (error) {
       console.error("Error loading data:", error);
     }
+    finally{
+      setLoading(false);
+    };
   };
 
   const handleClickRejectAdmin = () => {
@@ -139,7 +145,7 @@ const TicketDocument = () => {
     setDateError("");
     setOpenSP(true);
   };
-  
+
   const handleCompletionDateChange = (e) => {
     const newCompletionDate = e.target.value;
     setCompletionDate(newCompletionDate);
@@ -408,6 +414,7 @@ const TicketDocument = () => {
       </div>
 
       <main>
+      
         <div className="p-10 ml-6 mr-6 bg-white mt-6">
           <div>
             <section>{getticketStatus(ticket.ticketStatus)}</section>
@@ -470,6 +477,12 @@ const TicketDocument = () => {
               {formattedDateTime}
             </Typography>
           </div>
+          <Backdrop
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loading}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </div>
         <Dialog
           open={openRA}

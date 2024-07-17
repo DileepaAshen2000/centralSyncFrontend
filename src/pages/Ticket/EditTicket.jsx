@@ -31,10 +31,12 @@ const EditTicket = () => {
   const [itemNameOptions, setItemNameOptions] = useState([]);
   const [brandOptions, setBrandOptions] = useState([]);
   const [modelOptions, setModelOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchTicketData = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(
           `http://localhost:8080/ticket/tickets/${id}`
         );
@@ -56,6 +58,9 @@ const EditTicket = () => {
       } catch (error) {
         console.error("Error fetching ticket data:", error);
       }
+      finally{
+        setLoading(false);
+      };
     };
 
     const fetchItemData = async () => {
@@ -415,6 +420,12 @@ const EditTicket = () => {
               </Button>
             </div>
           </div>
+          <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
         </form>
       </Box>
     </>

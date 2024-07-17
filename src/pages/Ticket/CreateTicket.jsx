@@ -38,8 +38,9 @@ const CreateTicket = () => {
   const [modelOptions, setModelOptions] = useState([]);
   const [filteredBrandOptions, setFilteredBrandOptions] = useState([]);
   const [filteredModelOptions, setFilteredModelOptions] = useState([]);
-
   const [loading, setLoading] = useState(false);
+
+   
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,6 +72,10 @@ const CreateTicket = () => {
       } catch (error) {
         console.error("Error fetching item data:", error);
       }
+      finally{
+        setLoading(false);
+      };
+      
     };
     fetchData();
   }, []);
@@ -422,6 +427,12 @@ const CreateTicket = () => {
               </Button>
             </div>
           </div>
+          <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
         </form>
       </Box>
     </>

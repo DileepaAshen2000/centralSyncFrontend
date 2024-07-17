@@ -104,7 +104,7 @@ export default function User() {
        
        
         {rowSelectionModel > 0 ? (
-          <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.25rem] mt-3 mb-3">
+          <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.25rem] mt-3 mb-6">
           <div className="col-start-4">
           {!isRequestHandler && (
             <Button
@@ -128,7 +128,7 @@ export default function User() {
           </div>
           </div>
         ) : (
-          <div className="grid grid-cols-6 grid-rows-1 gap-y-7  gap-x-[0.25rem] mt-3 mb-3 ml-[70px]">
+          <div className="grid grid-cols-6 grid-rows-1 gap-y-7  gap-x-[0.25rem] mt-3 mb-6 ml-[70px]">
             <div className="col-start-6">
               {!isRequestHandler && (
                 <Button
