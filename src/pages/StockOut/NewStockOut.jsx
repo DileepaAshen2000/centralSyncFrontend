@@ -10,12 +10,13 @@ import {
   FormControl,
 } from "@mui/material";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import LoginService from "../Login/LoginService";
 
 const NewStockOut = () => {
   let navigate = useNavigate();
+  let reactLocation=useLocation();
   const [profileInfo, setProfileInfo] = useState({});
   const [stockOut, setStockOut] = useState({
     department: "",
@@ -45,6 +46,7 @@ const NewStockOut = () => {
     file,
   } = stockOut;
 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -63,7 +65,18 @@ const NewStockOut = () => {
     };
     fetchData();
   }, []);
-
+ //fetch data when navigate through search
+  useEffect(() => {
+    if (reactLocation.state?.item) {
+      const { itemName, brand, model } = reactLocation.state.item;
+      const selectedItem = options.find(
+        (option) => option.itemName === itemName
+      );
+      setSelectedItemName(selectedItem || null);
+      setSelectedBrand(brand);
+      setSelectedModel(model);
+    }
+  }, [reactLocation.state,options]);
   const handleItemChange = async (event, value) => {
     if (value) {
       setSelectedItemName(value.itemName);
@@ -294,6 +307,7 @@ const NewStockOut = () => {
             options={options}
             getOptionLabel={(option) => option.itemName}
             onChange={handleItemChange}
+            value={selectedItemName||null}
             sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField

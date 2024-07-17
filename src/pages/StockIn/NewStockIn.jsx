@@ -9,12 +9,13 @@ import {
   InputLabel,
 } from "@mui/material";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import LoginService from "../Login/LoginService";
 
 const NewStockIn = () => {
   let navigate = useNavigate();
+  let reactLocation = useLocation();
   const [profileInfo, setProfileInfo] = useState({});
   const [stockIn, setStockIn] = useState({
     location: "",
@@ -33,15 +34,19 @@ const NewStockIn = () => {
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedModel, setSelectedModel] = useState("");
 
-  const {
-    location,
-    date,
-    description,
-    inQty,
-    itemId,
-    userId,
-    file,
-  } = stockIn;
+  const { location, date, description, inQty, itemId, userId, file } = stockIn;
+  //fetch data when navigate through search
+  useEffect(() => {
+    if (reactLocation.state?.item) {
+      const { itemName, brand, model } = reactLocation.state.item;
+      const selectedItem = options.find(
+        (option) => option.itemName === itemName
+      );
+      setSelectedItemName(selectedItem || null);
+      setSelectedBrand(brand);
+      setSelectedModel(model);
+    }
+  }, [reactLocation.state,options]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,7 +59,10 @@ const NewStockIn = () => {
         const token = localStorage.getItem("token");
         const profile = await LoginService.getYourProfile(token);
         setProfileInfo(profile.users);
-        setStockIn((prevStockIn) => ({ ...prevStockIn, userId: profile.users.userId }));
+        setStockIn((prevStockIn) => ({
+          ...prevStockIn,
+          userId: profile.users.userId,
+        }));
       } catch (error) {
         console.error("Error fetching item details:", error);
       }
@@ -123,7 +131,10 @@ const NewStockIn = () => {
         );
         if (response.status === 200) {
           const item = response.data;
-          setStockIn((prevStockIn) => ({ ...prevStockIn, itemId: item.itemId }));
+          setStockIn((prevStockIn) => ({
+            ...prevStockIn,
+            itemId: item.itemId,
+          }));
         } else {
           setStockIn((prevStockIn) => ({ ...prevStockIn, itemId: "" }));
           Swal.fire({
@@ -199,7 +210,6 @@ const NewStockIn = () => {
     e.preventDefault();
 
     try {
-
       const validationErrors = {};
 
       // Validate all fields
@@ -221,52 +231,52 @@ const NewStockIn = () => {
         });
         return;
       }
-            const formData = new FormData();
-            formData.append("location", location);
-            formData.append("date", date);
-            formData.append("description", description);
-            formData.append("inQty", inQty);
-            formData.append("itemId", itemId);
-            formData.append("userId", userId);
-            formData.append("file", file); // Append the file to the formData
-      
-            const result = await axios.post(
-              "http://localhost:8080/stock-in/add",
-              formData,
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
-              }
-            );
-      
-            navigate("/stockIn"); // To navigate to the stockin page
-            Swal.fire({
-              title: "Done!",
-              text: "Stock-In Successfully Submitted.!",
-              icon: "success",
-            });
-          } catch (error) {
-            if (error.response && error.response.status === 400) {
-              console.log(error.response.data);
-            } else if (error.response.status === 403) {
-              console.error("Error:", error);
-              console.log(error.response.data);
-              Swal.fire({
-                title: "Error!",
-                text: "The item is currently inactive",
-                icon: "error",
-              });
-            } else {
-              console.error("Error:", error);
-              console.log(error.response.data);
-              Swal.fire({
-                title: "Error!",
-                text: `Failed to submit Stock-In. Error: ${error.response.data}`,
-                icon: "error"
-              });
-            }
-          }
+      const formData = new FormData();
+      formData.append("location", location);
+      formData.append("date", date);
+      formData.append("description", description);
+      formData.append("inQty", inQty);
+      formData.append("itemId", itemId);
+      formData.append("userId", userId);
+      formData.append("file", file); // Append the file to the formData
+
+      const result = await axios.post(
+        "http://localhost:8080/stock-in/add",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      navigate("/stockIn"); // To navigate to the stockin page
+      Swal.fire({
+        title: "Done!",
+        text: "Stock-In Successfully Submitted.!",
+        icon: "success",
+      });
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        console.log(error.response.data);
+      } else if (error.response.status === 403) {
+        console.error("Error:", error);
+        console.log(error.response.data);
+        Swal.fire({
+          title: "Error!",
+          text: "The item is currently inactive",
+          icon: "error",
+        });
+      } else {
+        console.error("Error:", error);
+        console.log(error.response.data);
+        Swal.fire({
+          title: "Error!",
+          text: `Failed to submit Stock-In. Error: ${error.response.data}`,
+          icon: "error",
+        });
+      }
+    }
   };
 
   const handleFileChange = (e) => {
@@ -290,6 +300,7 @@ const NewStockIn = () => {
             options={options}
             getOptionLabel={(option) => option.itemName}
             onChange={handleItemChange}
+            value={selectedItemName || null}
             sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField
@@ -432,21 +443,22 @@ const NewStockIn = () => {
       </div>
 
       <div className="flex items-center col-span-4 col-start-1">
-            <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
-              Quantity In
-            </InputLabel>
-            <div>
-                <TextField 
-                  size='small' 
-                  placeholder='Enter Quantity In' 
-                  type='Number' 
-                  name='inQty' 
-                  value={inQty} 
-                  error={!!errors.inQty}
-                  helperText={errors.inQty}
-                  onChange={onInputChange}/>      
-            </div>
-          </div>
+        <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
+          Quantity In
+        </InputLabel>
+        <div>
+          <TextField
+            size="small"
+            placeholder="Enter Quantity In"
+            type="Number"
+            name="inQty"
+            value={inQty}
+            error={!!errors.inQty}
+            helperText={errors.inQty}
+            onChange={onInputChange}
+          />
+        </div>
+      </div>
 
       <div className="flex col-span-4 col-start-1 ">
         <InputLabel
@@ -493,7 +505,7 @@ const NewStockIn = () => {
       <Button
         className="col-start-12 rounded"
         variant="outlined"
-        onClick={() => navigate("/stockIn")}
+        onClick={() => navigate(-1)}
       >
         cancel
       </Button>
