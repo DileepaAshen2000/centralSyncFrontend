@@ -55,6 +55,7 @@ export default function BasicTabs() {
             </h1>
             <p>Here are all tickets</p>
           </div>
+          
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <Tabs
               value={value}

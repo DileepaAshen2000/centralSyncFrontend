@@ -191,7 +191,9 @@ const Ticket = () => {
         width: "100%",
       }}
     >
+   
       <Box className="flex pt-2 pb-2">
+       
         {rowSelectionModel > 0 && (
           <div className="grid grid-cols-11 grid-rows-1 gap-y-7 gap-x-[5] mb-2 ">
             <div className="col-start-8">
@@ -215,6 +217,8 @@ const Ticket = () => {
           </div>
         )}
       </Box>
+
+      <h1 className="text-white bg-[#00008B] p-3 text-center text-xl">Others' Issue Tickets</h1>
       <DataGrid
         rows={rows}
         columns={columns}

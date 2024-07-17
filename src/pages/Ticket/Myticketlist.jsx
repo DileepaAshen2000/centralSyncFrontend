@@ -149,7 +149,10 @@ const MyTicketList = () => {
   };
 
   return (
+    
     <Box sx={{ height: 400, width: "100%" }}>
+      
+     
       <Box className="flex pb-2">
         {rowSelectionModel.length > 0 && (
           <>
@@ -198,6 +201,7 @@ const MyTicketList = () => {
           </div>
         )}
       </Box>
+      <h1 className="text-white bg-[#00008B] p-3 text-center text-xl">My Issue Tickets</h1>
       <DataGrid
         rows={rows}
         columns={columns}

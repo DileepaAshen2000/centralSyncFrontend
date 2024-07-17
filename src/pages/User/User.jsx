@@ -99,9 +99,10 @@ export default function User() {
         height: 400,
         width: "100%",
       }}
-    >
+    >    
+ 
        
-        <h1 className="inline-block p-4 text-3xl font-bold">User</h1>
+        <h1 className="text-white bg-[#00008B] p-3 text-center text-xl">All Users</h1>
         {rowSelectionModel > 0 ? (
           <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.25rem] mt-3 mb-3">
           <div className="col-start-4">
