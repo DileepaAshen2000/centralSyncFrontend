@@ -7,6 +7,7 @@ import {
   Select,
   TextField,
   Typography,
+  Box,
 } from "@mui/material";
 import { Button, Backdrop, CircularProgress } from "@mui/material";
 import Swal from "sweetalert2";
@@ -95,7 +96,7 @@ const AddItemForm = () => {
     } else if (name === "weight") {
       if (!value) {
         validationErrors.weight = "Weight is required";
-      } else if(!/^\d+(\.\d+)?$/.test(value)) {
+      } else if (!/^\d+(\.\d+)?$/.test(value)) {
         validationErrors.weight = "Weight must be a positive number";
       } else if (!/^\S*$/.test(value)) {
         validationErrors.weight = "Spaces are not allowed";
@@ -238,8 +239,9 @@ const AddItemForm = () => {
         onSubmit={(e) => handleSave(e)}
         className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14"
       >
-        <h1 className="col-span-4 pt-2 text-3xl font-bold ">New item</h1>
-
+        <Box className="w-full col-span-8 bg-blue-900 text-white text-center py-4 my-4 ">
+          <h1 className="pt-2 pb-3 text-3xl font-bold">New Inventory Item</h1>
+        </Box>
         <div className="flex items-center col-span-4 col-start-1">
           <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
             Item Name
@@ -419,7 +421,7 @@ const AddItemForm = () => {
             </Select>
           </div>
         </div>
-        <div className="flex items-center col-span-4 col-start-1">
+        <div className="flex items-center col-span-6 col-start-1">
           <InputLabel htmlFor="weight" className="flex-none w-32 text-black">
             Weight
           </InputLabel>

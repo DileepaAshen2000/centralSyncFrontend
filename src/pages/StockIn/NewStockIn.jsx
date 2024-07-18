@@ -39,14 +39,12 @@ const NewStockIn = () => {
   useEffect(() => {
     if (reactLocation.state?.item) {
       const { itemName, brand, model } = reactLocation.state.item;
-      const selectedItem = options.find(
-        (option) => option.itemName === itemName
-      );
-      setSelectedItemName(selectedItem || null);
+    
+      setSelectedItemName(itemName);
       setSelectedBrand(brand);
       setSelectedModel(model);
     }
-  }, [reactLocation.state,options]);
+  }, [reactLocation.state]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -300,7 +298,7 @@ const NewStockIn = () => {
             options={options}
             getOptionLabel={(option) => option.itemName}
             onChange={handleItemChange}
-            value={selectedItemName || null}
+            value={selectedItemName ? options.find(option => option.itemName === selectedItemName) || null : null}
             sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField

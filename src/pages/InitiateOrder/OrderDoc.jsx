@@ -254,36 +254,35 @@ const ViewOrderDetails = () => {
       return (
         <Alert severity="success" sx={{ width: "300px" }}>
           <AlertTitle>Completed</AlertTitle>
+          updated on:{lastStatusUpdate}
         </Alert>
       );
     } else if (status === "REVIEWED") {
       return (
         <Alert severity="info" sx={{ width: "300px" }}>
           <AlertTitle>Reviewed</AlertTitle>
+          updated on:{lastStatusUpdate}
         </Alert>
       );
     } else if (status === "PENDING") {
       return (
         <Alert severity="warning" sx={{ width: "300px" }}>
           <AlertTitle>Pending</AlertTitle>
+          updated on:{dateInitiated}
         </Alert>
       );
     } else if (status === "CANCELLED") {
       return (
         <Alert severity="error" sx={{ width: "300px" }}>
           <AlertTitle>Cancelled</AlertTitle>
+          updated on:{lastStatusUpdate}
         </Alert>
       );
     } else if (status === "PROBLEM_REPORTED") {
       return (
         <Alert severity="error" sx={{ width: "300px" }}>
           <AlertTitle>Problem Reported</AlertTitle>
-        </Alert>
-      );
-    } else if (status === "RESOLVED") {
-      return (
-        <Alert severity="info" sx={{ width: "300px" }}>
-          <AlertTitle>Resolved</AlertTitle>
+          updated on:{lastStatusUpdate}
         </Alert>
       );
     }
@@ -316,12 +315,7 @@ const ViewOrderDetails = () => {
                 <li className="font-bold">Email Address</li>
                 <li className="font-bold"> Mobile</li>
                 <li className="font-bold">Date Initiated</li>
-                {status !== "PENDING" && (
-                  <li className="font-bold">
-                    Last Status Update to <br />
-                    {status}{" "}
-                  </li>
-                )}
+
               </ul>
               <ul className="flex flex-col gap-2">
                 <li>{orderID}</li>
@@ -330,7 +324,6 @@ const ViewOrderDetails = () => {
                 <li>{vendorEmail}</li>
                 <li>{mobile}</li>
                 <li>{dateInitiated}</li>
-                {status !== "PENDING" && <li>{lastStatusUpdate}</li>}
               </ul>
             </section>
 
@@ -400,18 +393,7 @@ const ViewOrderDetails = () => {
                   Mark as Reviewed
                 </Button>
               )}
-            {status === "PROBLEM_REPORTED" && status !== "RESOLVED" && (
-              <Button
-                variant="contained"
-                color="primary"
-                className="mr-4 rounded bg-purple-300 text-purple-800 hover:text-white hover:bg-purple-600 font-bold"
-                onClick={() =>
-                  handleOpenDialog("Mark as Resolved", handleMarkAsResolved)
-                }
-              >
-                Mark as Resolved
-              </Button>
-            )}
+
             {status !== "COMPLETED" && status !== "CANCELLED" && (
               <Button
                 variant="contained"
@@ -501,9 +483,7 @@ const ViewOrderDetails = () => {
                 <li className="font-bold">Email Address</li>
                 <li className="font-bold"> Mobile</li>
                 <li className="font-bold">Date Initiated</li>
-                {status !== "PENDING" && (
-                  <li className="font-bold">Last Status Update to {status} </li>
-                )}
+              
               </ul>
               <ul className="flex flex-col gap-2">
                 <li>{orderID}</li>
@@ -512,7 +492,6 @@ const ViewOrderDetails = () => {
                 <li>{vendorEmail}</li>
                 <li>{mobile}</li>
                 <li>{dateInitiated}</li>
-                {status !== "PENDING" && <li>{lastStatusUpdate}</li>}
               </ul>
             </section>
 

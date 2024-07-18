@@ -14,9 +14,7 @@ const getStatusClass = (status) => {
       return "bg-yellow-400 text-black font-bold w-[155px]";
     case "PROBLEM_REPORTED":
       return "bg-red-400 text-black font-bold w-[155px]";
-    case "RESOLVED":
-      return "bg-purple-400 text-black font-bold w-[155px]";
-  }
+     }
 };
 
 const columns = [
@@ -103,7 +101,7 @@ const InProgressOrders = () => {
 
   return (
     <Box className="h-[400px] w-full">
-    <Box className="bg-[#bbc93c] text-white font-medium p-4  mb-0 mt-4 flex items-center justify-center">
+    <Box className="bg-[#3f51b5] text-white font-medium p-4  mb-0 mt-4 flex items-center justify-center">
         <p>In Progress Orders List</p>
       </Box>
       {/* Data grid component */}

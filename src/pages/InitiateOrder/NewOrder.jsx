@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
   InputLabel,
   TextField,
-  Typography,
+  Box,
   Backdrop,
   CircularProgress,
 } from "@mui/material";
@@ -174,8 +174,9 @@ const NewOrderForm = () => {
   return (
     <>
       <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
-        <h1 className=" col-span-4 text-3xl pt-2 font-bold ">New Order</h1>
-
+      <Box className="w-full col-span-8 bg-blue-900 text-white text-center py-4 my-4 ">
+          <h1 className="pt-2 pb-3 text-3xl font-bold">New Order</h1>
+        </Box>
         <div className="col-start-1 col-span-4 flex items-center">
           <InputLabel
             htmlFor="vendorName"

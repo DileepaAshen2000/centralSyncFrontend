@@ -16,7 +16,7 @@ import LoginService from "../Login/LoginService";
 
 const NewStockOut = () => {
   let navigate = useNavigate();
-  let reactLocation=useLocation();
+  let reactLocation = useLocation();
   const [profileInfo, setProfileInfo] = useState({});
   const [stockOut, setStockOut] = useState({
     department: "",
@@ -27,7 +27,7 @@ const NewStockOut = () => {
     userId: "",
     file: null,
   });
- 
+
   const [errors, setErrors] = useState({});
   const [options, setOptions] = useState([]);
   const [brands, setBrands] = useState([]);
@@ -36,16 +36,8 @@ const NewStockOut = () => {
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedModel, setSelectedModel] = useState("");
 
-  const {
-    department,
-    date,
-    description,
-    outQty,
-    itemId,
-    userId,
-    file,
-  } = stockOut;
-
+  const { department, date, description, outQty, itemId, userId, file } =
+    stockOut;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,25 +50,27 @@ const NewStockOut = () => {
         const token = localStorage.getItem("token");
         const profile = await LoginService.getYourProfile(token);
         setProfileInfo(profile.users);
-        setStockOut((prevStockOut) => ({ ...prevStockOut, userId: profile.users.userId }));
+        setStockOut((prevStockOut) => ({
+          ...prevStockOut,
+          userId: profile.users.userId,
+        }));
       } catch (error) {
         console.error("Error fetching item details:", error);
       }
     };
     fetchData();
   }, []);
- //fetch data when navigate through search
+  //fetch data when navigate through search
   useEffect(() => {
     if (reactLocation.state?.item) {
       const { itemName, brand, model } = reactLocation.state.item;
-      const selectedItem = options.find(
-        (option) => option.itemName === itemName
-      );
-      setSelectedItemName(selectedItem || null);
+      
+      setSelectedItemName(itemName);
       setSelectedBrand(brand);
       setSelectedModel(model);
     }
-  }, [reactLocation.state,options]);
+  }, [reactLocation.state]);
+
   const handleItemChange = async (event, value) => {
     if (value) {
       setSelectedItemName(value.itemName);
@@ -138,7 +132,10 @@ const NewStockOut = () => {
         );
         if (response.status === 200) {
           const item = response.data;
-          setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: item.itemId }));
+          setStockOut((prevStockOut) => ({
+            ...prevStockOut,
+            itemId: item.itemId,
+          }));
         } else {
           setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: "" }));
           Swal.fire({
@@ -180,7 +177,7 @@ const NewStockOut = () => {
       validationErrors.brand = "Brand is required.";
     } else if (name === "model" && !value) {
       validationErrors.model = "Model is required.";
-    }else if (name === "itemId" && !value) {
+    } else if (name === "itemId" && !value) {
       validationErrors.itemId = "Item ID is required.";
     }
 
@@ -216,7 +213,6 @@ const NewStockOut = () => {
     e.preventDefault();
 
     try {
-
       const validationErrors = {};
 
       // Validate all fields
@@ -238,52 +234,52 @@ const NewStockOut = () => {
         });
         return;
       }
-            const formData = new FormData();
-            formData.append("department", department);
-            formData.append("date", date);
-            formData.append("description", description);
-            formData.append("outQty", outQty);
-            formData.append("itemId", itemId);
-            formData.append("userId", userId);
-            formData.append("file", file);
-      
-            const result = await axios.post(
-              "http://localhost:8080/stock-out/add",
-              formData,
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
-              }
-            );
-      
-            navigate("/stockOut");
-            Swal.fire({
-              title: "Done!",
-              text: "Stock-Out Successfully Submitted.!",
-              icon: "success",
-            });
-          } catch (error) {
-            if (error.response && error.response.status === 400) {
-              console.log(error.response.data);
-            } else if (error.response.status === 403) {
-              console.error("Error:", error);
-              console.log(error.response.data);
-              Swal.fire({
-                title: "Error!",
-                text: "The item is currently inactive",
-                icon: "error",
-              });
-            } else {
-              console.error("Error:", error);
-              console.log(error.response.data);
-              Swal.fire({
-                title: "Error!",
-                text: `Failed to submit Stock-In. Error: ${error.response.data}`,
-                icon: "error"
-              });
-            }
-          }
+      const formData = new FormData();
+      formData.append("department", department);
+      formData.append("date", date);
+      formData.append("description", description);
+      formData.append("outQty", outQty);
+      formData.append("itemId", itemId);
+      formData.append("userId", userId);
+      formData.append("file", file);
+
+      const result = await axios.post(
+        "http://localhost:8080/stock-out/add",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      navigate("/stockOut");
+      Swal.fire({
+        title: "Done!",
+        text: "Stock-Out Successfully Submitted.!",
+        icon: "success",
+      });
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        console.log(error.response.data);
+      } else if (error.response.status === 403) {
+        console.error("Error:", error);
+        console.log(error.response.data);
+        Swal.fire({
+          title: "Error!",
+          text: "The item is currently inactive",
+          icon: "error",
+        });
+      } else {
+        console.error("Error:", error);
+        console.log(error.response.data);
+        Swal.fire({
+          title: "Error!",
+          text: `Failed to submit Stock-In. Error: ${error.response.data}`,
+          icon: "error",
+        });
+      }
+    }
   };
 
   const handleFileChange = (e) => {
@@ -307,7 +303,8 @@ const NewStockOut = () => {
             options={options}
             getOptionLabel={(option) => option.itemName}
             onChange={handleItemChange}
-            value={selectedItemName||null}
+            value={selectedItemName ? options.find(option => option.itemName === selectedItemName) || null : null}
+
             sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField
@@ -450,8 +447,12 @@ const NewStockOut = () => {
               <MenuItem value="Quality Assurance">Quality Assurance</MenuItem>
               <MenuItem value="Customer Service">Customer Service</MenuItem>
               <MenuItem value="Human Resource">Human Resource</MenuItem>
-              <MenuItem value="Finance & Administration">Finance & Administration</MenuItem>
-              <MenuItem value="Research & Development">Research & Development</MenuItem>
+              <MenuItem value="Finance & Administration">
+                Finance & Administration
+              </MenuItem>
+              <MenuItem value="Research & Development">
+                Research & Development
+              </MenuItem>
             </Select>
             <Typography variant="caption" className="text-red-600">
               {errors.department}
@@ -461,21 +462,22 @@ const NewStockOut = () => {
       </div>
 
       <div className="flex items-center col-span-4 col-start-1">
-            <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
-              Quantity Out
-            </InputLabel>
-            <div>
-                <TextField 
-                  size='small' 
-                  placeholder='Enter Quantity In' 
-                  type='Number' 
-                  name='outQty' 
-                  value={outQty} 
-                  error={!!errors.outQty}
-                  helperText={errors.outQty}
-                  onChange={onInputChange}/>      
-            </div>
-          </div>
+        <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
+          Quantity Out
+        </InputLabel>
+        <div>
+          <TextField
+            size="small"
+            placeholder="Enter Quantity In"
+            type="Number"
+            name="outQty"
+            value={outQty}
+            error={!!errors.outQty}
+            helperText={errors.outQty}
+            onChange={onInputChange}
+          />
+        </div>
+      </div>
 
       <div className="flex col-span-4 col-start-1 ">
         <InputLabel
