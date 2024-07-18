@@ -297,7 +297,7 @@ const EditItem = () => {
         title: "Deleted",
         text: "Inventory Item deleted successfully!",
       }).then(() => {
-        navigate(-1);
+        navigate("/item");
       });
     } catch (error) {
       if (error.response.status === 409) {

@@ -25,6 +25,13 @@ const columns = [
     flex: 1.5,
   },
   {
+    field: "brand",
+    headerName: "Brand",
+    minwidth: 150,
+    editable: false,
+    flex: 1,
+  },
+  {
     field: "model",
     headerName: "Model",
     minwidth: 200,
@@ -38,13 +45,7 @@ const columns = [
     editable: false,
     flex: 1.5,
   },
-  {
-    field: "brand",
-    headerName: "Brand",
-    minwidth: 150,
-    editable: false,
-    flex: 1,
-  },
+
   {
     field: "quantity",
     headerName: "Quantity",
