@@ -250,7 +250,7 @@ const Home = () => {
 
                 {/* Stock Out routing */}
                 <Route path="/stockOut" element={<StockOutList />}></Route>
-                <Route path="/new-stockout" element={<NewStockOut />}></Route>
+                <Route path="/new-stockout/:reqId" element={<NewStockOut />}></Route>
                 <Route
                   path="/stockOut/:soutId"
                   element={<StockOutDocument />}

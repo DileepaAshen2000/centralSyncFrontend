@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
 import LoginService from "../pages/Login/LoginService";
+import { Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const PendingActivities = () => {
   const [pendingCountAdj, setPendingCountAdj] = useState(null);
@@ -9,6 +11,7 @@ const PendingActivities = () => {
   const [loading, setLoading] = useState(true);
   const isEmployee = LoginService.isEmployee();
   const [profileInfo, setProfileInfo] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProfileInfo();
@@ -49,28 +52,56 @@ const PendingActivities = () => {
     }
   };
 
+  const handleAdjustment = () => {
+    navigate("/adjustment");
+  }
+
+  const handleRequest = () => {
+    if (isEmployee) {
+      navigate("/employee-de-request-list");
+    } else {
+      navigate("/admin-in-request-list");
+    }
+  }
+
   return loading ? (
     <div className="flex justify-center items-center h-[100px] w-[200px]">
       <CircularProgress />
     </div>
   ) : (
-    <div className="p-4 text-xl">
-      <div className="text-xl text-left">
-        <h1>Pending Activities</h1>
+    <div className="h-[100%]">
+      <div className="mb-2">
+        <Typography className="p-2 pl-4 text-sm text-left bg-blue-200">Pending Activities</Typography>
       </div>
-      {isEmployee &&(
-        <div className="flex gap-4 p-4">
-          <h3>Your Pending Adjustments: {pendingCountAdj}</h3>
-          <h3>Your Pending Requests: {pendingCountReq}</h3>
+      <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[150px]">
+        <div className="flex items-center justify-center col-span-2 row-span-2 rounded-lg bg-slate-100" onClick={handleAdjustment}>
+          {isEmployee ? (
+            <div className="flex flex-col gap-2">
+              <h3 className="text-xl">Your Pending Adjustments</h3>
+              <h3 className="text-3xl">{pendingCountAdj}</h3>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <h3 className="text-xl">Pending Adjustments</h3>
+              <h3 className="text-3xl">{pendingCountAdj}</h3>
+            </div>
+          
+          )}
+        </div>
+        <div className="flex items-center justify-center col-span-2 row-span-2 rounded-lg bg-slate-100" onClick={handleRequest}>
+          {isEmployee ? (
+            <div className="flex flex-col gap-2">
+              <h3 className="text-xl">Your Pending Requests</h3>
+              <h3 className="text-3xl">{pendingCountReq}</h3>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <h3 className="text-xl">Pending Requests</h3>
+              <h3 className="text-3xl">{pendingCountReq}</h3>
+            </div>
+          )}
+        </div>
       </div>
-      )}
-      {!isEmployee &&(
-        <div className="flex gap-4 p-4">
-          <h3>Pending Adjustments: {pendingCountAdj}</h3>
-          <h3>Pending Requests: {pendingCountReq}</h3>
-      </div>
-      )}
-      
     </div>
   );
 };

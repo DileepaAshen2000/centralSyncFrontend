@@ -74,7 +74,7 @@ const StockOutList = () => {
             <Button
               variant="contained"
               className="bg-blue-600 py-2  text-white rounded w-[auto]"
-              onClick={() => navigate("/new-stockout")}
+              onClick={() => navigate("/new-stockout/:reqId")}
             >
               New Stock-Out
             </Button>
