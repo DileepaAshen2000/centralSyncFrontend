@@ -120,7 +120,7 @@ const ItemDataGrid = () => {
   };
 
   return (
-    <Box className="h-[400px] w-full">
+    <Box className="h-[400px] w-full h-full">
       {isAdmin && (
          <Button
             variant="contained"

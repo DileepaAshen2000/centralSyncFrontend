@@ -155,7 +155,7 @@ const SearchBar = () => {
                 <InputAdornment position="start">
                   <Tooltip title="Search">
                     <SearchIcon
-                      onClick={handleSearch}
+                      onClick={()=> handleSearch(searchTerm)}
                       style={{ cursor: "pointer" }}
                     />
                   </Tooltip>
