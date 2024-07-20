@@ -230,7 +230,26 @@ console.log('Validation passed');
   };
 
   const handleFileChange = (e) => {
-    setFiles(e.target.files);
+    const selectedFiles = e.target.files;
+    const errors = [];
+    const pdfFiles = [];
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const file = selectedFiles[i];
+      if (file.type !== "application/pdf") {
+        errors.push(`${file.name} is not a PDF file.`);
+      } else if (file.size > 5 * 1024 * 1024) {
+        errors.push(`${file.name} exceeds the 5MB size limit.`);
+      } else {
+        pdfFiles.push(file);
+      }
+    }
+
+    if (errors.length > 0) {
+      setFileErrors(errors.join(" "));
+    } else {
+      setFileErrors("");
+      setFiles(pdfFiles);
+    }
   };
 
   const getInventoryRequestListLink = () => {
