@@ -33,7 +33,7 @@ const ViewOrderDetails = () => {
   const [loading, setLoading] = useState(true);
   const printRef = useRef();
   const { orderID } = useParams();
-  const [note, setNote] = useState("");
+  const [message, setMessage] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogTitle, setDialogTitle] = useState("");
   const [dialogAction, setDialogAction] = useState(null);
@@ -50,6 +50,7 @@ const ViewOrderDetails = () => {
     quantity: "",
     description: "",
     status: "",
+    note:""
   });
 
   const {
@@ -64,6 +65,7 @@ const ViewOrderDetails = () => {
     quantity,
     description,
     status,
+    note,
   } = order;
 
   useEffect(() => {
@@ -91,15 +93,15 @@ const ViewOrderDetails = () => {
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
-    setNote("");
+    setMessage("");
   };
 
   const handleConfirmAction = async () => {
-    console.log("Note at confirmation:", note); // Debugging line
+    console.log("message at confirmation:", message); // Debugging line
 
     try {
       if (dialogAction) {
-        await dialogAction(note); // Pass the note to the dialog action
+        await dialogAction(message); // Pass the message to the dialog action
       } else {
         await dialogAction();
       }
@@ -188,13 +190,13 @@ const ViewOrderDetails = () => {
     }
   };
 
-  const handleMarkAsProblemReported = async (note) => {
+  const handleMarkAsProblemReported = async (message) => {
     setLoading(true);
-    console.log("Note at confirmation:", note); // Debugging line
+    console.log("message at confirmation:", message); // Debugging line
     try {
       const response = await axios.patch(
         `http://localhost:8080/orders/problemReported/${orderID}`,
-        { note: note }, // Send note as a JSON object
+        { message: message }, // Send message as a JSON object
         {
           headers: {
             "Content-Type": "application/json",
@@ -353,13 +355,25 @@ const ViewOrderDetails = () => {
             </TableContainer>
           </div>
           {description !== "" && (
-            <div className="mt-10 mb-30">
+            <div className="mt-10 mb-10">
               <Typography variant="h6" className="font-bold" gutterBottom>
                 Description :{" "}
               </Typography>
               <div className="w-2/3">
                 <Typography variant="subtitle1" className="text-gray-500">
                   {description}
+                </Typography>
+              </div>
+            </div>
+          )}
+          {status==="PROBLEM_REPORTED" && (
+            <div className="mb-30 border-red-400">
+              <Typography variant="h6" className="font-bold text-red-700" gutterBottom>
+                Problem :
+              </Typography>
+              <div className="w-2/3">
+                <Typography variant="subtitle1" className="text-red-500">
+                  {note}
                 </Typography>
               </div>
             </div>
@@ -406,7 +420,7 @@ const ViewOrderDetails = () => {
                 Mark as Cancelled
               </Button>
             )}
-            {status !== "PROBLEM_REPORTED" && status !== "CANCELLED" && (
+            {status !== "PROBLEM_REPORTED" && status !== "CANCELLED" && status !== "COMPLETED" && (
               <Button
                 variant="contained"
                 color="primary"
@@ -430,9 +444,9 @@ const ViewOrderDetails = () => {
                 </DialogContentText>
                 {dialogTitle.includes("Problem Reported") && (
                   <TextField
-                    label="Enter note"
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
+                    label="Enter message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     multiline
                     rows={4}
                     variant="outlined"
