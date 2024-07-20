@@ -89,37 +89,40 @@ const EmployeeInRequestList = () => {
       const userId = LoginService.returnUserID();
       const response = await axios.get(`http://localhost:8080/request/user/${userId}`);
       let data = formatRequestsData(response.data);
-
+  
       const acceptedItems = data.filter(item => item.status === 'ACCEPTED' || item.status === 'WANT_TO_RETURN_ITEM');
       const acceptedItemDetailsPromises = acceptedItems.map(item => fetchItemDetails(item.itemId));
       const acceptedItemNames = await Promise.all(acceptedItemDetailsPromises);
-
+  
       const acceptedItemsWithNames = acceptedItems.map((item, index) => ({
         ...item,
         itemName: acceptedItemNames[index],
+        no: index + 1, // Separate numbering for accepted items
       }));
-
-      setRequestRows(data);
+  
+      setRequestRows(data.map((item, index) => ({ ...item, no: index + 1 }))); // Numbering for requests
       setLoadingRequests(false);
-
+  
       const receivedItems = data.filter(item => item.status === 'RECEIVED');
       const itemDetailsPromises = receivedItems.map(item => fetchItemDetails(item.itemId));
       const itemNames = await Promise.all(itemDetailsPromises);
-
+  
       const receivedItemsWithNames = receivedItems.map((item, index) => ({
         ...item,
         itemName: itemNames[index],
+        no: index + 1, // Separate numbering for received items
       }));
-
+  
       setItemsRows(receivedItemsWithNames.concat(acceptedItemsWithNames));
       setLoadingItems(false);
-
+  
     } catch (error) {
       console.error('Failed to fetch inventory requests:', error);
       setLoadingRequests(false);
       setLoadingItems(false);
     }
   };
+  
 
   const formatRequestsData = (data) => {
     return data
@@ -159,7 +162,7 @@ const EmployeeInRequestList = () => {
   };
 
   const requestColumns = [
-    { field: 'id', headerName: 'No:', width: 200 },
+    { field: 'no', headerName: 'No:', width: 200 },
     { field: 'date', headerName: 'Date', width: 200 },
     { field: 'time', headerName: 'Time', width: 200 },
     { field: 'reason', headerName: 'Reason', width: 200 },
@@ -202,7 +205,7 @@ const EmployeeInRequestList = () => {
   ];
 
   const itemsColumns = [
-    { field: 'id', headerName: 'No:', width: 180 },
+    { field: 'no', headerName: 'No:', width: 180 },
     { field: 'itemName', headerName: 'Item Name', width: 180 },
     { field: 'date', headerName: 'Received Date', width: 180},
     { field: 'quantity', headerName: 'Requested Quantity', width: 180 },
@@ -249,7 +252,14 @@ const EmployeeInRequestList = () => {
   ];
 
 
-  const filteredRequestRows = requestRows.filter(row => row.status !== 'ACCEPTED'&& row.status!=='WANT_TO_RETURN_ITEM');
+  const filteredRequestRows = requestRows
+  .filter(row => row.status !== 'ACCEPTED'&& row.status!=='WANT_TO_RETURN_ITEM')
+  .map((item, index) => ({ ...item, id: index + 1 }));
+
+  const formattedItemsRows = itemsRows.map((item, index) => ({
+    ...item,
+    id: index + 1,
+  }));
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -282,7 +292,7 @@ const EmployeeInRequestList = () => {
         <TabPanel value="2">
           <SectionHeader title="Items In My Hand" color="#6a1b9a" />
           <Table 
-            rows={itemsRows} 
+            rows={formattedItemsRows}
             columns={itemsColumns} 
             loading={loadingItems} 
             onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 

@@ -140,7 +140,7 @@ const RequestHandlerInRequestList = () => {
   };
 
   const columns = [
-    { field: 'id', headerName: 'Inventory Request No:', width: 200 },
+    { field: 'id', headerName: 'No:', width: 200 },
     { field: 'date', headerName: 'Date', width: 200 },
     { field: 'time', headerName: 'Time', width: 200 },
     { field: 'itemName', headerName: 'Item Name', width: 200 },
@@ -189,7 +189,7 @@ const RequestHandlerInRequestList = () => {
 
   // New columns for "Items On My Hand"
   const itemsOnHandColumns = [
-    { field: 'id', headerName: 'Inventory Request No:', width: 200 },
+    { field: 'id', headerName: 'No:', width: 200 },
     { field: 'date', headerName: 'Received Date', width: 200 },
     { field: 'itemName', headerName: 'Item Name', width: 200 },
     { field: 'quantity', headerName: 'Requested Quantity', width: 200 },
