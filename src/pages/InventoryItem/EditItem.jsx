@@ -407,7 +407,7 @@ const EditItem = () => {
             />
           )}
           <p className="text-sm text-gray-500 mt-2">
-            Click the image to update
+          Update by clicking on image
           </p>
           <input
             type="file"

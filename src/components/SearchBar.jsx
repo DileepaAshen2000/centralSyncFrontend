@@ -74,7 +74,9 @@ const SearchBar = () => {
       }
     } catch (error) {
       console.log(error);
-    } 
+    } finally{
+      setFilterAnchorEl(null);
+    }
   };
 
   const handleFilterClick = (event) => {

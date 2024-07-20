@@ -60,8 +60,8 @@ const ViewItemDetails = () => {
           brand: response.data.brand,
           model: response.data.model,
           unit: response.data.unit,
-          dimension: response.data.dimension,
-          weight: response.data.weight,
+          dimension: response.data.dimension || "",
+          weight: response.data.weight || "",
           description: response.data.description,
           quantity: response.data.quantity,
           status: response.data.status,
@@ -136,8 +136,12 @@ const ViewItemDetails = () => {
                 <li className="font-bold">Brand</li>
                 <li className="font-bold">Model </li>
                 <li className="font-bold"> Unit</li>
-                <li className="font-bold">Dimension</li>
-                <li className="font-bold">Weight</li>
+                {dimension && dimension.trim() !== "" && (
+                  <li className="font-bold">Dimension</li>
+                )}
+                {weight && weight.trim() !== "" && (
+                  <li className="font-bold">Weight</li>
+                )}
                 <li className="font-bold">Quantity</li>
                 <li className="font-bold">Description</li>
               </ul>
@@ -148,8 +152,8 @@ const ViewItemDetails = () => {
                 <li>{brand}</li>
                 <li>{model}</li>
                 <li>{unit}</li>
-                <li>{dimension}</li>
-                <li>{weight}</li>
+                {dimension && dimension.trim() !== "" && <li>{dimension}</li>}
+                {weight && weight.trim() !== "" && <li>{weight}</li>}
                 <li>{quantity}</li>
                 <li>{description}</li>
               </ul>
