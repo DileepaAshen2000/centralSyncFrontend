@@ -76,29 +76,61 @@ const NewRequest = () => {
   //set item name and id when navigating from item search
   useEffect(() => {
     if (location.state?.item) {
-      const { itemId, itemName } = location.state.item;
-      setItemId(itemId);
+      const { itemName } = location.state.item;
+     
       setItemName(itemName);
-      fetchItemDetails(itemId);
+      fetchItemDetails(itemName);
+     
     }
   }, [location.state]);
+
+
+  
+
+  const fetchItemDetails = async (itemName, brand, model) => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/inventory-item/getItemByDetails",
+        {
+          params: { itemName, brand, model },
+        }
+      );
+      const item = response.data;
+      if (item) {
+        setItemId(item.itemId);
+        setAvailableQuantity(item.quantity);
+      } else {
+        setItemId("");
+        setAvailableQuantity(0);
+      }
+    } catch (error) {
+      console.error("Error fetching item details:", error);
+      setItemId("");
+      setAvailableQuantity(0);
+    }
+  };
 
   useEffect(() => {
     validateForm();
   }, [itemId, quantity, reason,files]);
-  
+
+  const isPositiveNumber = (value) => {
+    return !isNaN(value) && Number(value) > 0;
+  };
 
   const validateForm = () => {
     const newErrors = {};
     if (!itemId) newErrors.itemId = "Item selection is required";
     if (!quantity) newErrors.quantity = "Quantity is required";
+    if (!isPositiveNumber(quantity)) 
+    newErrors.quantity = "Quantity must be a positive number.";
     if (quantity > availableQuantity)
-      newErrors.quantity = "Quantity exceeds available stock";
+    newErrors.quantity = "Quantity exceeds available stock";
     if (!reason) newErrors.reason = "Reason is required";
     else if (reason.length > 50)
-      newErrors.reason = "Reason must be 35 characters or less";
+      newErrors.reason = "Reason must be 50 characters or less";
     if (description.split(/\s+/).length > 50)
-      newErrors.description = "Description must be 150 words or less";
+      newErrors.description = "Description must be 50 words or less";
     if (!brand) newErrors.brand = "Brand selection is required";
     if (!model) newErrors.model = "Model selection is required";
     if (fileErrors) newErrors.files = fileErrors;
@@ -194,7 +226,7 @@ const NewRequest = () => {
       setBrand("");
       setModel("");
       fetchItemDetails(value.itemId);
-
+  
       // Fetch brand options
       try {
         const response = await axios.get(`http://localhost:8080/inventory-item/getBrandsByItemName?itemName=${value.itemName}`);
@@ -212,9 +244,11 @@ const NewRequest = () => {
       setModelOptions([]);
     }
   };
+  
   const handleBrandChange = async (event, value) => {
     setBrand(value);
     setModel("");
+    setModelOptions([]);
     if (value) {
       // Fetch model options
       try {
@@ -223,14 +257,20 @@ const NewRequest = () => {
       } catch (error) {
         console.error("Error fetching model options:", error);
       }
+      fetchItemDetails(itemName, value, model);
     } else {
       setModelOptions([]);
+      setItemId("");
+      setAvailableQuantity(0);
     }
   };
-
+  
   const handleModelChange = (event, value) => {
     setModel(value);
+    fetchItemDetails(itemName, brand, value);
   };
+  
+
   const handleReasonChange = (e) => {
     if (e.target.value.length <= 50) {
       setReason(e.target.value);
@@ -249,15 +289,7 @@ const NewRequest = () => {
     if(isOnlineEmployee) return "/employee-de-request-list"
     return  "/employee-in-request-list";
   };
-  const fetchItemDetails = async (itemId) => {
-    try {
-      const response = await axios.get(`http://localhost:8080/inventory-item/getById/${itemId}`);
-      const itemData = response.data;
-      setItemDetails(itemData);
-    } catch (error) {
-      console.error("Error fetching item details:", error);
-    }
-  };
+
 
   const filteredOptions = options.filter(
     (option) =>
@@ -304,12 +336,9 @@ const NewRequest = () => {
                   <Autocomplete
                      options={filteredOptions}
                      getOptionLabel={(option) => option.itemName}
+                     value={options.find((option) => option.itemName === itemName) || null}
                      onChange={handleItemChange}
-                     value={
-                       itemName
-                         ? options.find((option) => option.itemId === itemId) || null
-                         : null
-                     }
+                    
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -332,7 +361,7 @@ const NewRequest = () => {
                     getOptionLabel={(option) => option}
                     onChange={handleBrandChange}
                     disabled={!itemName}
-                    value={brand}
+                    value={brand || null}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -353,9 +382,8 @@ const NewRequest = () => {
                   <Autocomplete
                     options={modelOptions}
                     getOptionLabel={(option) => option}
+                    value={model || null}
                     onChange={handleModelChange}
-                    disabled={!itemName || !brand}
-                    value={model}
                     renderInput={(params) => (
                       <TextField
                         {...params}

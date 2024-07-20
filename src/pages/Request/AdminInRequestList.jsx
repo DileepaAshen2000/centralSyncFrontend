@@ -214,7 +214,7 @@ const AdminInRequestList = () => {
             backgroundColor = '#F59E0B';
             break;
           case 'WANT_TO_RETURN_ITEM':
-            backgroundColor = '#FFCC00';
+            backgroundColor = '#af5c9b';
             break;
           default:
             backgroundColor = '#FFFFFF';
@@ -292,7 +292,7 @@ const AdminInRequestList = () => {
             rows={itemsOnHandRows} 
             columns={itemsOnHandColumns} 
             loading={loadingRequests} 
-            onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
+            onRowClick={(params) => navigate(`/admin/in-request-document/${params.row.reqId}`)} 
           />
         </TabPanel>
       </TabContext>
