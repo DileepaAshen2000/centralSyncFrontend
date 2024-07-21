@@ -18,11 +18,18 @@ const getStatusClass = (status) => {
 
 const columns = [
   {
+    field: "id",
+    headerName: "Item ID",
+    minwidth: 50,
+    editable: false,
+    flex: 0.5,
+  },
+  {
     field: "item_name",
     headerName: "Item Name",
-    minwidth: 250,
+    minwidth: 220,
     editable: false,
-    flex: 1.5,
+    flex: 1.25,
   },
   {
     field: "brand",

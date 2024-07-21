@@ -88,14 +88,25 @@ const EditItem = () => {
         const { dimension, dimensionUnit, ...rest } = prevErrors;
         return rest;
       });
+
+      if (!requireWeight) {
+        setErrors((prevErrors) => {
+          const { weight, weightUnit, ...rest } = prevErrors;
+          return rest;
+        });
+      }
+
+      // Clear dimension and weight fields if they are not required
+      setInventoryItem((prevState) => ({
+        ...prevState,
+        dimension: !requireDimensions ? "" : prevState.dimension,
+        dimensionUnit: !requireDimensions ? "" : prevState.dimensionUnit,
+        weight: !requireWeight ? "" : prevState.weight,
+        weightUnit: !requireWeight ? "" : prevState.weightUnit,
+      }));
     }
 
-    if (!requireWeight) {
-      setErrors((prevErrors) => {
-        const { weight, weightUnit, ...rest } = prevErrors;
-        return rest;
-      });
-    }
+   
   }, [itemGroup, requireDimensions, requireWeight, itemID]);
   const validateField = (name, value) => {
     const validationErrors = {};
@@ -407,7 +418,7 @@ const EditItem = () => {
             />
           )}
           <p className="text-sm text-gray-500 mt-2">
-          Update by clicking on image
+            Update by clicking on image
           </p>
           <input
             type="file"

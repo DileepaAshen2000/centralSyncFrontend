@@ -93,6 +93,15 @@ const AddItemForm = () => {
         return rest;
       });
     }
+
+    // Clear dimension and weight fields if they are not required
+    setInventoryItem((prevState) => ({
+      ...prevState,
+      dimension: !requireDimensions ? "" : prevState.dimension,
+      dimensionUnit: !requireDimensions ? "" : prevState.dimensionUnit,
+      weight: !requireWeight ? "" : prevState.weight,
+      weightUnit: !requireWeight ? "" : prevState.weightUnit,
+    }));
   }, [itemGroup, requireDimensions, requireWeight]);
 
   const validateField = (name, value) => {
