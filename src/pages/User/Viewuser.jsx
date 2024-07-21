@@ -111,9 +111,9 @@ const ViewUser = () => {
     <>
       <Box className="p-5 bg-white rounded-2xl w-[1122.7px]">
         <div className="grid grid-cols-6 grid-rows-1 gap-y-10 gap-x-[0.25rem] mt-12 pb-10">
-          <div className="col-start-1 col-span-2">
-            <h1 className="pt-2 pb-3 text-3xl font-bold ">User Details</h1>
-          </div>
+        
+        <h1 className="col-span-4 text-3xl font-bold ">User Details</h1>
+      
           {!isRequestHandler && (
             <>
               {user.status === "ACTIVE" && (

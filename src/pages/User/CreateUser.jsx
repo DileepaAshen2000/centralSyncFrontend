@@ -8,7 +8,7 @@ import {
   MenuItem,
   Typography,
   CircularProgress,
-  Backdrop
+  Backdrop,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -193,20 +193,19 @@ const CreateUser = () => {
       });
       const backendErrors = error.response.data;
       setErrors(backendErrors);
-    }
-    finally {
+    } finally {
       setLoading(false);
-    };
+    }
   };
 
   return (
     <>
       <Box className="p-5 bg-white rounded-2xl w-[1122.7px]">
-      <div className="pb-12">
-        <Box className="w-[1100.7px]  bg-blue-900 text-white text-center p-3">
-          <header className="text-3xl font-bold">New User</header>
-        </Box>
-      </div>
+        <div className="pb-12">
+          <Box className="w-[1100.7px]  bg-blue-900 text-white text-center p-3">
+            <header className="text-3xl font-bold">New User</header>
+          </Box>
+        </div>
 
         <form>
           <div className="grid grid-cols-6 grid-rows-7 gap-y-7 gap-x-[0.25rem] ">
@@ -345,7 +344,7 @@ const CreateUser = () => {
                 error={!!errors.role}
               >
                 <MenuItem disabled value={role}></MenuItem>
-                <MenuItem value="ADMIN">Admin</MenuItem>
+                {/*<MenuItem value="ADMIN">Admin</MenuItem>*/}
                 <MenuItem value="REQUEST_HANDLER">Request Handler</MenuItem>
                 <MenuItem value="EMPLOYEE">Employee</MenuItem>
               </Select>{" "}
@@ -550,11 +549,11 @@ const CreateUser = () => {
             </div>
           </div>
           <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loading}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </form>
       </Box>
     </>

@@ -32,6 +32,8 @@ const EditTicket = () => {
   const [brandOptions, setBrandOptions] = useState([]);
   const [modelOptions, setModelOptions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [filteredBrandOptions, setFilteredBrandOptions] = useState([]);
+  const [filteredModelOptions, setFilteredModelOptions] = useState([]);
 
   useEffect(() => {
     const fetchTicketData = async () => {
@@ -95,49 +97,70 @@ const EditTicket = () => {
     if (value) {
       setTicket((prevTicket) => ({
         ...prevTicket,
-        itemName: value.itemName,
+        itemName: value,
+        brand: "", // Reset brand and model when item changes
+        model: "",
       }));
-      validateField("itemName", value.itemName);
+
+      // Update brand and model options based on the selected item
+      const filteredBrands = options
+        .filter((option) => option.itemName === value)
+        .map((option) => option.brand);
+      setFilteredBrandOptions([...new Set(filteredBrands)]);
+  
+      setFilteredModelOptions([]);
     } else {
       setTicket((prevTicket) => ({
         ...prevTicket,
         itemName: "",
+        brand: "",
+        model: "",
       }));
-      validateField("itemName", "");
+      setFilteredBrandOptions([]);
+      setFilteredModelOptions([]);
     }
   };
-
+  
   const handleItembrandChange = (event, value) => {
     if (value) {
       setTicket((prevTicket) => ({
         ...prevTicket,
-        brand: value.brand,
+        brand: value,
+        model: "", // Reset model when brand changes
       }));
-      validateField("brand", value.brand);
+  
+      // Update model options based on the selected brand and item
+      const filteredModels = options
+        .filter(
+          (option) =>
+            option.itemName === ticket.itemName && option.brand === value
+        )
+        .map((option) => option.model);
+      setFilteredModelOptions([...new Set(filteredModels)]);
     } else {
       setTicket((prevTicket) => ({
         ...prevTicket,
         brand: "",
+        model: "",
       }));
-      validateField("brand", "");
+      setFilteredModelOptions([]);
     }
   };
-
+  
   const handleItemmodelChange = (event, value) => {
     if (value) {
       setTicket((prevTicket) => ({
         ...prevTicket,
-        model: value.model,
+        model: value,
       }));
-      validateField("model", value.model);
     } else {
       setTicket((prevTicket) => ({
         ...prevTicket,
         model: "",
       }));
-      validateField("model", "");
     }
   };
+
 
   const validateField = (name, value) => {
     const validationErrors = {};
@@ -222,6 +245,7 @@ const EditTicket = () => {
               {errors.itemName && (
                 <div className="text-[#FC0000] text-sm">{errors.itemName}</div>
               )}
+               
               <Autocomplete
                 options={itemNameOptions}
                 getOptionLabel={(option) => option}
@@ -231,14 +255,12 @@ const EditTicket = () => {
                   <TextField
                     {...params}
                     variant="outlined"
+                    size="small"
+                    error={!!errors.itemName}
                     sx={{
                       width: 300,
                     }}
-                    size="small"
-                    value={ticket.itemId.itemName}
-                    onBlur={handleBlur}
-                    error={!!errors.itemName}
-                    name="itemName"
+                     
                   />
                 )}
               />
@@ -253,24 +275,21 @@ const EditTicket = () => {
               )}
 
               <Autocomplete
-                options={brandOptions}
+                options={filteredBrandOptions}
                 getOptionLabel={(option) => option}
                 onChange={handleItembrandChange}
                 value={ticket.brand || null}
-                variant="outlined"
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     label="Brand"
                     variant="outlined"
+                    size="small"
+                    error={!!errors.brand}
                     sx={{
                       width: 300,
                     }}
-                    size="small"
-                    value={ticket.itemId.brand}
-                    onBlur={handleBlur}
-                    error={!!errors.brand}
-                    name="brand"
+                     
                   />
                 )}
               />
@@ -287,24 +306,21 @@ const EditTicket = () => {
               )}
 
               <Autocomplete
-                options={modelOptions}
+                options={filteredModelOptions}
                 getOptionLabel={(option) => option}
                 onChange={handleItemmodelChange}
                 value={ticket.model || null}
-                variant="outlined"
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     label="Model"
                     variant="outlined"
+                    size="small"
+                    error={!!errors.model}
                     sx={{
                       width: 300,
                     }}
-                    size="small"
-                    value={ticket.itemId.model}
-                    onBlur={handleBlur}
-                    error={!!errors.model}
-                    name="model"
+                     
                   />
                 )}
               />

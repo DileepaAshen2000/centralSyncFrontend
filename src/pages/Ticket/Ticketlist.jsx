@@ -73,9 +73,7 @@ export default function BasicTabs() {
 
       {isEmployee && (
         <div>
-          <div className="pb-5">
-            <h1 className="inline-block text-3xl font-bold">Issue Tickets</h1>
-          </div>
+           
           <MyTicketList />
         </div>
       )}

@@ -9,6 +9,7 @@ import {
   Box,
   CircularProgress,
   Backdrop,
+  Typography,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
@@ -18,6 +19,7 @@ import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { TextareaAutosize } from "@mui/base/TextareaAutosize";
 
 const CreateTicket = () => {
   const form = useForm();
@@ -39,8 +41,6 @@ const CreateTicket = () => {
   const [filteredBrandOptions, setFilteredBrandOptions] = useState([]);
   const [filteredModelOptions, setFilteredModelOptions] = useState([]);
   const [loading, setLoading] = useState(false);
-
-   
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,11 +71,9 @@ const CreateTicket = () => {
         setModelOptions(modelOptions);
       } catch (error) {
         console.error("Error fetching item data:", error);
-      }
-      finally{
+      } finally {
         setLoading(false);
-      };
-      
+      }
     };
     fetchData();
   }, []);
@@ -106,9 +104,9 @@ const CreateTicket = () => {
     } else if (name === "description") {
       if (!value) {
         validationErrors.description = "Description is required";
-      } else if (value.length < 10 || value.length > 200) {
+      } else if (value.length < 30 || value.length > 400) {
         validationErrors.description =
-          "Description must be between 10 and 200 characters";
+          "Description must be between 30 and 400 characters";
       }
     }
 
@@ -220,11 +218,11 @@ const CreateTicket = () => {
   return (
     <>
       <Box className="p-5 bg-white rounded-2xl w-[1122.7px]">
-      <div className="pb-12">
-        <Box className="w-[1100.7px]  bg-blue-900 text-white text-center p-3">
-          <header className="text-3xl font-bold">New Ticket</header>
-        </Box>
-      </div>
+        <div className="pb-12">
+          <Box className="w-[1100.7px]  bg-blue-900 text-white text-center p-3">
+            <header className="text-3xl font-bold">New Ticket</header>
+          </Box>
+        </div>
         <form>
           <div className="grid grid-cols-6 grid-rows-7  gap-x-5 gap-y-5">
             <div className="col-span-1">
@@ -386,11 +384,9 @@ const CreateTicket = () => {
                   {errors.description}
                 </div>
               )}
-              <TextField
+              <textarea
                 variant="outlined"
-                InputProps={{
-                  className: "w-[450px] h-[100px]",
-                }}
+                className="w-[450px] h-[100px] border-2 border-gray-300 rounded-md"
                 value={description}
                 name="description"
                 onChange={(e) => {
@@ -400,7 +396,10 @@ const CreateTicket = () => {
                 size="small"
                 onBlur={handleBlur}
                 error={!!errors.description}
-              />
+                
+              ></textarea>
+            <Typography  variant="caption" className="text-gray-500">Please provide clear description about the issue and troubleshooting steps you have already attemped.</Typography>
+              
             </div>
             <div></div>
             <div></div>
@@ -428,11 +427,11 @@ const CreateTicket = () => {
             </div>
           </div>
           <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loading}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </form>
       </Box>
     </>

@@ -14,7 +14,7 @@ import {
   DialogContentText,
   DialogTitle,
   CircularProgress,
-  Backdrop
+  Backdrop,
 } from "@mui/material";
 import LoginService from "../Login/LoginService";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -40,7 +40,6 @@ const TicketDocument = () => {
   const [openA, setOpenA] = useState(false);
   const [openC, setOpenC] = useState(false);
   const [loading, setLoading] = useState(false);
- 
 
   const [ticket, setTicket] = useState({
     date: "",
@@ -50,6 +49,7 @@ const TicketDocument = () => {
     itemId: "",
     note: "",
     user: "",
+    previousStatus: "",
   });
 
   const [item, setItem] = useState({
@@ -96,10 +96,9 @@ const TicketDocument = () => {
       //console.log(result1.data);
     } catch (error) {
       console.error("Error loading data:", error);
-    }
-    finally{
+    } finally {
       setLoading(false);
-    };
+    }
   };
 
   const handleClickRejectAdmin = () => {
@@ -183,6 +182,7 @@ const TicketDocument = () => {
 
   // Handle ticket send to admin
   const handleSendToAdmin = () => {
+    setLoading(true);
     axios
       .patch(`http://localhost:8080/ticket/sendtoadmin/${id}`, { note })
       .then((response) => {
@@ -197,11 +197,15 @@ const TicketDocument = () => {
       })
       .catch((error) => {
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   // Handle ticket Accept
   const handleAccept = () => {
+    setLoading(true);
     axios
       .patch(`http://localhost:8080/ticket/accept/${id}`, { note })
       .then((response) => {
@@ -221,6 +225,9 @@ const TicketDocument = () => {
           text: "Failed to update status",
         });
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false); // Set loading to false after the request is completed
       });
   };
   const handleInprogress = () => {
@@ -229,6 +236,7 @@ const TicketDocument = () => {
 
   // Handle ticket In Progress with Completion Date
   const handleInprogressWithDate = () => {
+    setLoading(true);
     axios
       .patch(`http://localhost:8080/ticket/inprogress/${id}`, {
         note,
@@ -251,6 +259,9 @@ const TicketDocument = () => {
           text: "Failed to update status",
         });
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -259,6 +270,7 @@ const TicketDocument = () => {
   };
   // Handle ticket Reject By Admin
   const handleRejectByAdminwithNote = () => {
+    setLoading(true);
     axios
       .patch(`http://localhost:8080/ticket/adminreject/${id}`, { note })
       .then((response) => {
@@ -278,11 +290,15 @@ const TicketDocument = () => {
           text: "Failed to update status",
         });
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   // Handle ticket Reject By RequestHandler
   const handleRejectByRequestHandler = () => {
+    setLoading(true);
     axios
       .patch(`http://localhost:8080/ticket/requesthandlerreject/${id}`, {
         note,
@@ -304,11 +320,15 @@ const TicketDocument = () => {
           text: "Failed to update status",
         });
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   // Handle ticket Complete
   const handleComplete = () => {
+    setLoading(true);
     axios
       .patch(`http://localhost:8080/ticket/complete/${id}`, { note })
       .then((response) => {
@@ -328,6 +348,9 @@ const TicketDocument = () => {
           text: "Failed to update status",
         });
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -414,7 +437,6 @@ const TicketDocument = () => {
       </div>
 
       <main>
-      
         <div className="p-10 ml-6 mr-6 bg-white mt-6">
           <div>
             <section>{getticketStatus(ticket.ticketStatus)}</section>
@@ -477,12 +499,6 @@ const TicketDocument = () => {
               {formattedDateTime}
             </Typography>
           </div>
-          <Backdrop
-            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-            open={loading}
-          >
-            <CircularProgress color="inherit" />
-          </Backdrop>
         </div>
         <Dialog
           open={openRA}
@@ -690,7 +706,8 @@ const TicketDocument = () => {
             )}
 
             {(ticket.ticketStatus === "ACCEPTED" ||
-              ticket.ticketStatus === "REJECTED_A") && (
+              ticket.ticketStatus === "REJECTED_A" ||
+              ticket.previousStatus === "ACCEPTED") && (
               <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                 <div className="col-start-6">
                   <Button
@@ -741,7 +758,7 @@ const TicketDocument = () => {
                 )}
                 {!showCompletionDate && (
                   <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
-                    {(ticket.user.role !== "ADMIN") && (
+                    {ticket.user.role !== "ADMIN" && (
                       <div className="col-start-3">
                         <Button
                           className="px-3 py-2 rounded w-[172px] h-[42px] bg-blue-300 text-[14px] text-blue-800 hover:text-white hover:bg-blue-600"
@@ -991,6 +1008,12 @@ const TicketDocument = () => {
             )}
           </>
         )}
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 20 }}
+          open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </main>
     </div>
   );

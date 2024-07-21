@@ -174,7 +174,7 @@ const MyTicketList = () => {
               </div>
               </div>
             )}
-            {isRequestHandler && rows.some(row => row.id === rowSelectionModel[0] && row.ticketStatus === "ACCEPTED") && (
+            {isRequestHandler && rows.some(row => row.id === rowSelectionModel[0] && (row.ticketStatus === "ACCEPTED" || row.ticketStatus === "INPROGRESS")) && (
               <div className="grid grid-cols-11 grid-rows-1 gap-y-7 gap-x-[5] mb-2 ">
               <div className="col-start-9">
                 <Button

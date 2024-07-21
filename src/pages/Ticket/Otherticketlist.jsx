@@ -96,7 +96,8 @@ const Ticket = () => {
                 ticket.user.role === "REQUEST_HANDLER" ||
                 ticket.ticketStatus === "SENT_TO_ADMIN" ||
                 ticket.ticketStatus === "ACCEPTED" ||
-                ticket.ticketStatus === "REJECTED_A"
+                ticket.ticketStatus === "REJECTED_A"||
+                ticket.previousStatus === "ACCEPTED" 
               );
             } else {
               console.log("user" + ticket.user.userId);
@@ -113,6 +114,8 @@ const Ticket = () => {
             ticketStatus:
               isAdmin && ticket.ticketStatus === "SENT_TO_ADMIN"
                 ? "PENDING"
+              :isAdmin && ticket.previousStatus === "ACCEPTED"
+                ? "ACCEPTED"
                 : ticket.ticketStatus === "REJECTED_A" ||
                   ticket.ticketStatus === "REJECTED_R"
                 ? "REJECTED"
@@ -202,24 +205,16 @@ const Ticket = () => {
        
         {rowSelectionModel > 0 && (
           <div className="grid grid-cols-11 grid-rows-1 gap-y-7 gap-x-[5] mb-2 ">
-            <div className="col-start-8">
+            <div className="col-start-9">
               <Button
                 variant="contained"
-                className="bg-blue-600 px-6 py-2 text-white rounded left-[68%] w-[120px] ml-10"
+                className="bg-blue-600 px-6 py-2 text-white rounded left-[68%] w-[180px] ml-10"
                 onClick={handleView}
               >
                 View
               </Button>
             </div>
-            <div className="col-start-10">
-              <Button
-                variant="contained"
-                className="bg-blue-600 px-6 py-2 text-white rounded left-[68%] w-[120px] "
-                onClick={handleDelete}
-              >
-                Delete
-              </Button>
-            </div>
+            
           </div>
         )}
       </Box>
