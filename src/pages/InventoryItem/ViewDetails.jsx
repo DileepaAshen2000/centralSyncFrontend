@@ -7,6 +7,9 @@ import {
   Alert,
   AlertTitle,
   Button,
+  List,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -19,6 +22,8 @@ const ViewItemDetails = () => {
   const [loading, setLoading] = useState(false);
   const { itemID } = useParams();
   const isAdmin = LoginService.isAdmin();
+  const isEmployee=LoginService.isEmployee();
+  const [usageDetails, setUsageDetails] = useState([]);
   const [inventoryItem, setInventoryItem] = useState({
     itemName: "",
     itemGroup: "",
@@ -60,8 +65,8 @@ const ViewItemDetails = () => {
           brand: response.data.brand,
           model: response.data.model,
           unit: response.data.unit,
-          dimension: response.data.dimension,
-          weight: response.data.weight,
+          dimension: response.data.dimension || "",
+          weight: response.data.weight || "",
           description: response.data.description,
           quantity: response.data.quantity,
           status: response.data.status,
@@ -69,6 +74,21 @@ const ViewItemDetails = () => {
         };
         console.log(response.data);
         setInventoryItem(item);
+
+        // Fetch usage details
+        const usageResponse = await axios.get(
+          `http://localhost:8080/request/getUsageById/${itemID}`
+        );
+        // Group by user and aggregate quantities
+        const groupedUsage = usageResponse.data.reduce((acc, usage) => {
+          const { userId, userName, userEmail,department, quantity } = usage;
+          if (!acc[userId]) {
+            acc[userId] = { userName, userEmail,department, totalQuantity: 0 };
+          }
+          acc[userId].totalQuantity += quantity;
+          return acc;
+        }, {});
+        setUsageDetails(Object.values(groupedUsage));
       } catch (error) {
         console.log(error);
       } finally {
@@ -136,9 +156,13 @@ const ViewItemDetails = () => {
                 <li className="font-bold">Brand</li>
                 <li className="font-bold">Model </li>
                 <li className="font-bold"> Unit</li>
-                <li className="font-bold">Dimension</li>
-                <li className="font-bold">Weight</li>
-                <li className="font-bold">Quantity</li>
+                {dimension && dimension.trim() !== "" && (
+                  <li className="font-bold">Dimension</li>
+                )}
+                {weight && weight.trim() !== "" && (
+                  <li className="font-bold">Weight</li>
+                )}
+                <li className="font-bold">Quantity Available</li>
                 <li className="font-bold">Description</li>
               </ul>
               <ul className="flex flex-col gap-2">
@@ -148,14 +172,39 @@ const ViewItemDetails = () => {
                 <li>{brand}</li>
                 <li>{model}</li>
                 <li>{unit}</li>
-                <li>{dimension}</li>
-                <li>{weight}</li>
-                <li>{quantity}</li>
+                {dimension && dimension.trim() !== "" && <li>{dimension}</li>}
+                {weight && weight.trim() !== "" && <li >{weight}</li>}
+                <li className="mb-3 mt-3">{quantity}</li>
+              
+
                 <li>{description}</li>
               </ul>
             </section>
           </div>
         </div>
+
+       {!isEmployee && itemGroup!=="OFFICE_SUPPLIES" && ( <div className="mt-8">
+          <Typography variant="h5" className="font-bold mb-4">
+            Usage Details
+          </Typography>
+          <List>
+            {usageDetails.length > 0 ? (
+              usageDetails.map((usage) => (
+                <ListItem key={usage.userId} className="bg-gray-100 mb-2 p-4 rounded-lg shadow-md">
+                  <ListItemText
+                    primary={`User: ${usage.userName} (${usage.userEmail})`}
+                    secondary={`${usage.department} Department |  Quantity Held: ${usage.totalQuantity}`}
+                  />
+                </ListItem>
+              ))
+            ) : (
+              <ListItem>
+                <ListItemText primary="No usage details available for this item." />
+              </ListItem>
+            )}
+          </List>
+        </div>
+)}
       </div>
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

@@ -18,11 +18,25 @@ const getStatusClass = (status) => {
 
 const columns = [
   {
+    field: "id",
+    headerName: "Item ID",
+    minwidth: 50,
+    editable: false,
+    flex: 0.5,
+  },
+  {
     field: "item_name",
     headerName: "Item Name",
-    minwidth: 250,
+    minwidth: 220,
     editable: false,
-    flex: 1.5,
+    flex: 1.25,
+  },
+  {
+    field: "brand",
+    headerName: "Brand",
+    minwidth: 150,
+    editable: false,
+    flex: 1,
   },
   {
     field: "model",
@@ -38,13 +52,7 @@ const columns = [
     editable: false,
     flex: 1.5,
   },
-  {
-    field: "brand",
-    headerName: "Brand",
-    minwidth: 150,
-    editable: false,
-    flex: 1,
-  },
+
   {
     field: "quantity",
     headerName: "Quantity",
@@ -119,7 +127,7 @@ const ItemDataGrid = () => {
   };
 
   return (
-    <Box className="h-[400px] w-full">
+    <Box className="h-[400px] w-full h-full">
       {isAdmin && (
          <Button
             variant="contained"

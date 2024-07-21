@@ -23,6 +23,8 @@ const EditItem = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { itemID } = useParams();
   const fileInputRef = useRef(null);
+  const [requireDimensions, setRequireDimensions] = useState();
+  const [requireWeight, setRequireWeight] = useState();
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [inventoryItem, setInventoryItem] = useState({
@@ -55,7 +57,57 @@ const EditItem = () => {
     quantity,
     status,
   } = inventoryItem;
+  useEffect(() => {
+    // Update required fields based on item group
+    switch (itemGroup) {
+      case "COMPUTERS_AND_LAPTOPS":
+      case "COMPUTER_HARDWARE":
+      case "FURNITURE":
+      case "PRINTERS_AND_SCANNERS":
+        setRequireDimensions(true);
+        setRequireWeight(true);
+        break;
+      case "COMPUTER_ACCESSORIES":
+        setRequireDimensions(false);
+        setRequireWeight(true);
+        break;
+      case "OFFICE_SUPPLIES":
+      case "OTHER":
+        setRequireDimensions(false);
+        setRequireWeight(false);
+        break;
+      default:
+        setRequireDimensions(false);
+        setRequireWeight(false);
+        break;
+    }
 
+    // Clear errors related to dimension and weight when they are no longer required
+    if (!requireDimensions) {
+      setErrors((prevErrors) => {
+        const { dimension, dimensionUnit, ...rest } = prevErrors;
+        return rest;
+      });
+
+      if (!requireWeight) {
+        setErrors((prevErrors) => {
+          const { weight, weightUnit, ...rest } = prevErrors;
+          return rest;
+        });
+      }
+
+      // Clear dimension and weight fields if they are not required
+      setInventoryItem((prevState) => ({
+        ...prevState,
+        dimension: !requireDimensions ? "" : prevState.dimension,
+        dimensionUnit: !requireDimensions ? "" : prevState.dimensionUnit,
+        weight: !requireWeight ? "" : prevState.weight,
+        weightUnit: !requireWeight ? "" : prevState.weightUnit,
+      }));
+    }
+
+   
+  }, [itemGroup, requireDimensions, requireWeight, itemID]);
   const validateField = (name, value) => {
     const validationErrors = {};
 
@@ -78,29 +130,33 @@ const EditItem = () => {
     } else if (name === "unit" && !value) {
       validationErrors.unit = "Unit is required";
     } else if (name === "dimension") {
-      if (!value) {
-        validationErrors.dimension = "Dimension is required";
-      } else if (
-        !/^(\d+(\.\d+)?\*\d+(\.\d+)?(\*\d+(\.\d+)?)?|\d+(\.\d+)?\*\d+(\.\d+)?)$/.test(
-          value
-        )
-      ) {
-        validationErrors.dimension =
-          "Enter dimension in the format a*b*c or a*b";
-      } else if (!/^\S*$/.test(value)) {
-        validationErrors.dimension = "Spaces are not allowed";
+      if (requireDimensions) {
+        if (!value) {
+          validationErrors.dimension = "Dimension is required";
+        } else if (
+          !/^(\d+(\.\d+)?\*\d+(\.\d+)?(\*\d+(\.\d+)?)?|\d+(\.\d+)?\*\d+(\.\d+)?)$/.test(
+            value
+          )
+        ) {
+          validationErrors.dimension =
+            "Enter dimension in the format  W*H*D or W*H";
+        } else if (!/^\S*$/.test(value)) {
+          validationErrors.dimension = "Spaces are not allowed";
+        }
       }
-    } else if (name === "dimensionUnit" && !value) {
+    } else if (name === "dimensionUnit" && requireDimensions && !value) {
       validationErrors.dimensionUnit = "Dimension Unit is required";
     } else if (name === "weight") {
-      if (!value) {
-        validationErrors.weight = "Weight is required";
-      } else if (!/^\d+(\.\d+)?$/.test(value)) {
-        validationErrors.weight = "Weight must be a positive number";
-      } else if (!/^\S*$/.test(value)) {
-        validationErrors.weight = "Spaces are not allowed";
+      if (requireWeight) {
+        if (!value) {
+          validationErrors.weight = "Weight is required";
+        } else if (!/^\d+(\.\d+)?$/.test(value)) {
+          validationErrors.weight = "Weight must be a positive number";
+        } else if (!/^\S*$/.test(value)) {
+          validationErrors.weight = "Spaces are not allowed";
+        }
       }
-    } else if (name === "weightUnit" && !value) {
+    } else if (name === "weightUnit" && requireWeight && !value) {
       validationErrors.weightUnit = "Weight Unit is required";
     } else if (name === "quantity") {
       if (!value) {
@@ -297,7 +353,7 @@ const EditItem = () => {
         title: "Deleted",
         text: "Inventory Item deleted successfully!",
       }).then(() => {
-        navigate(-1);
+        navigate("/item");
       });
     } catch (error) {
       if (error.response.status === 409) {
@@ -362,7 +418,7 @@ const EditItem = () => {
             />
           )}
           <p className="text-sm text-gray-500 mt-2">
-            Click the image to update
+            Update by clicking on image
           </p>
           <input
             type="file"
@@ -527,7 +583,11 @@ const EditItem = () => {
             />
           </div>
         </div>
-        <div className="col-start-1 col-span-6 flex items-center">
+        <div
+          className={`flex items-center col-span-6 col-start-1 ${
+            !requireDimensions && "opacity-50"
+          }`}
+        >
           <InputLabel
             htmlFor="dimension"
             className="flex-none text-black  w-32"
@@ -547,6 +607,8 @@ const EditItem = () => {
               variant="outlined"
               error={errors.dimension}
               onBlur={handleBlur}
+              required={requireDimensions}
+              disabled={!requireDimensions}
               InputProps={{
                 className: "w-[220px]  ml-3   ",
                 readOnly: false,
@@ -560,6 +622,8 @@ const EditItem = () => {
               onChange={onInputChange}
               error={errors.dimensionUnit}
               onBlur={handleBlur}
+              required={requireDimensions}
+              disabled={!requireDimensions}
               className="col-start-3  col-span-2 w-[80] ml-1 "
               size="small"
             >
@@ -571,7 +635,11 @@ const EditItem = () => {
             </Select>
           </div>
         </div>
-        <div className="col-start-1 col-span-6 flex items-center">
+        <div
+          className={`flex items-center col-span-6 col-start-1 ${
+            !requireWeight && "opacity-50"
+          }`}
+        >
           <InputLabel htmlFor="weight" className="flex-none text-black  w-32">
             Weight
           </InputLabel>
@@ -588,6 +656,8 @@ const EditItem = () => {
               variant="outlined"
               error={errors.weight}
               onBlur={handleBlur}
+              required={requireWeight}
+              disabled={!requireWeight}
               InputProps={{
                 className: "w-[220px]  ml-3   ",
                 readOnly: false,
@@ -600,6 +670,8 @@ const EditItem = () => {
               onChange={onInputChange}
               error={errors.weightUnit}
               onBlur={handleBlur}
+              required={requireWeight}
+              disabled={!requireWeight}
               className="col-start-3 col-span-2 w-[80] ml-1 "
               size="small"
             >
