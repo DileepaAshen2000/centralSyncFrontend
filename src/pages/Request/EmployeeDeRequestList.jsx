@@ -63,6 +63,14 @@ const EmployeeDeRequestList = () => {
   const [loadingRequests, setLoadingRequests] = useState(true);
   const [loadingItems, setLoadingItems] = useState(true);
 
+    //state variables for counts
+    const [pendingCount, setPendingCount] = useState(0);
+    const [rejectedCount, setRejectedCount] = useState(0);
+    const [receivedCount, setReceivedCount] = useState(0);
+    const [dispatchedCount, setDispatchedCount] = useState(0);
+    const [deliveredCount, setDeliveredCount] = useState(0);
+    const [wantToReturnCount, setWantToReturnCount] = useState(0);
+
   useEffect(() => {
     checkEmployeeStatus();
     fetchRequestsData();
@@ -89,6 +97,17 @@ const EmployeeDeRequestList = () => {
       const userId = LoginService.returnUserID();
       const response = await axios.get(`http://localhost:8080/request/user/${userId}`);
       let data = formatRequestsData(response.data);
+
+       // Calculate counts
+       setPendingCount(data.filter(item => item.status === 'PENDING').length);
+       setRejectedCount(data.filter(item => item.status === 'REJECTED').length);
+       setWantToReturnCount(data.filter(item => item.status === 'WANT_TO_RETURN_ITEM').length);
+       setReceivedCount(data.filter(item => item.status === 'RECEIVED').length);
+        setDispatchedCount(data.filter(item => item.status === 'DISPATCHED').length);
+        console.log(data.filter(item => item.status === 'DISPATCHED').length);
+        setDeliveredCount(data.filter(item => item.status === 'DELIVERED').length);
+
+
 
       const acceptedItems = data.filter(item => item.status === 'ACCEPTED' || item.status === 'WANT_TO_RETURN_ITEM');
       const acceptedItemDetailsPromises = acceptedItems.map(item => fetchItemDetails(item.itemId));
@@ -164,7 +183,7 @@ const EmployeeDeRequestList = () => {
   };
 
   const requestColumns = [
-    { field: 'id', headerName: 'No:', width: 200 },
+    { field: 'reqId', headerName: 'Request Id', width: 200 },
     { field: 'date', headerName: 'Date', width: 200 },
     { field: 'time', headerName: 'Time', width: 200 },
     { field: 'itemName', headerName: 'Item Name', width: 200 },
@@ -213,7 +232,7 @@ const EmployeeDeRequestList = () => {
   ];
 
   const itemsColumns = [
-    { field: 'id', headerName: 'No:', width: 180 },
+    { field: 'reqId', headerName: 'Request Id', width: 180 },
     { field: 'itemName', headerName: 'Item Name', width: 180 },
     { field: 'date', headerName: 'Received Date', width: 180},
     { field: 'quantity', headerName: 'Requested Quantity', width: 180 },
@@ -294,6 +313,13 @@ const formattedItemsRows = itemsRows.map((item, index) => ({
             loading={loadingRequests} 
             onRowClick={(params) => navigate(`/employee/de-request-document/${params.row.reqId}`)} 
           />
+          <Box sx={{ display: 'flex', justifyContent: 'space-around', marginTop: '16px' }}>
+            <CountBox title="Pending Requests" count={pendingCount} backgroundColor="#ADD8E6" />
+            <CountBox title="Rejected Requests" count={rejectedCount} backgroundColor="#F08080" />
+            <CountBox title="Received Requests" count={receivedCount} backgroundColor="#4540bd" />
+            <CountBox title="Dispatched Requests" count={dispatchedCount} backgroundColor="#FFA500" />
+            <CountBox title="Delivered Requests" count={deliveredCount} backgroundColor="#90EE90" />
+          </Box>
         </TabPanel>
 
         <TabPanel value="2">
@@ -304,6 +330,11 @@ const formattedItemsRows = itemsRows.map((item, index) => ({
             loading={loadingItems} 
             onRowClick={(params) => navigate(`/employee/de-request-document/${params.row.reqId}`)} 
           />
+           <Box sx={{ display: 'flex', justifyContent: 'space-around', marginTop: '16px' }}>
+            <CountBox title="Recieved Requests" count={receivedCount} backgroundColor="#7a7a7a" />
+            <CountBox title="Want To Return Item Requests" count={wantToReturnCount} backgroundColor="#af5c9b" />
+          
+          </Box>
         </TabPanel>
       </TabContext>
     </Box>
@@ -318,5 +349,26 @@ const SectionHeader = ({ title, color }) => {
     </Box>
   );
 };
+
+// New code for CountBox component
+const CountBox = ({ title, count, backgroundColor }) => {
+  if (count === 0) {
+    return null; // Return null to hide the box if count is 0
+  }
+
+  return (
+    <Box sx={{
+      textAlign: 'center',
+      textStyle: 'bold',
+      padding: '16px',
+      borderRadius: '8px',
+      backgroundColor: backgroundColor
+    }}>
+      <h3>{title}</h3>
+      <p>{count}</p>
+    </Box>
+  );
+};
+
 
 export default EmployeeDeRequestList;
