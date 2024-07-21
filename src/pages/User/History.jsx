@@ -220,52 +220,52 @@ const UserActivityHistory = () => {
   const getIcon = (action) => {
     switch (true) {
       case action.includes("inactive"):
-        return <BlockIcon className="bg-red-500 rounded-full h-7 w-7" />;
+        return <BlockIcon className="text-red-500 rounded-full h-7 w-7" />;
       case action.includes("deleted"):
-        return <DeleteIcon className="bg-red-500 rounded-full h-7 w-7" />;
+        return <DeleteIcon className="text-red-500 rounded-full h-7 w-7" />;
       case action.includes("approved") ||
         action.includes("accepted") ||
         action.includes("Completed"):
         return (
-          <CheckCircleIcon className="bg-green-800 rounded-full h-7 w-7" />
+          <CheckCircleIcon className="text-green-800 rounded-full h-7 w-7" />
         );
       case action.includes("rejected"):
-        return <CancelIcon className="bg-red-500 rounded-full h-7 w-7" />;
+        return <CancelIcon className="text-red-500 rounded-full h-7 w-7" />;
       case action.includes("password") || action.includes("Password"):
-        return <LockIcon className="bg-red-500 rounded-full h-7 w-7" />;
+        return <LockIcon className="text-red-500 rounded-full h-7 w-7" />;
       case action.includes("reviewed"):
-        return <ReviewIcon className="bg-blue-500 rounded-full h-7 w-7" />;
+        return <ReviewIcon className="text-blue-500 rounded-full h-7 w-7" />;
       case action.includes("User") || action.includes("user"):
-        return <UserIcon className="bg-green-500 rounded-full h-7 w-7" />;
+        return <UserIcon className="text-green-500 rounded-full h-7 w-7" />;
       case action.includes("ticket"):
-        return <TicketIcon className="bg-yellow-500 rounded-full h-7 w-7" />;
+        return <TicketIcon className="text-yellow-500 rounded-full h-7 w-7" />;
       case action.includes("Stock In"):
       case action.includes("Stock Out"):
-        return <StockIcon className="bg-purple-500 rounded-full h-7 w-7" />;
+        return <StockIcon className="text-purple-500 rounded-full h-7 w-7" />;
       case action.includes("request"):
-        return <InventoryIcon className="bg-orange-500 rounded-full h-7 w-7" />;
+        return <InventoryIcon className="text-orange-500 rounded-full h-7 w-7" />;
       case action.includes("Reservation"):
         return (
-          <ReservationIcon className="bg-yellow-500 rounded-full h-7 w-7" />
+          <ReservationIcon className="text-yellow-500 rounded-full h-7 w-7" />
         );
       case action.includes("delivered"):
         return (
-          <LocalShippingIcon className="bg-blue-600 rounded-full h-7 w-7" />
+          <LocalShippingIcon className="text-blue-600 rounded-full h-7 w-7" />
         );
       case action.includes("item") || action.includes("Item"):
-        return <ItemIcon className="bg-blue-700 rounded-full h-7 w-7" />;
+        return <ItemIcon className="text-blue-700 rounded-full h-7 w-7" />;
       case action.includes("Order") || action.includes("order"):
-        return <OrderIcon className="bg-green-700 rounded-full h-7 w-7" />;
+        return <OrderIcon className="text-green-700 rounded-full h-7 w-7" />;
       case action.includes("Adjustment") || action.includes("adjustment"):
-        return <AdjustmentIcon className="bg-blue-800 rounded-full h-7 w-7" />;
+        return <AdjustmentIcon className="text-blue-800 rounded-full h-7 w-7" />;
 
       case action.includes("Profile"):
         return (
-          <ManageAccountsIcon className="bg-purple-600 rounded-full h-7 w-7" />
+          <ManageAccountsIcon className="text-purple-600 rounded-full h-7 w-7" />
         );
 
       default:
-        return <TimelineDot className="bg-red-500 rounded-full h-7 w-7" />;
+        return <TimelineDot className="text-red-500 rounded-full h-7 w-7" />;
     }
   };
 

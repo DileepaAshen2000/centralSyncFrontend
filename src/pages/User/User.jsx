@@ -99,12 +99,14 @@ export default function User() {
         height: 400,
         width: "100%",
       }}
-    >
+    >    
+ 
        
-        <h1 className="inline-block p-4 text-3xl font-bold">User</h1>
+       
         {rowSelectionModel > 0 ? (
-          <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.25rem] mt-3 mb-3">
+          <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.25rem] mt-3 mb-6">
           <div className="col-start-4">
+          {!isRequestHandler && (
             <Button
               variant="contained"
               className="bg-blue-600 px-6 py-2 text-white rounded left-[68%] w-[150px] ml-[70px]"
@@ -112,7 +114,9 @@ export default function User() {
             >
               Edit
             </Button>
+          )}
           </div> 
+        
           <div className="col-start-5">
             <Button
               variant="contained"
@@ -124,7 +128,7 @@ export default function User() {
           </div>
           </div>
         ) : (
-          <div className="grid grid-cols-6 grid-rows-1 gap-y-7  gap-x-[0.25rem] mt-3 mb-3 ml-[70px]">
+          <div className="grid grid-cols-6 grid-rows-1 gap-y-7  gap-x-[0.25rem] mt-3 mb-6 ml-[70px]">
             <div className="col-start-6">
               {!isRequestHandler && (
                 <Button
@@ -144,7 +148,8 @@ export default function User() {
           <CircularProgress />
         </div>
       ):(
-      
+      <>
+        <h1 className="text-white bg-[#3f51b5] p-3 text-center text-xl">All Users</h1>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -175,7 +180,10 @@ export default function User() {
           },
         }}
       />
+       </>
       )}
+      
     </Box>
+   
   );
 }

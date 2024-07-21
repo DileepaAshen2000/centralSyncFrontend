@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import inventory from "../../assests/inventory.jpg";
 import { useNavigate } from "react-router-dom";
 import LoginService from "./LoginService";
+import Swal from 'sweetalert2';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -15,11 +16,24 @@ export default function LoginPage() {
       const userData = await LoginService.login(email, password);
       console.log(userData);
       if (userData.token) {
+        if (userData.status === "INACTIVE") {
+          Swal.fire({
+            icon: 'error',
+            title: 'Account Inactive',
+            text: "Sorry, you can't log into centralSync",
+          });
+          return;
+        }
 
         localStorage.setItem('token', userData.token);
         localStorage.setItem('role', userData.role);
         localStorage.setItem('userId', userData.userId);
         localStorage.setItem('workSite', userData.workSite);
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Successful',
+          text: 'You have successfully logged in!',
+        }).then(() => {
                // Navigate based on role
                switch (userData.role) {
                 case 'ADMIN':
@@ -35,8 +49,13 @@ export default function LoginPage() {
                   navigate('/default-dashboard'); // Fallback case if role is not recognized
               } // Navigate to desired location after successful login
         console.log("login success")
+      });
       } else {
-        setError(userData.error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Failed',
+          text: userData.error || 'Incorrect username or password',
+        });
       }
     } catch (error) {
       console.log(error);

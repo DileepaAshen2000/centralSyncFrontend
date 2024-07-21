@@ -1,17 +1,15 @@
-
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
-import MyTicketList from './Myticketlist';
-import Ticket from './Otherticketlist';
-import LoginService from '../Login/LoginService';
+import * as React from "react";
+import PropTypes from "prop-types";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Box from "@mui/material/Box";
+import MyTicketList from "./Myticketlist";
+import Ticket from "./Otherticketlist";
+import LoginService from "../Login/LoginService";
 import { useEffect, useState } from "react";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
- 
 
   return (
     <div
@@ -35,48 +33,48 @@ CustomTabPanel.propTypes = {
 function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
   };
 }
 
 export default function BasicTabs() {
   const [value, setValue] = React.useState(0);
   const isEmployee = LoginService.isEmployee();
+  
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
- 
 
   return (
     <div>
-      {(!isEmployee) && (
-        <Box sx={{ width: '100%' }}>
-          <div className='pb-5'>
-            <h1 className="inline-block text-3xl font-bold">All Issue Tickets</h1>
-            <p>Here are all tickets</p>
-          </div>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-              <Tab label="My Tickets" {...a11yProps(0)} />
-              <Tab label="Others' Tickets" {...a11yProps(1)} />
+      {!isEmployee && (
+        <Box sx={{ width: "100%" }}>
+           
+          
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              aria-label="basic tabs example"
+            >
+              <Tab label="Others' Tickets" {...a11yProps(0)} />
+              <Tab label="My Tickets" {...a11yProps(1)} />
             </Tabs>
           </Box>
           <CustomTabPanel value={value} index={0}>
-          <MyTicketList/>   
+            <Ticket />
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
-          <Ticket/>
+            <MyTicketList />
           </CustomTabPanel>
         </Box>
       )}
-      
-      {isEmployee  && (
+
+      {isEmployee && (
         <div>
-          <div className='pb-5'>
-            <h1 className="inline-block text-3xl font-bold">Issue Tickets</h1>          
-          </div>
-          <MyTicketList/>
+           
+          <MyTicketList />
         </div>
       )}
     </div>
