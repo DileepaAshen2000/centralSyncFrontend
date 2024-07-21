@@ -68,6 +68,7 @@ const EmployeeInRequestList = () => {
   const [acceptedCount, setAcceptedCount] = useState(0);
   const [rejectedCount, setRejectedCount] = useState(0);
   const [wantToReturnCount, setWantToReturnCount] = useState(0);
+  
 
   useEffect(() => {
     checkEmployeeStatus();
