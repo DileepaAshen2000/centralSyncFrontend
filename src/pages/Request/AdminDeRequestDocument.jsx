@@ -309,7 +309,17 @@ const AdminDeRequestDocument = () => {
       alert('Please write a note before sending.');
     }
   };
-  
+  const handleDelete = () => {
+    axios
+      .delete(`http://localhost:8080/request/deleteRequest/${reqId}`)
+      .then(() => {
+        setInventoryRequest(!inventoryRequest);
+        navigate(getInventoryRequestListLink());
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleFileDownload = async () => {
     try {
@@ -364,6 +374,14 @@ const AdminDeRequestDocument = () => {
               Edit
             </Button>
           )}
+            {(inventoryRequest.reqStatus === 'WANT_TO_RETURN_ITEM' && role === 'ADMIN' && <Button
+              className="px-6 py-2 text-white bg-blue-600 rounded"
+              variant='contained'
+              type='submit'
+              onClick={handleDelete}
+            >
+              Delete
+            </Button>)}
           <ReactToPrint
             trigger={() => (
               <Button className="px-6 py-2 text-white bg-blue-600 rounded" variant='contained'>

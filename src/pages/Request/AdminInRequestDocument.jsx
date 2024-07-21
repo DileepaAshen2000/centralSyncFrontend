@@ -178,7 +178,7 @@ setOpenSA(true);
   };
   const handleDelete = () => {
     axios
-      .patch(`http://localhost:8080/request/deleteRequest/${reqId}`)
+      .delete(`http://localhost:8080/request/deleteRequest/${reqId}`)
       .then(() => {
         setInventoryRequest(!inventoryRequest);
         navigate(getInventoryRequestListLink());
