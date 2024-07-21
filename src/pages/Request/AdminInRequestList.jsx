@@ -85,7 +85,7 @@ const AdminInRequestList = () => {
       // Filtering requests based on role
       const reviewingRequests = data.filter(item => (item.status === 'SENT_TO_ADMIN' && item.workSite !== 'ONLINE'));
       console.log('Reviewing Requests:', reviewingRequests);
-      const myRequests = data.filter(item => (item.workSite === 'ONLINE')&& (item.status === 'PENDING'));
+      const myRequests = data.filter(item => (item.workSite === 'ONLINE') && (item.status !== 'WANT_TO_RETURN_ITEM'));
       const itemsOnHand = data.filter(item =>item.status === 'WANT_TO_RETURN_ITEM'); // Filter for items on hand
       
 
@@ -140,14 +140,14 @@ const AdminInRequestList = () => {
   };
 
   const columns = [
-    { field: 'id', headerName: 'Inventory Request No:', width: 200 },
-    { field: 'date', headerName: 'Date', width: 200 },
-    { field: 'time', headerName: 'Time', width: 200 },
-    { field: 'itemName', headerName: 'Item Name', width: 200 },
+    { field: 'id', headerName: 'No:', width: 180 },
+    { field: 'date', headerName: 'Date', width: 180 },
+    { field: 'time', headerName: 'Time', width: 180 },
+    { field: 'itemName', headerName: 'Item Name', width: 180 },
     { 
       field: 'status', 
       headerName: 'Status', 
-      width: 200,
+      width: 220,
       renderCell: (params) => {
         const status = params.value;
         let backgroundColor;
@@ -162,11 +162,20 @@ const AdminInRequestList = () => {
             backgroundColor = '#F08080';
             break;
           case 'SENT_TO_ADMIN':
-            backgroundColor = '#F59E0B';
+            backgroundColor = '#FFD700';
             break;
           case 'WANT_TO_RETURN_ITEM':
             backgroundColor = '#af5c9b';
             break;
+          case 'DELIVERED':
+            backgroundColor = '#22C55E';
+            break;
+            case 'RECEIVED':
+              backgroundColor = '#708090';
+              break;
+              case 'DISPATCHED':
+                backgroundColor = '#F97316';
+              break;
           default:
             backgroundColor = '#FFFFFF';
         }
@@ -189,7 +198,7 @@ const AdminInRequestList = () => {
 
   // New columns for "Items On My Hand"
   const itemsOnHandColumns = [
-    { field: 'id', headerName: 'Inventory Request No:', width: 180 },
+    { field: 'id', headerName: 'No:', width: 180 },
     { field: 'itemName', headerName: 'Item Name', width: 180 },
     { field: 'date', headerName: 'Received Date', width: 180 },
     { field: 'quantity', headerName: 'Requested Quantity', width: 180 },
@@ -211,10 +220,16 @@ const AdminInRequestList = () => {
             backgroundColor = '#F08080';
             break;
           case 'SENT_TO_ADMIN':
-            backgroundColor = '#F59E0B';
+            backgroundColor = '#FFD700';
             break;
           case 'WANT_TO_RETURN_ITEM':
             backgroundColor = '#af5c9b';
+            break;
+            case 'RECEIVED':
+              backgroundColor = '#708090';
+            break;
+            case 'DISPATCHED':
+              backgroundColor = '#F97316';
             break;
           default:
             backgroundColor = '#FFFFFF';
