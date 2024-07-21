@@ -145,7 +145,12 @@ const EmployeeDeRequestList = () => {
         // Sort by status "PENDING" first, then by creation date
         if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
         if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
-        return b.createdDateTime - a.createdDateTime;
+        if (a.status === 'DISPATCHED' && b.status !== 'DISPATCHED') return -1;
+        if (a.status !== 'DISPATCHED' && b.status === 'DISPATCHED') return 1;
+        if (a.status === 'DELIVERED' && b.status !== 'DELIVERED') return -1;
+        if (a.status !== 'DELIVERED' && b.status === 'DELIVERED') return 1;
+        if (a.status === 'RECEIVED' && b.status !== 'RECEIVED') return -1;
+        if (a.status !== 'RECEIVED' && b.status === 'RECEIVED') return 1;
       })
       .map((item, index) => ({
         ...item,

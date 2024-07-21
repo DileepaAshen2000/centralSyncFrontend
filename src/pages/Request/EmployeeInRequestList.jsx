@@ -148,6 +148,8 @@ const EmployeeInRequestList = () => {
         // Sort by status "PENDING" first, then by creation date
         if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
         if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
+        if (a.status === 'ACCEPTED' && b.status !== 'ACCEPTED') return -1;
+        if (a.status !== 'ACCEPTED' && b.status === 'ACCEPTED') return 1;
         return b.createdDateTime - a.createdDateTime;
       })
       .map((item, index) => ({

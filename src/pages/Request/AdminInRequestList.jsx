@@ -251,15 +251,27 @@ const AdminInRequestList = () => {
     },
   ];
 
-  const filteredReviewingRequestRows = reviewingRequestRows
+  const filteredReviewingRequestRows = [...reviewingRequestRows]
   .filter(row => row.status !== 'WANT_TO_RETURN_ITEM')
   .sort((a, b) => {
     // *** Sorting logic to move 'PENDING' status rows to the top ***
     if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
     if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
-    return 0;
+    return b.createdDateTime - a.createdDateTime;
   });
   const role = localStorage.getItem('role');
+
+  const sortedMyRequestRows = [...myRequestRows].sort((a, b) => {
+    if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
+    if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
+    if (a.status === 'DISPATCHED' && b.status !== 'DISPATCHED') return -1;
+    if (a.status !== 'DISPATCHED' && b.status === 'DISPATCHED') return 1;
+    if (a.status === 'DELIVERED' && b.status !== 'DELIVERED') return -1;
+    if (a.status !== 'DELIVERED' && b.status === 'DELIVERED') return 1;
+    if (a.status === 'RECEIVED' && b.status !== 'RECEIVED') return -1;
+    if (a.status !== 'RECEIVED' && b.status === 'RECEIVED') return 1;
+    return b.createdDateTime - a.createdDateTime;
+  });
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -294,7 +306,7 @@ const AdminInRequestList = () => {
         <TabPanel value="2">
           <SectionHeader title="Work From Home Employee's Delivery Requests List" color="#006400" />
           <Table 
-            rows={myRequestRows} 
+            rows={sortedMyRequestRows} 
             columns={columns} 
             loading={loadingRequests} 
             onRowClick={(params) => navigate(`/admin/de-request-document/${params.row.reqId}`)} 
