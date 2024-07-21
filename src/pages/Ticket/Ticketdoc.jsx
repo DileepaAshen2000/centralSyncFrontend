@@ -451,6 +451,7 @@ const TicketDocument = () => {
                 <li className="font-bold">Created by</li>
                 <li className="font-bold">Item Name</li>
                 <li className="font-bold">Item Brand</li>
+                <li className="font-bold">Item Model</li>
                 <li className="font-bold">Date</li>
                 <li className="font-bold">Topic</li>
               </ul>
@@ -461,6 +462,7 @@ const TicketDocument = () => {
                 </li>
                 <li>{item.itemName}</li>
                 <li>{item.brand}</li>
+                <li>{item.model}</li>
                 <li>{ticket.date}</li>
                 <li className="font-bold text-red-600">{ticket.topic}</li>
               </ul>
