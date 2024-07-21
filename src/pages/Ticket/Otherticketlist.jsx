@@ -1,7 +1,7 @@
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate, useParams } from "react-router-dom";
-import { TextField, Button, Stack, Select } from "@mui/material";
+import { TextField, Button, Stack, Select,CircularProgress} from "@mui/material";
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import axios from "axios";
@@ -56,6 +56,7 @@ const Ticket = () => {
   const [rows, setRows] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState({});
   const [profileInfo, setProfileInfo] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const isAdmin = LoginService.isAdmin();
   const isRequestHandler = LoginService.isReqHandler();
@@ -63,6 +64,7 @@ const Ticket = () => {
   useEffect(() => {
     const fetchProfileInfo = async () => {
       try {
+        
         const token = localStorage.getItem("token");
         const response = await LoginService.getYourProfile(token);
         console.log("Profile Info Response:", response);
@@ -83,6 +85,7 @@ const Ticket = () => {
   }, [profileInfo]);
 
   const fetchTickets = () => {
+    setLoading(true);
     axios
       .get("http://localhost:8080/ticket/getAll")
       .then((response) => {
@@ -93,7 +96,8 @@ const Ticket = () => {
                 ticket.user.role === "REQUEST_HANDLER" ||
                 ticket.ticketStatus === "SENT_TO_ADMIN" ||
                 ticket.ticketStatus === "ACCEPTED" ||
-                ticket.ticketStatus === "REJECTED_A"
+                ticket.ticketStatus === "REJECTED_A"||
+                ticket.previousStatus === "ACCEPTED" 
               );
             } else {
               console.log("user" + ticket.user.userId);
@@ -110,6 +114,8 @@ const Ticket = () => {
             ticketStatus:
               isAdmin && ticket.ticketStatus === "SENT_TO_ADMIN"
                 ? "PENDING"
+              :isAdmin && ticket.previousStatus === "ACCEPTED"
+                ? "ACCEPTED"
                 : ticket.ticketStatus === "REJECTED_A" ||
                   ticket.ticketStatus === "REJECTED_R"
                 ? "REJECTED"
@@ -125,6 +131,9 @@ const Ticket = () => {
       })
       .catch((error) => {
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -191,30 +200,31 @@ const Ticket = () => {
         width: "100%",
       }}
     >
+   
       <Box className="flex pt-2 pb-2">
+       
         {rowSelectionModel > 0 && (
           <div className="grid grid-cols-11 grid-rows-1 gap-y-7 gap-x-[5] mb-2 ">
-            <div className="col-start-8">
+            <div className="col-start-9">
               <Button
                 variant="contained"
-                className="bg-blue-600 px-6 py-2 text-white rounded left-[68%] w-[120px] ml-10"
+                className="bg-blue-600 px-6 py-2 text-white rounded left-[68%] w-[180px] ml-10"
                 onClick={handleView}
               >
                 View
               </Button>
             </div>
-            <div className="col-start-10">
-              <Button
-                variant="contained"
-                className="bg-blue-600 px-6 py-2 text-white rounded left-[68%] w-[120px] "
-                onClick={handleDelete}
-              >
-                Delete
-              </Button>
-            </div>
+            
           </div>
         )}
       </Box>
+
+      <h1 className="text-white bg-[#3f51b5] p-3 text-center text-xl">Others' Issue Tickets</h1>
+      {loading ? (
+        <div className="flex justify-center mostRequestedItems-center">
+          <CircularProgress />
+        </div>
+      ):(
       <DataGrid
         rows={rows}
         columns={columns}
@@ -245,6 +255,7 @@ const Ticket = () => {
           },
         }}
       />
+      )}
     </Box>
   );
 };

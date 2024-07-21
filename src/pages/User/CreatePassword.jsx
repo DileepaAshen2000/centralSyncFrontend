@@ -107,7 +107,7 @@ const CreatePassword = () => {
       <div className="flex w-full h-screen">
         <div className="grid grid-cols-1 m-auto md:grid-cols-2 h-[630px] shadow-lg shadow-gray-600 sm:max-w-[1000px]">
           <div className="hidden mt-[100px] md:block bg-blue-300">
-            <img src={image} className="w-full h-[530px]" />
+            <img src={image} className="w-full h-[560px]" />
           </div>
           <div className="flex flex-col justify-around p-16 bg-blue-300">
             <form onSubmit={handleSubmit}>

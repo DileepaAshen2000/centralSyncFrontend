@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
   InputLabel,
   TextField,
-  Typography,
+  Box,
   Backdrop,
   CircularProgress,
 } from "@mui/material";
@@ -174,8 +174,9 @@ const NewOrderForm = () => {
   return (
     <>
       <form className="grid grid-cols-8 gap-y-10 p-10 bg-white rounded-2xl ml-14 mr-14">
-        <h1 className=" col-span-4 text-3xl pt-2 font-bold ">New Order</h1>
-
+      <Box className="w-full col-span-8 bg-blue-900 text-white text-center py-4 my-4 ">
+          <h1 className="pt-2 pb-3 text-3xl font-bold">New Order</h1>
+        </Box>
         <div className="col-start-1 col-span-4 flex items-center">
           <InputLabel
             htmlFor="vendorName"
@@ -408,30 +409,18 @@ const NewOrderForm = () => {
             />
           </div>
         </div>
-        <div className="flex-row col-span-10 col-start-1 ">
-          <Typography display="block" gutterBottom>
-            Attach File(s) to initiate the order{" "}
-          </Typography>
-          <input
-            type="file"
-            onChange={handleFileChange}
-            className="mt-4 mb-2"
-          ></input>
-          <Typography variant="caption" display="block" gutterBottom>
-            You can upload a maximum of 1 file, 5MB each
-          </Typography>
-        </div>
+    
 
         <Button
           variant="contained"
-          className="row-start-13 col-start-6 col-span-3 w-[60%]  rounded-sm bg-blue-600  m-5"
+          className="row-start-12 col-start-6 col-span-3 w-[60%]  rounded-sm bg-blue-600  m-5"
           onClick={handleSubmit}
         >
           Initiate the Order
         </Button>
         <Button
           variant="outlined"
-          className="row-start-13 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600 m-5"
+          className="row-start-12 col-start-8 rounded-sm bg-white text-blue-600 border-blue-600 m-5"
           onClick={() => navigate("/order")}
         >
           Cancel

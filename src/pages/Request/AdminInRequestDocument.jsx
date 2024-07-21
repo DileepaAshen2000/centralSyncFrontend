@@ -363,7 +363,7 @@ setOpenSA(true);
               Edit
             </Button>
           )}
-           {(inventoryRequest.reqStatus === 'REJECTED' && role === 'ADMIN' && <Button
+           {(inventoryRequest.reqStatus === 'WANT_TO_RETURN_ITEM' && role === 'ADMIN' && <Button
               className="px-6 py-2 text-white bg-blue-600 rounded"
               variant='contained'
               type='submit'

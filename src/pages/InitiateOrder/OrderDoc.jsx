@@ -33,7 +33,7 @@ const ViewOrderDetails = () => {
   const [loading, setLoading] = useState(true);
   const printRef = useRef();
   const { orderID } = useParams();
-  const [note, setNote] = useState("");
+  const [message, setMessage] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogTitle, setDialogTitle] = useState("");
   const [dialogAction, setDialogAction] = useState(null);
@@ -44,12 +44,13 @@ const ViewOrderDetails = () => {
     vendorEmail: "",
     mobile: "",
     dateInitiated: "",
-    dateCompleted: "",
+    lastStatusUpdate: "",
     itemName: "",
     brandName: "",
     quantity: "",
     description: "",
     status: "",
+    note:""
   });
 
   const {
@@ -58,12 +59,13 @@ const ViewOrderDetails = () => {
     vendorEmail,
     mobile,
     dateInitiated,
-    dateCompleted,
+    lastStatusUpdate,
     itemName,
     brandName,
     quantity,
     description,
     status,
+    note,
   } = order;
 
   useEffect(() => {
@@ -91,12 +93,19 @@ const ViewOrderDetails = () => {
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
-    setNote("");
+    setMessage("");
   };
 
   const handleConfirmAction = async () => {
+    console.log("message at confirmation:", message); // Debugging line
+
     try {
-      await dialogAction();
+      if (dialogAction) {
+        await dialogAction(message); // Pass the message to the dialog action
+      } else {
+        await dialogAction();
+      }
+
       handleCloseDialog();
     } catch (error) {
       console.log(error);
@@ -181,13 +190,18 @@ const ViewOrderDetails = () => {
     }
   };
 
-  const handleMarkAsProblemReported = async () => {
+  const handleMarkAsProblemReported = async (message) => {
     setLoading(true);
-    console.log(note);
+    console.log("message at confirmation:", message); // Debugging line
     try {
       const response = await axios.patch(
         `http://localhost:8080/orders/problemReported/${orderID}`,
-        { note: note }
+        { message: message }, // Send message as a JSON object
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
 
       if (response.status === 200) {
@@ -242,36 +256,35 @@ const ViewOrderDetails = () => {
       return (
         <Alert severity="success" sx={{ width: "300px" }}>
           <AlertTitle>Completed</AlertTitle>
+          updated on:{lastStatusUpdate}
         </Alert>
       );
     } else if (status === "REVIEWED") {
       return (
         <Alert severity="info" sx={{ width: "300px" }}>
           <AlertTitle>Reviewed</AlertTitle>
+          updated on:{lastStatusUpdate}
         </Alert>
       );
     } else if (status === "PENDING") {
       return (
         <Alert severity="warning" sx={{ width: "300px" }}>
           <AlertTitle>Pending</AlertTitle>
+          updated on:{dateInitiated}
         </Alert>
       );
     } else if (status === "CANCELLED") {
       return (
         <Alert severity="error" sx={{ width: "300px" }}>
           <AlertTitle>Cancelled</AlertTitle>
+          updated on:{lastStatusUpdate}
         </Alert>
       );
     } else if (status === "PROBLEM_REPORTED") {
       return (
         <Alert severity="error" sx={{ width: "300px" }}>
           <AlertTitle>Problem Reported</AlertTitle>
-        </Alert>
-      );
-    } else if (status === "RESOLVED") {
-      return (
-        <Alert severity="info" sx={{ width: "300px" }}>
-          <AlertTitle>Resolved</AlertTitle>
+          updated on:{lastStatusUpdate}
         </Alert>
       );
     }
@@ -304,9 +317,7 @@ const ViewOrderDetails = () => {
                 <li className="font-bold">Email Address</li>
                 <li className="font-bold"> Mobile</li>
                 <li className="font-bold">Date Initiated</li>
-                {status === "COMPLETED" && (
-                  <li className="font-bold">Date Completed</li>
-                )}
+
               </ul>
               <ul className="flex flex-col gap-2">
                 <li>{orderID}</li>
@@ -315,7 +326,6 @@ const ViewOrderDetails = () => {
                 <li>{vendorEmail}</li>
                 <li>{mobile}</li>
                 <li>{dateInitiated}</li>
-                {status === "COMPLETED" && <li>{dateCompleted}</li>}
               </ul>
             </section>
 
@@ -345,13 +355,25 @@ const ViewOrderDetails = () => {
             </TableContainer>
           </div>
           {description !== "" && (
-            <div className="mt-10 mb-30">
+            <div className="mt-10 mb-10">
               <Typography variant="h6" className="font-bold" gutterBottom>
                 Description :{" "}
               </Typography>
               <div className="w-2/3">
                 <Typography variant="subtitle1" className="text-gray-500">
                   {description}
+                </Typography>
+              </div>
+            </div>
+          )}
+          {status==="PROBLEM_REPORTED" && (
+            <div className="mb-30 border-red-400">
+              <Typography variant="h6" className="font-bold text-red-700" gutterBottom>
+                Problem :
+              </Typography>
+              <div className="w-2/3">
+                <Typography variant="subtitle1" className="text-red-500">
+                  {note}
                 </Typography>
               </div>
             </div>
@@ -371,44 +393,34 @@ const ViewOrderDetails = () => {
                 Mark as Completed
               </Button>
             )}
-            {status !== "REVIEWED" && status !== "CANCELLED" && status !== "COMPLETED" && (
-              <Button
-                variant="contained"
-                color="primary"
-                className="mr-4 rounded   bg-blue-300 text-blue-800 hover:text-white hover:bg-blue-600 font-bold"
-                onClick={() =>
-                  handleOpenDialog("Mark as Reviewed", handleMarkAsReviewed)
-                }
-              >
-                Mark as Reviewed
-              </Button>
-            )}
-            {status === "PROBLEM_REPORTED" && status !== "RESOLVED" && (
-              <Button
-                variant="contained"
-                color="primary"
-                className="mr-4 rounded bg-blue-300 text-blue-800 hover:text-white hover:bg-blue-600 font-bold"
-                onClick={() =>
-                  handleOpenDialog("Mark as Resolved", handleMarkAsResolved)
-                }
-              >
-                Mark as Resolved
-              </Button>
-            )}
-            {status !== "COMPLETED" &&
-              (status !== "CANCELLED" && (
+            {status !== "REVIEWED" &&
+              status !== "CANCELLED" &&
+              status !== "COMPLETED" && (
                 <Button
                   variant="contained"
                   color="primary"
-                  className="mr-4 rounded bg-red-300 text-red-800 hover:text-white hover:bg-red-600 font-bold"
+                  className="mr-4 rounded   bg-blue-300 text-blue-800 hover:text-white hover:bg-blue-600 font-bold"
                   onClick={() =>
-                    handleOpenDialog("Mark as Cancelled", handleMarkAsCancelled)
+                    handleOpenDialog("Mark as Reviewed", handleMarkAsReviewed)
                   }
                 >
-                  Mark as Cancelled
+                  Mark as Reviewed
                 </Button>
-              ))}
-            {status !== "PROBLEM_REPORTED" && status !== "CANCELLED" && (
+              )}
+
+            {status !== "COMPLETED" && status !== "CANCELLED" && (
+              <Button
+                variant="contained"
+                color="primary"
+                className="mr-4 rounded bg-red-300 text-red-800 hover:text-white hover:bg-red-600 font-bold"
+                onClick={() =>
+                  handleOpenDialog("Mark as Cancelled", handleMarkAsCancelled)
+                }
+              >
+                Mark as Cancelled
+              </Button>
+            )}
+            {status !== "PROBLEM_REPORTED" && status !== "CANCELLED" && status !== "COMPLETED" && (
               <Button
                 variant="contained"
                 color="primary"
@@ -432,9 +444,9 @@ const ViewOrderDetails = () => {
                 </DialogContentText>
                 {dialogTitle.includes("Problem Reported") && (
                   <TextField
-                    label="Enter note"
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
+                    label="Enter message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     multiline
                     rows={4}
                     variant="outlined"
@@ -485,9 +497,7 @@ const ViewOrderDetails = () => {
                 <li className="font-bold">Email Address</li>
                 <li className="font-bold"> Mobile</li>
                 <li className="font-bold">Date Initiated</li>
-                {status === "COMPLETED" && (
-                  <li className="font-bold">Date Completed</li>
-                )}
+              
               </ul>
               <ul className="flex flex-col gap-2">
                 <li>{orderID}</li>
@@ -496,7 +506,6 @@ const ViewOrderDetails = () => {
                 <li>{vendorEmail}</li>
                 <li>{mobile}</li>
                 <li>{dateInitiated}</li>
-                {status === "COMPLETED" && <li>{dateCompleted}</li>}
               </ul>
             </section>
 

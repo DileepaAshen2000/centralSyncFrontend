@@ -65,7 +65,7 @@ export default function OrderTab() {
             aria-label="basic tabs example"
           >
             <Tab label="In Progress Orders" {...a11yProps(0)} />
-            <Tab label="Completed Orders" {...a11yProps(1)} />
+            <Tab label="Processed Orders" {...a11yProps(1)} />
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>

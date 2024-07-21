@@ -16,11 +16,24 @@ export default function LoginPage() {
       const userData = await LoginService.login(email, password);
       console.log(userData);
       if (userData.token) {
+        if (userData.status === "INACTIVE") {
+          Swal.fire({
+            icon: 'error',
+            title: 'Account Inactive',
+            text: "Sorry, you can't log into centralSync",
+          });
+          return;
+        }
 
         localStorage.setItem('token', userData.token);
         localStorage.setItem('role', userData.role);
         localStorage.setItem('userId', userData.userId);
         localStorage.setItem('workSite', userData.workSite);
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Successful',
+          text: 'You have successfully logged in!',
+        }).then(() => {
                // Navigate based on role
                switch (userData.role) {
                 case 'ADMIN':
@@ -40,7 +53,8 @@ export default function LoginPage() {
           title: 'Login Successful',
           text: 'You have successfully logged in!',
         })
-      } else {
+      });
+    } else {
         Swal.fire({
           icon: 'error',
           title: 'Login Failed',

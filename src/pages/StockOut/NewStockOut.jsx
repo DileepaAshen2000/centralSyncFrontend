@@ -10,7 +10,7 @@ import {
   FormControl,
 } from "@mui/material";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import LoginService from "../Login/LoginService";
 import { useParams } from "react-router-dom";
@@ -50,15 +50,8 @@ const NewStockOut = () => {
   const [selectedModel, setSelectedModel] = useState("");
   const [availableQuantity, setAvailableQuantity] = useState(0);
 
-  const {
-    department,
-    date,
-    description,
-    outQty,
-    itemId,
-    userId,
-    file,
-  } = stockOut;
+  const { department, date, description, outQty, itemId, userId, file } =
+    stockOut;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -103,7 +96,10 @@ const NewStockOut = () => {
         const token = localStorage.getItem("token");
         const profile = await LoginService.getYourProfile(token);
         setProfileInfo(profile.users);
-        setStockOut((prevStockOut) => ({ ...prevStockOut, userId: profile.users.userId }));
+        setStockOut((prevStockOut) => ({
+          ...prevStockOut,
+          userId: profile.users.userId,
+        }));
       } catch (error) {
         console.error("Error fetching item details:", error);
       }
@@ -215,7 +211,7 @@ const NewStockOut = () => {
       validationErrors.brand = "Brand is required.";
     } else if (name === "model" && !value) {
       validationErrors.model = "Model is required.";
-    }else if (name === "itemId" && !value) {
+    } else if (name === "itemId" && !value) {
       validationErrors.itemId = "Item ID is required.";
     }
 
@@ -449,6 +445,8 @@ const NewStockOut = () => {
             getOptionLabel={(option) => option.itemName}
             value={selectedItemName ? { itemName: selectedItemName } : null}
             onChange={handleItemChange}
+            value={selectedItemName ? options.find(option => option.itemName === selectedItemName) || null : null}
+
             sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField
@@ -591,8 +589,12 @@ const NewStockOut = () => {
               <MenuItem value="Quality Assurance">Quality Assurance</MenuItem>
               <MenuItem value="Customer Service">Customer Service</MenuItem>
               <MenuItem value="Human Resource">Human Resource</MenuItem>
-              <MenuItem value="Finance & Administration">Finance & Administration</MenuItem>
-              <MenuItem value="Research & Development">Research & Development</MenuItem>
+              <MenuItem value="Finance & Administration">
+                Finance & Administration
+              </MenuItem>
+              <MenuItem value="Research & Development">
+                Research & Development
+              </MenuItem>
             </Select>
             <Typography variant="caption" className="text-red-600">
               {errors.department}
@@ -602,21 +604,22 @@ const NewStockOut = () => {
       </div>
 
       <div className="flex items-center col-span-4 col-start-1">
-            <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
-              Quantity Out
-            </InputLabel>
-            <div>
-                <TextField 
-                  size='small' 
-                  placeholder='Enter Quantity In' 
-                  type='Number' 
-                  name='outQty' 
-                  value={outQty} 
-                  error={!!errors.outQty}
-                  helperText={errors.outQty}
-                  onChange={onInputChange}/>      
-            </div>
-          </div>
+        <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
+          Quantity Out
+        </InputLabel>
+        <div>
+          <TextField
+            size="small"
+            placeholder="Enter Quantity In"
+            type="Number"
+            name="outQty"
+            value={outQty}
+            error={!!errors.outQty}
+            helperText={errors.outQty}
+            onChange={onInputChange}
+          />
+        </div>
+      </div>
 
       <div className="flex col-span-4 col-start-1 ">
         <InputLabel

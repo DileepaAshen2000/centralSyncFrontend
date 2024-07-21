@@ -23,7 +23,7 @@ const InsightTable = ({ category, year, isOpen }) => {
   const [open, setOpen] = useState(isOpen);
   const [loadingTickets, setLoadingTickets] = useState();
   const [loadingMostRequested, setLoadingMostRequested] = useState();
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchTickets = async () => {
       try {
@@ -207,7 +207,7 @@ const InsightTable = ({ category, year, isOpen }) => {
             </TableHead>
 
             <TableBody>
-              <TableRow>
+              <TableRow onClick={()=> navigate("/item/view-item/" + mostRequestedItem.id)}>
                 <TableCell component="th" scope="row">
                   {mostRequestedItem.itemName}
                 </TableCell>

@@ -8,7 +8,7 @@ import {
   Autocomplete,
   Box,
   CircularProgress,
-  Backdrop
+  Backdrop,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
@@ -24,14 +24,21 @@ const EditTicket = () => {
     topic: "",
     description: "",
     date: "",
-    itemId: { itemName: "", brand: "" },
+    itemId: { itemName: "", brand: "", model: "" },
   });
   const [errors, setErrors] = useState({});
   const [options, setOptions] = useState([]);
+  const [itemNameOptions, setItemNameOptions] = useState([]);
+  const [brandOptions, setBrandOptions] = useState([]);
+  const [modelOptions, setModelOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [filteredBrandOptions, setFilteredBrandOptions] = useState([]);
+  const [filteredModelOptions, setFilteredModelOptions] = useState([]);
 
   useEffect(() => {
     const fetchTicketData = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(
           `http://localhost:8080/ticket/tickets/${id}`
         );
@@ -39,7 +46,7 @@ const EditTicket = () => {
         const itemResponse = await axios.get(
           `http://localhost:8080/inventory-item/getById/${itemId.itemId}`
         );
-        const { itemName, brand } = itemResponse.data;
+        const { itemName, brand, model } = itemResponse.data;
 
         setTicket({
           topic,
@@ -48,10 +55,14 @@ const EditTicket = () => {
           itemId,
           itemName,
           brand,
+          model,
         });
       } catch (error) {
         console.error("Error fetching ticket data:", error);
       }
+      finally{
+        setLoading(false);
+      };
     };
 
     const fetchItemData = async () => {
@@ -59,7 +70,20 @@ const EditTicket = () => {
         const response = await axios.get(
           "http://localhost:8080/inventory-item/getAll"
         );
+        const uniqueItemNames = [
+          ...new Set(response.data.map((item) => item.itemName)),
+        ];
+        const uniqueBrands = [
+          ...new Set(response.data.map((item) => item.brand)),
+        ];
+        const uniqueModels = [
+          ...new Set(response.data.map((item) => item.model)),
+        ];
+
         setOptions(response.data);
+        setItemNameOptions(uniqueItemNames);
+        setBrandOptions(uniqueBrands);
+        setModelOptions(uniqueModels);
       } catch (error) {
         console.error("Error fetching item data:", error);
       }
@@ -73,33 +97,70 @@ const EditTicket = () => {
     if (value) {
       setTicket((prevTicket) => ({
         ...prevTicket,
-        itemName: value.itemName,
+        itemName: value,
+        brand: "", // Reset brand and model when item changes
+        model: "",
       }));
-      validateField("itemName", value.itemName);
+
+      // Update brand and model options based on the selected item
+      const filteredBrands = options
+        .filter((option) => option.itemName === value)
+        .map((option) => option.brand);
+      setFilteredBrandOptions([...new Set(filteredBrands)]);
+  
+      setFilteredModelOptions([]);
     } else {
       setTicket((prevTicket) => ({
         ...prevTicket,
         itemName: "",
+        brand: "",
+        model: "",
       }));
-      validateField("itemName", "");
+      setFilteredBrandOptions([]);
+      setFilteredModelOptions([]);
     }
   };
-
+  
   const handleItembrandChange = (event, value) => {
     if (value) {
       setTicket((prevTicket) => ({
         ...prevTicket,
-        brand: value.brand,
+        brand: value,
+        model: "", // Reset model when brand changes
       }));
-      validateField("brand", value.brand);
+  
+      // Update model options based on the selected brand and item
+      const filteredModels = options
+        .filter(
+          (option) =>
+            option.itemName === ticket.itemName && option.brand === value
+        )
+        .map((option) => option.model);
+      setFilteredModelOptions([...new Set(filteredModels)]);
     } else {
       setTicket((prevTicket) => ({
         ...prevTicket,
         brand: "",
+        model: "",
       }));
-      validateField("brand", "");
+      setFilteredModelOptions([]);
     }
   };
+  
+  const handleItemmodelChange = (event, value) => {
+    if (value) {
+      setTicket((prevTicket) => ({
+        ...prevTicket,
+        model: value,
+      }));
+    } else {
+      setTicket((prevTicket) => ({
+        ...prevTicket,
+        model: "",
+      }));
+    }
+  };
+
 
   const validateField = (name, value) => {
     const validationErrors = {};
@@ -108,6 +169,8 @@ const EditTicket = () => {
       validationErrors.itemName = "Item name is required";
     } else if (name === "brand" && !value) {
       validationErrors.brand = "Item brand is required";
+    } else if (name === "model" && !value) {
+      validationErrors.model = "Item model is required";
     } else if (name === "topic" && !value) {
       validationErrors.topic = "Topic is required";
     } else if (name === "date" && !value) {
@@ -168,11 +231,13 @@ const EditTicket = () => {
   return (
     <>
       <Box className="p-5 bg-white rounded-2xl w-[1122.7px]">
-        <Box className="pb-4">
-          <h1 className="pt-2 pb-3 text-3xl font-bold">Edit Ticket</h1>
+      <div className="pb-12">
+        <Box className="w-[1100.7px]  bg-blue-900 text-white text-center p-3">
+          <header className="text-3xl font-bold">Edit Ticket</header>
         </Box>
+      </div>
         <form>
-          <div className="grid grid-cols-6 grid-rows-6 gap-x-5 gap-y-5">
+          <div className="grid grid-cols-7 grid-rows-7 gap-x-5 gap-y-5">
             <div className="col-span-1">
               <label htmlFor="name">Item Name</label>
             </div>
@@ -180,32 +245,27 @@ const EditTicket = () => {
               {errors.itemName && (
                 <div className="text-[#FC0000] text-sm">{errors.itemName}</div>
               )}
+               
               <Autocomplete
-                options={options}
-                getOptionLabel={(option) => option.itemName}
+                options={itemNameOptions}
+                getOptionLabel={(option) => option}
                 onChange={handleItemChange}
-                value={
-                  options.find(
-                    (option) => option.itemName === ticket.itemName
-                  ) || null
-                }
+                value={ticket.itemName || null}
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     variant="outlined"
+                    size="small"
+                    error={!!errors.itemName}
                     sx={{
                       width: 300,
                     }}
-                    size="small"
-                    value={ticket.itemId.itemName}
-                    onBlur={handleBlur}
-                    error={!!errors.itemName}
-                    name="itemName"
+                     
                   />
                 )}
               />
             </div>{" "}
-            <div className="col-span-3"></div>
+            <div className="col-span-4"></div>
             <div className="col-span-1">
               <label htmlFor="name">Item Brand</label>
             </div>
@@ -215,33 +275,57 @@ const EditTicket = () => {
               )}
 
               <Autocomplete
-                options={options}
-                getOptionLabel={(option) => option.brand}
+                options={filteredBrandOptions}
+                getOptionLabel={(option) => option}
                 onChange={handleItembrandChange}
-                value={
-                  options.find((option) => option.brand === ticket.brand) ||
-                  null
-                }
-                variant="outlined"
+                value={ticket.brand || null}
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     label="Brand"
                     variant="outlined"
+                    size="small"
+                    error={!!errors.brand}
                     sx={{
                       width: 300,
                     }}
-                    size="small"
-                    value={ticket.itemId.brand}
-                    onBlur={handleBlur}
-                    error={!!errors.brand}
-                    name="brand"
+                     
                   />
                 )}
               />
             </div>
             <div></div>
             <div></div>
+            <div></div>
+            <div className="col-span-1">
+              <label htmlFor="name">Item Model</label>
+            </div>
+            <div className="col-span-3">
+              {errors.model && (
+                <div className="text-[#FC0000] text-sm">{errors.model}</div>
+              )}
+
+              <Autocomplete
+                options={filteredModelOptions}
+                getOptionLabel={(option) => option}
+                onChange={handleItemmodelChange}
+                value={ticket.model || null}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Model"
+                    variant="outlined"
+                    size="small"
+                    error={!!errors.model}
+                    sx={{
+                      width: 300,
+                    }}
+                     
+                  />
+                )}
+              />
+            </div>{" "}
+            <div className="col-span-3"></div>
             <div className="col-span-1 row-span-1">
               <label htmlFor="topic">Topic for ticket</label>
             </div>
@@ -273,6 +357,7 @@ const EditTicket = () => {
             <div></div>
             <div></div>
             <div></div>
+            <div></div>
             <div className="col-span-1 row-span-1">
               <label htmlFor="description">Date</label>
             </div>
@@ -297,6 +382,7 @@ const EditTicket = () => {
                 name="date"
               />
             </div>
+            <div></div>
             <div></div>
             <div></div>
             <div></div>
@@ -350,6 +436,12 @@ const EditTicket = () => {
               </Button>
             </div>
           </div>
+          <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
         </form>
       </Box>
     </>

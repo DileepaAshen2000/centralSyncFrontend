@@ -54,7 +54,11 @@ const UsageBarChart = ({ category, year }) => {
       const date = new Date(rq.date);
       const month = date.toLocaleDateString("default", { month: "short" });
       acc[month] = acc[month] || [];
-      if (rq.status !== "REJECTED") {
+      if (
+        rq.status !== "REJECTED" &&
+        rq.status !== "SENT_TO_ADMIN" &&
+        rq.status !== "PENDING"
+      ) {
         acc[month].push(rq);
       }
       return acc;

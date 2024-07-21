@@ -9,12 +9,13 @@ import {
   InputLabel,
 } from "@mui/material";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import LoginService from "../Login/LoginService";
 
 const NewStockIn = () => {
   let navigate = useNavigate();
+  let reactLocation = useLocation();
   const [profileInfo, setProfileInfo] = useState({});
   const [stockIn, setStockIn] = useState({
     location: "",
@@ -33,15 +34,17 @@ const NewStockIn = () => {
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedModel, setSelectedModel] = useState("");
 
-  const {
-    location,
-    date,
-    description,
-    inQty,
-    itemId,
-    userId,
-    file,
-  } = stockIn;
+  const { location, date, description, inQty, itemId, userId, file } = stockIn;
+  //fetch data when navigate through search
+  useEffect(() => {
+    if (reactLocation.state?.item) {
+      const { itemName, brand, model } = reactLocation.state.item;
+    
+      setSelectedItemName(itemName);
+      setSelectedBrand(brand);
+      setSelectedModel(model);
+    }
+  }, [reactLocation.state]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,7 +57,10 @@ const NewStockIn = () => {
         const token = localStorage.getItem("token");
         const profile = await LoginService.getYourProfile(token);
         setProfileInfo(profile.users);
-        setStockIn((prevStockIn) => ({ ...prevStockIn, userId: profile.users.userId }));
+        setStockIn((prevStockIn) => ({
+          ...prevStockIn,
+          userId: profile.users.userId,
+        }));
       } catch (error) {
         console.error("Error fetching item details:", error);
       }
@@ -123,7 +129,10 @@ const NewStockIn = () => {
         );
         if (response.status === 200) {
           const item = response.data;
-          setStockIn((prevStockIn) => ({ ...prevStockIn, itemId: item.itemId }));
+          setStockIn((prevStockIn) => ({
+            ...prevStockIn,
+            itemId: item.itemId,
+          }));
         } else {
           setStockIn((prevStockIn) => ({ ...prevStockIn, itemId: "" }));
           Swal.fire({
@@ -199,7 +208,6 @@ const NewStockIn = () => {
     e.preventDefault();
 
     try {
-
       const validationErrors = {};
 
       // Validate all fields
@@ -288,6 +296,7 @@ const NewStockIn = () => {
             options={options}
             getOptionLabel={(option) => option.itemName}
             onChange={handleItemChange}
+            value={selectedItemName ? options.find(option => option.itemName === selectedItemName) || null : null}
             sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField
@@ -430,21 +439,22 @@ const NewStockIn = () => {
       </div>
 
       <div className="flex items-center col-span-4 col-start-1">
-            <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
-              Quantity In
-            </InputLabel>
-            <div>
-                <TextField 
-                  size='small' 
-                  placeholder='Enter Quantity In' 
-                  type='Number' 
-                  name='inQty' 
-                  value={inQty} 
-                  error={!!errors.inQty}
-                  helperText={errors.inQty}
-                  onChange={onInputChange}/>      
-            </div>
-          </div>
+        <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
+          Quantity In
+        </InputLabel>
+        <div>
+          <TextField
+            size="small"
+            placeholder="Enter Quantity In"
+            type="Number"
+            name="inQty"
+            value={inQty}
+            error={!!errors.inQty}
+            helperText={errors.inQty}
+            onChange={onInputChange}
+          />
+        </div>
+      </div>
 
       <div className="flex col-span-4 col-start-1 ">
         <InputLabel
@@ -491,7 +501,7 @@ const NewStockIn = () => {
       <Button
         className="col-start-12 rounded"
         variant="outlined"
-        onClick={() => navigate("/stockIn")}
+        onClick={() => navigate(-1)}
       >
         cancel
       </Button>

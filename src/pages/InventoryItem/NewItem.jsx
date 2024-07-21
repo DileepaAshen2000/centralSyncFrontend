@@ -7,6 +7,7 @@ import {
   Select,
   TextField,
   Typography,
+  Box,
 } from "@mui/material";
 import { Button, Backdrop, CircularProgress } from "@mui/material";
 import Swal from "sweetalert2";
@@ -18,6 +19,8 @@ const AddItemForm = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [fetchData, setFetchData] = useState(false);
+  const [requireDimensions, setRequireDimensions] = useState(false);
+  const [requireWeight, setRequireWeight] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   //State for item object with properties -->initial state of properties=null
   const [inventoryItem, setInventoryItem] = useState({
@@ -51,6 +54,56 @@ const AddItemForm = () => {
     image,
   } = inventoryItem;
 
+  useEffect(() => {
+    // Update required fields based on item group
+    switch (itemGroup) {
+      case "COMPUTERS_AND_LAPTOPS":
+      case "COMPUTER_HARDWARE":
+      case "FURNITURE":
+      case "PRINTERS_AND_SCANNERS":
+        setRequireDimensions(true);
+        setRequireWeight(true);
+        break;
+      case "COMPUTER_ACCESSORIES":
+        setRequireDimensions(false);
+        setRequireWeight(true);
+        break;
+      case "OFFICE_SUPPLIES":
+      case "OTHER":
+        setRequireDimensions(false);
+        setRequireWeight(false);
+        break;
+      default:
+        setRequireDimensions(false);
+        setRequireWeight(false);
+        break;
+    }
+
+    // Clear errors related to dimension and weight when they are no longer required
+    if (!requireDimensions) {
+      setErrors((prevErrors) => {
+        const { dimension, dimensionUnit, ...rest } = prevErrors;
+        return rest;
+      });
+    }
+
+    if (!requireWeight) {
+      setErrors((prevErrors) => {
+        const { weight, weightUnit, ...rest } = prevErrors;
+        return rest;
+      });
+    }
+
+    // Clear dimension and weight fields if they are not required
+    setInventoryItem((prevState) => ({
+      ...prevState,
+      dimension: !requireDimensions ? "" : prevState.dimension,
+      dimensionUnit: !requireDimensions ? "" : prevState.dimensionUnit,
+      weight: !requireWeight ? "" : prevState.weight,
+      weightUnit: !requireWeight ? "" : prevState.weightUnit,
+    }));
+  }, [itemGroup, requireDimensions, requireWeight]);
+
   const validateField = (name, value) => {
     const validationErrors = {};
 
@@ -77,30 +130,34 @@ const AddItemForm = () => {
         validationErrors.dimension = "Unit must contain only letters";
       }
     } else if (name === "dimension") {
-      if (!value) {
-        validationErrors.dimension = "Dimension is required";
-      } else if (
-        !/^(\d+(\.\d+)?\*\d+(\.\d+)?(\*\d+(\.\d+)?)?|\d+(\.\d+)?\*\d+(\.\d+)?)$/.test(
-          value
-        )
-      ) {
-        validationErrors.dimension =
-          "Enter dimension in the format a*b*c or a*b";
-      } else if (!/^\S*$/.test(value)) {
-        validationErrors.dimension = "Spaces are not allowed";
+      if (requireDimensions) {
+        if (!value) {
+          validationErrors.dimension = "Dimension is required";
+        } else if (
+          !/^(\d+(\.\d+)?\*\d+(\.\d+)?(\*\d+(\.\d+)?)?|\d+(\.\d+)?\*\d+(\.\d+)?)$/.test(
+            value
+          )
+        ) {
+          validationErrors.dimension =
+            "Enter dimension in the format W*H*D or W*H";
+        } else if (!/^\S*$/.test(value)) {
+          validationErrors.dimension = "Spaces are not allowed";
+        }
       }
-    } else if (name === "dimensionUnit" && !value) {
+    } else if (name === "dimensionUnit" && requireDimensions && !value) {
       validationErrors.dimensionUnit =
         "Dimension is required with the MEASURING UNIT";
     } else if (name === "weight") {
-      if (!value) {
-        validationErrors.weight = "Weight is required";
-      } else if(!/^\d+(\.\d+)?$/.test(value)) {
-        validationErrors.weight = "Weight must be a positive number";
-      } else if (!/^\S*$/.test(value)) {
-        validationErrors.weight = "Spaces are not allowed";
+      if (requireWeight) {
+        if (!value) {
+          validationErrors.weight = "Weight is required";
+        } else if (!/^\d+(\.\d+)?$/.test(value)) {
+          validationErrors.weight = "Weight must be a positive number";
+        } else if (!/^\S*$/.test(value)) {
+          validationErrors.weight = "Spaces are not allowed";
+        }
       }
-    } else if (name === "weightUnit" && !value) {
+    } else if (name === "weightUnit" && requireWeight && !value) {
       validationErrors.weightUnit =
         "Weight is required with the MEASURING UNIT";
     } else if (name === "description" && !value) {
@@ -116,6 +173,14 @@ const AddItemForm = () => {
       ...errors,
       [name]: validationErrors[name],
     });
+
+    // Remove the error if there is no validation error for the field
+    if (!validationErrors[name]) {
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest;
+      });
+    }
   };
 
   const handleBlur = (e) => {
@@ -238,8 +303,9 @@ const AddItemForm = () => {
         onSubmit={(e) => handleSave(e)}
         className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14"
       >
-        <h1 className="col-span-4 pt-2 text-3xl font-bold ">New item</h1>
-
+        <Box className="w-full col-span-8 bg-blue-900 text-white text-center py-4 my-4 ">
+          <h1 className="pt-2 pb-3 text-3xl font-bold">New Inventory Item</h1>
+        </Box>
         <div className="flex items-center col-span-4 col-start-1">
           <InputLabel htmlFor="name" className="flex-none w-32 text-black ">
             Item Name
@@ -379,7 +445,11 @@ const AddItemForm = () => {
           </div>
         </div>
 
-        <div className="flex items-center col-span-6 col-start-1">
+        <div
+          className={`flex items-center col-span-6 col-start-1 ${
+            !requireDimensions && "opacity-50"
+          }`}
+        >
           <InputLabel htmlFor="dimension" className="flex-none w-32 text-black">
             Dimension
           </InputLabel>
@@ -396,6 +466,8 @@ const AddItemForm = () => {
               variant="outlined"
               error={errors.dimension || errors.dimensionUnit}
               onBlur={handleBlur}
+              required={requireDimensions}
+              disabled={!requireDimensions}
               InputProps={{
                 className: "w-[220px] ml-3  ",
               }}
@@ -408,6 +480,8 @@ const AddItemForm = () => {
               onChange={onInputChange}
               error={errors.dimensionUnit}
               onBlur={handleBlur}
+              required={requireDimensions}
+              disabled={!requireDimensions}
               className="col-start-3  col-span-2 w-[80] ml-1 "
               size="small"
             >
@@ -419,7 +493,11 @@ const AddItemForm = () => {
             </Select>
           </div>
         </div>
-        <div className="flex items-center col-span-4 col-start-1">
+        <div
+          className={`flex items-center col-span-6 col-start-1 ${
+            !requireWeight && "opacity-50"
+          }`}
+        >
           <InputLabel htmlFor="weight" className="flex-none w-32 text-black">
             Weight
           </InputLabel>
@@ -436,6 +514,8 @@ const AddItemForm = () => {
               variant="outlined"
               error={errors.weight || errors.weightUnit}
               onBlur={handleBlur}
+              required={requireWeight}
+              disabled={!requireWeight}
               InputProps={{
                 className: "w-[220px] ml-3   ",
               }}
@@ -447,6 +527,8 @@ const AddItemForm = () => {
               onChange={onInputChange}
               error={errors.weightUnit}
               onBlur={handleBlur}
+              required={requireWeight}
+              disabled={!requireWeight}
               className="col-start-3 col-span-2 w-[80] ml-1 "
               size="small"
             >

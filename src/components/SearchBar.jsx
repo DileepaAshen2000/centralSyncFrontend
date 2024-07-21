@@ -74,7 +74,9 @@ const SearchBar = () => {
       }
     } catch (error) {
       console.log(error);
-    } 
+    } finally {
+      setFilterAnchorEl(null);
+    }
   };
 
   const handleFilterClick = (event) => {
@@ -119,6 +121,9 @@ const SearchBar = () => {
     OFFICE_SUPPLIES: "Office supplies",
     OTHER: "Other",
   };
+  const categoryLabels = selectedCategories
+    .map((category) => categoryMapping[category])
+    .join(", ");
   return (
     <div className="relative  bg-opacity-15  ml-5 md:w-[400px] sm:mr-3 sm:w-auto">
       <Autocomplete
@@ -155,11 +160,10 @@ const SearchBar = () => {
                 <InputAdornment position="start">
                   <Tooltip title="Search">
                     <SearchIcon
-                      onClick={handleSearch}
+                      onClick={() => handleSearch(searchTerm)}
                       style={{ cursor: "pointer" }}
                     />
                   </Tooltip>
-                  
                 </InputAdornment>
               ),
 
@@ -213,6 +217,14 @@ const SearchBar = () => {
         <DialogContent>
           <DialogContentText>
             No results were found for "{searchTerm}"
+            {selectedCategories.length > 0 && (
+              <>
+                {` in the categor${
+                  selectedCategories.length > 1 ? "ies" : "y"
+                } `}
+                {categoryLabels}.
+              </>
+            )}
           </DialogContentText>
         </DialogContent>
         <DialogActions>

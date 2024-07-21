@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Stack, Select, Box,Typography} from "@mui/material";
+import { TextField, Button, Stack, Select, Box,Typography,CircularProgress,Backdrop} from "@mui/material";
 import LoginService from "../Login/LoginService";
 // import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
@@ -12,6 +12,7 @@ import Swal from "sweetalert2";
 //import SmallAvatar from "@mui/material/SmallAvatar";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
+  
 
 //import DragDrop from "./Drag&Drop";
 //import { DropzoneArea } from 'material-ui-dropzone';
@@ -24,6 +25,7 @@ const EditProfile= () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
   const [profileInfo, setProfileInfo] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const [user, setUser] = useState({
      
@@ -129,12 +131,16 @@ const EditProfile= () => {
 
   const fetchUserDetails = async (userId) => {
     try {
+      setLoading(true);
       const response = await axios.get(`http://localhost:8080/user/users/${userId}`);
       setUser(response.data);
       setImageUrl(response.data.imagePath ? `http://localhost:8080/user/display/${userId}` : null);
     } catch (error) {
       console.error("Error fetching user:", error);
     }
+    finally{
+      setLoading(false);
+    };
   };
 
 
@@ -481,6 +487,12 @@ const EditProfile= () => {
               </Button>
             </div>
           </div>
+          <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
         </form>
       </Box>
     </>
