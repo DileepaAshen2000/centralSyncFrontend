@@ -105,7 +105,7 @@ const CreateTicket = () => {
     } else if (name === "description") {
       if (!value) {
         validationErrors.description = "Description is required";
-      } else if (value.length < 30 || value.length > 400) {
+      } else if (value.length < 30 || value.length > 900) {
         validationErrors.description =
           "Description must be between 30 and 400 characters";
       }
@@ -397,6 +397,7 @@ const CreateTicket = () => {
                 size="small"
                 onBlur={handleBlur}
                 error={!!errors.description}
+                maxlength="1000"
                 
               ></textarea>
             <Typography  variant="caption" className="text-gray-500">Please provide clear description about the issue and troubleshooting steps you have already attemped.</Typography>
