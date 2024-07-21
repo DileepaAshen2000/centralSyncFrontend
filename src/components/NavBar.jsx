@@ -200,8 +200,9 @@ export default function NavBar() {
               </IconButton>
             </Tooltip>
             
+        
             <div className='flex items-center'>
-              {profileInfo ? (
+            {profileInfo ? (
                 <h4 className="text-black text-bold ">
                   {profileInfo.firstName} {profileInfo.lastName}
                 </h4>
@@ -209,19 +210,23 @@ export default function NavBar() {
                 <h4 className="text-black ">Loading...</h4>
               )}
             </div>
-            <Tooltip title="Account">
-              <IconButton
-                size="large"
-                edge="end"
-                aria-label="account of current user"
-                aria-haspopup="true"
-                onClick={toggleSidebar}
-                color="inherit"
-                className="hidden md:block"
-              >
-                <AccountCircle className='text-3xl text-black' />
-              </IconButton>
-            </Tooltip>
+            <IconButton
+              size="large"
+              edge="end"
+              aria-label="account of current user"
+              aria-haspopup="true"
+              onClick={toggleSidebar}
+              color="inherit"
+              className="hidden md:block"
+            >
+              {profileInfo.imagePath && (
+                <Avatar
+                  alt="Profile pic"
+                  src={`http://localhost:8080/user/display/${profileInfo.userId}`}
+                  sx={{ width: 50, height: 50 }}
+                />
+              )}
+            </IconButton>
           </Box>
           <div
             className="text-black cursor-pointer text- md:hidden"
