@@ -121,7 +121,7 @@ export default function NavBar() {
   const connectWebSocket = () => {
     const userId = LoginService.getUserId();
 
-    const socket = new SockJS("http://localhost:8080/our-websocket");
+    const socket = new SockJS(`http://localhost:8080/our-websocket?userId=${userId}`);
 
     const stompClient = new Client({
       webSocketFactory: () => socket,

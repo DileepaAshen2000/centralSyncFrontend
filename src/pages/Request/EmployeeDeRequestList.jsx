@@ -145,7 +145,12 @@ const EmployeeDeRequestList = () => {
         // Sort by status "PENDING" first, then by creation date
         if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
         if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
-        return b.createdDateTime - a.createdDateTime;
+        if (a.status === 'DISPATCHED' && b.status !== 'DISPATCHED') return -1;
+        if (a.status !== 'DISPATCHED' && b.status === 'DISPATCHED') return 1;
+        if (a.status === 'DELIVERED' && b.status !== 'DELIVERED') return -1;
+        if (a.status !== 'DELIVERED' && b.status === 'DELIVERED') return 1;
+        if (a.status === 'RECEIVED' && b.status !== 'RECEIVED') return -1;
+        if (a.status !== 'RECEIVED' && b.status === 'RECEIVED') return 1;
       })
       .map((item, index) => ({
         ...item,
@@ -186,6 +191,9 @@ const EmployeeDeRequestList = () => {
               case 'DELIVERED':
                 backgroundColor = '#90EE90';
                 break;
+                case 'DISPATCHED':
+                  backgroundColor = '#FFA500';
+                  break;
         }
         return (
           <Box 
@@ -252,8 +260,14 @@ const EmployeeDeRequestList = () => {
   ];
 
 
-  const filteredRequestRows = requestRows.filter(row => row.status !== 'RECEIVED'&& row.status!=='WANT_TO_RETURN_ITEM');
+  const filteredRequestRows = requestRows
+  .filter(row => row.status !== 'RECEIVED' && row.status !== 'WANT_TO_RETURN_ITEM')
+  .map((item, index) => ({ ...item, id: index + 1 }));
 
+const formattedItemsRows = itemsRows.map((item, index) => ({
+  ...item,
+  id: index + 1,
+}));
   return (
     <Box sx={{ width: '100%' }}>
       <div className="flex justify-end">
@@ -285,7 +299,7 @@ const EmployeeDeRequestList = () => {
         <TabPanel value="2">
           <SectionHeader title="Items In My Hand" color="#6a1b9a" />
           <Table 
-            rows={itemsRows} 
+            rows={formattedItemsRows} 
             columns={itemsColumns} 
             loading={loadingItems} 
             onRowClick={(params) => navigate(`/employee/de-request-document/${params.row.reqId}`)} 

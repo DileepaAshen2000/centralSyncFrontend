@@ -82,6 +82,23 @@ const buttonColor = (reqStatus, updateDateTime) => {
       </Alert>
     );
   }
+  else if (reqStatus === 'RECEIVED') {
+    return (
+      <Alert
+        severity="info"
+        sx={{
+          width: '300px',
+          margin: 5,
+          backgroundColor: '#708090',
+          color: 'black'
+        }}
+      >
+        <AlertTitle>Received</AlertTitle>
+        <div>Updated: Date {date}</div>
+        <div style={{ marginLeft: '67px' }}>Time {time}</div>
+      </Alert>
+    );
+  }
 };
 
 const isEmployee = LoginService.isEmployee();

@@ -64,6 +64,7 @@ const RequestHandlerInRequestList = () => {
   const [isReqHandler, setIsReqHandler] = useState(false);
   const [value, setValue] = useState('1');
   const [reviewingRequestRows, setReviewingRequestRows] = useState([]);
+  const [sortedFiltredReviewingRequestRows, setSortedFiltredReviewingRequestRows] = useState([]);
   const [myRequestRows, setMyRequestRows] = useState([]);
   const [itemsOnHandRows, setItemsOnHandRows] = useState([]); // New state for items on hand
   const [loadingRequests, setLoadingRequests] = useState(true);
@@ -85,6 +86,7 @@ const RequestHandlerInRequestList = () => {
       // Filtering requests based on role
       const reviewingRequests = data.filter(item => item.role === 'EMPLOYEE' && item.workSite !== 'ONLINE' && item.status !== 'SENT_TO_ADMIN' );
       console.log('Reviewing Requests:', reviewingRequests);
+      const sortedReviewingRequests = reviewingRequests
       const myRequests = data.filter(item => item.role === 'REQUEST_HANDLER' && item.status !== 'ACCEPTED' && item.status !== 'WANT_TO_RETURN_ITEM'); // Filter out ACCEPTED and WANT_TO_RETURN_ITEM statuses
       const itemsOnHand = data.filter(item => item.role === 'REQUEST_HANDLER' && (item.status === 'ACCEPTED' || item.status === 'WANT_TO_RETURN_ITEM')); // Filter for items on hand
       
@@ -94,11 +96,22 @@ const RequestHandlerInRequestList = () => {
       setMyRequestRows(myRequests.map((item, index) => ({ ...item, id: index + 1 })));
       setItemsOnHandRows(itemsOnHand.map((item, index) => ({ ...item, id: index + 1 })));
       
+
+      // Assign sequential IDs
+      setReviewingRequestRows(assignSequentialIds(sortedReviewingRequests));
+      setMyRequestRows(assignSequentialIds(myRequests));
+      setItemsOnHandRows(assignSequentialIds(itemsOnHand));
+
+
       setLoadingRequests(false);
     } catch (error) {
       console.error('Failed to fetch inventory requests:', error);
       setLoadingRequests(false);
     }
+  };
+
+  const assignSequentialIds = (rows) => {
+    return rows.map((item, index) => ({ ...item, id: index + 1 }));
   };
   useEffect(() => {
     checkEmployeeStatus();
@@ -140,14 +153,14 @@ const RequestHandlerInRequestList = () => {
   };
 
   const columns = [
-    { field: 'id', headerName: 'Inventory Request No:', width: 200 },
-    { field: 'date', headerName: 'Date', width: 200 },
-    { field: 'time', headerName: 'Time', width: 200 },
-    { field: 'itemName', headerName: 'Item Name', width: 200 },
+    { field: 'sequentialId', headerName: 'No:', width: 180 },
+    { field: 'date', headerName: 'Date', width: 180 },
+    { field: 'time', headerName: 'Time', width: 180 },
+    { field: 'itemName', headerName: 'Item Name', width: 180 },
     { 
       field: 'status', 
       headerName: 'Status', 
-      width: 200,
+      width: 220,
       renderCell: (params) => {
         const status = params.value;
         let backgroundColor;
@@ -165,7 +178,7 @@ const RequestHandlerInRequestList = () => {
             backgroundColor = '#FFFFE0';
             break;
           case 'WANT_TO_RETURN_ITEM':
-            backgroundColor = '#FFCC00';
+            backgroundColor = '#af5c9b';
             break;
           default:
             backgroundColor = '#FFFFFF';
@@ -189,14 +202,14 @@ const RequestHandlerInRequestList = () => {
 
   // New columns for "Items On My Hand"
   const itemsOnHandColumns = [
-    { field: 'id', headerName: 'Inventory Request No:', width: 200 },
-    { field: 'date', headerName: 'Received Date', width: 200 },
-    { field: 'itemName', headerName: 'Item Name', width: 200 },
-    { field: 'quantity', headerName: 'Requested Quantity', width: 200 },
+    { field: 'sequentialId', headerName: 'No:', width: 180 },
+    { field: 'date', headerName: 'Received Date', width: 180 },
+    { field: 'itemName', headerName: 'Item Name', width: 180 },
+    { field: 'quantity', headerName: 'Requested Quantity', width: 180 },
     { 
       field: 'status', 
       headerName: 'Status', 
-      width: 200,
+      width: 220,
       renderCell: (params) => {
         const status = params.value;
         let backgroundColor;
@@ -214,7 +227,7 @@ const RequestHandlerInRequestList = () => {
             backgroundColor = '#FFFFE0';
             break;
           case 'WANT_TO_RETURN_ITEM':
-            backgroundColor = '#FFCC00';
+            backgroundColor = '#af5c9b';
             break;
           default:
             backgroundColor = '#FFFFFF';
@@ -238,13 +251,26 @@ const RequestHandlerInRequestList = () => {
   ];
 
   const filteredReviewingRequestRows = reviewingRequestRows
-  .filter(row => row.status !== 'WANT_TO_RETURN_ITEM')
-  .sort((a, b) => {
+    .filter(row => row.status !== 'WANT_TO_RETURN_ITEM')
+    .sort((a, b) => {
+      // *** Sorting logic to move 'PENDING' status rows to the top ***
+      if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
+      if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
+      if (a.status === 'ACCEPTED' && b.status !== 'ACCEPTED') return -1;
+      if (a.status !== 'ACCEPTED' && b.status === 'ACCPETED') return 1;
+      return 0;
+    })
+    .map((row, index) => ({ ...row, sequentialId: index + 1 })); // Sequential numbering
+
+   const filteredItemsOnHandRows = itemsOnHandRows
+   .sort((a, b) => {
     // *** Sorting logic to move 'PENDING' status rows to the top ***
-    if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
-    if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
+    if (a.status === 'ACCEPTED' && b.status !== 'ACCEPTED') return -1;
+    if (a.status !== 'ACCEPTED' && b.status === 'ACCEPTED') return 1;
     return 0;
-  });
+  })
+  .map((row, index) => ({ ...row, sequentialId: index + 1 }));
+
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -278,7 +304,7 @@ const RequestHandlerInRequestList = () => {
         <TabPanel value="2">
           <SectionHeader title="My Inventory Requests" color="#3f51b5" />
           <Table 
-            rows={myRequestRows} 
+            rows={myRequestRows.map((row, index) => ({ ...row, sequentialId: index + 1 }))} 
             columns={columns} 
             loading={loadingRequests} 
             onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
@@ -288,7 +314,7 @@ const RequestHandlerInRequestList = () => {
         <TabPanel value="3"> {/* New TabPanel for Items On My Hand */}
           <SectionHeader title="Items On My Hand" color="#6a1b9a" />
           <Table 
-            rows={itemsOnHandRows} 
+           rows={filteredItemsOnHandRows} // Sequential numbering for items on hand
             columns={itemsOnHandColumns} 
             loading={loadingRequests} 
             onRowClick={(params) => navigate(`/employee/in-request-document/${params.row.reqId}`)} 
