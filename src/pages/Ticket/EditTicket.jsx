@@ -395,7 +395,7 @@ const EditTicket = () => {
                   {errors.description}
                 </div>
               )}
-              <textarea
+              <TextField
                 variant="outlined"
                 InputProps={{
                   className: "w-[450px] h-[100px]",
@@ -409,7 +409,7 @@ const EditTicket = () => {
                 onBlur={handleBlur}
                 error={!!errors.description}
                 name="description"
-              ></textarea>
+              />
             </div>
             <div></div>
             <div></div>
