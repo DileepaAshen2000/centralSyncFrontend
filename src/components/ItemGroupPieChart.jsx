@@ -5,7 +5,7 @@ import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
 
 const size = {
-  width: 300,
+  width: 150,
   height: 400,
 };
 
@@ -47,7 +47,7 @@ const ItemPieChart = () => {
   ) : (
     <div className="flex items-center justify-center">
       <PieChart
-        margin={{ top: 10, bottom: 150, left: 10, right: 10}}
+        margin={{ top: 0, bottom: 150, left: 10, right: 10}}
         colors={palette}
         series={series}
         slotProps={{

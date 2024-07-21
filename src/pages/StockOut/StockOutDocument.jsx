@@ -119,6 +119,7 @@ const StockOutDocument = () => {
                 <TableRow className=" bg-zinc-800">
                   <TableCell align="right" className="text-white">Item ID</TableCell>
                   <TableCell align="right" className="text-white">Item Name</TableCell>
+                  <TableCell align="right" className="text-white">Item Details</TableCell>
                   <TableCell align="right" className="text-white">Department</TableCell>
                   <TableCell align="right" className="text-white">Quantity Out</TableCell>
                   <TableCell align="right" className="text-white">New Quantity On Hand</TableCell>
@@ -128,6 +129,7 @@ const StockOutDocument = () => {
                   <TableRow>
                     <TableCell align="right">{itemId.itemId}</TableCell> {/* Access itemId.id */}
                     <TableCell align="right">{itemId.itemName}</TableCell>
+                    <TableCell align="right">{itemId.brand} - {itemId.model}</TableCell>
                     <TableCell align="right">{department}</TableCell>
                     <TableCell align="right">{outQty}</TableCell>
                     <TableCell align="right">{itemId.quantity}</TableCell>

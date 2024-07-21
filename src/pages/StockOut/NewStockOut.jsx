@@ -48,6 +48,7 @@ const NewStockOut = () => {
   const [selectedItemName, setSelectedItemName] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedModel, setSelectedModel] = useState("");
+  const [availableQuantity, setAvailableQuantity] = useState(0);
 
   const {
     department,
@@ -60,8 +61,6 @@ const NewStockOut = () => {
   } = stockOut;
 
   useEffect(() => {
-    console.log("hello ");
-    console.log(reqId);
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -173,6 +172,7 @@ const NewStockOut = () => {
         );
         if (response.status === 200) {
           const item = response.data;
+          setAvailableQuantity(item.quantity);
           setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: item.itemId }));
         } else {
           setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: "" }));
@@ -247,79 +247,185 @@ const NewStockOut = () => {
     validateField(name, value);
   };
 
+  // const onSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+
+  //     const validationErrors = {};
+
+  //     // Validate all fields
+  //     validateField("itemName", selectedItemName);
+  //     validateField("department", department);
+  //     validateField("date", date);
+  //     validateField("outQty", outQty);
+  //     validateField("brand", selectedBrand);
+  //     validateField("model", selectedModel);
+
+  //     // Check if there are any errors
+  //     const hasErrors = Object.keys(errors).some((key) => !!errors[key]);
+
+  //     if (hasErrors) {
+  //       Swal.fire({
+  //         icon: "error",
+  //         title: "Error!",
+  //         text: "Failed to submit Stock-In. Please check your inputs.",
+  //       });
+  //       return;
+  //     }
+
+  //     console.log("availableQuantity", availableQuantity);
+
+  //     if (parseInt(outQty) > availableQuantity) {
+  //       Swal.fire({
+  //         icon: "error",
+  //         title: "Error!",
+  //         text: "Out Quantity cannot be greater than available quantity."+"Available Quantity: "+availableQuantity,
+  //       });
+  //       return;
+  //     }
+  //           const formData = new FormData();
+  //           formData.append("department", department);
+  //           formData.append("date", date);
+  //           formData.append("description", description);
+  //           formData.append("outQty", outQty);
+  //           formData.append("itemId", itemId);
+  //           formData.append("userId", userId);
+  //           formData.append("file", file);
+      
+  //           const result = await axios.post(
+  //             "http://localhost:8080/stock-out/add",
+  //             formData,
+  //             {
+  //               headers: {
+  //                 "Content-Type": "multipart/form-data",
+  //               },
+  //             }
+  //           );
+      
+  //           navigate("/stockOut");
+  //           Swal.fire({
+  //             title: "Done!",
+  //             text: "Stock-Out Successfully Submitted.!",
+  //             icon: "success",
+  //           });
+  //         } catch (error) {
+  //           if (error.response && error.response.status === 400) {
+  //             console.log(error.response.data);
+  //           } else if (error.response.status === 403) {
+  //             console.error("Error:", error);
+  //             console.log(error.response.data);
+  //             Swal.fire({
+  //               title: "Error!",
+  //               text: "The item is currently inactive",
+  //               icon: "error",
+  //             });
+  //           } else {
+  //             console.error("Error:", error);
+  //             console.log(error.response.data);
+  //             Swal.fire({
+  //               title: "Error!",
+  //               text: `Failed to submit Stock-In. Error: ${error.response.data}`,
+  //               icon: "error"
+  //             });
+  //           }
+  //         }
+  // };
+
   const onSubmit = async (e) => {
     e.preventDefault();
-
+  
+    // Perform final validation
+    const validationErrors = {};
+  
+    // Validate all fields
+    validateField("itemName", selectedItemName);
+    validateField("department", department);
+    validateField("date", date);
+    validateField("outQty", outQty);
+    validateField("brand", selectedBrand);
+    validateField("model", selectedModel);
+  
+    // Check if there are any errors
+    const hasErrors = Object.keys(errors).some((key) => !!errors[key]);
+  
+    // Check for negative quantity
+    if (parseInt(outQty) <= 0) {
+      validationErrors.outQty = "Out Quantity must be a positive number.";
+    }
+  
+    // If there are any errors, prevent submission
+    if (hasErrors || Object.keys(validationErrors).length > 0) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        ...validationErrors,
+      }));
+  
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Failed to submit Stock-Out. Please check your inputs.",
+      });
+      return;
+    }
+  
+    if (parseInt(outQty) > availableQuantity) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Out Quantity cannot be greater than available quantity. Available Quantity: " + availableQuantity,
+      });
+      return;
+    }
+  
     try {
-
-      const validationErrors = {};
-
-      // Validate all fields
-      validateField("itemName", selectedItemName);
-      validateField("department", department);
-      validateField("date", date);
-      validateField("outQty", outQty);
-      validateField("brand", selectedBrand);
-      validateField("model", selectedModel);
-
-      // Check if there are any errors
-      const hasErrors = Object.keys(errors).some((key) => !!errors[key]);
-
-      if (hasErrors) {
+      const formData = new FormData();
+      formData.append("department", department);
+      formData.append("date", date);
+      formData.append("description", description);
+      formData.append("outQty", outQty);
+      formData.append("itemId", itemId);
+      formData.append("userId", userId);
+      formData.append("file", file);
+  
+      const result = await axios.post(
+        "http://localhost:8080/stock-out/add",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+  
+      navigate("/stockOut");
+      Swal.fire({
+        title: "Done!",
+        text: "Stock-Out Successfully Submitted.!",
+        icon: "success",
+      });
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        console.log(error.response.data);
+      } else if (error.response.status === 406) {
+        console.log(error.response.data);
         Swal.fire({
-          icon: "error",
           title: "Error!",
-          text: "Please correct the errors in the form.",
+          text: "Inventory item is currently inactive and can not be used",
+          icon: "error",
         });
-        return;
+      } else {
+        console.error("Error:", error);
+        console.log(error.response.data);
+        Swal.fire({
+          title: "Error!",
+          text: `Failed to submit Stock-Out. Error: ${error.response.data}`,
+          icon: "error",
+        });
       }
-            const formData = new FormData();
-            formData.append("department", department);
-            formData.append("date", date);
-            formData.append("description", description);
-            formData.append("outQty", outQty);
-            formData.append("itemId", itemId);
-            formData.append("userId", userId);
-            formData.append("file", file);
-      
-            const result = await axios.post(
-              "http://localhost:8080/stock-out/add",
-              formData,
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
-              }
-            );
-      
-            navigate("/stockOut");
-            Swal.fire({
-              title: "Done!",
-              text: "Stock-Out Successfully Submitted.!",
-              icon: "success",
-            });
-          } catch (error) {
-            if (error.response && error.response.status === 400) {
-              console.log(error.response.data);
-            } else if (error.response.status === 403) {
-              console.error("Error:", error);
-              console.log(error.response.data);
-              Swal.fire({
-                title: "Error!",
-                text: "The item is currently inactive",
-                icon: "error",
-              });
-            } else {
-              console.error("Error:", error);
-              console.log(error.response.data);
-              Swal.fire({
-                title: "Error!",
-                text: `Failed to submit Stock-In. Error: ${error.response.data}`,
-                icon: "error"
-              });
-            }
-          }
+    }
   };
+  
 
   const handleFileChange = (e) => {
     setStockOut({ ...stockOut, file: e.target.files[0] });
@@ -566,448 +672,3 @@ const NewStockOut = () => {
 };
 
 export default NewStockOut;
-
-
-// import React, { useState, useEffect } from "react";
-// import {
-//   Select,
-//   MenuItem,
-//   TextField,
-//   Typography,
-//   Button,
-//   Autocomplete,
-//   InputLabel,
-//   FormControl,
-// } from "@mui/material";
-// import axios from "axios";
-// import { useNavigate } from "react-router-dom";
-// import Swal from "sweetalert2";
-// import LoginService from "../Login/LoginService";
-// import { useParams } from "react-router-dom";
-
-// const NewStockOut = () => {
-//   let navigate = useNavigate();
-//   const { reqId } = useParams();
-//   const [profileInfo, setProfileInfo] = useState({});
-//   const [stockOut, setStockOut] = useState({
-//     department: "",
-//     date: new Date().toISOString().split("T")[0],
-//     description: "",
-//     outQty: "",
-//     itemId: "",
-//     userId: "",
-//     file: null,
-//   });
-
-//   const [req, setReq] = useState({
-//     quantity: "",
-//     itemId: "",
-//     userId: "",
-//   });
-
-  // const {
-  //   quantity,
-  //   itemId: reqItemId,
-  //   userId: reqUserId,
-  // } = req;
-
-//   const [errors, setErrors] = useState({});
-//   const [options, setOptions] = useState([]);
-//   const [brands, setBrands] = useState([]);
-//   const [models, setModels] = useState([]);
-//   const [selectedItemName, setSelectedItemName] = useState("");
-//   const [selectedBrand, setSelectedBrand] = useState("");
-//   const [selectedModel, setSelectedModel] = useState("");
-
-//   const {
-//     department,
-//     date,
-//     description,
-//     outQty,
-//     itemId,
-//     userId,
-//     file,
-//   } = stockOut;
-
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const response = await axios.get("http://localhost:8080/inventory-item/getAll");
-//         setOptions(response.data);
-
-        // if (reqId) {
-        //   const request = await axios.get(`http://localhost:8080/request/getById/${reqId}`);
-        //   const requestData = request.data;
-        //   setReq(requestData);
-
-        //   setStockOut((prevStockOut) => ({
-        //     ...prevStockOut,
-        //     outQty: requestData.quantity,
-        //     itemId: requestData.itemId,
-        //     userId: requestData.userId,
-        //   }));
-
-        //   const itemResponse = await axios.get(`http://localhost:8080/inventory-item/getById/${requestData.itemId}`);
-        //   const itemData = itemResponse.data;
-
-        //   setSelectedItemName(itemData.itemName);
-        //   setSelectedBrand(itemData.brand);
-        //   setSelectedModel(itemData.model);
-
-        //   const brandsResponse = await axios.get(
-        //     `http://localhost:8080/inventory-item/getBrandsByItemName?itemName=${itemData.itemName}`
-        //   );
-        //   setBrands(brandsResponse.data);
-
-        //   const modelsResponse = await axios.get(
-        //     `http://localhost:8080/inventory-item/getModelsByItemNameAndBrand?itemName=${itemData.itemName}&brand=${itemData.brand}`
-        //   );
-        //   setModels(modelsResponse.data);
-        // }
-
-//         const token = localStorage.getItem("token");
-//         const profile = await LoginService.getYourProfile(token);
-//         setProfileInfo(profile.users);
-//         setStockOut((prevStockOut) => ({
-//           ...prevStockOut,
-//           userId: profile.users.userId,
-//         }));
-//       } catch (error) {
-//         console.error("Error fetching item details:", error);
-//       }
-//     };
-//     fetchData();
-//   }, [reqId]);
-
-//   const handleItemChange = async (event, value) => {
-//     if (value) {
-//       setSelectedItemName(value.itemName);
-//       validateField("itemName", value.itemName);
-//       try {
-//         const response = await axios.get(
-//           `http://localhost:8080/inventory-item/getBrandsByItemName?itemName=${value.itemName}`
-//         );
-//         setBrands(response.data);
-//         setSelectedBrand("");
-//         setModels([]);
-//         setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: "" }));
-//       } catch (error) {
-//         console.error("Error fetching brands:", error);
-//       }
-//     } else {
-//       setSelectedItemName("");
-//       setBrands([]);
-//       setModels([]);
-//       validateField("itemName", "");
-//     }
-//   };
-
-//   const handleBrandChange = async (event, value) => {
-//     if (value) {
-//       setSelectedBrand(value);
-//       validateField("brand", value);
-//       try {
-//         const response = await axios.get(
-//           `http://localhost:8080/inventory-item/getModelsByItemNameAndBrand?itemName=${selectedItemName}&brand=${value}`
-//         );
-//         setModels(response.data);
-//         setSelectedModel("");
-//         setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: "" }));
-//       } catch (error) {
-//         console.error("Error fetching models:", error);
-//       }
-//     } else {
-//       setSelectedBrand("");
-//       setModels([]);
-//       validateField("brand", "");
-//     }
-//   };
-
-//   const handleModelChange = async (event, value) => {
-//     if (value) {
-//       setSelectedModel(value);
-//       validateField("model", value);
-//       try {
-//         const response = await axios.get(
-//           `http://localhost:8080/inventory-item/getItemByDetails`,
-//           {
-//             params: {
-//               itemName: selectedItemName,
-//               brand: selectedBrand,
-//               model: value,
-//             },
-//           }
-//         );
-//         if (response.status === 200) {
-//           const item = response.data;
-//           setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: item.itemId }));
-//         } else {
-//           setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: "" }));
-//           Swal.fire({
-//             icon: "error",
-//             title: "Error!",
-//             text: "Item not found.",
-//           });
-//         }
-//       } catch (error) {
-//         console.error("Error fetching item details:", error);
-//         Swal.fire({
-//           icon: "error",
-//           title: "Error!",
-//           text: "Failed to fetch item details.",
-//         });
-//       }
-//     } else {
-//       setSelectedModel("");
-//       validateField("model", "");
-//       setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: "" }));
-//     }
-//   };
-
-//   const validateField = (name, value) => {
-//     const validationErrors = {};
-//     if (name === "itemName" && !value) {
-//       validationErrors.itemName = "Item Name is required.";
-//     } else if (name === "department" && !value) {
-//       validationErrors.department = "Department is required.";
-//     } else if (name === "date" && !value) {
-//       validationErrors.date = "Date is required.";
-//     } else if (name === "outQty") {
-//       if (!value) {
-//         validationErrors.outQty = "Out Quantity is required.";
-//       } else if (isNaN(value) || value <= 0) {
-//         validationErrors.outQty = "Out Quantity must be a positive number.";
-//       }
-//     } else if (name === "brand" && !value) {
-//       validationErrors.brand = "Brand is required.";
-//     } else if (name === "model" && !value) {
-//       validationErrors.model = "Model is required.";
-//     } else if (name === "itemId" && !value) {
-//       validationErrors.itemId = "Item ID is required.";
-//     }
-
-//     setErrors((prevErrors) => ({
-//       ...prevErrors,
-//       [name]: validationErrors[name],
-//     }));
-
-//     // Remove the error if there is no validation error for the field
-//     if (!validationErrors[name]) {
-//       setErrors((prevErrors) => {
-//         const { [name]: removedError, ...rest } = prevErrors;
-//         return rest;
-//       });
-//     }
-//   };
-
-//   const onInputChange = (e) => {
-//     const { name, value } = e.target;
-//     let updatedStockOut = { ...stockOut, [name]: value };
-//     setStockOut(updatedStockOut);
-//     if (errors[name]) {
-//       validateField(name, value);
-//     }
-//   };
-
-//   const handleBlur = (e) => {
-//     const { name, value } = e.target;
-//     validateField(name, value);
-//   };
-
-//   const onSubmit = async (e) => {
-//     e.preventDefault();
-
-//     try {
-//       const validationErrors = {};
-
-//       // Validate all fields
-//       validateField("itemName", selectedItemName);
-//       validateField("department", department);
-//       validateField("date", date);
-//       validateField("outQty", outQty);
-//       validateField("brand", selectedBrand);
-//       validateField("model", selectedModel);
-
-//       // Check if there are any errors
-//       const hasErrors = Object.keys(errors).some((key) => !!errors[key]);
-
-//       if (!hasErrors) {
-//         const formData = new FormData();
-//         formData.append("department", department);
-//         formData.append("date", date);
-//         formData.append("description", description);
-//         formData.append("outQty", outQty);
-//         formData.append("itemId", itemId);
-//         formData.append("userId", userId);
-//         formData.append("file", file);
-
-//         const response = await axios.post("http://localhost:8080/stock-out/create", formData, {
-//           headers: {
-//             "Content-Type": "multipart/form-data",
-//           },
-//         });
-
-//         if (response.status === 200) {
-//           Swal.fire({
-//             icon: "success",
-//             title: "Success!",
-//             text: "Stock out entry created successfully.",
-//           }).then(() => {
-//             navigate("/stock-out");
-//           });
-//         } else {
-//           Swal.fire({
-//             icon: "error",
-//             title: "Error!",
-//             text: "Failed to create stock out entry.",
-//           });
-//         }
-//       } else {
-//         Swal.fire({
-//           icon: "error",
-//           title: "Validation Error",
-//           text: "Please fill in all required fields correctly.",
-//         });
-//       }
-//     } catch (error) {
-//       console.error("Error creating stock out entry:", error);
-//       Swal.fire({
-//         icon: "error",
-//         title: "Error!",
-//         text: "Failed to create stock out entry.",
-//       });
-//     }
-//   };
-
-//   const handleFileChange = (e) => {
-//     setStockOut({ ...stockOut, file: e.target.files[0] });
-//   };
-
-//   return (
-//     <div>
-//       <Typography variant="h4" gutterBottom>
-//         New Stock Out
-//       </Typography>
-//       <form onSubmit={onSubmit}>
-//         <FormControl fullWidth margin="normal">
-//           <Autocomplete
-//             options={options}
-//             getOptionLabel={(option) => option.itemName}
-//             value={selectedItemName ? { itemName: selectedItemName } : null}
-//             onChange={handleItemChange}
-//             renderInput={(params) => (
-//               <TextField
-//                 {...params}
-//                 label="Item Name"
-//                 name="itemName"
-//                 onBlur={handleBlur}
-//                 error={!!errors.itemName}
-//                 helperText={errors.itemName}
-//               />
-//             )}
-//           />
-//         </FormControl>
-//         <FormControl fullWidth margin="normal">
-//           <Autocomplete
-//             options={brands}
-//             getOptionLabel={(option) => option}
-//             value={selectedBrand}
-//             onChange={handleBrandChange}
-//             renderInput={(params) => (
-//               <TextField
-//                 {...params}
-//                 label="Brand"
-//                 name="brand"
-//                 onBlur={handleBlur}
-//                 error={!!errors.brand}
-//                 helperText={errors.brand}
-//               />
-//             )}
-//           />
-//         </FormControl>
-//         <FormControl fullWidth margin="normal">
-//           <Autocomplete
-//             options={models}
-//             getOptionLabel={(option) => option}
-//             value={selectedModel}
-//             onChange={handleModelChange}
-//             renderInput={(params) => (
-//               <TextField
-//                 {...params}
-//                 label="Model"
-//                 name="model"
-//                 onBlur={handleBlur}
-//                 error={!!errors.model}
-//                 helperText={errors.model}
-//               />
-//             )}
-//           />
-//         </FormControl>
-//         <FormControl fullWidth margin="normal">
-//           <TextField
-//             label="Department"
-//             name="department"
-//             value={department}
-//             onChange={onInputChange}
-//             onBlur={handleBlur}
-//             error={!!errors.department}
-//             helperText={errors.department}
-//           />
-//         </FormControl>
-//         <FormControl fullWidth margin="normal">
-//           <TextField
-//             label="Date"
-//             name="date"
-//             type="date"
-//             value={date}
-//             onChange={onInputChange}
-//             onBlur={handleBlur}
-//             error={!!errors.date}
-//             helperText={errors.date}
-//           />
-//         </FormControl>
-//         <FormControl fullWidth margin="normal">
-//           <TextField
-//             label="Description"
-//             name="description"
-//             value={description}
-//             onChange={onInputChange}
-//             multiline
-//             rows={4}
-//           />
-//         </FormControl>
-//         <FormControl fullWidth margin="normal">
-//           <TextField
-//             label="Out Quantity"
-//             name="outQty"
-//             value={outQty}
-//             onChange={onInputChange}
-//             onBlur={handleBlur}
-//             error={!!errors.outQty}
-//             helperText={errors.outQty}
-//           />
-//         </FormControl>
-//         <FormControl fullWidth margin="normal">
-//           <TextField
-//             label="User ID"
-//             name="userId"
-//             value={userId}
-//             onChange={onInputChange}
-//             onBlur={handleBlur}
-//             error={!!errors.userId}
-//             helperText={errors.userId}
-//           />
-//         </FormControl>
-//         <FormControl fullWidth margin="normal">
-//           <InputLabel>File</InputLabel>
-//           <TextField type="file" name="file" onChange={handleFileChange} />
-//         </FormControl>
-//         <Button type="submit" variant="contained" color="primary">
-//           Submit
-//         </Button>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default NewStockOut;

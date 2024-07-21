@@ -217,7 +217,7 @@ const NewStockIn = () => {
         Swal.fire({
           icon: "error",
           title: "Error!",
-          text: "Please correct the errors in the form.",
+          text: "Failed to submit Stock-In. Please check your inputs.",
         });
         return;
       }
@@ -247,25 +247,23 @@ const NewStockIn = () => {
               icon: "success",
             });
           } catch (error) {
-            if (error.response && error.response.status === 400) {
-              console.log(error.response.data);
-            } else if (error.response.status === 403) {
-              console.error("Error:", error);
-              console.log(error.response.data);
+
+            if(error.response.status === 406){
               Swal.fire({
                 title: "Error!",
-                text: "The item is currently inactive",
-                icon: "error",
-              });
-            } else {
-              console.error("Error:", error);
-              console.log(error.response.data);
-              Swal.fire({
-                title: "Error!",
-                text: `Failed to submit Stock-In. Error: ${error.response.data}`,
+                text: "Inventory item is currently inactive and can not be used.",
                 icon: "error"
               });
+              return;
             }
+            console.error("Error:", error);
+            console.log(error.response.data);
+            Swal.fire({
+              title: "Error!",
+              text: "Failed to submit Stock-In. Please check your inputs.",
+              icon: "error"
+            });
+            
           }
   };
 

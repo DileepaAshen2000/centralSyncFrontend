@@ -343,7 +343,8 @@ const EditAdjustment = () => {
             onBlur={handleBlur}
             className="w-[300px] h-10 bg-white">
             <MenuItem value="Damaged Item">Damaged Item</MenuItem>
-            <MenuItem value="Stolen Item">Stolen Item</MenuItem>
+            <MenuItem value="Return to Insurance">Return to Insurance</MenuItem>
+            <MenuItem value="Omissions in Issuance">Omissions in Issuance</MenuItem>
             <MenuItem value="Others">Others</MenuItem>
           </Select>
         </div>

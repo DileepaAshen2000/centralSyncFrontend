@@ -140,7 +140,7 @@ const LowStockReport = () => {
         <div>
           <section className="flex flex-col items-center justify-center mt-4 mb-10">
             <header className="text-3xl">LOW-STOCK ITEMS REPORT</header>
-            <Typography variant='h6' gutterBottom>Company Name</Typography>
+            <Typography variant='h6' gutterBottom>Central Sync</Typography>
           </section>
           <section className="flex flex-row gap-10 ml-6">
             <ul className='flex flex-col gap-2'>
@@ -164,6 +164,8 @@ const LowStockReport = () => {
                 <TableCell align="right" className="text-white">#</TableCell>
                 <TableCell align="right" className="text-white">Item ID</TableCell>
                 <TableCell align="right" className="text-white">Item Name</TableCell>
+                <TableCell align="right" className="text-white">Item Details</TableCell>
+                <TableCell align="right" className="text-white">Status</TableCell>
                 <TableCell align="right" className="text-white">Available Quantity</TableCell>
               </TableRow>
             </TableHead>
@@ -173,6 +175,8 @@ const LowStockReport = () => {
                   <TableCell align="right">{index + 1}</TableCell>
                   <TableCell align="right">{item.itemId}</TableCell>
                   <TableCell align="right">{item.itemName}</TableCell>
+                  <TableCell align="right">{item.brand} - {item.model}</TableCell>
+                  <TableCell align="right">{item.status}</TableCell>
                   <TableCell align="right">{item.quantity}</TableCell>
                 </TableRow>
               ))}

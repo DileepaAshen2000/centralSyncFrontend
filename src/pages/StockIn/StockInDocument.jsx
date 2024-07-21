@@ -148,6 +148,7 @@ const handlePrint = useReactToPrint({
                 <TableRow className=" bg-zinc-800">
                   <TableCell align="right" className="text-white">Item ID</TableCell>
                   <TableCell align="right" className="text-white">Item Name</TableCell>
+                  <TableCell align="right" className="text-white">Item Details</TableCell>
                   <TableCell align="right" className="text-white">Location</TableCell>
                   <TableCell align="right" className="text-white">Quantity In</TableCell>
                   <TableCell align="right" className="text-white">New Quantity On Hand</TableCell>
@@ -157,6 +158,7 @@ const handlePrint = useReactToPrint({
                   <TableRow>
                     <TableCell align="right">{itemId.itemId}</TableCell>
                     <TableCell align="right">{itemId.itemName}</TableCell>
+                    <TableCell align="right">{itemId.brand} - {itemId.model}</TableCell>
                     <TableCell align="right">{location}</TableCell>
                     <TableCell align="right">{inQty}</TableCell>
                     <TableCell align="right">{itemId.quantity}</TableCell>

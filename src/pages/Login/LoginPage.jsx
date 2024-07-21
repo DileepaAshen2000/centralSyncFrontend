@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import inventory from "../../assests/inventory.jpg";
 import { useNavigate } from "react-router-dom";
 import LoginService from "./LoginService";
+import Swal from "sweetalert2";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -34,8 +35,17 @@ export default function LoginPage() {
                 default:
                   navigate('/default-dashboard'); // Fallback case if role is not recognized
               } // Navigate to desired location after successful login
-        console.log("login success")
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Successful',
+          text: 'You have successfully logged in!',
+        })
       } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Failed',
+          text: 'Invalid email or password!',
+        })
         setError(userData.error);
       }
     } catch (error) {

@@ -8,8 +8,11 @@ import { useNavigate } from "react-router-dom";
 const PendingActivities = () => {
   const [pendingCountAdj, setPendingCountAdj] = useState(null);
   const [pendingCountReq, setPendingCountReq] = useState(null);
+  const [pendingCountTicket, setPendingCountTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const isEmployee = LoginService.isEmployee();
+  const isRequestHandler = LoginService.isReqHandler();
+  const isAdmin = LoginService.isAdmin();
   const [profileInfo, setProfileInfo] = useState(null);
   const navigate = useNavigate();
 
@@ -30,6 +33,11 @@ const PendingActivities = () => {
           setPendingCountAdj(response1.data);
           const response2 = await axios.get("http://localhost:8080/request/pending-all/count");
           setPendingCountReq(response2.data);
+        }
+
+        if(isRequestHandler) {
+          const response3 = await axios.get("http://localhost:8080/ticket/count");
+          setPendingCountTicket(response3.data);
         }
         setLoading(false);
       } catch (error) {
@@ -75,17 +83,23 @@ const PendingActivities = () => {
       </div>
       <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[150px]">
         <div className="flex items-center justify-center col-span-2 row-span-2 rounded-lg bg-slate-100" onClick={handleAdjustment}>
-          {isEmployee ? (
+          {isEmployee && (
             <div className="flex flex-col gap-2">
               <h3 className="text-xl">Your Pending Adjustments</h3>
               <h3 className="text-3xl">{pendingCountAdj}</h3>
             </div>
-          ) : (
+          )}
+          {isRequestHandler && (
+            <div className="flex flex-col gap-2">
+              <h3 className="text-xl">Pending Issue Tickets</h3>
+              <h3 className="text-3xl">{pendingCountTicket}</h3>
+            </div>
+          )}
+          {isAdmin && (
             <div className="flex flex-col gap-2">
               <h3 className="text-xl">Pending Adjustments</h3>
               <h3 className="text-3xl">{pendingCountAdj}</h3>
             </div>
-          
           )}
         </div>
         <div className="flex items-center justify-center col-span-2 row-span-2 rounded-lg bg-slate-100" onClick={handleRequest}>

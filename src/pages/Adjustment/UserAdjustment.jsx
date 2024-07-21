@@ -19,7 +19,7 @@ const getStatusClass = (status) => {
   };
 
 const columns = [
-    { field: 'id', headerName: 'Adjustment ID', width: 150 },
+    { field: 'id', headerName: 'Reference No.', width: 150 },
     { field: 'reason', headerName: 'Reason', width: 180 },
     { field: 'description', headerName: 'Description', width: 250 },
     { field: 'adjusted_Qty', headerName: 'Adjusted_Qty', width: 150 },
