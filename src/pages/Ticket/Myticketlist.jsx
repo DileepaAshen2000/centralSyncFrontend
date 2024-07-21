@@ -1,7 +1,7 @@
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate, useParams } from "react-router-dom";
-import { TextField, Button, Stack, Select } from "@mui/material";
+import { TextField, Button, Stack, Select,CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import axios from "axios";
@@ -56,6 +56,7 @@ const MyTicketList = () => {
   const isAdmin = LoginService.isAdmin();
   const isRequestHandler = LoginService.isReqHandler();
   const isEmployee = LoginService.isEmployee();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchProfileInfo();
@@ -79,6 +80,7 @@ const MyTicketList = () => {
 
   const fetchTickets = async (userId) => {
     try {
+      setLoading(true);
       const response = await axios.get(`http://localhost:8080/ticket/${userId}`);
       const data = response.data.map((ticket) => ({
         id: ticket.ticketId,
@@ -101,6 +103,9 @@ const MyTicketList = () => {
       
     } catch (error) {
       console.log(error);
+    }
+    finally {
+      setLoading(false);
     }
   }
 
@@ -149,7 +154,10 @@ const MyTicketList = () => {
   };
 
   return (
+    
     <Box sx={{ height: 400, width: "100%" }}>
+      
+     
       <Box className="flex pb-2">
         {rowSelectionModel.length > 0 && (
           <>
@@ -166,7 +174,7 @@ const MyTicketList = () => {
               </div>
               </div>
             )}
-            {isRequestHandler && rows.some(row => row.id === rowSelectionModel[0] && row.ticketStatus === "ACCEPTED") && (
+            {isRequestHandler && rows.some(row => row.id === rowSelectionModel[0] && (row.ticketStatus === "ACCEPTED" || row.ticketStatus === "INPROGRESS")) && (
               <div className="grid grid-cols-11 grid-rows-1 gap-y-7 gap-x-[5] mb-2 ">
               <div className="col-start-9">
                 <Button
@@ -198,6 +206,12 @@ const MyTicketList = () => {
           </div>
         )}
       </Box>
+      <h1 className="text-white bg-[#3f51b5] p-3 text-center text-xl">My Issue Tickets</h1>
+      {loading ? (
+        <div className="flex justify-center mostRequestedItems-center">
+          <CircularProgress />
+        </div>
+      ):(
       <DataGrid
         rows={rows}
         columns={columns}
@@ -228,6 +242,7 @@ const MyTicketList = () => {
           },
         }}
       />
+      )}
     </Box>
   );
 };

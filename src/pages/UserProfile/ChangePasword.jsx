@@ -7,7 +7,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import { IconButton, InputAdornment, TextField } from "@mui/material";
+import { IconButton, InputAdornment, TextField,CircularProgress,Backdrop } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import LoginService from "../Login/LoginService";
 
@@ -21,6 +21,7 @@ const ChangePassword = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const passwordCriteria = {
     minLength: {
@@ -92,6 +93,7 @@ const ChangePassword = () => {
       return;
     }
     setMatchError("");
+    setLoading(true);
     try {
       const response = await axios.put(
         `http://localhost:8080/user/${profileInfo.userId}/password`,
@@ -115,6 +117,9 @@ const ChangePassword = () => {
           setMatchError(responseData);
         }
       }
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -223,6 +228,12 @@ const ChangePassword = () => {
               >
                 Change Password
               </button>
+              <Backdrop
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loading}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
             </form>
           </div>
         </div>

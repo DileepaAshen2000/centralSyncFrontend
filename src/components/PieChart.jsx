@@ -86,7 +86,7 @@ const ItemPieChart = () => {
       }}
       {...size}
     >
-      <PieCenterLabel />
+      <PieCenterLabel itemData={itemData} />
     </PieChart>
   );
 };

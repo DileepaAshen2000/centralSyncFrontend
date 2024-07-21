@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import MenuItem from "@mui/material/MenuItem";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Badge from "@mui/material/Badge";
 import Swal from "sweetalert2";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -228,9 +228,11 @@ const Userupdate = () => {
   return (
     <>
       <Box className="p-5 bg-white rounded-2xl w-[1122.7px]">
-        <Box className="pb-4">
-          <h1 className="pt-2 pb-3 text-3xl font-bold ">Edit User</h1>
+      <div className="pb-12">
+        <Box className="w-[1100.7px]  bg-blue-900 text-white text-center p-3">
+          <header className="text-3xl font-bold">Edit User</header>
         </Box>
+      </div>
         <form noValidate>
           <div className="grid grid-cols-6 grid-rows-7  gap-x-[0.25rem] gap-y-7 ">
             <div className="col-span-1 row-span-1">

@@ -95,7 +95,6 @@ const StockOutList = () => {
         autoHeight
         pageSizeOptions={[5]}
         checkboxSelection
-        disableRowSelectionOnClick
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={handlerowSelectionModelChange}
         sx={{

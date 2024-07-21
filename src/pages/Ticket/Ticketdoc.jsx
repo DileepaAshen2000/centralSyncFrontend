@@ -14,7 +14,7 @@ import {
   DialogContentText,
   DialogTitle,
   CircularProgress,
-  Backdrop
+  Backdrop,
 } from "@mui/material";
 import LoginService from "../Login/LoginService";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -39,6 +39,7 @@ const TicketDocument = () => {
   const [openSP, setOpenSP] = useState(false);
   const [openA, setOpenA] = useState(false);
   const [openC, setOpenC] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [ticket, setTicket] = useState({
     date: "",
@@ -48,11 +49,13 @@ const TicketDocument = () => {
     itemId: "",
     note: "",
     user: "",
+    previousStatus: "",
   });
 
   const [item, setItem] = useState({
     itemName: "",
     brand: "",
+    model: "",
   });
   const isAdmin = LoginService.isAdmin();
   const isRequestHandler = LoginService.isReqHandler();
@@ -77,6 +80,7 @@ const TicketDocument = () => {
 
   const loadTicket = async () => {
     try {
+      setLoading(true);
       const result = await axios.get(
         `http://localhost:8080/ticket/tickets/${id}`
       );
@@ -92,6 +96,8 @@ const TicketDocument = () => {
       //console.log(result1.data);
     } catch (error) {
       console.error("Error loading data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -126,8 +132,35 @@ const TicketDocument = () => {
       setDateError("Please add completion date.");
       return;
     }
+
+    const completionDateObj = new Date(completionDate);
+    const currentDate = new Date();
+
+    if (completionDateObj <= currentDate) {
+      setDateError("Completion date must not be in the past.");
+      return;
+    }
+
     setDateError("");
     setOpenSP(true);
+  };
+
+  const handleCompletionDateChange = (e) => {
+    const newCompletionDate = e.target.value;
+    setCompletionDate(newCompletionDate);
+
+    if (!newCompletionDate.trim()) {
+      setDateError("Please add completion date.");
+    } else {
+      const completionDateObj = new Date(newCompletionDate);
+      const currentDate = new Date();
+
+      if (completionDateObj <= currentDate) {
+        setDateError("Completion date should not be in the past.");
+      } else {
+        setDateError("");
+      }
+    }
   };
 
   const handleClickAccept = () => {
@@ -149,6 +182,7 @@ const TicketDocument = () => {
 
   // Handle ticket send to admin
   const handleSendToAdmin = () => {
+    setLoading(true);
     axios
       .patch(`http://localhost:8080/ticket/sendtoadmin/${id}`, { note })
       .then((response) => {
@@ -163,11 +197,15 @@ const TicketDocument = () => {
       })
       .catch((error) => {
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   // Handle ticket Accept
   const handleAccept = () => {
+    setLoading(true);
     axios
       .patch(`http://localhost:8080/ticket/accept/${id}`, { note })
       .then((response) => {
@@ -187,6 +225,9 @@ const TicketDocument = () => {
           text: "Failed to update status",
         });
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false); // Set loading to false after the request is completed
       });
   };
   const handleInprogress = () => {
@@ -195,6 +236,7 @@ const TicketDocument = () => {
 
   // Handle ticket In Progress with Completion Date
   const handleInprogressWithDate = () => {
+    setLoading(true);
     axios
       .patch(`http://localhost:8080/ticket/inprogress/${id}`, {
         note,
@@ -217,6 +259,9 @@ const TicketDocument = () => {
           text: "Failed to update status",
         });
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -225,6 +270,7 @@ const TicketDocument = () => {
   };
   // Handle ticket Reject By Admin
   const handleRejectByAdminwithNote = () => {
+    setLoading(true);
     axios
       .patch(`http://localhost:8080/ticket/adminreject/${id}`, { note })
       .then((response) => {
@@ -244,11 +290,15 @@ const TicketDocument = () => {
           text: "Failed to update status",
         });
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   // Handle ticket Reject By RequestHandler
   const handleRejectByRequestHandler = () => {
+    setLoading(true);
     axios
       .patch(`http://localhost:8080/ticket/requesthandlerreject/${id}`, {
         note,
@@ -270,11 +320,15 @@ const TicketDocument = () => {
           text: "Failed to update status",
         });
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   // Handle ticket Complete
   const handleComplete = () => {
+    setLoading(true);
     axios
       .patch(`http://localhost:8080/ticket/complete/${id}`, { note })
       .then((response) => {
@@ -294,6 +348,9 @@ const TicketDocument = () => {
           text: "Failed to update status",
         });
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -394,6 +451,7 @@ const TicketDocument = () => {
                 <li className="font-bold">Created by</li>
                 <li className="font-bold">Item Name</li>
                 <li className="font-bold">Item Brand</li>
+                <li className="font-bold">Item Model</li>
                 <li className="font-bold">Date</li>
                 <li className="font-bold">Topic</li>
               </ul>
@@ -404,6 +462,7 @@ const TicketDocument = () => {
                 </li>
                 <li>{item.itemName}</li>
                 <li>{item.brand}</li>
+                <li>{item.model}</li>
                 <li>{ticket.date}</li>
                 <li className="font-bold text-red-600">{ticket.topic}</li>
               </ul>
@@ -649,7 +708,8 @@ const TicketDocument = () => {
             )}
 
             {(ticket.ticketStatus === "ACCEPTED" ||
-              ticket.ticketStatus === "REJECTED_A") && (
+              ticket.ticketStatus === "REJECTED_A" ||
+              ticket.previousStatus === "ACCEPTED") && (
               <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
                 <div className="col-start-6">
                   <Button
@@ -700,7 +760,7 @@ const TicketDocument = () => {
                 )}
                 {!showCompletionDate && (
                   <div className="grid grid-cols-6 grid-rows-1 gap-y-7 gap-x-[0.65rem] mt-12">
-                    {(ticket.user.role !== "ADMIN") && (
+                    {ticket.user.role !== "ADMIN" && (
                       <div className="col-start-3">
                         <Button
                           className="px-3 py-2 rounded w-[172px] h-[42px] bg-blue-300 text-[14px] text-blue-800 hover:text-white hover:bg-blue-600"
@@ -761,7 +821,7 @@ const TicketDocument = () => {
                           type="date"
                           className="w-[220px] mt-2 border-2 border-gray-300 bg-white"
                           value={completionDate}
-                          onChange={(e) => setCompletionDate(e.target.value)}
+                          onChange={handleCompletionDateChange}
                         />
                       </div>
                     </div>
@@ -950,6 +1010,12 @@ const TicketDocument = () => {
             )}
           </>
         )}
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 20 }}
+          open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </main>
     </div>
   );

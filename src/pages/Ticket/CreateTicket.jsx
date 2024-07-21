@@ -8,7 +8,8 @@ import {
   Autocomplete,
   Box,
   CircularProgress,
-  Backdrop
+  Backdrop,
+  Typography,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 //import image from "../assests/flyer-Photo.jpg";
@@ -18,6 +19,7 @@ import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { TextareaAutosize } from "@mui/base/TextareaAutosize";
 
 const CreateTicket = () => {
   const form = useForm();
@@ -27,11 +29,17 @@ const CreateTicket = () => {
   const [date, setdate] = useState(new Date().toISOString().split("T")[0]);
   const [itemName, setItemName] = useState("");
   const [brand, setBrand] = useState("");
+  const [model, setModel] = useState("");
   const [fetchData, setFetchData] = useState(false);
 
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [options, setOptions] = useState([]);
+  const [itemNameOptions, setItemNameOptions] = useState([]);
+  const [brandOptions, setBrandOptions] = useState([]);
+  const [modelOptions, setModelOptions] = useState([]);
+  const [filteredBrandOptions, setFilteredBrandOptions] = useState([]);
+  const [filteredModelOptions, setFilteredModelOptions] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -41,20 +49,43 @@ const CreateTicket = () => {
         const response = await axios.get(
           "http://localhost:8080/inventory-item/getAll"
         );
+        const uniqueItemNames = [
+          ...new Set(response.data.map((item) => item.itemName)),
+        ];
+        const uniqueBrands = [
+          ...new Set(response.data.map((item) => item.brand)),
+        ];
+        const uniqueModels = [
+          ...new Set(response.data.map((item) => item.model)),
+        ];
+
+        const brandOptions = uniqueBrands.map((brand) => ({ brand }));
+        const itemNameOptions = uniqueItemNames.map((itemName) => ({
+          itemName,
+        }));
+        const modelOptions = uniqueModels.map((model) => ({ model }));
+
         setOptions(response.data);
+        setItemNameOptions(itemNameOptions);
+        setBrandOptions(brandOptions);
+        setModelOptions(modelOptions);
       } catch (error) {
         console.error("Error fetching item data:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
   }, []);
 
   console.log("Options:", options);
+  //fetch data when navigate through search
   useEffect(() => {
     if (location.state?.item) {
-      const { itemName, brand } = location.state.item;
+      const { itemName, brand, model } = location.state.item;
       setItemName(itemName);
       setBrand(brand);
+      setModel(model);
     }
   }, [location.state]);
 
@@ -65,6 +96,8 @@ const CreateTicket = () => {
       validationErrors.itemName = "Item name is required";
     } else if (name === "brand" && !value) {
       validationErrors.brand = "Item brand is required";
+    } else if (name === "model" && !value) {
+      validationErrors.model = "Item model is required";
     } else if (name === "topic" && !value) {
       validationErrors.topic = "Topic is required";
     } else if (name === "date" && !value) {
@@ -72,9 +105,9 @@ const CreateTicket = () => {
     } else if (name === "description") {
       if (!value) {
         validationErrors.description = "Description is required";
-      } else if (value.length < 10 || value.length > 200) {
+      } else if (value.length < 30 || value.length > 400) {
         validationErrors.description =
-          "Description must be between 10 and 200 characters";
+          "Description must be between 30 and 400 characters";
       }
     }
 
@@ -101,9 +134,17 @@ const CreateTicket = () => {
     if (value) {
       setItemName(value.itemName);
       validateField("itemName", value.itemName);
+      const filteredBrands = options
+        .filter((option) => option.itemName === value.itemName)
+        .map((option) => option.brand);
+      setFilteredBrandOptions([...new Set(filteredBrands)]);
+      setBrand("");
+      setFilteredModelOptions([]);
     } else {
       setItemName("");
       validateField("itemName", "");
+      setFilteredBrandOptions([]);
+      setFilteredModelOptions([]);
     }
   };
 
@@ -111,11 +152,35 @@ const CreateTicket = () => {
     if (value) {
       setBrand(value.brand);
       validateField("brand", value.brand);
+      const filteredModels = options
+        .filter(
+          (option) =>
+            option.itemName === itemName && option.brand === value.brand
+        )
+        .map((option) => option.model);
+      setFilteredModelOptions([...new Set(filteredModels)]);
+      setModel("");
     } else {
       setBrand("");
       validateField("brand", "");
+      setFilteredModelOptions([]);
     }
   };
+
+  const handleItemmodelChange = (event, value) => {
+    if (value) {
+      setModel(value.model);
+      validateField("model", value.model);
+    } else {
+      setModel("");
+      validateField("model", "");
+    }
+  };
+
+  const findOptionByLabel = (options, label, key) => {
+    return options.find((option) => option[key] === label) || null;
+  };
+
   const handleClick = (e) => {
     e.preventDefault();
     const ticket = {
@@ -124,6 +189,7 @@ const CreateTicket = () => {
       date,
       itemName,
       brand,
+      model,
     };
     console.log(ticket);
     axios
@@ -153,11 +219,13 @@ const CreateTicket = () => {
   return (
     <>
       <Box className="p-5 bg-white rounded-2xl w-[1122.7px]">
-        <Box className="pb-4">
-          <h1 className="pt-2 pb-3 text-3xl font-bold ">New Ticket</h1>
-        </Box>
+        <div className="pb-12">
+          <Box className="w-[1100.7px]  bg-blue-900 text-white text-center p-3">
+            <header className="text-3xl font-bold">New Ticket</header>
+          </Box>
+        </div>
         <form>
-          <div className="grid grid-cols-6 grid-rows-6  gap-x-5 gap-y-5">
+          <div className="grid grid-cols-6 grid-rows-7  gap-x-5 gap-y-5">
             <div className="col-span-1">
               <label htmlFor="name">Item Name</label>
             </div>
@@ -166,12 +234,14 @@ const CreateTicket = () => {
                 <div className="text-[#FC0000] text-sm">{errors.itemName}</div>
               )}
               <Autocomplete
-                options={options}
+                options={itemNameOptions}
                 getOptionLabel={(option) => option.itemName}
                 onChange={handleItemChange}
                 value={
-                  options.find((option) => option.itemName === itemName) || null
-                } //setting initial seleted value
+                  itemNameOptions.find(
+                    (option) => option.itemName === itemName
+                  ) || null
+                }
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -198,10 +268,10 @@ const CreateTicket = () => {
               )}
 
               <Autocomplete
-                options={options}
+                options={filteredBrandOptions.map((brand) => ({ brand }))}
                 getOptionLabel={(option) => option.brand}
                 onChange={handleItembrandChange}
-                value={options.find((option) => option.brand === brand) || null}
+                value={brand ? { brand } : null}
                 variant="outlined"
                 renderInput={(params) => (
                   <TextField
@@ -221,6 +291,35 @@ const CreateTicket = () => {
             </div>
             <div></div>
             <div></div>
+            <div className="col-span-1">
+              <label htmlFor="name">Item Model</label>
+            </div>
+            <div className="col-span-2">
+              {errors.model && (
+                <div className="text-[#FC0000] text-sm">{errors.model}</div>
+              )}
+              <Autocomplete
+                options={filteredModelOptions.map((model) => ({ model }))}
+                getOptionLabel={(option) => option.model}
+                onChange={handleItemmodelChange}
+                value={model ? { model } : null}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Item model"
+                    variant="outlined"
+                    sx={{
+                      width: 300,
+                    }}
+                    size="small"
+                    onBlur={handleBlur}
+                    error={!!errors.model}
+                    name="model"
+                  />
+                )}
+              />
+            </div>{" "}
+            <div className="col-span-3"></div>
             <div className="col-span-1 row-span-1">
               <label htmlFor="topic">Topic for ticket</label>
             </div>
@@ -286,11 +385,9 @@ const CreateTicket = () => {
                   {errors.description}
                 </div>
               )}
-              <TextField
+              <textarea
                 variant="outlined"
-                InputProps={{
-                  className: "w-[450px] h-[100px]",
-                }}
+                className="w-[450px] h-[100px] border-2 border-gray-300 rounded-md"
                 value={description}
                 name="description"
                 onChange={(e) => {
@@ -300,7 +397,10 @@ const CreateTicket = () => {
                 size="small"
                 onBlur={handleBlur}
                 error={!!errors.description}
-              />
+                
+              ></textarea>
+            <Typography  variant="caption" className="text-gray-500">Please provide clear description about the issue and troubleshooting steps you have already attemped.</Typography>
+              
             </div>
             <div></div>
             <div></div>
@@ -327,6 +427,12 @@ const CreateTicket = () => {
               </Button>
             </div>
           </div>
+          <Backdrop
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loading}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </form>
       </Box>
     </>

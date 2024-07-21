@@ -16,8 +16,8 @@ const AvgCards = ({ category, year }) => {
         const response = await axios.get(
           `http://localhost:8080/request/getAll?itemGroup=${category}&year=${year}`
         );
-        console.log("Requests response:", response.data); 
-        setRequests(Array.isArray(response.data) ? response.data : []);
+        console.log("Requests response:", response.data);
+        setRequests(response.data);
       } catch (error) {
         console.log(error);
         setRequests([]);
@@ -61,7 +61,11 @@ const AvgCards = ({ category, year }) => {
     return data
       .map((req) => req.reqStatus)
       .reduce((count, status) => {
-        return status === "accepted" ? count + 1 : count;
+        return status !== "REJECTED" &&
+          status !== "SENT_TO_ADMIN" &&
+          status !== "PENDING"
+          ? count + 1
+          : count;
       }, 0);
   };
 

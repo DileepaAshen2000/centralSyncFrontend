@@ -73,14 +73,16 @@ const NewRequest = () => {
     fetchWorkSite();
     fetchData();
   }, []);
-  //set item name and id when navigating from item search
+  //set item details when navigating from item search
   useEffect(() => {
     if (location.state?.item) {
+
       const { itemName } = location.state.item;
      
       setItemName(itemName);
       fetchItemDetails(itemName);
      
+
     }
   }, [location.state]);
 
@@ -178,6 +180,10 @@ const NewRequest = () => {
         }
       }
   } catch (error) {
+    if(error.response.status===403){
+      setErrors({ form: `Failed to submit request. Selected item is Inactive: ${error.message}` });
+
+    }
     console.error("Error during fetch:", error);
     setErrors({ form: `Failed to submit request. Network or server error: ${error.message}` });
   }

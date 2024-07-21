@@ -45,7 +45,10 @@ import Ticket from "./Ticket/Ticketlist";
 import ViewUser from "./User/Viewuser";
 import NewStockOut from "./StockOut/NewStockOut";
 import StockOutDocument from "./StockOut/StockOutDocument";
-import R_admin from "./Reservation/R_admin";
+import AdminReservation from "./Reservation/AdminReservation";
+import EditReservation from "./Reservation/EditReservation";
+import ReservationDocument from "./Reservation/ReservationDocument";
+import ReservationList from "./Reservation/ReservationList";
 import NewReservation from "./Reservation/NewReservation";
 import TicketDocument from "./Ticket/Ticketdoc";
 import InventorySummary from "./Report/InventorySummary";
@@ -282,11 +285,26 @@ const Home = () => {
                 ></Route>
 
                 {/* Reservations routing */}
-                <Route path="/reservation" element={<R_admin />}></Route>
-                <Route
+                <Route path="/reservation"
+                 element={<AdminReservation/>}>
+                 </Route>
+                 <Route
                   path="/newreservation"
                   element={<NewReservation />}
                 ></Route>
+                <Route
+                  path="/editreservation"
+                  element={<EditReservation />}
+                ></Route>
+                <Route
+                  path="/reservationlist"
+                  element={<ReservationList/>}
+                ></Route>
+                <Route
+                  path="/reservationdocument"
+                  element={<ReservationDocument />}
+                ></Route>
+
                 {/* SearchBar routing */}
                 <Route path="/search-result" element={<SearchResult />}></Route>
                 <Route path="/item-detail" element={<ItemDetail />} />

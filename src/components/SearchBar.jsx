@@ -14,6 +14,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Tooltip,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -73,7 +74,9 @@ const SearchBar = () => {
       }
     } catch (error) {
       console.log(error);
-    } 
+    } finally {
+      setFilterAnchorEl(null);
+    }
   };
 
   const handleFilterClick = (event) => {
@@ -118,6 +121,9 @@ const SearchBar = () => {
     OFFICE_SUPPLIES: "Office supplies",
     OTHER: "Other",
   };
+  const categoryLabels = selectedCategories
+    .map((category) => categoryMapping[category])
+    .join(", ");
   return (
     <div className="relative  bg-opacity-15  ml-5 md:w-[400px] sm:mr-3 sm:w-auto">
       <Autocomplete
@@ -151,11 +157,13 @@ const SearchBar = () => {
                 </InputAdornment>
               ),
               endAdornment: (
-                <InputAdornment position="end">
-                  <SearchIcon
-                    onClick={() => handleSearch(searchTerm)}
-                    style={{ cursor: "pointer" }}
-                  />
+                <InputAdornment position="start">
+                  <Tooltip title="Search">
+                    <SearchIcon
+                      onClick={() => handleSearch(searchTerm)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  </Tooltip>
                 </InputAdornment>
               ),
 
@@ -180,7 +188,7 @@ const SearchBar = () => {
           horizontal: "left",
         }}
       >
-        <div className="p-2 flex flex-column">
+        <div className="flex p-2 flex-column">
           <FormGroup>
             {categories.map((category) => (
               <FormControlLabel
@@ -195,7 +203,7 @@ const SearchBar = () => {
               />
             ))}
             <Button
-              className="rounded-sm text-black"
+              className="text-black rounded-sm"
               variant="outlined"
               onClick={() => handleSearch(searchTerm)}
             >
@@ -209,6 +217,14 @@ const SearchBar = () => {
         <DialogContent>
           <DialogContentText>
             No results were found for "{searchTerm}"
+            {selectedCategories.length > 0 && (
+              <>
+                {` in the categor${
+                  selectedCategories.length > 1 ? "ies" : "y"
+                } `}
+                {categoryLabels}.
+              </>
+            )}
           </DialogContentText>
         </DialogContent>
         <DialogActions>

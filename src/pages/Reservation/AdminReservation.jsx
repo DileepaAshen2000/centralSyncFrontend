@@ -1,3 +1,38 @@
+// import React from 'react'
+// import R_Table from '../../components/R_Table'
+// import { Box } from '@mui/material'
+// // import Button from '../../components/InventoryRequest/Button' 
+// import Button from '@mui/material/Button'
+// import { useNavigate } from 'react-router-dom'
+// import My_Reservation from '../../components/My_Reservation'
+
+// const AdminReservation = () => {
+//   const navigate = useNavigate();
+//   return (
+//     <Box>
+//         <Box className="flex pb-4 gap-96">
+//             <Box>
+//               <h1 className="pt-2 pb-3 text-3xl font-bold ">My Reservation</h1>
+//               <p>Here is a list of all my reservation</p>
+//             </Box>
+//             <Box className="flex items-center">
+//               <Button className="px-6 py-2 text-white bg-blue-600 rounded"
+//                variant='contained'
+//                onClick={() => navigate("/newreservation")}
+//                 >New Reservation</Button>
+//             </Box>
+//         </Box>
+//         <My_Reservation/>
+//         <h1 className="pt-2 pb-3 text-3xl font-bold ">Reservation</h1>
+//               <p>Here is a list of all reservation</p>
+//               <R_Table/>
+//     </Box>
+//   )
+// }
+
+// export default AdminReservation
+
+
 import * as React from "react";
 import Box from "@mui/material/Box";
 import { Button } from "@mui/material";
@@ -7,42 +42,18 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoginService from "../Login/LoginService";
 
-const getStatusClass = (status) => {
-  switch (status) {
-    case "ACCEPTED":
-      return "bg-green-500 text-white w-[90px]";
-    case "REJECTED":
-      return "bg-red-500 text-white text-sm w-[90px]";  
-    case "PENDING":
-      return "bg-blue-500 text-white text-sm w-[90px]";  
-  }
-};
-
 const columns = [
-    { field: 'id', headerName: 'Adjustment ID', width: 150 },
-    { field: 'reason', headerName: 'Reason', width: 180 },
-    { field: 'description', headerName: 'Description', width: 250 },
-    { field: 'adjusted_Qty', headerName: 'Adjusted_Qty', width: 150 },
-    { field: 'date', headerName: 'Date', width: 150 },
-    {
-      field: "status",
-      headerName: "Status",
-      width: 130,
-      renderCell: (params) => (
-        <div
-          className={`p-2 rounded text-center ${getStatusClass(params.value)}`}
-        >
-          {params.value}
-        </div>
-      ),
-    },
+    { field: 'id', headerName: 'Reservation ID', width: 150 },
+    { field: 'quantity', headerName: 'Quantity', width: 180 },
+    { field: 'reason', headerName: 'Reason', width: 280 },
+    { field: 'start', headerName: 'Start_Date', width: 150 },
+    { field: 'end', headerName: 'End_Date', width: 150 },
+    { field: 'status', headerName: 'Status', width: 100 },
   ];
 
-const AdminAdjustment = () => {
+const AdminReservation = () => {
   const navigate = useNavigate();
   const [rows, setRows] = useState([]);
-
- 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,14 +62,14 @@ const AdminAdjustment = () => {
         const profile = await LoginService.getYourProfile(token);
         const userId = profile.users.userId;
 
-        const response = await axios.get(`http://localhost:8080/adjustment/getAllById/${userId}`);
-        const data = response.data.map((adj) => ({
-          id: adj.adjId,
-          reason: adj.reason,
-          description: adj.description,
-          adjusted_Qty: adj.adjustedQuantity,
-          date: adj.date,
-          status: adj.status
+        const response = await axios.get(`http://localhost:8080/reservation/getAllById/${userId}`);
+        const data = response.data.map((res) => ({
+          id: res.resId,
+          quantity: res.reservationQuantity,
+          reason: res.reason,
+          start: res.startDate,
+          end: res.endDate,
+          status: res.status
         }));
         setRows(data);
       } catch (error) {
@@ -75,20 +86,20 @@ const AdminAdjustment = () => {
 
   const handleClick = () => {
     if (rowSelectionModel > 0) {
-      const selectedAdjId = rowSelectionModel[0];
-      console.log("selected adj id :" + selectedAdjId);
-      navigate("/adjustment/editadjustment/" + selectedAdjId);
+      const selectedResId = rowSelectionModel[0];
+      console.log("selected res id :" + selectedResId);
+      navigate("/reservation/editreservation/" + selectedResId);
     } else {
-      navigate("/newadjustment");
+      navigate("/newreservation");
     }
   };
   
   const handleViewClick = () => {
     if (rowSelectionModel > 0) {
-      const selectedAdjId = rowSelectionModel[0];
-      navigate("/adjustment/" + selectedAdjId);
+      const selectedResId = rowSelectionModel[0];
+      navigate("/reservation/" + selectedResId);
     } else {
-      navigate("/newadjustment");
+      navigate("/newreservation");
     }
   };
 
@@ -126,9 +137,9 @@ const AdminAdjustment = () => {
             <Button
               variant="contained"
               className="bg-blue-600 py-2 text-white rounded w-[auto]"
-              onClick={() => navigate("/newadjustment")}
+              onClick={() => navigate("/newreservation")}
             >
-            New Adjustment
+            New Reservation
             </Button>
           </div>
           
@@ -148,26 +159,12 @@ const AdminAdjustment = () => {
           autoHeight
           pageSizeOptions={[5]}
           checkboxSelection
+          disableRowSelectionOnClick
           disableMultipleSelection={true} // Prevent multiple row selection
           rowSelectionModel={rowSelectionModel}
           onRowSelectionModelChange={handlerowSelectionModelChange}
-          sx={{
-          '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: '#f5f5f5',
-            borderBottom: '2px solid #000',
-          },
-          '& .MuiDataGrid-cell': {
-            borderBottom: '1px solid #ddd',
-          },
-          '& .MuiDataGrid-row': {
-            borderBottom: '2px solid #000',
-          },
-          '& .MuiDataGrid-root': {
-            border: '2px solid #000',
-          },
-        }}
         />
     </Box>
   );
 };
-export default AdminAdjustment;
+export default AdminReservation;

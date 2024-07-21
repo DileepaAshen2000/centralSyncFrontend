@@ -1,27 +1,46 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import { Button, CircularProgress } from "@mui/material";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoginService from "../Login/LoginService";
 
-
 const getStatusClass = (status) => {
   switch (status) {
     case "ACTIVE":
-      return "bg-green-500 text-black w-[90px]";
+      return "bg-green-500 text-black font-bold w-[90px]";
     case "INACTIVE":
-      return "bg-red-500 text-black text-sm w-[90px]";  
+      return "bg-red-500 text-black font-bold w-[90px]";
   }
 };
 
 const columns = [
-  { field: "id", headerName: "Item ID", width: 150 },
+  {
+    field: "id",
+    headerName: "Item ID",
+    minwidth: 50,
+    editable: false,
+    flex: 0.5,
+  },
   {
     field: "item_name",
     headerName: "Item Name",
+    minwidth: 220,
+    editable: false,
+    flex: 1.25,
+  },
+  {
+    field: "brand",
+    headerName: "Brand",
+    minwidth: 150,
+    editable: false,
+    flex: 1,
+  },
+  {
+    field: "model",
+    headerName: "Model",
     minwidth: 200,
     editable: false,
     flex: 1,
@@ -29,17 +48,18 @@ const columns = [
   {
     field: "group",
     headerName: "Group",
-    minwidth: 200,
+    minwidth: 300,
     editable: false,
-    flex: 1,
+    flex: 1.5,
   },
+
   {
     field: "quantity",
     headerName: "Quantity",
     type: "number",
-    minwidth: 150,
+    minwidth: 100,
     editable: false,
-    flex: 1,
+    flex: 0.5,
   },
   {
     field: "status",
@@ -62,10 +82,6 @@ const ItemDataGrid = () => {
   const [loading, setLoading] = useState();
   const [rows, setRows] = useState([]);
 
-
-  const [rowSelectionModel, setRowSelectionModel] = useState([]);
-
-
   const categoryMapping = {
     COMPUTERS_AND_LAPTOPS: "Computers & Laptops",
     COMPUTER_ACCESSORIES: "Computer Accessories",
@@ -87,7 +103,9 @@ const ItemDataGrid = () => {
         const data = response.data.map((item) => ({
           id: item.itemId,
           item_name: item.itemName,
+          model: item.model,
           group: categoryMapping[item.itemGroup],
+          brand: item.brand,
           quantity: item.quantity,
           status: item.status,
         }));
@@ -103,55 +121,24 @@ const ItemDataGrid = () => {
     fetchData();
   }, []);
 
-  const handleRowSelectionModelChange = (newSelectedRow) => {
-    setRowSelectionModel(newSelectedRow);
-  };
-
-  const handleView = () => {
-    const selectedItemId = rowSelectionModel[0];
+  const handleClick = (params) => {
+    const selectedItemId = params.id;
     navigate("/item/view-item/" + selectedItemId);
   };
 
-  const handleEdit = () => {
-    const selectedItemId = rowSelectionModel[0];
-    navigate("/item/edit-item/" + selectedItemId);
-  };
-
   return (
-    <Box className="h-[400px] w-full">
-      <Box className="py-4">
-        <h1 className="block text-3xl font-bold">All items</h1>
-        <p className="inline-block">Here are all inventory items!!</p>
-        {rowSelectionModel.length > 0 ? (
-          <>
-            {isAdmin && (
-              <Button
-                variant="contained"
-                className="bg-blue-600 py-2 text-white rounded left-[40%] w-[145px]"
-                onClick={handleEdit}
-              >
-                Edit
-              </Button>
-            )}
-            <Button
-              variant="contained"
-              className="bg-blue-600 py-2 text-white rounded left-[48%] w-[145px]"
-              onClick={handleView}
-            >
-              View
-            </Button>
-          </>
-        ) : (
-          isAdmin && (
-            <Button
-              variant="contained"
-              className="bg-blue-600 px-6 py-2 text-white rounded left-[62%] w-[145px]"
-              onClick={() => navigate("/item/add-item")}
-            >
-              Add items
-            </Button>
-          )
-        )}
+    <Box className="h-[400px] w-full h-full">
+      {isAdmin && (
+         <Button
+            variant="contained"
+            className="bg-blue-600 px-6 py-2 text-white rounded left-[85%] w-[145px]"
+             onClick={() => navigate("/item/add-item")}
+        >
+          Add items
+        </Button>
+      )}
+      <Box className="bg-[#3f51b5] text-white font-medium p-4  mb-0 mt-8 flex items-center justify-center">
+        <p>Inventory Item List</p>
       </Box>
       {loading ? (
         <div className="flex justify-center mostRequestedItems-center">
@@ -170,24 +157,22 @@ const ItemDataGrid = () => {
           }}
           autoHeight
           pageSizeOptions={[10]}
-          checkboxSelection
-          rowSelectionModel={rowSelectionModel}
-          onRowSelectionModelChange={handleRowSelectionModelChange}
+          onRowClick={handleClick}
           sx={{
-          '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: '#f5f5f5',
-            borderBottom: '2px solid #000',
-          },
-          '& .MuiDataGrid-cell': {
-            borderBottom: '1px solid #ddd',
-          },
-          '& .MuiDataGrid-row': {
-            borderBottom: '2px solid #000',
-          },
-          '& .MuiDataGrid-root': {
-            border: '2px solid #000',
-          },
-        }}
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: "#f5f5f5",
+              borderBottom: "2px solid #000",
+            },
+            "& .MuiDataGrid-cell": {
+              borderBottom: "1px solid #ddd",
+            },
+            "& .MuiDataGrid-row": {
+              borderBottom: "2px solid #000",
+            },
+            "& .MuiDataGrid-root": {
+              border: "2px solid #000",
+            },
+          }}
         />
       )}
     </Box>

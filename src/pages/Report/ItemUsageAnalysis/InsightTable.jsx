@@ -15,6 +15,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import { Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const InsightTable = ({ category, year, isOpen }) => {
   const [ticket, setTicket] = useState([]);
@@ -22,7 +23,7 @@ const InsightTable = ({ category, year, isOpen }) => {
   const [open, setOpen] = useState(isOpen);
   const [loadingTickets, setLoadingTickets] = useState();
   const [loadingMostRequested, setLoadingMostRequested] = useState();
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchTickets = async () => {
       try {
@@ -52,6 +53,7 @@ const InsightTable = ({ category, year, isOpen }) => {
         }
       } catch (error) {
         console.log(error);
+        setTicket(null);
       } finally {
         setLoadingTickets(false);
       }
@@ -81,6 +83,7 @@ const InsightTable = ({ category, year, isOpen }) => {
         console.log("mostRequestedItem", mostRequestedItem);
       } catch (error) {
         console.log(error);
+        setMostRequestedItem(null);
       } finally {
         setLoadingMostRequested(false);
       }
@@ -204,7 +207,7 @@ const InsightTable = ({ category, year, isOpen }) => {
             </TableHead>
 
             <TableBody>
-              <TableRow>
+              <TableRow onClick={()=> navigate("/item/view-item/" + mostRequestedItem.id)}>
                 <TableCell component="th" scope="row">
                   {mostRequestedItem.itemName}
                 </TableCell>
@@ -222,13 +225,17 @@ const InsightTable = ({ category, year, isOpen }) => {
 };
 
 function Row(props) {
+  const navigate = useNavigate();
   const { row } = props;
 
   return (
     <TableBody>
       {row.details &&
         row.details.map((detailsRow) => (
-          <TableRow key={detailsRow.id}>
+          <TableRow
+            key={detailsRow.id}
+            onClick={() => navigate("/ticket/ticketdoc/" + detailsRow.id)}
+          >
             <TableCell component="th" scope="row">
               {detailsRow.id}
             </TableCell>

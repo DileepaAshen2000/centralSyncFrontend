@@ -1,13 +1,25 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import { Button, CircularProgress } from "@mui/material";
+import {  CircularProgress } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const getStatusClass = (status) => {
+  switch (status) {
+    case "COMPLETED":
+      return "bg-green-500 text-black font-bold w-[100px]";
+    case "CANCELLED":
+      return "bg-red-400 text-black  font-bold w-[100px]";
+  }
+};
+
 const columns = [
-  { field: "id", headerName: "Order ID", width: 150 },
+  { field: "id", headerName: "Order ID",
+    minwidth: 100,
+    editable: false,
+    flex: 0.5, },
   {
     field: "email_address",
     headerName: "Email Address",
@@ -23,8 +35,8 @@ const columns = [
     flex: 1,
   },
   {
-    field: "date",
-    headerName: "Date",
+    field: "date_last_update",
+    headerName: "Date Completed/Cancelled",
     type: "number",
     minwidth: 150,
     editable: true,
@@ -36,7 +48,9 @@ const columns = [
     minwidth: 200,
     flex: 1,
     renderCell: (params) => (
-      <div className="p-2 rounded text-center bg-green-400 text-black text-sm w-[95px]">
+      <div
+        className={`p-2 rounded text-center  ${getStatusClass(params.value)}`}
+      >
         {params.value}
       </div>
     ),
@@ -54,15 +68,19 @@ const CompleteOrders = () => {
       try {
         const response = await axios.get("http://localhost:8080/orders/getAll");
         const data = response.data
-          .filter((order) => order.status === "COMPLETED")
+          .filter((order) => (order.status === "COMPLETED"||order.status==="CANCELLED"))
           .map((order) => ({
             id: order.orderId,
             email_address: order.vendorEmail,
             vendor_name: order.vendorName,
-            date: order.date,
+            date_last_update: order.lastStatusUpdate,
             status: order.status,
           }));
-        setRows(data);
+        const sortedData = data.sort(
+          (a, b) => new Date(b.date_last_update) - new Date(a.date_last_update)
+        );
+
+        setRows(sortedData);
       } catch (error) {
         console.log(error);
       } finally {
@@ -73,8 +91,6 @@ const CompleteOrders = () => {
     fetchData();
   }, []);
 
- 
-
   const handleRowClick = (params) => {
     const selectedItemId = params.row.id;
     console.log("ID", selectedItemId);
@@ -83,6 +99,9 @@ const CompleteOrders = () => {
 
   return (
     <Box className="h-[400px] w-full">
+    <Box className="bg-[#3f51b5] text-white font-medium p-4  mb-0 mt-4 flex items-center justify-center">
+        <p>Processed Order List</p>
+      </Box>
       {/* Data grid component */}
       {loading ? (
         <div className="flex justify-center mostRequestedItems-center">
@@ -101,7 +120,6 @@ const CompleteOrders = () => {
           }}
           autoHeight
           pageSizeOptions={[5]}
-          checkboxSelection
           onRowClick={handleRowClick}
           sx={{
             "& .MuiDataGrid-columnHeaders": {
