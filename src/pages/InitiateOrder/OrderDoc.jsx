@@ -115,7 +115,13 @@ const ViewOrderDetails = () => {
     setLoading(true);
     try {
       const response = await axios.patch(
-        `http://localhost:8080/orders/review/${orderID}`
+        `http://localhost:8080/orders/review/${orderID}`,
+        {   prevStatus: status    },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
 
       if (response.status === 200) {
@@ -378,6 +384,18 @@ const ViewOrderDetails = () => {
               </div>
             </div>
           )}
+          {status !== "PROBLEM_REPORTED" && note && (
+        <div className="mb-30 border-gray-400">
+          <Typography variant="h6" className="font-bold text-gray-700" gutterBottom>
+            Resolved Issue:
+          </Typography>
+          <div className="w-2/3">
+            <Typography variant="subtitle1" className="text-gray-500">
+              {note}
+            </Typography>
+          </div>
+        </div>
+      )}
 
           {/* buttons */}
           <div className="mt-6 flex items-center justify-between">
