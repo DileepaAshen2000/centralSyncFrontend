@@ -207,7 +207,7 @@ setOpenSA(true);
       .patch(`http://localhost:8080/request/updateStatus/accept/${reqId}`)
       .then(() => {
         setInventoryRequest(!inventoryRequest);
-        navigate((`/new-stockout/${reqId}`));
+        navigate(`/new-stockout/${reqId}`);
       })
       .catch((error) => {
         console.log(error);
