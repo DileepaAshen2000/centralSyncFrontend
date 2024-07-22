@@ -83,6 +83,9 @@ const StockInList = () => {
         )}
       </Box>
 
+      <Box className="bg-[#703fb5] text-white font-medium p-4  mb-0 mt-8 flex items-center justify-center">
+        <p>My Stock-In List</p>
+      </Box>
       <DataGrid className='shadow-lg'
         rows={rows}
         columns={columns}

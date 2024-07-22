@@ -12,42 +12,38 @@ const getStatusClass = (status) => {
     case "ACCEPTED":
       return "bg-green-500 text-white w-[90px]";
     case "REJECTED":
-      return "bg-red-500 text-white text-sm w-[90px]";  
+      return "bg-red-500 text-white text-sm w-[90px]";
     case "PENDING":
-      return "bg-blue-500 text-white text-sm w-[90px]";  
+      return "bg-blue-500 text-white text-sm w-[90px]";
   }
 };
 
 const columns = [
-    { field: 'id', headerName: 'Reference No.', width: 150 },
-    { field: 'reason', headerName: 'Reason', width: 180 },
-    { field: 'description', headerName: 'Description', width: 250 },
-    { field: 'adjusted_Qty', headerName: 'Adjusted_Qty', width: 150 },
-    { field: 'date', headerName: 'Date', width: 150 },
-    {
-      field: "status",
-      headerName: "Status",
-      width: 130,
-      renderCell: (params) => (
-        <div
-          className={`p-2 rounded text-center ${getStatusClass(params.value)}`}
-        >
-          {params.value}
-        </div>
-      ),
-    },
-  ];
+  { field: 'id', headerName: 'Reference No.', width: 150 },
+  { field: 'reason', headerName: 'Reason', width: 180 },
+  { field: 'description', headerName: 'Description', width: 250 },
+  { field: 'adjusted_Qty', headerName: 'Adjusted_Qty', width: 150 },
+  { field: 'date', headerName: 'Date', width: 150 },
+  {
+    field: "status",
+    headerName: "Status",
+    width: 130,
+    renderCell: (params) => (
+      <div className={`p-2 rounded text-center ${getStatusClass(params.value)}`}>
+        {params.value}
+      </div>
+    ),
+  },
+];
 
 const AdminAdjustment = () => {
   const navigate = useNavigate();
   const [rows, setRows] = useState([]);
 
- 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+        const token = localStorage.getItem('token');
         const profile = await LoginService.getYourProfile(token);
         const userId = profile.users.userId;
 
@@ -60,6 +56,18 @@ const AdminAdjustment = () => {
           date: adj.date,
           status: adj.status
         }));
+
+        // Sort the data to have PENDING adjustments at the beginning
+        data.sort((a, b) => {
+          if (a.status === "PENDING" && b.status !== "PENDING") {
+            return -1;
+          } else if (a.status !== "PENDING" && b.status === "PENDING") {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+
         setRows(data);
       } catch (error) {
         console.log(error);
@@ -82,7 +90,7 @@ const AdminAdjustment = () => {
       navigate("/newadjustment");
     }
   };
-  
+
   const handleViewClick = () => {
     if (rowSelectionModel > 0) {
       const selectedAdjId = rowSelectionModel[0];
@@ -95,8 +103,7 @@ const AdminAdjustment = () => {
   return (
     <Box className="h-[400px] w-full flex-row space-y-4">
       <Box className="flex p-4 space-x-96">
-        
-        {rowSelectionModel > 0 ? (
+        {rowSelectionModel.length > 0 ? (
           <div className="flex items-center ">
             {rows.find(row => row.id === rowSelectionModel[0]).status === "PENDING" && (
               <Button
@@ -107,7 +114,6 @@ const AdminAdjustment = () => {
                 Edit
               </Button>
             )}
-            
             <div className="pl-10">
               <Button
                 variant="contained"
@@ -117,41 +123,36 @@ const AdminAdjustment = () => {
                 View
               </Button>
             </div>
-            
-            
           </div>
         ) : (
-          
           <div className="flex items-center">
             <Button
               variant="contained"
               className="bg-blue-600 py-2 text-white rounded w-[auto]"
               onClick={() => navigate("/newadjustment")}
             >
-            New Adjustment
+              New Adjustment
             </Button>
           </div>
-          
         )}
       </Box>
-
-        <DataGrid className='shadow-lg'
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
+      <DataGrid className='shadow-lg'
+        rows={rows}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
             },
-          }}
-          autoHeight
-          pageSizeOptions={[5]}
-          checkboxSelection
-          disableMultipleSelection={true} // Prevent multiple row selection
-          rowSelectionModel={rowSelectionModel}
-          onRowSelectionModelChange={handlerowSelectionModelChange}
-          sx={{
+          },
+        }}
+        autoHeight
+        pageSizeOptions={[5]}
+        checkboxSelection
+        disableMultipleSelection={true} // Prevent multiple row selection
+        rowSelectionModel={rowSelectionModel}
+        onRowSelectionModelChange={handlerowSelectionModelChange}
+        sx={{
           '& .MuiDataGrid-columnHeaders': {
             backgroundColor: '#f5f5f5',
             borderBottom: '2px solid #000',
@@ -166,7 +167,7 @@ const AdminAdjustment = () => {
             border: '2px solid #000',
           },
         }}
-        />
+      />
     </Box>
   );
 };

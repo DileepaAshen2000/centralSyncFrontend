@@ -48,11 +48,6 @@ export default function LoginPage() {
                 default:
                   navigate('/default-dashboard'); // Fallback case if role is not recognized
               } // Navigate to desired location after successful login
-        Swal.fire({
-          icon: 'success',
-          title: 'Login Successful',
-          text: 'You have successfully logged in!',
-        })
       });
     } else {
         Swal.fire({

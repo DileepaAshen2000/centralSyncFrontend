@@ -251,7 +251,7 @@ const EditAdjustment = () => {
 
       <div className="flex items-center col-span-4 col-start-1">
         <InputLabel htmlFor="adjId" className="flex-none w-32 text-black ">
-          Adjustment ID
+          Reference No.
         </InputLabel>
         <div>
           <TextField

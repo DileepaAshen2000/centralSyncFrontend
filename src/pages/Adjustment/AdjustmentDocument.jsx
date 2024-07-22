@@ -162,15 +162,15 @@ const AdjustmentDocument = () => {
           >print</Button>
         </div>
         <div ref={printRef} className="p-10 ml-6 mr-6 bg-white">
-          <div>
+          <div className="w-full py-4 text-center text-white bg-blue-900">
+            <header className="text-3xl font-bold">INVENTORY ADJUSTMENT</header>
+          </div>
+          <div className='mt-6'>
             <section>
               {getStatus(status)}
             </section>
           </div>
           <div>
-            <section className="flex flex-row items-end justify-end mb-6">
-              <header className="text-3xl">INVENTORY ADJUSTMENT</header>
-            </section>
             <section className="flex flex-row items-end justify-end gap-10">
               <ul className='flex flex-col gap-2'>
                 <li className="font-bold">Reference No</li>

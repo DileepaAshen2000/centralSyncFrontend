@@ -73,7 +73,7 @@ const PendingActivities = () => {
   }
 
   return loading ? (
-    <div className="flex justify-center items-center h-[100px] w-[200px]">
+    <div className="flex justify-center items-center h-[100px] w-[200px] m-auto">
       <CircularProgress />
     </div>
   ) : (

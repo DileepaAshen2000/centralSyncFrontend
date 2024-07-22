@@ -121,10 +121,10 @@ const handlePrint = useReactToPrint({
           >print</Button>
         </div>
         <div ref={printRef} className="p-10 ml-6 mr-6 bg-white">
-          <div>
-            <section className="flex flex-row items-end justify-end mt-4 mb-10">
-              <header className="text-3xl">Stock-In Report</header>
-            </section>
+          <div className="w-full py-4 text-center text-white bg-purple-800">
+            <header className="text-3xl font-bold">STOCK-IN REPORT</header>
+          </div>
+          <div className='mt-10'>
             <section className="flex flex-row items-end justify-end gap-10">
               <ul className='flex flex-col gap-2'>
                 <li className="font-bold">Reference No.</li>

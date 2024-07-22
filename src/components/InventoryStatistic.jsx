@@ -42,7 +42,7 @@ export default function InventoryStatistic() {
   return (
     <div>
       {loading ? (
-        <div className="flex justify-center items-center h-[400px] w-[300px]">
+        <div className="flex justify-center items-center h-[400px] w-[300px] m-auto">
           <CircularProgress />
         </div>
       ) : (

@@ -62,7 +62,6 @@ const NewStockOut = () => {
         setOptions(response.data);
 
         if (reqId && !isNaN(reqId)) {
-          console.log("dileepa ashen");
           const request = await axios.get(`http://localhost:8080/request/getById/${reqId}`);
           const requestData = request.data;
           setReq(requestData);
@@ -243,90 +242,6 @@ const NewStockOut = () => {
     validateField(name, value);
   };
 
-  // const onSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-
-  //     const validationErrors = {};
-
-  //     // Validate all fields
-  //     validateField("itemName", selectedItemName);
-  //     validateField("department", department);
-  //     validateField("date", date);
-  //     validateField("outQty", outQty);
-  //     validateField("brand", selectedBrand);
-  //     validateField("model", selectedModel);
-
-  //     // Check if there are any errors
-  //     const hasErrors = Object.keys(errors).some((key) => !!errors[key]);
-
-  //     if (hasErrors) {
-  //       Swal.fire({
-  //         icon: "error",
-  //         title: "Error!",
-  //         text: "Failed to submit Stock-In. Please check your inputs.",
-  //       });
-  //       return;
-  //     }
-
-  //     console.log("availableQuantity", availableQuantity);
-
-  //     if (parseInt(outQty) > availableQuantity) {
-  //       Swal.fire({
-  //         icon: "error",
-  //         title: "Error!",
-  //         text: "Out Quantity cannot be greater than available quantity."+"Available Quantity: "+availableQuantity,
-  //       });
-  //       return;
-  //     }
-  //           const formData = new FormData();
-  //           formData.append("department", department);
-  //           formData.append("date", date);
-  //           formData.append("description", description);
-  //           formData.append("outQty", outQty);
-  //           formData.append("itemId", itemId);
-  //           formData.append("userId", userId);
-  //           formData.append("file", file);
-      
-  //           const result = await axios.post(
-  //             "http://localhost:8080/stock-out/add",
-  //             formData,
-  //             {
-  //               headers: {
-  //                 "Content-Type": "multipart/form-data",
-  //               },
-  //             }
-  //           );
-      
-  //           navigate("/stockOut");
-  //           Swal.fire({
-  //             title: "Done!",
-  //             text: "Stock-Out Successfully Submitted.!",
-  //             icon: "success",
-  //           });
-  //         } catch (error) {
-  //           if (error.response && error.response.status === 400) {
-  //             console.log(error.response.data);
-  //           } else if (error.response.status === 403) {
-  //             console.error("Error:", error);
-  //             console.log(error.response.data);
-  //             Swal.fire({
-  //               title: "Error!",
-  //               text: "The item is currently inactive",
-  //               icon: "error",
-  //             });
-  //           } else {
-  //             console.error("Error:", error);
-  //             console.log(error.response.data);
-  //             Swal.fire({
-  //               title: "Error!",
-  //               text: `Failed to submit Stock-In. Error: ${error.response.data}`,
-  //               icon: "error"
-  //             });
-  //           }
-  //         }
-  // };
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -445,8 +360,7 @@ const NewStockOut = () => {
             getOptionLabel={(option) => option.itemName}
             value={selectedItemName ? { itemName: selectedItemName } : null}
             onChange={handleItemChange}
-            value={selectedItemName ? options.find(option => option.itemName === selectedItemName) || null : null}
-
+            // value={selectedItemName ? options.find(option => option.itemName === selectedItemName) || null : null}
             sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField
