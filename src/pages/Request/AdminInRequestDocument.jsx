@@ -126,7 +126,7 @@ setOpenSA(true);
 
   const handleClickAccept = () => {
     setOpenAD(true);
-    navigate(`/new-stockout/${reqId}`);
+    // navigate(`/new-stockout/${reqId}`);
   };
   
 
@@ -207,7 +207,7 @@ setOpenSA(true);
       .patch(`http://localhost:8080/request/updateStatus/accept/${reqId}`)
       .then(() => {
         setInventoryRequest(!inventoryRequest);
-        navigate(getInventoryRequestListLink());
+        navigate(`/new-stockout/${reqId}`);
       })
       .catch((error) => {
         console.log(error);
