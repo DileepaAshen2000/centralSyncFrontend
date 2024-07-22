@@ -8,6 +8,7 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import LoginService from '../Login/LoginService'; // Ensure the path is correct
+import { set } from 'date-fns';
 
 // Table component to display data with a loading state
 const Table = ({ rows, columns, loading, onRowClick }) => {
@@ -71,11 +72,15 @@ const AdminInRequestList = () => {
       //state variables for counts
       const [sentToAdminCount, setSentToAdminCount] = useState(0);
       const[pendingCount,setPendingCount]=useState(0);
+      const[reqPendingCount, setReqPendingCount] = useState(0);
+      const [reqRejectedCount, setReqRejectedtedCount] = useState(0);
+      const[reqAcceptedCount, setReqAcceptedCount] = useState(0);
       const [receivedCount, setReceivedCount] = useState(0);
     const [dispatchedCount, setDispatchedCount] = useState(0);
     const [deliveredCount, setDeliveredCount] = useState(0);
     const [rejectedCount, setRejectedCount] = useState(0);
     const [wantToReturnCount, setWantToReturnCount] = useState(0);
+const[acceptedCount,setAcceptedCount]=useState(0);
 
   useEffect(() => {
     checkEmployeeStatus();
@@ -92,9 +97,12 @@ const AdminInRequestList = () => {
       let data = formatRequestsData(response.data);
 
       // Filtering requests based on role
-      const reviewingRequests = data.filter(item => (item.status === 'SENT_TO_ADMIN' && item.workSite !== 'ONLINE'));
+      const reviewingRequests = data.filter(item => ((item.status === 'SENT_TO_ADMIN' && item.workSite !== 'ONLINE') ||
+    (item.role === 'REQUEST_HANDLER')));
       setSentToAdminCount(reviewingRequests.filter(item => item.status === 'SENT_TO_ADMIN').length);
-      console.log('Reviewing Requests:', reviewingRequests);
+      setReqPendingCount(reviewingRequests.filter(item => item.status === 'PENDING').length);
+     setReqRejectedtedCount(reviewingRequests.filter(item => item.status === 'REJECTED').length);
+      setReqAcceptedCount(reviewingRequests.filter(item => item.status === 'ACCEPTED').length);
       const myRequests = data.filter(item => (item.workSite === 'ONLINE') && (item.status !== 'WANT_TO_RETURN_ITEM'));
       setPendingCount(myRequests.filter(item => item.status === 'PENDING').length);
       setDispatchedCount(myRequests.filter(item => item.status === 'DISPATCHED').length);
@@ -320,6 +328,9 @@ const AdminInRequestList = () => {
           />
           <Box sx={{ display: 'flex', justifyContent: 'space-around', marginTop: '16px' }}>
             <CountBox title="Sent To Admin" count={sentToAdminCount} backgroundColor="#FFD700" />
+            <CountBox title="Pending Requests" count={reqPendingCount} backgroundColor="#ADD8E6" />
+            <CountBox title="Accepted Requests" count={reqAcceptedCount} backgroundColor="#90EE90" />
+            <CountBox title="Rejected Requests" count={reqRejectedCount} backgroundColor="#F08080" />
             </Box>
         </TabPanel>
 
