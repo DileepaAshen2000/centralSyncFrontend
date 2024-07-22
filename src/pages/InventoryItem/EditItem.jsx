@@ -380,7 +380,7 @@ const EditItem = () => {
     axios
       .patch(`http://localhost:8080/inventory-item/markAsInactive/${itemID}`)
       .then(() => {
-        navigate(-1);
+        navigate("/item");
       })
       .catch((error) => {
         console.log(error);
