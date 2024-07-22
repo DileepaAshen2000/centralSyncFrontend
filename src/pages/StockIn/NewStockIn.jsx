@@ -225,56 +225,54 @@ const NewStockIn = () => {
         Swal.fire({
           icon: "error",
           title: "Error!",
-          text: "Please correct the errors in the form.",
+          text: "Failed to submit Stock-In. Please check your inputs.",
         });
         return;
       }
-      const formData = new FormData();
-      formData.append("location", location);
-      formData.append("date", date);
-      formData.append("description", description);
-      formData.append("inQty", inQty);
-      formData.append("itemId", itemId);
-      formData.append("userId", userId);
-      formData.append("file", file); // Append the file to the formData
+            const formData = new FormData();
+            formData.append("location", location);
+            formData.append("date", date);
+            formData.append("description", description);
+            formData.append("inQty", inQty);
+            formData.append("itemId", itemId);
+            formData.append("userId", userId);
+            formData.append("file", file); // Append the file to the formData
+      
+            const result = await axios.post(
+              "http://localhost:8080/stock-in/add",
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+      
+            navigate("/stockIn"); // To navigate to the stockin page
+            Swal.fire({
+              title: "Done!",
+              text: "Stock-In Successfully Submitted.!",
+              icon: "success",
+            });
+          } catch (error) {
 
-      const result = await axios.post(
-        "http://localhost:8080/stock-in/add",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      navigate("/stockIn"); // To navigate to the stockin page
-      Swal.fire({
-        title: "Done!",
-        text: "Stock-In Successfully Submitted.!",
-        icon: "success",
-      });
-    } catch (error) {
-      if (error.response && error.response.status === 400) {
-        console.log(error.response.data);
-      } else if (error.response.status === 403) {
-        console.error("Error:", error);
-        console.log(error.response.data);
-        Swal.fire({
-          title: "Error!",
-          text: "The item is currently inactive",
-          icon: "error",
-        });
-      } else {
-        console.error("Error:", error);
-        console.log(error.response.data);
-        Swal.fire({
-          title: "Error!",
-          text: `Failed to submit Stock-In. Error: ${error.response.data}`,
-          icon: "error",
-        });
-      }
-    }
+            if(error.response.status === 406){
+              Swal.fire({
+                title: "Error!",
+                text: "Inventory item is currently inactive and can not be used.",
+                icon: "error"
+              });
+              return;
+            }
+            console.error("Error:", error);
+            console.log(error.response.data);
+            Swal.fire({
+              title: "Error!",
+              text: "Failed to submit Stock-In. Please check your inputs.",
+              icon: "error"
+            });
+            
+          }
   };
 
   const handleFileChange = (e) => {

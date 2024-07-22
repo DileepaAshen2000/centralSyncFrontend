@@ -5,9 +5,10 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import LoginService from "../Login/LoginService";
 
 const columns = [
-    { field: 'id', headerName: 'Stock-Out ID', width: 120 },
+    { field: 'id', headerName: 'Reference No.', width: 120 },
     { field: 'itemId', headerName: 'Item ID', width: 120 },
     { field: 'description', headerName: 'Description', width: 300 },
     { field: 'quantity', headerName: 'Quantity Out', width: 150 },
@@ -17,11 +18,12 @@ const columns = [
 
 const StockOutList = () => {
   const navigate = useNavigate();
+  const userId = localStorage.getItem("userId");
 
   const [rows, setRows] = useState([]);
   useEffect(() => {
     axios
-      .get("http://localhost:8080/stock-out/getAll")
+      .get(`http://localhost:8080/stock-out/getAllById/${userId}`)
       .then((response) => {
         const data = response.data.map((stockOut) => ({
             id: stockOut.soutId,
@@ -74,7 +76,7 @@ const StockOutList = () => {
             <Button
               variant="contained"
               className="bg-blue-600 py-2  text-white rounded w-[auto]"
-              onClick={() => navigate("/new-stockout")}
+              onClick={() => navigate("/new-stockout/:reqId")}
             >
               New Stock-Out
             </Button>
@@ -82,6 +84,9 @@ const StockOutList = () => {
         )}
       </Box>
 
+      <Box className="bg-[#3fb568] text-white font-medium p-4  mb-0 mt-8 flex items-center justify-center">
+        <p>My Stock-Out List</p>
+      </Box>
       <DataGrid className='shadow-lg'
         rows={rows}
         columns={columns}

@@ -13,10 +13,11 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import LoginService from "../Login/LoginService";
+import { useParams } from "react-router-dom";
 
 const NewStockOut = () => {
   let navigate = useNavigate();
-  let reactLocation = useLocation();
+  const { reqId } = useParams();
   const [profileInfo, setProfileInfo] = useState({});
   const [stockOut, setStockOut] = useState({
     department: "",
@@ -28,6 +29,18 @@ const NewStockOut = () => {
     file: null,
   });
 
+  const [req, setReq] = useState({
+    quantity: "",
+    itemId:"",
+    userId:"",
+  });
+
+  const {
+    quantity,
+    itemId: reqItemId,
+    userId: reqUserId,
+  } = req;
+ 
   const [errors, setErrors] = useState({});
   const [options, setOptions] = useState([]);
   const [brands, setBrands] = useState([]);
@@ -35,6 +48,7 @@ const NewStockOut = () => {
   const [selectedItemName, setSelectedItemName] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedModel, setSelectedModel] = useState("");
+  const [availableQuantity, setAvailableQuantity] = useState(0);
 
   const { department, date, description, outQty, itemId, userId, file } =
     stockOut;
@@ -46,6 +60,37 @@ const NewStockOut = () => {
           "http://localhost:8080/inventory-item/getAll"
         );
         setOptions(response.data);
+
+        if (reqId && !isNaN(reqId)) {
+          const request = await axios.get(`http://localhost:8080/request/getById/${reqId}`);
+          const requestData = request.data;
+          setReq(requestData);
+          console.log(requestData);
+
+          setStockOut((prevStockOut) => ({
+            ...prevStockOut,
+            outQty: requestData.quantity,
+            itemId: requestData.itemId,
+            userId: requestData.userId,
+          }));
+
+          const itemResponse = await axios.get(`http://localhost:8080/inventory-item/getById/${requestData.itemId}`);
+          const itemData = itemResponse.data;
+
+          setSelectedItemName(itemData.itemName);
+          setSelectedBrand(itemData.brand);
+          setSelectedModel(itemData.model);
+
+          const brandsResponse = await axios.get(
+            `http://localhost:8080/inventory-item/getBrandsByItemName?itemName=${itemData.itemName}`
+          );
+          setBrands(brandsResponse.data);
+
+          const modelsResponse = await axios.get(
+            `http://localhost:8080/inventory-item/getModelsByItemNameAndBrand?itemName=${itemData.itemName}&brand=${itemData.brand}`
+          );
+          setModels(modelsResponse.data);
+        }
 
         const token = localStorage.getItem("token");
         const profile = await LoginService.getYourProfile(token);
@@ -59,17 +104,7 @@ const NewStockOut = () => {
       }
     };
     fetchData();
-  }, []);
-  //fetch data when navigate through search
-  useEffect(() => {
-    if (reactLocation.state?.item) {
-      const { itemName, brand, model } = reactLocation.state.item;
-      
-      setSelectedItemName(itemName);
-      setSelectedBrand(brand);
-      setSelectedModel(model);
-    }
-  }, [reactLocation.state]);
+  }, [reqId]);
 
   const handleItemChange = async (event, value) => {
     if (value) {
@@ -132,10 +167,8 @@ const NewStockOut = () => {
         );
         if (response.status === 200) {
           const item = response.data;
-          setStockOut((prevStockOut) => ({
-            ...prevStockOut,
-            itemId: item.itemId,
-          }));
+          setAvailableQuantity(item.quantity);
+          setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: item.itemId }));
         } else {
           setStockOut((prevStockOut) => ({ ...prevStockOut, itemId: "" }));
           Swal.fire({
@@ -209,31 +242,54 @@ const NewStockOut = () => {
     validateField(name, value);
   };
 
+
   const onSubmit = async (e) => {
     e.preventDefault();
-
+  
+    // Perform final validation
+    const validationErrors = {};
+  
+    // Validate all fields
+    validateField("itemName", selectedItemName);
+    validateField("department", department);
+    validateField("date", date);
+    validateField("outQty", outQty);
+    validateField("brand", selectedBrand);
+    validateField("model", selectedModel);
+  
+    // Check if there are any errors
+    const hasErrors = Object.keys(errors).some((key) => !!errors[key]);
+  
+    // Check for negative quantity
+    if (parseInt(outQty) <= 0) {
+      validationErrors.outQty = "Out Quantity must be a positive number.";
+    }
+  
+    // If there are any errors, prevent submission
+    if (hasErrors || Object.keys(validationErrors).length > 0) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        ...validationErrors,
+      }));
+  
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Failed to submit Stock-Out. Please check your inputs.",
+      });
+      return;
+    }
+  
+    if (parseInt(outQty) > availableQuantity) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Out Quantity cannot be greater than available quantity. Available Quantity: " + availableQuantity,
+      });
+      return;
+    }
+  
     try {
-      const validationErrors = {};
-
-      // Validate all fields
-      validateField("itemName", selectedItemName);
-      validateField("department", department);
-      validateField("date", date);
-      validateField("outQty", outQty);
-      validateField("brand", selectedBrand);
-      validateField("model", selectedModel);
-
-      // Check if there are any errors
-      const hasErrors = Object.keys(errors).some((key) => !!errors[key]);
-
-      if (hasErrors) {
-        Swal.fire({
-          icon: "error",
-          title: "Error!",
-          text: "Please correct the errors in the form.",
-        });
-        return;
-      }
       const formData = new FormData();
       formData.append("department", department);
       formData.append("date", date);
@@ -242,7 +298,7 @@ const NewStockOut = () => {
       formData.append("itemId", itemId);
       formData.append("userId", userId);
       formData.append("file", file);
-
+  
       const result = await axios.post(
         "http://localhost:8080/stock-out/add",
         formData,
@@ -252,7 +308,7 @@ const NewStockOut = () => {
           },
         }
       );
-
+  
       navigate("/stockOut");
       Swal.fire({
         title: "Done!",
@@ -262,12 +318,11 @@ const NewStockOut = () => {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         console.log(error.response.data);
-      } else if (error.response.status === 403) {
-        console.error("Error:", error);
+      } else if (error.response.status === 406) {
         console.log(error.response.data);
         Swal.fire({
           title: "Error!",
-          text: "The item is currently inactive",
+          text: "Inventory item is currently inactive and can not be used",
           icon: "error",
         });
       } else {
@@ -275,12 +330,13 @@ const NewStockOut = () => {
         console.log(error.response.data);
         Swal.fire({
           title: "Error!",
-          text: `Failed to submit Stock-In. Error: ${error.response.data}`,
+          text: `Failed to submit Stock-Out. Error: ${error.response.data}`,
           icon: "error",
         });
       }
     }
   };
+  
 
   const handleFileChange = (e) => {
     setStockOut({ ...stockOut, file: e.target.files[0] });
@@ -302,9 +358,9 @@ const NewStockOut = () => {
             disablePortal
             options={options}
             getOptionLabel={(option) => option.itemName}
+            value={selectedItemName ? { itemName: selectedItemName } : null}
             onChange={handleItemChange}
-            value={selectedItemName ? options.find(option => option.itemName === selectedItemName) || null : null}
-
+            // value={selectedItemName ? options.find(option => option.itemName === selectedItemName) || null : null}
             sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField

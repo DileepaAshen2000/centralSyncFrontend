@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const columns = [
-    { field: 'id', headerName: 'StockIn ID', width: 120 },
+    { field: 'id', headerName: 'Reference No.', width: 120 },
     { field: 'itemId', headerName: 'Item ID', width: 120 },
     { field: 'description', headerName: 'Description', width: 300 },
     { field: 'quantity', headerName: 'Quantity In', width: 150 },
@@ -17,11 +17,12 @@ const columns = [
 
 const StockInList = () => {
   const navigate = useNavigate();
+  const userId = localStorage.getItem("userId");
 
   const [rows, setRows] = useState([]);
   useEffect(() => {
     axios
-      .get("http://localhost:8080/stock-in/getAll")
+      .get(`http://localhost:8080/stock-in/getAllById/${userId}`)
       .then((response) => {
         const data = response.data.map((stockIn) => ({
             id: stockIn.sinId,
@@ -82,6 +83,9 @@ const StockInList = () => {
         )}
       </Box>
 
+      <Box className="bg-[#703fb5] text-white font-medium p-4  mb-0 mt-8 flex items-center justify-center">
+        <p>My Stock-In List</p>
+      </Box>
       <DataGrid className='shadow-lg'
         rows={rows}
         columns={columns}

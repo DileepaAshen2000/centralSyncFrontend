@@ -126,6 +126,7 @@ setOpenSA(true);
 
   const handleClickAccept = () => {
     setOpenAD(true);
+    navigate(`/new-stockout/${reqId}`);
   };
   
 
@@ -387,7 +388,7 @@ setOpenSA(true);
               
                 
                
-                <div className="w-full  bg-blue-900 text-white text-center py-4">
+                <div className="w-full py-4 text-center text-white bg-blue-900">
                   <header className="text-3xl font-bold">INVENTORY REQUEST</header>
                 </div>
         
@@ -473,7 +474,7 @@ setOpenSA(true);
                 onChange={(e) => setNote(e.target.value)}
               />
               <Button
-                className="ml-2 px-4 py-2 text-white bg-blue-600 rounded"
+                className="px-4 py-2 ml-2 text-white bg-blue-600 rounded"
                 variant='contained'
                 onClick={handleSendNote}
                 style={{ height: 'fit-content', alignSelf: 'center' }}
@@ -489,7 +490,7 @@ setOpenSA(true);
         (
             <>
               <Button
-                className="px-6 py-2 bg-green-500 text-white hover:bg-green-400"
+                className="px-6 py-2 text-white bg-green-500 hover:bg-green-400"
                 variant='contained'
                 type='submit'
                 onClick={handleClickAccept}
@@ -520,7 +521,7 @@ setOpenSA(true);
        (
             <>
               <Button
-                className="px-6 py-2 bg-red-500 text-white hover:bg-red-400"
+                className="px-6 py-2 text-white bg-red-500 hover:bg-red-400"
                 variant='contained'
                 type='submit'
                 onClick={handleClickReject}

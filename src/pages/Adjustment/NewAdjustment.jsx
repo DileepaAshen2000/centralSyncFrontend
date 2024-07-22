@@ -178,17 +178,21 @@ const NewAdjustment = () => {
       } else if (isNaN(value) || value <= 0) {
         validationErrors.newQuantity = "New Quantity must be a positive number.";
       }
+      const adjustedQty = value - item.quantity;
+      if (adjustedQty < -10 || adjustedQty > 10) {
+        validationErrors.adjustedQuantity = "Adjusted quantity must be between -10 and 10.";
+      }
     } else if (name === "brand" && !value) {
       validationErrors.brand = "Brand is required.";
     } else if (name === "model" && !value) {
       validationErrors.model = "Model is required.";
     }
-
+  
     setErrors((prevErrors) => ({
       ...prevErrors,
       [name]: validationErrors[name],
     }));
-
+  
     // Remove the error if there is no validation error for the field
     if (!validationErrors[name]) {
       setErrors((prevErrors) => {
@@ -203,42 +207,68 @@ const NewAdjustment = () => {
     let updatedAdj = { ...adj, [name]: value };
     if (name === "newQuantity") {
       updatedAdj.adjustedQuantity = value - item.quantity;
+      if (updatedAdj.adjustedQuantity < -10 || updatedAdj.adjustedQuantity > 10) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          adjustedQuantity: "Adjusted quantity must be between -10 and 10.",
+        }));
+      } else {
+        setErrors((prevErrors) => {
+          const { adjustedQuantity, ...rest } = prevErrors;
+          return rest;
+        });
+      }
     }
     setAdj(updatedAdj);
     if (errors[name]) {
       validateField(name, value);
     }
   };
+  
 
   const handleBlur = (e) => {
     const { name, value } = e.target;
     validateField(name, value);
   };
-
+  
   const onSubmit = async (e) => {
     e.preventDefault();
-
-    const validationErrors = {};
-
-      validateField("itemName", selectedItemName);
-      validateField("reason", reason);
-      validateField("date", date);
-      validateField("newQuantity", newQuantity);
-      validateField("brand", selectedBrand);
-      validateField("model", selectedModel);
-
-      // Check if there are any errors
-      const hasErrors = Object.keys(errors).some((key) => !!errors[key]);
-
-      if (hasErrors) {
-        Swal.fire({
-          icon: "error",
-          title: "Error!",
-          text: "Failed to submit adjustment. Please check your inputs.",
-        });
-        return;
-      }
-
+  
+    // Validate all fields
+    validateField("itemName", selectedItemName);
+    validateField("reason", reason);
+    validateField("date", date);
+    validateField("newQuantity", newQuantity);
+    validateField("brand", selectedBrand);
+    validateField("model", selectedModel);
+  
+    const adjustedQty = newQuantity - item.quantity;
+    if (adjustedQty < -10 || adjustedQty > 10) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        adjustedQuantity: "Adjusted quantity must be between -10 and 10.",
+      }));
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Adjusted quantity must be between -10 and 10.",
+      });
+      return;
+    }
+  
+    // Check if there are any errors
+    const hasErrors = Object.keys(errors).some((key) => !!errors[key]);
+  
+    if (hasErrors) {
+      console.log("Validation errors found:", errors);
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Failed to submit Adjustment. Please check your inputs.",
+      });
+      return;
+    }
+  
     const formData = new FormData();
     formData.append(
       "adjustment",
@@ -260,6 +290,7 @@ const NewAdjustment = () => {
     if (file) {
       formData.append("file", file);
     }
+    console.log(formData);
     try {
       const response = await axios.post(
         "http://localhost:8080/adjustment/add",
@@ -270,7 +301,7 @@ const NewAdjustment = () => {
           },
         }
       );
-
+  
       if (response.status === 201) {
         Swal.fire({
           icon: "success",
@@ -280,7 +311,7 @@ const NewAdjustment = () => {
         navigate("/adjustment");
       }
     } catch (error) {
-      if(error.response.status === 403){
+      if (error.response.status === 406) {
         Swal.fire({
           icon: "error",
           title: "Error!",
@@ -293,13 +324,14 @@ const NewAdjustment = () => {
         Swal.fire({
           icon: "error",
           title: "Error!",
-          text: "Failed to submit adjustment. Please check your inputs.",
+          text: "Failed to submit Adjustment. Please check your inputs.",
         });
         const backendErrors = error.response.data;
         setErrors(backendErrors);
       }
     }
   };
+  
 
   const handleFileChange = (e) => {
     setAdj({ ...adj, file: e.target.files[0] });
@@ -454,7 +486,8 @@ const NewAdjustment = () => {
             className="w-[300px] h-10 bg-white"
           >
             <MenuItem value="Damaged Item">Damaged Item</MenuItem>
-            <MenuItem value="Stolen Item">Stolen Item</MenuItem>
+            <MenuItem value="Return to Insurance">Return to Insurance</MenuItem>
+            <MenuItem value="Omissions in Issuance">Omissions in Issuance</MenuItem>
             <MenuItem value="Others">Others</MenuItem>
           </Select>
           <Typography variant="caption" className="text-xs text-[#FC0000]">
@@ -505,9 +538,9 @@ const NewAdjustment = () => {
               <TableBody>
                 <TableRow>
                   <TableCell component="th" scope="row">
-                    {selectedItemName || "Loading..."}
+                    {selectedItemName || "--"}
                   </TableCell>
-                  <TableCell align="right">{item.quantity}</TableCell>
+                  <TableCell align="right">{item.quantity || "--"}</TableCell>
                   <TableCell align="right">
                     <TextField
                       size="small"
@@ -521,7 +554,7 @@ const NewAdjustment = () => {
                       onBlur={handleBlur}
                     ></TextField>
                   </TableCell>
-                  <TableCell align="right">{adjustedQuantity}</TableCell>
+                  <TableCell align="right">{adjustedQuantity || "--"}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>

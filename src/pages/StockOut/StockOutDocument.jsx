@@ -92,10 +92,10 @@ const StockOutDocument = () => {
           >Print</Button>
         </div>
         <div ref={printRef} className="p-10 ml-6 mr-6 bg-white">
-          <div>
-            <section className="flex flex-row items-end justify-end mt-4 mb-10">
-              <header className="text-3xl">Stock-Out Report</header>
-            </section>
+          <div className="w-full py-4 text-center text-white bg-green-800">
+            <header className="text-3xl font-bold">STOCK-OUT REPORT</header>
+          </div>
+          <div className='mt-10'>
             <section className="flex flex-row items-end justify-end gap-10">
               <ul className='flex flex-col gap-2'>
                 <li className="font-bold">Reference No.</li>
@@ -119,6 +119,7 @@ const StockOutDocument = () => {
                 <TableRow className=" bg-zinc-800">
                   <TableCell align="right" className="text-white">Item ID</TableCell>
                   <TableCell align="right" className="text-white">Item Name</TableCell>
+                  <TableCell align="right" className="text-white">Item Details</TableCell>
                   <TableCell align="right" className="text-white">Department</TableCell>
                   <TableCell align="right" className="text-white">Quantity Out</TableCell>
                   <TableCell align="right" className="text-white">New Quantity On Hand</TableCell>
@@ -128,6 +129,7 @@ const StockOutDocument = () => {
                   <TableRow>
                     <TableCell align="right">{itemId.itemId}</TableCell> {/* Access itemId.id */}
                     <TableCell align="right">{itemId.itemName}</TableCell>
+                    <TableCell align="right">{itemId.brand} - {itemId.model}</TableCell>
                     <TableCell align="right">{department}</TableCell>
                     <TableCell align="right">{outQty}</TableCell>
                     <TableCell align="right">{itemId.quantity}</TableCell>

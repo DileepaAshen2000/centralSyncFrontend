@@ -49,13 +49,6 @@ const EditAdjustment = () => {
     setFlag(1);
   };
 
-  // new
-
-  
-
-
-  // end of new
-
   useEffect(() => {
     loadAdjustment();
   },[]);
@@ -63,42 +56,6 @@ const EditAdjustment = () => {
   const onSubmit=async(e)=>{
     if(flag === 1){
       e.preventDefault(); // To remove unwanted url tail part
-      // const validationErrors = validateInputs();
-      // console.log(Object.keys(validationErrors).length)
-      // if (Object.keys(validationErrors).length > 0) {
-      //   setErrors(validationErrors);
-      //   return;
-      // }
-
-      // try {
-      //   const formData = new FormData();
-      //   formData.append('reason', reason);
-      //   formData.append('date', date);
-      //   formData.append('description', description);
-      //   formData.append('adjustedQuantity', adjustedQuantity);
-      //   formData.append('itemId', itemId);
-      //   formData.append('file', file); // Append the file to the formData
-
-      //   const result = await axios.put(`http://localhost:8080/adjustment/updateById/${adjId}`, formData, {
-      //     headers: {
-      //       'Content-Type': 'multipart/form-data'
-      //     }
-      //   });
-      
-      //   navigate('/adjustment');
-      //   Swal.fire({
-      //     title: "Done!",
-      //     text: "Adjustment Successfully Editted !",
-      //     icon: "success"
-      //   });
-      // } catch (error) {
-      //   console.error("Error:", error);
-      //   Swal.fire({
-      //     title: "Error!",
-      //     text: "Failed to Edit Adjustment. Please try again later.",
-      //     icon: "error"
-      //   });
-      // }
 
       const formData = new FormData();
     formData.append(
@@ -161,28 +118,6 @@ const EditAdjustment = () => {
     } 
   };
 
-  // Validate the input fields
-  // const validateInputs = () => {
-  //   const errors = {};
-  //   if (!reason) {
-  //     errors.reason = 'Reason is required';
-  //   }
-  //   if (!date) {
-  //     errors.date = 'Date is required';
-  //   }
-    
-  //   if (!newQuantity) {
-  //     errors.newQuantity = 'New Quantity is required';
-  //   }
-  //   if (!itemId) {
-  //     errors.itemId = 'Item ID is required';
-  //   }
-  //   if (newQuantity<0){
-  //     errors.newQuantity = 'Quantity should be positive value'
-  //   }
-    
-  //   return errors;
-  // };
 
   const handleFileChange = (e) => {
     setAdj({ ...adj, file: e.target.files[0] });
@@ -241,9 +176,6 @@ const EditAdjustment = () => {
     const { name, value } = e.target;
     validateField(name, value);
   };
-
-
-  //////
   
   return (
     <form className="grid grid-cols-8 p-10 bg-white gap-y-10 rounded-2xl ml-14 mr-14" onSubmit={(e)=> onSubmit(e)}>
@@ -251,7 +183,7 @@ const EditAdjustment = () => {
 
       <div className="flex items-center col-span-4 col-start-1">
         <InputLabel htmlFor="adjId" className="flex-none w-32 text-black ">
-          Adjustment ID
+          Reference No.
         </InputLabel>
         <div>
           <TextField
@@ -343,7 +275,8 @@ const EditAdjustment = () => {
             onBlur={handleBlur}
             className="w-[300px] h-10 bg-white">
             <MenuItem value="Damaged Item">Damaged Item</MenuItem>
-            <MenuItem value="Stolen Item">Stolen Item</MenuItem>
+            <MenuItem value="Return to Insurance">Return to Insurance</MenuItem>
+            <MenuItem value="Omissions in Issuance">Omissions in Issuance</MenuItem>
             <MenuItem value="Others">Others</MenuItem>
           </Select>
         </div>

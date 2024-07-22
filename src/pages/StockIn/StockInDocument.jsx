@@ -30,13 +30,6 @@ const StockInDocument = () => {
   })
 
 const{date,description,inQty,location,itemId,userId,generatedBy,filePath} = stockIn;
-
-// const [item,setItem] = useState({  // create state for StockIn, initial state is empty with object.
-//   itemName:"",
-//   quantity:"",
-//   itemGroup:""
-// })
-// const{itemName,quantity,itemGroup} = item;
 const printRef = useRef();
 
 useEffect(() => {
@@ -52,9 +45,6 @@ const loadStockIn = async () => {
     const token = localStorage.getItem('token');
     const profile = await LoginService.getYourProfile(token);
     setStockIn(preStockIn => ({ ...preStockIn, generatedBy: profile.users.userId }));
-    
-    // const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${result.data.itemId}`);
-    // setItem(result1.data);
   } catch (error) {
     console.error('Error loading StockIn:', error);
   }
@@ -121,10 +111,10 @@ const handlePrint = useReactToPrint({
           >print</Button>
         </div>
         <div ref={printRef} className="p-10 ml-6 mr-6 bg-white">
-          <div>
-            <section className="flex flex-row items-end justify-end mt-4 mb-10">
-              <header className="text-3xl">Stock-In Report</header>
-            </section>
+          <div className="w-full py-4 text-center text-white bg-purple-800">
+            <header className="text-3xl font-bold">STOCK-IN REPORT</header>
+          </div>
+          <div className='mt-10'>
             <section className="flex flex-row items-end justify-end gap-10">
               <ul className='flex flex-col gap-2'>
                 <li className="font-bold">Reference No.</li>
@@ -148,6 +138,7 @@ const handlePrint = useReactToPrint({
                 <TableRow className=" bg-zinc-800">
                   <TableCell align="right" className="text-white">Item ID</TableCell>
                   <TableCell align="right" className="text-white">Item Name</TableCell>
+                  <TableCell align="right" className="text-white">Item Details</TableCell>
                   <TableCell align="right" className="text-white">Location</TableCell>
                   <TableCell align="right" className="text-white">Quantity In</TableCell>
                   <TableCell align="right" className="text-white">New Quantity On Hand</TableCell>
@@ -157,6 +148,7 @@ const handlePrint = useReactToPrint({
                   <TableRow>
                     <TableCell align="right">{itemId.itemId}</TableCell>
                     <TableCell align="right">{itemId.itemName}</TableCell>
+                    <TableCell align="right">{itemId.brand} - {itemId.model}</TableCell>
                     <TableCell align="right">{location}</TableCell>
                     <TableCell align="right">{inQty}</TableCell>
                     <TableCell align="right">{itemId.quantity}</TableCell>
