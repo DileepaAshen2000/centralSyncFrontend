@@ -30,13 +30,6 @@ const StockInDocument = () => {
   })
 
 const{date,description,inQty,location,itemId,userId,generatedBy,filePath} = stockIn;
-
-// const [item,setItem] = useState({  // create state for StockIn, initial state is empty with object.
-//   itemName:"",
-//   quantity:"",
-//   itemGroup:""
-// })
-// const{itemName,quantity,itemGroup} = item;
 const printRef = useRef();
 
 useEffect(() => {
@@ -52,9 +45,6 @@ const loadStockIn = async () => {
     const token = localStorage.getItem('token');
     const profile = await LoginService.getYourProfile(token);
     setStockIn(preStockIn => ({ ...preStockIn, generatedBy: profile.users.userId }));
-    
-    // const result1 = await axios.get(`http://localhost:8080/inventory-item/getById/${result.data.itemId}`);
-    // setItem(result1.data);
   } catch (error) {
     console.error('Error loading StockIn:', error);
   }

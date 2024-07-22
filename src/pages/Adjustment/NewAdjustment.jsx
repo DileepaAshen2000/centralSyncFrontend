@@ -164,40 +164,6 @@ const NewAdjustment = () => {
     }
   };
 
-  // const validateField = (name, value) => {
-  //   const validationErrors = {};
-  //   if (name === "itemName" && !value) {
-  //     validationErrors.itemName = "Item Name is required.";
-  //   } else if (name === "reason" && !value) {
-  //     validationErrors.reason = "Reason is required.";
-  //   } else if (name === "date" && !value) {
-  //     validationErrors.date = "Date is required.";
-  //   } else if (name === "newQuantity") {
-  //     if (!value) {
-  //       validationErrors.newQuantity = "New Quantity is required.";
-  //     } else if (isNaN(value) || value <= 0) {
-  //       validationErrors.newQuantity = "New Quantity must be a positive number.";
-  //     }
-  //   } else if (name === "brand" && !value) {
-  //     validationErrors.brand = "Brand is required.";
-  //   } else if (name === "model" && !value) {
-  //     validationErrors.model = "Model is required.";
-  //   }
-
-  //   setErrors((prevErrors) => ({
-  //     ...prevErrors,
-  //     [name]: validationErrors[name],
-  //   }));
-
-  //   // Remove the error if there is no validation error for the field
-  //   if (!validationErrors[name]) {
-  //     setErrors((prevErrors) => {
-  //       const { [name]: removedError, ...rest } = prevErrors;
-  //       return rest;
-  //     });
-  //   }
-  // };
-
   const validateField = (name, value) => {
     const validationErrors = {};
     if (name === "itemName" && !value) {
@@ -236,18 +202,6 @@ const NewAdjustment = () => {
     }
   };
 
-  // const onInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   let updatedAdj = { ...adj, [name]: value };
-  //   if (name === "newQuantity") {
-  //     updatedAdj.adjustedQuantity = value - item.quantity;
-  //   }
-  //   setAdj(updatedAdj);
-  //   if (errors[name]) {
-  //     validateField(name, value);
-  //   }
-  // };
-
   const onInputChange = (e) => {
     const { name, value } = e.target;
     let updatedAdj = { ...adj, [name]: value };
@@ -276,94 +230,7 @@ const NewAdjustment = () => {
     const { name, value } = e.target;
     validateField(name, value);
   };
-
-  // const onSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   const validationErrors = {};
-
-  //     validateField("itemName", selectedItemName);
-  //     validateField("reason", reason);
-  //     validateField("date", date);
-  //     validateField("newQuantity", newQuantity);
-  //     validateField("brand", selectedBrand);
-  //     validateField("model", selectedModel);
-
-  //     // Check if there are any errors
-  //     const hasErrors = Object.keys(errors).some((key) => !!errors[key]);
-
-  //     if (hasErrors) {
-  //       console.log("Validation errors found:", errors);
-  //       Swal.fire({
-  //         icon: "error",
-  //         title: "Error!",
-  //         text: "Failed to submit Adjustment. Please check your inputs.",
-  //       });
-  //       return;
-  //     }
-
-  //   const formData = new FormData();
-  //   formData.append(
-  //     "adjustment",
-  //     new Blob(
-  //       [
-  //         JSON.stringify({
-  //           reason,
-  //           date,
-  //           description,
-  //           newQuantity,
-  //           adjustedQuantity,
-  //           userId,
-  //           itemId,
-  //         }),
-  //       ],
-  //       { type: "application/json" }
-  //     )
-  //   );
-  //   if (file) {
-  //     formData.append("file", file);
-  //   }
-  //   try {
-  //     const response = await axios.post(
-  //       "http://localhost:8080/adjustment/add",
-  //       formData,
-  //       {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       }
-  //     );
-
-  //     if (response.status === 201) {
-  //       Swal.fire({
-  //         icon: "success",
-  //         title: "Success!",
-  //         text: "Adjustment successfully submitted!",
-  //       });
-  //       navigate("/adjustment");
-  //     }
-  //   } catch (error) {
-  //     if(error.response.status === 403){
-  //       Swal.fire({
-  //         icon: "error",
-  //         title: "Error!",
-  //         text: `${error.response.data}`,
-  //       });
-  //       return;
-  //     }
-  //     if (error.response) {
-  //       console.log(error.response.data);
-  //       Swal.fire({
-  //         icon: "error",
-  //         title: "Error!",
-  //         text: "Failed to submit Adjustment. Please check your inputs.",
-  //       });
-  //       const backendErrors = error.response.data;
-  //       setErrors(backendErrors);
-  //     }
-  //   }
-  // };
-
+  
   const onSubmit = async (e) => {
     e.preventDefault();
   
