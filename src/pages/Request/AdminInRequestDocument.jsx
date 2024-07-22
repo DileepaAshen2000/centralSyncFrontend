@@ -181,7 +181,7 @@ setOpenSA(true);
       .delete(`http://localhost:8080/request/deleteRequest/${reqId}`)
       .then(() => {
         setInventoryRequest(!inventoryRequest);
-        navigate(getInventoryRequestListLink());
+        navigate("/new-stockin");
       })
       .catch((error) => {
         console.log(error);
