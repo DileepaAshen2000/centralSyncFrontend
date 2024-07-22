@@ -289,6 +289,7 @@ const AdminInRequestList = () => {
     return b.createdDateTime - a.createdDateTime;
   });
 
+
   return (
     <Box sx={{ width: '100%' }}>
      {(role === 'EMPLOYEE' || role === 'REQUEST_HANDLER') && (
@@ -325,7 +326,7 @@ const AdminInRequestList = () => {
         <TabPanel value="2">
           <SectionHeader title="Work From Home Employee's Delivery Requests List" color="#006400" />
           <Table 
-            rows={sortedMyRequestRows} 
+            rows={sortedMyRequestRows}
             columns={columns} 
             loading={loadingRequests} 
             onRowClick={(params) => navigate(`/admin/de-request-document/${params.row.reqId}`)} 
@@ -345,7 +346,12 @@ const AdminInRequestList = () => {
             rows={itemsOnHandRows} 
             columns={itemsOnHandColumns} 
             loading={loadingRequests} 
-            onRowClick={(params) => navigate(`/admin/in-request-document/${params.row.reqId}`)} 
+            onRowClick={(params) => {
+              const link = params.row.workSite === 'ONLINE'
+                ? `/admin/de-request-document/${params.row.reqId}`
+                : `/admin/in-request-document/${params.row.reqId}`;
+              navigate(link);
+            }} 
           />
            <Box sx={{ display: 'flex', justifyContent: 'space-around', marginTop: '16px' }}>
             <CountBox title="Want To Return Item Requests" count={wantToReturnCount} backgroundColor="#af5c9b" />
