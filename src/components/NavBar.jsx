@@ -200,6 +200,7 @@ export default function NavBar() {
               </IconButton>
             </Tooltip>
             
+        
             <div className='flex items-center'>
             {profileInfo ? (
                 <h4 className="text-black text-bold ">

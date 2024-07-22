@@ -13,44 +13,24 @@ const AvgCards = ({ category, year }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8080/request/getAll?itemGroup=${category}&year=${year}`
-        );
-        console.log("Requests response:", response.data);
-        setRequests(response.data);
+        const [requestsResponse, stockInResponse, stockOutResponse] = await Promise.all([
+          axios.get(`http://localhost:8080/request/filtered?itemGroup=${category}&year=${year}`),
+          axios.get(`http://localhost:8080/stock-in/getAll?itemGroup=${category}&year=${year}`),
+          axios.get(`http://localhost:8080/stock-out/getAll?itemGroup=${category}&year=${year}`)
+        ]);
+        
+        console.log("Requests response:", requestsResponse.data);
+        console.log("Stock In response:", stockInResponse.data);
+        console.log("Stock Out response:", stockOutResponse.data);
+        
+        setRequests(requestsResponse.data);
+        setStockIn(stockInResponse.data);
+        setStockOut(stockOutResponse.data);
       } catch (error) {
         console.log(error);
         setRequests([]);
-      }
-    };
-
-    fetchData();
-  }, [category, year]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/stock-out/getAll?itemGroup=${category}&year=${year}`
-        );
-        setStockOut(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, [category, year]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/stock-in/getAll?itemGroup=${category}&year=${year}`
-        );
-        setStockIn(response.data);
-      } catch (error) {
-        console.log(error);
+        setStockIn([]);
+        setStockOut([]);
       }
     };
 
@@ -59,15 +39,10 @@ const AvgCards = ({ category, year }) => {
 
   const totReq = (data) => {
     return data
-      .map((req) => req.reqStatus)
-      .reduce((count, status) => {
-        return status !== "REJECTED" &&
-          status !== "SENT_TO_ADMIN" &&
-          status !== "PENDING"
-          ? count + 1
-          : count;
-      }, 0);
+      .filter((req) => req.reqStatus !== "REJECTED" && req.reqStatus !== "SENT_TO_ADMIN" && req.reqStatus !== "PENDING")
+      .length;
   };
+  console.log("tot Req:", totReq(requests));
 
   const totStockIn = (data) => {
     return data
@@ -93,7 +68,7 @@ const AvgCards = ({ category, year }) => {
         </span>
         <div className="flex flex-col">
           <span className="text-2xl text-blue-800">
-            {Math.ceil(totReq(requests) / 12)}
+            {Math.round(totReq(requests) / 12)}
           </span>
           <span className="text-sm text-gray-800">Average Usage per Month</span>
         </div>
@@ -108,7 +83,7 @@ const AvgCards = ({ category, year }) => {
         </span>
         <div className="flex flex-col">
           <span className="text-2xl text-green-800">
-            {Math.ceil(totStockIn(stockIn) / 12)} pcs
+            {Math.round(totStockIn(stockIn) / 12)} pcs
           </span>
           <span className="text-sm text-gray-800">
             Average Stock In per Month
@@ -126,7 +101,7 @@ const AvgCards = ({ category, year }) => {
         </span>
         <div className="flex flex-col">
           <span className="text-2xl text-red-800">
-            {Math.ceil(totStockOut(stockOut) / 12)} pcs
+            {Math.round(totStockOut(stockOut) / 12)} pcs
           </span>
           <span className="text-sm text-gray-800">
             Average Stock Out per Month

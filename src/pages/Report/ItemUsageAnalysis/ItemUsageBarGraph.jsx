@@ -40,44 +40,6 @@ const UsageBarChart = ({ category, year }) => {
       </div>
     );
   }
-
-  const requestsByMonth = requests
-    .map((req) => {
-      const dateArray = req.createdDateTime;
-      const date = new Date(Date.UTC(...dateArray));
-      return {
-        date: date,
-        status: req.reqStatus,
-      };
-    })
-    .reduce((acc, rq) => {
-      const date = new Date(rq.date);
-      const month = date.toLocaleDateString("default", { month: "short" });
-      acc[month] = acc[month] || [];
-      if (
-        rq.status !== "REJECTED" &&
-        rq.status !== "SENT_TO_ADMIN" &&
-        rq.status !== "PENDING"
-      ) {
-        acc[month].push(rq);
-      }
-      return acc;
-    }, {});
-  console.log("requests By month", requestsByMonth);
-  // Check if there are any months with data
-  const hasData = Object.values(requestsByMonth).some(
-    (monthData) => monthData.length > 0
-  );
-
-  if (!hasData) {
-    return <div className="text-center m-10">No records found</div>;
-  }
-
-  // if (Object.keys(requestsByMonth).length === 0) {
-  //   return <div className="text-center m-10">No records found</div>;
-  // }
-
-  console.log(requestsByMonth);
   const xLabels = [
     "Jan",
     "Feb",
@@ -92,10 +54,45 @@ const UsageBarChart = ({ category, year }) => {
     "Nov",
     "Dec",
   ];
+  const requestsByMonth = xLabels.reduce((acc, month) => {
+    acc[month] = 0;
+    return acc;
+  }, {});
 
-  const noOfItemsUsed = xLabels.map(
-    (label) => requestsByMonth[label]?.length ?? 0
-  );
+  requests.forEach((req) => {
+    // Parse formattedCreatedDateTime to Date
+    const [datePart] = req.formattedCreatedDateTime.split(' ');
+    const [year, month, day] = datePart.split('-');
+    const date = new Date(`${year}-${month}-${day}T00:00:00Z`);
+    
+    const monthIndex = date.getMonth(); // Get the month index (0-11)
+    const monthLabel = xLabels[monthIndex]; // Use month index to get the month label
+
+    if (
+      req.reqStatus !== "REJECTED" &&
+      req.reqStatus !== "SENT_TO_ADMIN" &&
+      req.reqStatus !== "PENDING"
+    ) {
+      requestsByMonth[monthLabel] = (requestsByMonth[monthLabel] || 0) + 1;
+    }
+  });
+  console.log("requests By month", requestsByMonth);
+
+  console.log("requests By month", requestsByMonth);
+  // Check if there are any months with data
+  const hasData = Object.values(requestsByMonth).some((count) => count > 0);
+
+  if (!hasData) {
+    return <div className="text-center m-10">No records found</div>;
+  }
+
+  // if (Object.keys(requestsByMonth).length === 0) {
+  //   return <div className="text-center m-10">No records found</div>;
+  // }
+
+  console.log(requestsByMonth);
+
+  const noOfItemsUsed = xLabels.map((label) => requestsByMonth[label] ?? 0);
 
   return (
     <div ref={ref} className="w-full h-full">

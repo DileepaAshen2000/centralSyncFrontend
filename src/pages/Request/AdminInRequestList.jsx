@@ -8,6 +8,7 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import LoginService from '../Login/LoginService'; // Ensure the path is correct
+import { set } from 'date-fns';
 
 // Table component to display data with a loading state
 const Table = ({ rows, columns, loading, onRowClick }) => {
@@ -68,6 +69,19 @@ const AdminInRequestList = () => {
   const [itemsOnHandRows, setItemsOnHandRows] = useState([]); // New state for items on hand
   const [loadingRequests, setLoadingRequests] = useState(true);
 
+      //state variables for counts
+      const [sentToAdminCount, setSentToAdminCount] = useState(0);
+      const[pendingCount,setPendingCount]=useState(0);
+      const[reqPendingCount, setReqPendingCount] = useState(0);
+      const [reqRejectedCount, setReqRejectedtedCount] = useState(0);
+      const[reqAcceptedCount, setReqAcceptedCount] = useState(0);
+      const [receivedCount, setReceivedCount] = useState(0);
+    const [dispatchedCount, setDispatchedCount] = useState(0);
+    const [deliveredCount, setDeliveredCount] = useState(0);
+    const [rejectedCount, setRejectedCount] = useState(0);
+    const [wantToReturnCount, setWantToReturnCount] = useState(0);
+const[acceptedCount,setAcceptedCount]=useState(0);
+
   useEffect(() => {
     checkEmployeeStatus();
     fetchRequestsData();
@@ -83,10 +97,20 @@ const AdminInRequestList = () => {
       let data = formatRequestsData(response.data);
 
       // Filtering requests based on role
-      const reviewingRequests = data.filter(item => (item.status === 'SENT_TO_ADMIN' && item.workSite !== 'ONLINE'));
-      console.log('Reviewing Requests:', reviewingRequests);
+      const reviewingRequests = data.filter(item => ((item.status === 'SENT_TO_ADMIN' && item.workSite !== 'ONLINE') ||
+    (item.role === 'REQUEST_HANDLER')));
+      setSentToAdminCount(reviewingRequests.filter(item => item.status === 'SENT_TO_ADMIN').length);
+      setReqPendingCount(reviewingRequests.filter(item => item.status === 'PENDING').length);
+     setReqRejectedtedCount(reviewingRequests.filter(item => item.status === 'REJECTED').length);
+      setReqAcceptedCount(reviewingRequests.filter(item => item.status === 'ACCEPTED').length);
       const myRequests = data.filter(item => (item.workSite === 'ONLINE') && (item.status !== 'WANT_TO_RETURN_ITEM'));
+      setPendingCount(myRequests.filter(item => item.status === 'PENDING').length);
+      setDispatchedCount(myRequests.filter(item => item.status === 'DISPATCHED').length);
+      setDeliveredCount(myRequests.filter(item => item.status === 'DELIVERED').length);
+      setReceivedCount(myRequests.filter(item => item.status === 'RECEIVED').length);
+      setRejectedCount(myRequests.filter(item => item.status === 'REJECTED').length);
       const itemsOnHand = data.filter(item =>item.status === 'WANT_TO_RETURN_ITEM'); // Filter for items on hand
+      setWantToReturnCount(itemsOnHand.filter(item =>item.status === 'WANT_TO_RETURN_ITEM').length);
       
 
       // Add sequential IDs
@@ -140,7 +164,7 @@ const AdminInRequestList = () => {
   };
 
   const columns = [
-    { field: 'id', headerName: 'No:', width: 180 },
+    { field: 'reqId', headerName: 'Request Id:', width: 180 },
     { field: 'date', headerName: 'Date', width: 180 },
     { field: 'time', headerName: 'Time', width: 180 },
     { field: 'itemName', headerName: 'Item Name', width: 180 },
@@ -198,7 +222,7 @@ const AdminInRequestList = () => {
 
   // New columns for "Items On My Hand"
   const itemsOnHandColumns = [
-    { field: 'id', headerName: 'No:', width: 180 },
+    { field: 'reqId', headerName: 'Request No:', width: 180 },
     { field: 'itemName', headerName: 'Item Name', width: 180 },
     { field: 'date', headerName: 'Received Date', width: 180 },
     { field: 'quantity', headerName: 'Requested Quantity', width: 180 },
@@ -273,6 +297,7 @@ const AdminInRequestList = () => {
     return b.createdDateTime - a.createdDateTime;
   });
 
+
   return (
     <Box sx={{ width: '100%' }}>
      {(role === 'EMPLOYEE' || role === 'REQUEST_HANDLER') && (
@@ -301,16 +326,29 @@ const AdminInRequestList = () => {
             loading={loadingRequests} 
             onRowClick={(params) => navigate(`/admin/in-request-document/${params.row.reqId}`)} 
           />
+          <Box sx={{ display: 'flex', justifyContent: 'space-around', marginTop: '16px' }}>
+            <CountBox title="Sent To Admin" count={sentToAdminCount} backgroundColor="#FFD700" />
+            <CountBox title="Pending Requests" count={reqPendingCount} backgroundColor="#ADD8E6" />
+            <CountBox title="Accepted Requests" count={reqAcceptedCount} backgroundColor="#90EE90" />
+            <CountBox title="Rejected Requests" count={reqRejectedCount} backgroundColor="#F08080" />
+            </Box>
         </TabPanel>
 
         <TabPanel value="2">
           <SectionHeader title="Work From Home Employee's Delivery Requests List" color="#006400" />
           <Table 
-            rows={sortedMyRequestRows} 
+            rows={sortedMyRequestRows}
             columns={columns} 
             loading={loadingRequests} 
             onRowClick={(params) => navigate(`/admin/de-request-document/${params.row.reqId}`)} 
           />
+           <Box sx={{ display: 'flex', justifyContent: 'space-around', marginTop: '16px' }}>
+           <CountBox title="Pending Requests" count={pendingCount} backgroundColor="#ADD8E6" />
+           <CountBox title="Rejected Requests" count={rejectedCount} backgroundColor="#F08080" />
+            <CountBox title="Received Requests" count={receivedCount} backgroundColor="#4540bd" />
+            <CountBox title="Dispatched Requests" count={dispatchedCount} backgroundColor="#FFA500" />
+            <CountBox title="Delivered Requests" count={deliveredCount} backgroundColor="#90EE90" />
+            </Box>
         </TabPanel>
 
         <TabPanel value="3"> {/* New TabPanel for Items On My Hand */}
@@ -319,10 +357,37 @@ const AdminInRequestList = () => {
             rows={itemsOnHandRows} 
             columns={itemsOnHandColumns} 
             loading={loadingRequests} 
-            onRowClick={(params) => navigate(`/admin/in-request-document/${params.row.reqId}`)} 
+            onRowClick={(params) => {
+              const link = params.row.workSite === 'ONLINE'
+                ? `/admin/de-request-document/${params.row.reqId}`
+                : `/admin/in-request-document/${params.row.reqId}`;
+              navigate(link);
+            }} 
           />
+           <Box sx={{ display: 'flex', justifyContent: 'space-around', marginTop: '16px' }}>
+            <CountBox title="Want To Return Item Requests" count={wantToReturnCount} backgroundColor="#af5c9b" />
+          </Box>
         </TabPanel>
       </TabContext>
+    </Box>
+  );
+};
+// New code for CountBox component
+const CountBox = ({ title, count, backgroundColor }) => {
+  if (count === 0) {
+    return null; // Return null to hide the box if count is 0
+  }
+
+  return (
+    <Box sx={{
+      textAlign: 'center',
+      textStyle: 'bold',
+      padding: '16px',
+      borderRadius: '8px',
+      backgroundColor: backgroundColor
+    }}>
+      <h3>{title}</h3>
+      <p>{count}</p>
     </Box>
   );
 };

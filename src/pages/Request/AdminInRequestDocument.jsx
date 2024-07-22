@@ -179,10 +179,10 @@ setOpenSA(true);
   };
   const handleDelete = () => {
     axios
-      .patch(`http://localhost:8080/request/deleteRequest/${reqId}`)
+      .delete(`http://localhost:8080/request/deleteRequest/${reqId}`)
       .then(() => {
         setInventoryRequest(!inventoryRequest);
-        navigate(getInventoryRequestListLink());
+        navigate("/new-stockin");
       })
       .catch((error) => {
         console.log(error);
@@ -461,7 +461,7 @@ setOpenSA(true);
 
         </div>
 
-        { (inventoryRequest?.reqStatus === 'SENT_TO_ADMIN') &&
+        { ((inventoryRequest?.reqStatus === 'SENT_TO_ADMIN') || (inventoryRequest?.role === 'REQUEST_HANDLER')) &&
         
          (
           <div className='flex gap-6 mt-6 ml-6'>
@@ -486,7 +486,7 @@ setOpenSA(true);
         )}
 
         <div className='flex justify-end gap-4 ml-[50%] mt-6'>
-        {inventoryRequest.reqStatus === 'SENT_TO_ADMIN' &&
+        {((inventoryRequest?.reqStatus === 'SENT_TO_ADMIN') || (inventoryRequest?.role === 'REQUEST_HANDLER')) &&
         (
             <>
               <Button
@@ -517,7 +517,7 @@ setOpenSA(true);
               </Button>
             </DialogActions>
           </Dialog>
-          {inventoryRequest.reqStatus === 'SENT_TO_ADMIN' &&
+          {((inventoryRequest?.reqStatus === 'SENT_TO_ADMIN') || (inventoryRequest?.role === 'REQUEST_HANDLER')) &&
        (
             <>
               <Button
